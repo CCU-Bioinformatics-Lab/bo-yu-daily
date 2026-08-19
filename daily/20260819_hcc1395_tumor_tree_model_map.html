@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HCC1395 腫瘤演化樹｜輸入 → 模型 → 推理</title>
+  <style>
+    :root {
+      --ink: #172333;
+      --muted: #6c7a89;
+      --paper: #f7f9fb;
+      --card: #ffffff;
+      --line: #dbe5ec;
+      --navy: #11263d;
+      --blue: #2878a9;
+      --cyan: #35b5b2;
+      --gold: #e6a93a;
+      --orange: #df7656;
+      --pink: #d97993;
+      --green: #4d9b76;
+      --red: #c64b55;
+      --shadow: 0 16px 44px rgba(17, 38, 61, .10);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Noto Sans TC", sans-serif;
+      line-height: 1.45;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .shell { max-width: 1320px; margin: 0 auto; padding: 28px 22px 68px; }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center; gap: 20px;
+      margin-bottom: 44px;
+    }
+    .brand { display: flex; gap: 12px; align-items: center; text-decoration: none; }
+    .brand-mark {
+      width: 42px; height: 42px; display: grid; place-items: center;
+      border-radius: 13px; color: white; background: var(--navy);
+      box-shadow: 0 8px 18px rgba(17, 38, 61, .18);
+    }
+    .brand strong { display: block; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
+    .brand span { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    nav { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+    nav a {
+      text-decoration: none; color: var(--muted); padding: 8px 11px;
+      border-radius: 999px; font-size: 12px; font-weight: 700;
+    }
+    nav a:hover, nav a:focus-visible { color: var(--navy); background: #e8f0f5; outline: none; }
+
+    .hero {
+      display: grid; grid-template-columns: minmax(0, 1.06fr) minmax(340px, .94fr);
+      gap: 28px; align-items: stretch; margin-bottom: 48px;
+    }
+    .hero-copy { padding: 28px 4px 12px; }
+    .eyebrow {
+      color: var(--blue); font-size: 12px; font-weight: 800; letter-spacing: .14em;
+      text-transform: uppercase; margin-bottom: 14px;
+    }
+    h1 { margin: 0; max-width: 720px; font-size: clamp(34px, 5vw, 66px); line-height: 1.02; letter-spacing: -.055em; }
+    .hero-copy p { max-width: 650px; color: var(--muted); font-size: 16px; margin: 20px 0 0; }
+    .hero-copy p strong { color: var(--ink); }
+    .hero-diagram {
+      min-height: 312px; padding: 20px; border: 1px solid var(--line); border-radius: 28px;
+      background: linear-gradient(145deg, #eef7fa 0%, #fffaf3 100%); box-shadow: var(--shadow);
+      position: relative; overflow: hidden;
+    }
+    .hero-diagram::after {
+      content: ""; position: absolute; width: 220px; height: 220px; border-radius: 50%;
+      right: -90px; bottom: -100px; background: rgba(53, 181, 178, .13);
+    }
+    .hero-diagram svg { width: 100%; height: 100%; min-height: 270px; position: relative; z-index: 1; }
+
+    .section { margin-top: 54px; scroll-margin-top: 24px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 17px; }
+    .section-kicker { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h2 { font-size: clamp(24px, 3vw, 37px); line-height: 1.06; letter-spacing: -.04em; margin: 4px 0 0; }
+    .section-lede { color: var(--muted); max-width: 570px; font-size: 14px; text-align: right; }
+
+    .input-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .data-card, .mini-card, .algo-card, .auto-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: 0 7px 22px rgba(17, 38, 61, .045);
+    }
+    .data-card { padding: 17px; min-height: 194px; position: relative; overflow: hidden; }
+    .data-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--accent, var(--blue)); }
+    .icon-box { width: 44px; height: 44px; display: grid; place-items: center; color: var(--accent, var(--blue)); background: color-mix(in srgb, var(--accent, var(--blue)) 12%, white); border-radius: 14px; margin-bottom: 13px; }
+    .icon-box svg { width: 26px; height: 26px; }
+    .data-card h3, .mini-card h3, .algo-card h3, .auto-card h3 { font-size: 15px; margin: 0 0 5px; letter-spacing: -.01em; }
+    .data-card p, .mini-card p, .algo-card p, .auto-card p { color: var(--muted); font-size: 12px; margin: 0; }
+    .stat { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 13px; padding: 5px 8px; border-radius: 8px; background: #f1f5f7; }
+    .path { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #7890a0; font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 11px; }
+    .tag { display: inline-block; color: var(--accent, var(--blue)); font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; margin-top: 10px; }
+
+    .data-note { display: flex; gap: 12px; align-items: center; margin-top: 13px; padding: 11px 14px; border: 1px dashed #cfdae1; border-radius: 15px; color: var(--muted); background: #fbfcfd; font-size: 12px; }
+    .data-note b { color: var(--ink); }
+
+    .prep-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: stretch; }
+    .prep-card { min-height: 154px; padding: 16px; position: relative; background: white; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 7px 22px rgba(17, 38, 61, .045); }
+    .prep-card:not(:last-child)::after { content: "→"; position: absolute; right: -20px; top: 62px; z-index: 2; color: #9db2bf; font-size: 23px; font-weight: 800; }
+    .prep-card .step-num { margin-bottom: 13px; }
+    .prep-card h3 { margin: 0 0 5px; font-size: 15px; }
+    .prep-card p { margin: 0; color: var(--muted); font-size: 12px; }
+    .prep-card .prep-output { display: block; margin-top: 13px; color: var(--blue); font: 700 10px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .table-contract { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: 16px; margin-top: 16px; }
+    .contract-card { padding: 20px; background: var(--navy); color: white; border-radius: 25px; box-shadow: var(--shadow); }
+    .contract-card.light { color: var(--ink); background: white; border: 1px solid var(--line); box-shadow: none; }
+    .contract-card h3 { margin: 4px 0 8px; font-size: 22px; letter-spacing: -.035em; }
+    .contract-card p { margin: 0; color: #a7c4d3; font-size: 12px; }
+    .contract-card.light p { color: var(--muted); }
+    .contract-card.light .panel-label { color: var(--muted); }
+    .contract-file { display: inline-block; margin-top: 14px; padding: 7px 9px; color: #c7e2ee; background: rgba(255,255,255,.09); border-radius: 9px; font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .format-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 14px; }
+    .format-card { padding: 11px 12px; background: #f7fafb; border: 1px solid var(--line); border-radius: 14px; }
+    .format-card strong { display: block; color: var(--blue); font-size: 11px; }
+    .format-card code { display: block; margin-top: 5px; color: var(--ink); font: 10px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .csv-file { display: inline-block; margin-top: 4px; padding: 6px 8px; color: var(--blue); background: #eef6f8; border-radius: 8px; font: 700 10px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .csv-preview { overflow-x: auto; margin: 14px 0 0; padding: 14px; color: #d9edf2; background: #172f43; border-radius: 14px; font: 10px/1.75 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre; }
+    .csv-preview .csv-head { color: #8fe0d5; }
+    .csv-preview .csv-value { color: #f5d38a; }
+    .csv-note { margin-top: 9px; color: var(--muted); font-size: 11px; }
+    .join-rule { display: grid; gap: 10px; margin-top: 15px; }
+    .join-rule div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid rgba(255,255,255,.13); border-radius: 12px; background: rgba(255,255,255,.07); font-size: 12px; }
+    .join-rule span:last-child { color: #a7c4d3; font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+
+    .split { display: grid; grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr); gap: 16px; }
+    .panel { background: var(--navy); color: white; border-radius: 27px; padding: 22px; box-shadow: var(--shadow); }
+    .panel.light { background: white; color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
+    .panel-label { color: #91b6ca; font-size: 11px; letter-spacing: .12em; font-weight: 800; text-transform: uppercase; }
+    .panel h3 { font-size: 22px; margin: 5px 0 17px; letter-spacing: -.035em; }
+    .chip-list { display: grid; gap: 9px; }
+    .chip {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding: 11px 12px; border: 1px solid rgba(255,255,255,.14); border-radius: 13px;
+      background: rgba(255,255,255,.075); font-size: 12px;
+    }
+    .chip span:last-child { color: #a7c4d3; font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+    .light .chip { color: var(--ink); border-color: var(--line); background: #f7fafb; }
+    .light .chip span:last-child { color: var(--blue); }
+    .model-wrap { display: grid; grid-template-columns: 1fr 1.05fr; gap: 14px; align-items: stretch; }
+    .auto-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .auto-card { padding: 12px; border-radius: 15px; box-shadow: none; }
+    .auto-card h3 { font-size: 13px; }
+    .auto-card p { font-size: 11px; }
+    .auto-card .mini-value { margin-top: 8px; color: var(--blue); font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .formula-strip { margin-top: 13px; padding: 12px 13px; border: 1px solid #cfe0e7; border-radius: 15px; background: #f3f9fb; }
+    .formula-strip .formula-label { color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .formula-strip code { display: block; margin-top: 7px; color: var(--navy); font: 700 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .formula-strip span { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
+    .model-tree { min-height: 210px; margin-top: 15px; padding: 8px; border: 1px solid var(--line); border-radius: 17px; background: #fbfcfd; }
+    .model-tree svg { width: 100%; height: 190px; }
+    .inference-visual { margin: 16px 0 18px; padding: 10px; overflow-x: auto; border: 1px solid #cfe0e7; border-radius: 18px; background: linear-gradient(135deg, #f7fbfc 0%, #fff 52%, #fbfaf7 100%); }
+    .inference-visual svg { display: block; width: 100%; min-width: 850px; height: auto; }
+    .inference-visual .svg-kicker { fill: #718393; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+    .inference-visual .svg-title { fill: #172333; font-size: 15px; font-weight: 800; }
+    .inference-visual .svg-copy { fill: #657786; font-size: 11px; }
+    .inference-visual .svg-mono { fill: #172333; font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .inference-visual .svg-line { fill: none; stroke: #a7b8c2; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .inference-visual .svg-dash { fill: none; stroke: #8aa4b2; stroke-width: 1.7; stroke-dasharray: 5 5; stroke-linecap: round; }
+    .inference-visual .svg-arrow { fill: none; stroke: #2878a9; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .inference-visual .svg-green { fill: none; stroke: #4d9b76; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .inference-visual .svg-red { fill: none; stroke: #d97979; stroke-width: 2; stroke-dasharray: 5 4; stroke-linecap: round; stroke-linejoin: round; }
+
+    .method-visual { margin: 16px 0 18px; padding: 10px; overflow-x: auto; border: 1px solid #d8cbaa; border-radius: 18px; background: linear-gradient(135deg, #fffdf7 0%, #fff 52%, #f7fbfc 100%); }
+    .method-visual svg { display: block; width: 100%; min-width: 820px; height: auto; }
+    .method-visual .m-kicker { fill: #718393; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+    .method-visual .m-title { fill: #172333; font-size: 15px; font-weight: 800; }
+    .method-visual .m-copy { fill: #657786; font-size: 11px; }
+    .method-visual .m-mono { fill: #172333; font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .method-visual .m-line { fill: none; stroke: #9db2bf; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .method-visual .m-dash { fill: none; stroke: #9db2bf; stroke-width: 1.8; stroke-dasharray: 5 5; stroke-linecap: round; stroke-linejoin: round; }
+    .method-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 9px; }
+    .method-card { min-height: 178px; padding: 15px 13px; position: relative; background: white; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 7px 22px rgba(17, 38, 61, .045); }
+    .method-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; border-radius: var(--radius) 0 0 var(--radius); background: var(--accent, var(--blue)); }
+    .method-card h3 { margin: 0 0 7px; font-size: 14px; }
+    .method-card p { margin: 0; color: var(--muted); font-size: 11px; }
+    .method-card .role { display: block; margin-top: 13px; color: var(--accent, var(--blue)); font: 700 10px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .method-card .method-symbol { display: inline-grid; place-items: center; width: 31px; height: 31px; margin-bottom: 13px; color: white; background: var(--accent, var(--blue)); border-radius: 10px; font: 800 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .method-note { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+    .method-note > div { padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line); background: #fff; }
+    .method-note > div:first-child { color: #d9edf2; background: var(--navy); border-color: var(--navy); }
+    .method-note strong { display: block; margin-bottom: 5px; color: var(--ink); font-size: 12px; }
+    .method-note > div:first-child strong { color: white; }
+    .method-note span { color: var(--muted); font-size: 11px; }
+    .method-note > div:first-child span { color: #a7c4d3; }
+    .scope-note { display: flex; gap: 10px; align-items: baseline; margin-top: -28px; margin-bottom: 28px; padding: 11px 14px; color: var(--muted); background: #fbfcfd; border: 1px dashed #cfdae1; border-radius: 14px; font-size: 11px; }
+    .scope-note strong { color: var(--ink); white-space: nowrap; }
+    .advanced-details { margin-top: 16px; }
+    .advanced-details summary { display: inline-flex; cursor: pointer; padding: 8px 11px; color: var(--blue); background: #eef6f8; border-radius: 9px; font-size: 11px; font-weight: 800; }
+    .advanced-details summary:hover, .advanced-details summary:focus-visible { background: #e2f0f3; outline: none; }
+    .scenario-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 18px 0 9px; }
+    .scenario-head strong { font-size: 14px; }
+    .scenario-head span { color: var(--muted); font-size: 11px; }
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .scenario-card { min-height: 170px; padding: 15px 16px; position: relative; background: #fff; border: 1px solid var(--line); border-radius: 17px; }
+    .scenario-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; border-radius: 17px 0 0 17px; background: var(--accent, var(--blue)); }
+    .scenario-card .scenario-index { display: inline-grid; place-items: center; width: 25px; height: 25px; margin-bottom: 10px; color: #fff; background: var(--accent, var(--blue)); border-radius: 8px; font: 800 10px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .scenario-card h3 { margin: 0 0 6px; font-size: 14px; }
+    .scenario-card p { margin: 0; color: var(--muted); font-size: 11px; }
+    .scenario-card .scenario-flow { display: block; margin-top: 12px; color: var(--accent, var(--blue)); font: 700 10px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    .algo-flow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; align-items: stretch; }
+    .algo-card { min-height: 175px; padding: 15px 13px; position: relative; }
+    .algo-card:not(:last-child)::after { content: "→"; position: absolute; right: -17px; top: 72px; color: #a5b6c1; font-size: 21px; font-weight: 800; z-index: 2; }
+    .step { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .step-num { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; color: white; background: var(--accent, var(--blue)); font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .step-icon { color: var(--accent, var(--blue)); }
+    .step-icon svg { width: 29px; height: 29px; }
+    .algo-card h3 { font-size: 13px; }
+    .algo-card p { font-size: 11px; }
+    .algo-card .metric { display: block; margin-top: 13px; color: var(--accent, var(--blue)); font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .status-band { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; margin-top: 16px; padding: 15px 17px; color: #7e2931; background: #fff2f1; border: 1px solid #f1c7c7; border-radius: 16px; }
+    .status-band strong { display: block; color: #a33d47; font-size: 14px; letter-spacing: .03em; }
+    .status-band span { display: block; color: #8d6668; font-size: 12px; }
+    .status-metrics { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .status-metrics b { padding: 6px 8px; color: #96323c; background: #fff; border: 1px solid #f2cdd0; border-radius: 8px; font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    .footer-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 16px; margin-top: 42px; }
+    .foot-card { padding: 17px 19px; border: 1px solid var(--line); border-radius: 17px; background: #fff; color: var(--muted); font-size: 11px; }
+    .foot-card strong { display: block; color: var(--ink); margin-bottom: 7px; font-size: 12px; }
+    .foot-card a { color: var(--blue); }
+    .source-list { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+    .source-list a { font-size: 11px; }
+
+    details { margin-top: 13px; }
+    summary { cursor: pointer; color: var(--blue); font-size: 12px; font-weight: 750; }
+    details[open] summary { margin-bottom: 8px; }
+    .detail-text { padding: 9px 11px; color: var(--muted); background: #f6f9fb; border-radius: 11px; font-size: 11px; }
+    .detail-text code { color: var(--ink); font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    @media (max-width: 1050px) {
+      .input-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .algo-flow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .algo-card:nth-child(3)::after, .algo-card:nth-child(6)::after { display: none; }
+      .prep-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .prep-card:nth-child(2)::after, .prep-card:nth-child(4)::after { display: none; }
+    }
+    @media (max-width: 760px) {
+      .shell { padding: 18px 14px 46px; }
+      .topbar { align-items: flex-start; flex-direction: column; margin-bottom: 30px; }
+      nav { justify-content: flex-start; }
+      .hero, .split, .model-wrap, .table-contract, .footer-grid { grid-template-columns: 1fr; }
+      .hero-copy { padding-top: 8px; }
+      .hero-diagram { min-height: 245px; }
+      .inference-visual { margin-right: -2px; margin-left: -2px; }
+      .input-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .section-head { display: block; }
+      .section-lede { text-align: left; margin-top: 9px; }
+      .algo-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .algo-card::after { display: none !important; }
+      .method-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .scenario-grid { grid-template-columns: 1fr; }
+      .method-note { grid-template-columns: 1fr; }
+      .prep-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .prep-card::after { display: none !important; }
+      .status-band { grid-template-columns: auto 1fr; }
+      .status-metrics { grid-column: 1 / -1; justify-content: flex-start; }
+    }
+    @media (max-width: 440px) {
+      .input-grid, .auto-grid, .algo-flow, .prep-flow, .format-grid, .method-grid { grid-template-columns: 1fr; }
+      .scenario-head { display: block; }
+      .scenario-head span { display: block; margin-top: 4px; }
+      h1 { font-size: 39px; }
+    }
+  </style>
+</head>
+<body>
+  <!--
+    Standalone offline visualization. Inline SVG icon motifs are adapted/redrawn
+    from the Flaticon references listed in the footer. Attribution is visible.
+  -->
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute">
+    <defs>
+      <symbol id="i-dna" viewBox="0 0 24 24">
+        <path d="M7 3c0 4.3 10 4.3 10 9s-10 4.7-10 9M17 3c0 4.3-10 4.3-10 9s10 4.7 10 9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M8.2 6.2h7.6M7.2 9.2h9.6M7.2 14.8h9.6M8.2 17.8h7.6" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="i-file" viewBox="0 0 24 24">
+        <path d="M6 2.8h8l4 4v14.4H6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M14 2.8v4h4M8.5 12h7M8.5 15.3h7M8.5 18.6h4" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="i-bam" viewBox="0 0 24 24">
+        <path d="M4 5.5h16M4 9.5h11M4 13.5h16M4 17.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M17.5 8v3M15.5 11h4M18 14v4" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round"/>
+        <circle cx="18" cy="19" r="1.6" fill="currentColor"/>
+      </symbol>
+      <symbol id="i-cnv" viewBox="0 0 24 24">
+        <path d="M4 19.5h16M5 17V7M9 17v-4M13 17V5M17 17v-7M21 17v-3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M4 4.5h16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"/>
+      </symbol>
+      <symbol id="i-tag" viewBox="0 0 24 24">
+        <path d="M4 5h8l8 7-8 7H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="8" cy="12" r="1.4" fill="currentColor"/>
+      </symbol>
+      <symbol id="i-gauge" viewBox="0 0 24 24">
+        <path d="M4.5 17a7.5 7.5 0 1 1 15 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M12 17l3.7-5.2M6.8 17h10.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="12" cy="17" r="1.5" fill="currentColor"/>
+      </symbol>
+      <symbol id="i-tree" viewBox="0 0 24 24">
+        <path d="M12 4v16M12 8H7M7 8v4M12 11h5M17 11v4M7 12H4M17 15h3" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round"/>
+        <circle cx="12" cy="4" r="1.8" fill="currentColor"/><circle cx="4" cy="12" r="1.8" fill="currentColor"/><circle cx="7" cy="12" r="1.8" fill="currentColor"/><circle cx="5" cy="20" r="1.8" fill="currentColor"/><circle cx="17" cy="15" r="1.8" fill="currentColor"/><circle cx="20" cy="15" r="1.8" fill="currentColor"/>
+      </symbol>
+      <symbol id="i-mcmc" viewBox="0 0 24 24">
+        <path d="M4 17c2.1-8.8 4.4-8.8 6.5 0S14.8 9 17 4s2.7 8 3 13" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round"/>
+        <circle cx="4" cy="17" r="1.5" fill="currentColor"/><circle cx="10.5" cy="17" r="1.5" fill="currentColor"/><circle cx="17" cy="4" r="1.5" fill="currentColor"/><circle cx="20" cy="17" r="1.5" fill="currentColor"/>
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.4 4.4L19 7.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l8 15H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 9v5M12 17.2v.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    </defs>
+  </svg>
+
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#top">
+        <span class="brand-mark"><svg><use href="#i-tree"/></svg></span>
+        <span><strong>HCC1395 / TREE MAP</strong><span>Data → Model → Inference</span></span>
+      </a>
+      <nav aria-label="頁面導覽">
+        <a href="#inputs">01 資料</a>
+        <a href="#prepare">02 整理表</a>
+        <a href="#model">03 模型</a>
+        <a href="#inference">04 推理</a>
+        <a href="20260819_hcc1395_inference_background.html">05 方法背景 ↗</a>
+      </nav>
+    </header>
+
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <div class="eyebrow">Tumor evolution tree / visual handoff</div>
+        <h1>把長讀段資訊<br><span style="color:var(--blue)">接回腫瘤演化樹</span></h1>
+        <p>這張圖只回答三件事：<strong>真的餵進來什麼</strong>、模型會<strong>自己猜什麼</strong>、以及用什麼<strong>推理方法</strong>把樹找出來。</p>
+      </div>
+      <div class="hero-diagram" aria-label="原始 bulk tree 加入 long-read evidence 的概念圖">
+        <svg viewBox="0 0 620 300" role="img">
+          <defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7z" fill="#2878a9"/></marker></defs>
+          <text x="26" y="31" fill="#6c7a89" font-size="12" font-weight="700">BASELINE</text>
+          <text x="350" y="31" fill="#6c7a89" font-size="12" font-weight="700">LONG-READ EXTENSION</text>
+          <g transform="translate(36 64)" color="#2878a9"><use href="#i-dna" width="80" height="80"/><text x="0" y="105" fill="#172333" font-size="16" font-weight="800">bulk + CNV</text><text x="0" y="126" fill="#6c7a89" font-size="12">VAF → CCF / LOH</text></g>
+          <path d="M165 108H315" fill="none" stroke="#2878a9" stroke-width="2" marker-end="url(#arrow)"/>
+          <g transform="translate(210 69)" color="#e6a93a"><use href="#i-tag" width="55" height="55"/><text x="0" y="82" fill="#172333" font-size="12" font-weight="800">long-read evidence</text><text x="0" y="100" fill="#6c7a89" font-size="11">HP-tagged counts</text></g>
+          <g transform="translate(367 59)" color="#35b5b2"><use href="#i-tree" width="90" height="90"/><text x="0" y="112" fill="#172333" font-size="16" font-weight="800">tree posterior</text><text x="0" y="133" fill="#6c7a89" font-size="12">candidate / abstain</text></g>
+          <path d="M487 88c26 0 45 18 45 43s-19 43-45 43" fill="none" stroke="#df7656" stroke-width="2" stroke-dasharray="4 5"/>
+          <text x="484" y="215" fill="#df7656" font-size="11" font-weight="700">not lineage truth yet</text>
+        </svg>
+      </div>
+    </section>
+
+    <div class="scope-note"><strong>本頁範圍</strong><span>這是 HCC1395 候選樹模型的簡要背景圖；local multi-evol-tree 的 regional candidate trees 是另一層研究結果。兩者可互相參考，但都不等同於已驗證的 single-cell lineage tree。</span></div>
+
+    <section class="section" id="inputs">
+      <div class="section-head">
+        <div><div class="section-kicker">01 / sources → model table</div><h2>資料來源與模型讀取表</h2></div>
+        <div class="section-lede">上游檔案先整理成模型整合表；sampler 直接讀其中的 eligible rows。</div>
+      </div>
+      <div class="input-grid">
+        <article class="data-card" style="--accent:#2878a9">
+          <div class="icon-box"><svg><use href="#i-dna"/></svg></div><h3>Reference FASTA</h3><p>固定 GRCh38 座標與 REF allele。</p><span class="tag">coordinate</span><span class="path">/big8_disk/ref/GRCh38_no_alt_analysis_set.fasta</span>
+        </article>
+        <article class="data-card" style="--accent:#35b5b2">
+          <div class="icon-box"><svg><use href="#i-bam"/></svg></div><h3>Tumor BAM</h3><p>上游產生 REF/ALT、depth 與 HP counts；不是 sampler 直接讀取檔案。</p><span class="stat">HCC1395.bam + .bai</span><span class="path">/big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/</span>
+        </article>
+        <article class="data-card" style="--accent:#35b5b2">
+          <div class="icon-box"><svg><use href="#i-bam"/></svg></div><h3>Matched normal BAM</h3><p>HCC1395BL：上游 normal baseline、germline/CN 校正。</p><span class="stat">HCC1395BL.bam + .bai</span><span class="path">/big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/</span>
+        </article>
+        <article class="data-card" style="--accent:#e6a93a">
+          <div class="icon-box"><svg><use href="#i-file"/></svg></div><h3>Somatic TP VCF</h3><p>固定 HCC1395 site snapshot；提供候選 SNV 與座標。</p><span class="stat">30,490 sites</span><span class="path">data/hcc1395_clairs_v041_tp_with_bam_ps.vcf.gz</span>
+        </article>
+        <article class="data-card" style="--accent:#4d9b76">
+          <div class="icon-box"><svg><use href="#i-file"/></svg></div><h3>模型整合表</h3><p>sampler 直接讀取的 site-level table；只有 eligible rows 進 likelihood。</p><span class="stat">30,490 rows · 30,006 eligible</span><span class="path">output/longphase_clone/.../likelihood_input.tsv.gz</span>
+        </article>
+        <article class="data-card" style="--accent:#e6a93a">
+          <div class="icon-box"><svg><use href="#i-tag"/></svg></div><h3>Tagged tumor BAM</h3><p>上游提供 read-level HP；目前保留 HP 1-1 / 2-1 統計到 model table。</p><span class="stat">HP-tagged reads</span><span class="path">longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/</span>
+        </article>
+        <article class="data-card" style="--accent:#d97993">
+          <div class="icon-box"><svg><use href="#i-file"/></svg></div><h3>Phased germline VCF</h3><p>上游 germline phase backbone，用於 read tagging。</p><span class="stat">HCC1395BL phased VCF</span><span class="path">/big8_disk/liaoyoyo2001/data/vcf/HCC1395BL_methyl_phase.vcf.gz</span>
+        </article>
+        <article class="data-card" style="--accent:#df7656">
+          <div class="icon-box"><svg><use href="#i-cnv"/></svg></div><h3>ASCAT CNV / LOH</h3><p>上游 CN summary；模型規格為 ASCAT purity 0.99，runtime 需顯式確認。</p><span class="stat">purity spec 0.99 · 650 segments</span><span class="path">output/cnv_callers/ascat_hcc1395_5khz_t4/purity_ploidy.txt</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="prepare">
+      <div class="section-head">
+        <div><div class="section-kicker">02 / table preparation</div><h2>原始檔案怎麼變成模型輸入</h2></div>
+        <div class="section-lede">先對齊同一個 SNV，再把 reads、CN 與 multiplicity 整成一列一個位點。</div>
+      </div>
+      <div class="prep-flow">
+        <article class="prep-card"><div class="step-num" style="background:#2878a9">01</div><h3>定義 site universe</h3><p>FASTA + somatic TP VCF 固定座標、REF/ALT 與候選 SNV。</p><span class="prep-output">30,490 sites</span></article>
+        <article class="prep-card"><div class="step-num" style="background:#35b5b2">02</div><h3>從 reads 計數</h3><p>Tumor／tagged BAM 產生 bulk 與 HP1-1 / HP2-1 counts。</p><span class="prep-output">bulk_counts + hp_counts</span></article>
+        <article class="prep-card"><div class="step-num" style="background:#df7656">03</div><h3>投影 CN 狀態</h3><p>ASCAT segments 對到每個 site，建立 total CN 與 multiplicity candidates。</p><span class="prep-output">total CN + Mpost</span></article>
+        <article class="prep-card"><div class="step-num" style="background:#4d9b76">04</div><h3>合併與篩選</h3><p>以 site key 合併，寫出模型可直接讀取的壓縮 TSV。</p><span class="prep-output">likelihood_input.tsv.gz</span></article>
+      </div>
+      <div class="table-contract">
+        <div class="contract-card">
+          <div class="panel-label">model table contract</div><h3>一列 = 一個 SNV</h3>
+          <p>不是 BAM，也不是 VCF；它是上游結果合併後的 site-level observation table。</p>
+          <span class="contract-file">TSV.GZ · 30,490 rows · 30,006 eligible</span>
+          <div class="join-rule">
+            <div><span>join key</span><span>chrom + pos + ref + alt</span></div>
+            <div><span>enter likelihood</span><span>model_include=yes<br>model_status=eligible</span></div>
+            <div><span>excluded rows retained</span><span>audit only: CN=0 / unmapped</span></div>
+          </div>
+        </div>
+        <div class="contract-card light">
+          <div class="panel-label">row preview</div><h3>直接看表格長什麼樣子</h3>
+          <span class="csv-file">likelihood_input.tsv.gz · TSV / CSV-style preview</span>
+          <pre class="csv-preview"><span class="csv-head">mutation_id,bulk_ref,bulk_alt,hp1_1_ref,hp1_1_alt,hp2_1_ref,hp2_1_alt,total_cn,multiplicity_posteriors,model_include,model_status</span>
+chr1:877772:G&gt;C,<span class="csv-value">20,41,0,36,0,0,1,"1=1",yes,eligible</span>
+chr1:123456:A&gt;G,<span class="csv-value">34,18,12,10,3,4,2,"1=0.62;2=0.38",yes,eligible</span>
+chr1:789012:C&gt;T,<span class="csv-value">11,0,0,0,0,0,0,,no,excluded_cn_zero</span></pre>
+          <p class="csv-note">每列是一個 SNV；eligible 列才進入 likelihood。實際檔案是壓縮 TSV，這裡用逗號呈現方便閱讀。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="model">
+      <div class="section-head">
+        <div><div class="section-kicker">03 / model contract</div><h2>模型吃什麼，自己猜什麼</h2></div>
+        <div class="section-lede">左邊是觀測與固定輸入；右邊是 posterior 要自動找出的 tree variables。</div>
+      </div>
+      <div class="split">
+        <div class="panel">
+          <div class="panel-label">fixed / observed</div><h3>模型輸入</h3>
+          <div class="chip-list">
+            <div class="chip"><span>Bulk REF / ALT counts</span><span>Dᵢ</span></div>
+            <div class="chip"><span>HP1-1 / HP2-1 counts</span><span>Hᵢ</span></div>
+            <div class="chip"><span>Total CN（整合表欄位）</span><span>Cᵢ</span></div>
+            <div class="chip"><span>每個 SNV 的 multiplicity 機率分布</span><span>Mpostᵢ(m)</span></div>
+            <div class="chip"><span>Purity model specification</span><span>rho_ASCAT = 0.99</span></div>
+          </div>
+        </div>
+        <div class="panel light">
+          <div class="panel-label">latent / posterior</div><h3>自動推導的參數</h3>
+          <div class="auto-grid">
+            <article class="auto-card"><h3>Tree T</h3><p>candidate regional / clone-node topology</p><div class="mini-value">candidate topology</div></article>
+            <article class="auto-card"><h3>Assignment zᵢ</h3><p>每個 SNV 屬於哪個 clone node</p><div class="mini-value">mutation → node</div></article>
+            <article class="auto-card"><h3>ηᵥ</h3><p>clone 自身的 exclusive fraction</p><div class="mini-value">exclusive fraction</div></article>
+            <article class="auto-card"><h3>ϕᵥ / CCF</h3><p>由 T、η 與 observations 推導的 prevalence</p><div class="mini-value">derived quantity</div></article>
+            <article class="auto-card"><h3>πᵥ</h3><p>mutation assignment mixture weight</p><div class="mini-value">posterior weight</div></article>
+            <article class="auto-card"><h3>qᵢ / Mᵢ</h3><p>HP side 與 multiplicity 在 likelihood 內整合</p><div class="mini-value">fixed / marginalized</div></article>
+          </div>
+          <div class="formula-strip">
+            <div class="formula-label">VAF expectation</div>
+            <code>θᵢ = ρ_ASCAT × ϕ × m / [2(1−ρ_ASCAT) + ρ_ASCAT × C]</code>
+            <span><b>ρ_ASCAT = 0.99</b> · M multiplicity posterior 邊際化</span>
+          </div>
+          <div class="model-tree" aria-label="自動推導的候選 clone tree">
+            <svg viewBox="0 0 540 190" role="img">
+              <path d="M50 95H150M150 95V45M150 95V145M150 45H270M150 145H270M270 45V22M270 45V68M270 145V122M270 145V168M270 22H420M270 68H420M270 122H420M270 168H420" fill="none" stroke="#9db2bf" stroke-width="2"/>
+              <g fill="#2878a9"><circle cx="50" cy="95" r="8"/><circle cx="150" cy="95" r="8"/></g>
+              <g fill="#35b5b2"><circle cx="270" cy="45" r="7"/><circle cx="270" cy="145" r="7"/></g>
+              <g fill="#e6a93a"><circle cx="420" cy="22" r="7"/><circle cx="420" cy="68" r="7"/></g>
+              <g fill="#d97993"><circle cx="420" cy="122" r="7"/><circle cx="420" cy="168" r="7"/></g>
+              <g fill="#172333" font-size="11" font-weight="700"><text x="27" y="82">root</text><text x="137" y="84">C1</text><text x="256" y="33">C2</text><text x="256" y="160">C3</text><text x="432" y="26">C4</text><text x="432" y="72">C5</text><text x="432" y="126">C6</text><text x="432" y="172">C7</text></g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="inference">
+      <div class="section-head">
+        <div><div class="section-kicker">04 / inference engine</div><h2>推理演算法怎麼猜出參數</h2></div>
+        <div class="section-lede">先把 site-level observations 變成 likelihood，再探索 candidate tree；下圖是主要流程摘要。</div>
+      </div>
+      <div class="inference-visual" role="img" aria-label="從 SNV 計數、CN、purity 與 multiplicity 機率分布建立 likelihood，再用 Metropolis-Hastings 與 Gibbs MCMC 探索 clone tree 參數並產生 posterior samples 的流程圖">
+        <svg viewBox="0 0 1320 390" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="1320" height="390" rx="15" fill="#fbfdfe"/>
+
+          <text x="30" y="28" class="svg-kicker">OBSERVED DATA</text>
+          <text x="285" y="28" class="svg-kicker">LIKELIHOOD</text>
+          <text x="580" y="28" class="svg-kicker">CANDIDATE STATE</text>
+          <text x="835" y="28" class="svg-kicker">METROPOLIS–HASTINGS / MCMC</text>
+          <text x="1160" y="28" class="svg-kicker">POSTERIOR</text>
+
+          <g>
+            <rect x="30" y="48" width="220" height="58" rx="12" fill="#fff" stroke="#cfe0e7"/>
+            <text x="46" y="69" class="svg-title">Dᵢ</text><text x="80" y="69" class="svg-copy">REF / ALT counts</text>
+            <rect x="77" y="80" width="76" height="8" rx="4" fill="#d9e4ea"/><rect x="77" y="80" width="31" height="8" rx="4" fill="#2878a9"/>
+            <rect x="163" y="80" width="55" height="8" rx="4" fill="#d9e4ea"/><rect x="163" y="80" width="43" height="8" rx="4" fill="#df7656"/>
+            <text x="46" y="97" class="svg-mono">Rᵢ</text><text x="111" y="97" class="svg-mono">Aᵢ</text><text x="185" y="97" class="svg-copy">depth</text>
+
+            <rect x="30" y="117" width="220" height="58" rx="12" fill="#fff" stroke="#cfe0e7"/>
+            <text x="46" y="138" class="svg-title">Cᵢ</text><text x="80" y="138" class="svg-copy">total CN</text>
+            <rect x="77" y="149" width="65" height="16" rx="8" fill="#edf6ed"/>
+            <text x="91" y="161" class="svg-mono">total</text><text x="151" y="160" class="svg-copy" font-size="10">major/minor → Mpost</text>
+
+            <rect x="30" y="186" width="220" height="58" rx="12" fill="#fff" stroke="#cfe0e7"/>
+            <text x="46" y="207" class="svg-title">ρ</text><text x="80" y="207" class="svg-copy">ASCAT tumor purity</text>
+            <path d="M 83 229 A 24 24 0 0 1 131 229" fill="none" stroke="#d9e4ea" stroke-width="7" stroke-linecap="round"/><path d="M 83 229 A 24 24 0 0 1 125 215" fill="none" stroke="#35b5b2" stroke-width="7" stroke-linecap="round"/><circle cx="125" cy="215" r="4" fill="#35b5b2"/>
+            <text x="145" y="224" class="svg-mono">0.99</text><text x="145" y="237" class="svg-copy">global</text>
+
+            <rect x="30" y="255" width="220" height="58" rx="12" fill="#fff" stroke="#cfe0e7"/>
+            <text x="46" y="276" class="svg-title">Mpostᵢ(m)</text><text x="125" y="276" class="svg-copy">multiplicity weights</text>
+            <rect x="77" y="287" width="30" height="7" rx="3.5" fill="#2878a9"/><rect x="112" y="287" width="50" height="7" rx="3.5" fill="#e6a93a"/><rect x="167" y="287" width="26" height="7" rx="3.5" fill="#d97993"/>
+            <text x="84" y="305" class="svg-mono">m=1</text><text x="128" y="305" class="svg-mono">m=2</text><text x="172" y="305" class="svg-mono">m=3</text>
+          </g>
+
+          <path d="M 250 77H262 M 250 146H262 M 250 215H262 M 250 284H262 M 262 77V284 M 262 165H280" fill="none" class="svg-arrow"/>
+          <polygon points="280,165 270,159 270,171" fill="#2878a9"/>
+
+          <g>
+            <rect x="285" y="48" width="250" height="244" rx="16" fill="#fff" stroke="#b8d1dc"/>
+            <text x="306" y="76" class="svg-title">Likelihood</text><text x="306" y="94" class="svg-copy">這個參數組合能否解釋觀測 counts？</text>
+            <path d="M 314 236H510M326 236V116" class="svg-line"/>
+            <path d="M 326 226 C 356 224 362 181 393 173 C 422 166 437 190 458 185 C 480 180 485 147 510 142" fill="none" stroke="#e6a93a" stroke-width="3"/>
+            <path d="M 326 226 C 356 227 375 204 400 193 C 426 182 452 186 510 178" fill="none" stroke="#d2dce2" stroke-width="2"/>
+            <path d="M 326 226 C 350 225 378 223 408 205 C 438 187 457 156 510 154" fill="none" stroke="#35b5b2" stroke-width="2" stroke-dasharray="4 4"/>
+            <circle cx="408" cy="205" r="5" fill="#2878a9"/><text x="416" y="203" class="svg-copy">observed VAF</text>
+            <text x="318" y="111" class="svg-mono">P(Dᵢ | ρ,C,ϕ,m)</text><text x="470" y="252" class="svg-copy">θ</text>
+            <rect x="307" y="259" width="205" height="22" rx="11" fill="#f3f9fb"/><text x="320" y="274" class="svg-mono">Σₘ P(m) × Lᵢ(m)</text>
+          </g>
+
+          <path d="M 535 170H570" fill="none" class="svg-arrow"/><polygon points="570,170 560,164 560,176" fill="#2878a9"/>
+
+          <g>
+            <rect x="580" y="48" width="220" height="244" rx="16" fill="#fff" stroke="#d8cbaa"/>
+            <text x="600" y="76" class="svg-title">候選參數</text><text x="600" y="94" class="svg-copy">先提出一個可能的解</text>
+            <rect x="600" y="108" width="66" height="24" rx="12" fill="#e8f3f7"/><text x="620" y="124" class="svg-mono">T</text><text x="674" y="124" class="svg-copy">tree</text>
+            <rect x="600" y="140" width="66" height="24" rx="12" fill="#fff0e8"/><text x="618" y="156" class="svg-mono">zᵢ</text><text x="674" y="156" class="svg-copy">clone</text>
+            <rect x="600" y="172" width="66" height="24" rx="12" fill="#edf6ed"/><text x="617" y="188" class="svg-mono">η,ϕ</text><text x="674" y="188" class="svg-copy">fractions</text>
+            <path d="M 704 132H735M735 132V112M735 132V152M735 112H770M735 152H770" class="svg-line"/>
+            <circle cx="704" cy="132" r="6" fill="#2878a9"/><circle cx="735" cy="112" r="5" fill="#35b5b2"/><circle cx="735" cy="152" r="5" fill="#e6a93a"/><circle cx="770" cy="112" r="5" fill="#d97993"/><circle cx="770" cy="152" r="5" fill="#4d9b76"/>
+            <text x="600" y="230" class="svg-copy">Gibbs sweep：重新分配 SNV</text><text x="600" y="249" class="svg-copy">MH move：重新提議 tree / fractions</text>
+            <rect x="600" y="262" width="165" height="20" rx="10" fill="#fff7df"/><text x="612" y="276" class="svg-mono">θ → log posterior</text>
+          </g>
+
+          <path d="M 800 170H825" fill="none" class="svg-arrow"/><polygon points="825,170 815,164 815,176" fill="#2878a9"/>
+
+          <g>
+            <rect x="835" y="48" width="285" height="244" rx="18" fill="#fff" stroke="#d6c9dc" stroke-dasharray="7 5"/>
+            <text x="855" y="76" class="svg-title">MH / MCMC 搜尋</text><text x="855" y="94" class="svg-copy">沿著 posterior 反覆探索參數空間</text>
+            <rect x="855" y="110" width="75" height="34" rx="10" fill="#e8f3f7"/><text x="871" y="131" class="svg-mono">current</text>
+            <rect x="1015" y="110" width="75" height="34" rx="10" fill="#fff0e8"/><text x="1028" y="131" class="svg-mono">proposal</text>
+            <path d="M 930 127H1007" fill="none" class="svg-arrow"/><polygon points="1007,127 997,121 997,133" fill="#2878a9"/>
+            <path d="M 997 166L1029 146L1061 166L1029 186Z" fill="#fff7df" stroke="#e6a93a" stroke-width="1.8"/>
+            <text x="1013" y="170" class="svg-mono">score</text>
+            <path d="M 1053 144 C 1082 169 1085 203 1046 225" fill="none" class="svg-green"/><polygon points="1046,225 1056,218 1053,231" fill="#4d9b76"/>
+            <rect x="1008" y="222" width="83" height="32" rx="10" fill="#edf6ed"/><text x="1022" y="242" class="svg-mono">accept</text>
+            <path d="M 997 181 C 977 219 922 230 891 145" fill="none" class="svg-red"/><polygon points="891,145 900,151 901,140" fill="#d97979"/>
+            <text x="855" y="178" class="svg-copy">reject → 留在 current</text>
+            <path d="M 855 272 C 880 250 902 286 927 268 S 974 251 996 273 S 1042 287 1062 264 S 1090 250 1101 270" fill="none" stroke="#2878a9" stroke-width="2.2"/>
+            <circle cx="855" cy="272" r="4" fill="#4d9b76"/><circle cx="880" cy="264" r="4" fill="#d2dce2"/><circle cx="905" cy="278" r="4" fill="#4d9b76"/><circle cx="927" cy="268" r="4" fill="#4d9b76"/><circle cx="950" cy="259" r="4" fill="#d2dce2"/><circle cx="974" cy="263" r="4" fill="#4d9b76"/><circle cx="996" cy="273" r="4" fill="#4d9b76"/><circle cx="1020" cy="281" r="4" fill="#d2dce2"/><circle cx="1042" cy="279" r="4" fill="#4d9b76"/><circle cx="1062" cy="264" r="4" fill="#4d9b76"/><circle cx="1084" cy="258" r="4" fill="#d2dce2"/><circle cx="1101" cy="270" r="4" fill="#4d9b76"/>
+            <text x="855" y="286" class="svg-copy">accepted samples → posterior</text>
+          </g>
+
+          <path d="M 1120 170H1150" fill="none" class="svg-arrow"/><polygon points="1150,170 1140,164 1140,176" fill="#2878a9"/>
+
+          <g>
+            <rect x="1160" y="48" width="130" height="244" rx="16" fill="#fff" stroke="#b9d6c1"/>
+            <text x="1177" y="76" class="svg-title">結果</text><text x="1177" y="94" class="svg-copy">不只一棵樹</text>
+            <path d="M 1184 151H1210M1210 151V124M1210 151V178M1210 124H1252M1210 178H1252" class="svg-line"/>
+            <circle cx="1184" cy="151" r="6" fill="#2878a9"/><circle cx="1210" cy="124" r="5" fill="#35b5b2"/><circle cx="1210" cy="178" r="5" fill="#e6a93a"/><circle cx="1252" cy="124" r="5" fill="#d97993"/><circle cx="1252" cy="178" r="5" fill="#4d9b76"/>
+            <rect x="1178" y="205" width="88" height="8" rx="4" fill="#d9e4ea"/><rect x="1178" y="205" width="66" height="8" rx="4" fill="#35b5b2"/>
+            <rect x="1178" y="222" width="88" height="8" rx="4" fill="#d9e4ea"/><rect x="1178" y="222" width="48" height="8" rx="4" fill="#e6a93a"/>
+            <text x="1178" y="250" class="svg-mono">T, zᵢ, η,ϕ</text><text x="1178" y="268" class="svg-copy">posterior samples</text>
+          </g>
+
+          <rect x="30" y="323" width="1260" height="38" rx="12" fill="#172333"/>
+          <text x="52" y="347" fill="#fff" font-size="13" font-weight="800">posterior ∝ likelihood × prior</text>
+          <text x="318" y="347" fill="#c6d7df" font-size="12">每次提議都重新評分；Multiplicity 以機率分布整合，不硬選單一 m。</text>
+        </svg>
+      </div>
+      <div class="algo-flow">
+        <article class="algo-card" style="--accent:#2878a9"><div class="step"><span class="step-num">01</span><span class="step-icon"><svg><use href="#i-file"/></svg></span></div><h3>把資料變成機率</h3><p>用 REF/ALT counts 建立 Binomial likelihood；HP counts 提供條件式分配。</p><span class="metric">30,006 eligible SNVs</span></article>
+        <article class="algo-card" style="--accent:#35b5b2"><div class="step"><span class="step-num">02</span><span class="step-icon"><svg><use href="#i-tree"/></svg></span></div><h3>產生參數候選</h3><p>用 purity、CN、multiplicity 把 counts 轉成 CCF-aware 的預期 ALT fraction。</p><span class="metric">VAF → CCF-aware</span></article>
+        <article class="algo-card" style="--accent:#e6a93a"><div class="step"><span class="step-num">03</span><span class="step-icon"><svg><use href="#i-tag"/></svg></span></div><h3>把 SNV 放進 clone</h3><p>提出 parent move，再用 Gibbs sweep 更新每個 SNV 屬於哪個 clone。</p><span class="metric">tree + assignment</span></article>
+        <article class="algo-card" style="--accent:#df7656"><div class="step"><span class="step-num">04</span><span class="step-icon"><svg><use href="#i-mcmc"/></svg></span></div><h3>調整 clone 比例</h3><p>更新 clone 的 exclusive fraction 與 cumulative prevalence，必要時調整分枝。</p><span class="metric">ηᵥ / ϕᵥ</span></article>
+        <article class="algo-card" style="--accent:#d97993"><div class="step"><span class="step-num">05</span><span class="step-icon"><svg><use href="#i-mcmc"/></svg></span></div><h3>反覆探索候選</h3><p>Metropolis–Hastings / MCMC 接受或拒絕候選；單次執行是一條 chain。</p><span class="metric">K = 2–8 clone nodes</span></article>
+        <article class="algo-card" style="--accent:#4d9b76"><div class="step"><span class="step-num">06</span><span class="step-icon"><svg><use href="#i-gauge"/></svg></span></div><h3>外部 QC 再判讀</h3><p>R-hat、ESS、simulation、holdout 由外部 workflow 檢查；未通過仍只保留 candidate。</p><span class="metric">candidate / abstain</span></article>
+      </div>
+      <div class="status-band">
+        <svg width="28" height="28"><use href="#i-alert"/></svg>
+        <div><strong>CURRENT STATUS · NOT CONVERGED</strong><span>SNV likelihood input 已建立；目前推理鏈仍不能當作 validated lineage posterior。</span></div>
+        <div class="status-metrics"><b>R-hat 24.983</b><b>ESS 3.1</b><b>REVIEW REQUIRED</b></div>
+      </div>
+    </section>
+
+    <section class="section" id="background">
+      <div class="section-head">
+        <div><div class="section-kicker">05 / methods background</div><h2>這不是一個演算法，是一組互相配合的零件</h2></div>
+      <div class="section-lede">Likelihood 負責評分；Gibbs、Metropolis–Hastings (MH) 與 split–merge move 負責探索；diagnostics 負責判斷結果是否可信。</div>
+      </div>
+      <div class="method-visual" role="img" aria-label="目前推理方法的背景架構：likelihood與tree prior定義目標posterior，Gibbs、Metropolis-Hastings與split-merge作為不同更新方法，最後輸出posterior samples與診斷結果">
+        <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="1200" height="360" rx="15" fill="#fbfdfe"/>
+          <text x="30" y="28" class="m-kicker">TARGET + UPDATE KERNELS + DIAGNOSTICS</text>
+          <text x="30" y="52" class="m-copy">先定義「什麼叫合理」，再用不同方法輪流探索參數。</text>
+
+          <g>
+            <rect x="30" y="82" width="215" height="174" rx="16" fill="#fff" stroke="#cfe0e7"/>
+            <text x="50" y="110" class="m-title">目標從哪裡來？</text>
+            <rect x="50" y="126" width="175" height="47" rx="11" fill="#e8f3f7"/>
+            <text x="64" y="147" class="m-mono">Likelihood</text><text x="64" y="163" class="m-copy">P(Dᵢ | T,z,η,ϕ)</text>
+            <rect x="50" y="184" width="175" height="47" rx="11" fill="#fff4dc"/>
+            <text x="64" y="205" class="m-mono">Tree prior</text><text x="64" y="221" class="m-copy">P(T,η,assignment)</text>
+            <text x="50" y="247" class="m-copy">counts + CN + purity + Mpost</text>
+          </g>
+
+          <path d="M 245 145H290" fill="none" stroke="#2878a9" stroke-width="2.2"/><polygon points="290,145 280,139 280,151" fill="#2878a9"/>
+
+          <g>
+            <rect x="300" y="96" width="250" height="142" rx="18" fill="#172333"/>
+            <text x="326" y="128" fill="#fff" class="m-title">target posterior</text>
+            <text x="326" y="158" fill="#8fe0d5" font-size="16" font-weight="800">π(θ | D) ∝ L × prior</text>
+            <text x="326" y="186" fill="#c6d7df" class="m-copy">θ = T, zᵢ, η, ϕ</text>
+            <text x="326" y="207" fill="#c6d7df" class="m-copy">Mpost / HP side 在 L 內邊際化</text>
+            <rect x="326" y="216" width="139" height="8" rx="4" fill="#35b5b2"/><rect x="470" y="216" width="54" height="8" rx="4" fill="#e6a93a"/>
+          </g>
+
+          <path d="M 550 137 C 580 95 594 82 620 82" fill="none" stroke="#35b5b2" stroke-width="2"/><polygon points="620,82 610,76 610,88" fill="#35b5b2"/>
+          <path d="M 550 166H620" fill="none" stroke="#d97993" stroke-width="2"/><polygon points="620,166 610,160 610,172" fill="#d97993"/>
+          <path d="M 550 196 C 580 238 594 250 620 250" fill="none" stroke="#df7656" stroke-width="2"/><polygon points="620,250 610,244 610,256" fill="#df7656"/>
+
+          <g>
+            <rect x="630" y="48" width="205" height="69" rx="14" fill="#e8f3f7" stroke="#b8d1dc"/>
+            <text x="650" y="76" class="m-title">Gibbs sampling</text><text x="650" y="96" class="m-copy">固定其他變數，更新 zᵢ</text>
+            <rect x="630" y="132" width="205" height="69" rx="14" fill="#fff0f4" stroke="#e2c1cb"/>
+            <text x="650" y="160" class="m-title">Metropolis–Hastings (MH)</text><text x="650" y="180" class="m-copy">提議 T / η / ϕ，再接受或拒絕</text>
+            <rect x="630" y="216" width="205" height="69" rx="14" fill="#fff0e8" stroke="#e4c1af"/>
+            <text x="650" y="244" class="m-title">restricted split–merge move</text><text x="650" y="264" class="m-copy">MH block：assignment + prevalence</text>
+          </g>
+
+          <path d="M 835 82H875M 835 166H875M 835 250H875" fill="none" stroke="#9db2bf" stroke-width="2"/>
+          <path d="M 875 82V250" fill="none" stroke="#9db2bf" stroke-width="2" stroke-dasharray="5 5"/>
+          <path d="M 875 166H910" fill="none" stroke="#4d9b76" stroke-width="2.2"/><polygon points="910,166 900,160 900,172" fill="#4d9b76"/>
+
+          <g>
+            <rect x="920" y="74" width="245" height="185" rx="17" fill="#fff" stroke="#b9d6c1"/>
+            <text x="944" y="103" class="m-title">共同輸出</text>
+            <text x="944" y="123" class="m-copy">accepted states / samples</text>
+            <path d="M 944 167 C 966 143 980 181 1002 157 S 1035 143 1055 169 S 1090 184 1138 146" fill="none" stroke="#2878a9" stroke-width="2.2"/>
+            <circle cx="944" cy="167" r="4" fill="#4d9b76"/><circle cx="980" cy="181" r="4" fill="#d2dce2"/><circle cx="1002" cy="157" r="4" fill="#4d9b76"/><circle cx="1035" cy="143" r="4" fill="#4d9b76"/><circle cx="1055" cy="169" r="4" fill="#d2dce2"/><circle cx="1090" cy="184" r="4" fill="#4d9b76"/><circle cx="1138" cy="146" r="4" fill="#4d9b76"/>
+            <path d="M 944 210H974M974 210V192M974 210V228M974 192H1032M974 228H1032" fill="none" stroke="#9db2bf" stroke-width="2"/>
+            <circle cx="944" cy="210" r="5" fill="#2878a9"/><circle cx="974" cy="192" r="4" fill="#35b5b2"/><circle cx="974" cy="228" r="4" fill="#e6a93a"/><circle cx="1032" cy="192" r="4" fill="#d97993"/><circle cx="1032" cy="228" r="4" fill="#4d9b76"/>
+            <text x="1050" y="202" class="m-mono">T, zᵢ</text><text x="1050" y="221" class="m-mono">η, ϕ</text><text x="1050" y="240" class="m-copy">tree samples</text>
+          </g>
+
+          <path d="M 745 300 C 800 320 885 312 920 272" fill="none" stroke="#9db2bf" stroke-width="1.8" stroke-dasharray="5 5"/><text x="630" y="323" class="m-copy">soft pairwise guide：只影響 proposal，不是 hard constraint</text>
+          <rect x="30" y="294" width="535" height="38" rx="12" fill="#11263d"/><text x="52" y="318" fill="#fff" font-size="12" font-weight="800">Likelihood = 評分</text><text x="183" y="318" fill="#c6d7df" font-size="12">Gibbs / MH = 更新</text><text x="357" y="318" fill="#c6d7df" font-size="12">Diagnostics = 檢查</text>
+        </svg>
+      </div>
+      <details class="advanced-details">
+        <summary>查看 target、prior 與 sampler 細節</summary>
+      <div class="method-grid">
+        <article class="method-card" style="--accent:#2878a9"><span class="method-symbol">L</span><h3>Likelihood</h3><p>計算目前參數能否解釋 REF/ALT、HP、CN 與 purity 觀測。</p><span class="role">Binomial + HP conditional allocation</span></article>
+        <article class="method-card" style="--accent:#e6a93a"><span class="method-symbol">P</span><h3>Tree prior</h3><p>在資料之外，對有限 clone tree 的深度與分枝給出偏好。</p><span class="role">finite TSSB-inspired prior</span></article>
+        <article class="method-card" style="--accent:#35b5b2"><span class="method-symbol">G</span><h3>Gibbs sampling</h3><p>固定其他參數，直接依條件分布重新抽 SNV → clone assignment。</p><span class="role">local conditional update</span></article>
+        <article class="method-card" style="--accent:#d97993"><span class="method-symbol">MH</span><h3>Metropolis–Hastings (MH)</h3><p>提出 topology、clone proportion 等候選，依 target 與 proposal correction 接受或拒絕。</p><span class="role">proposal kernel / Hastings correction</span></article>
+        <article class="method-card" style="--accent:#df7656"><span class="method-symbol">↔</span><h3>Split–merge move</h3><p>不是獨立完整 sampler，而是嵌入 MH 的受限 block proposal；部分 move 才會改 sibling 分枝。</p><span class="role">restricted MH block move</span></article>
+        <article class="method-card" style="--accent:#4d9b76"><span class="method-symbol">QC</span><h3>Diagnostics</h3><p>R-hat、ESS、simulation 與 holdout 不會猜參數，只判斷 samples 能否採信。</p><span class="role">convergence / abstention gate</span></article>
+      </div>
+      <div class="scenario-head"><strong>三個方法各自什麼時候用？</strong><span>MH = Metropolis–Hastings；split–merge 是 MH block move。</span></div>
+      <div class="scenario-grid">
+        <article class="scenario-card" style="--accent:#35b5b2"><span class="scenario-index">01</span><h3>Gibbs：大量局部離散更新</h3><p>適合 SNV → clone assignment 這種大量離散變數，而且 conditional distribution 可以直接抽樣時。現在固定 T、η、π，重新抽 zᵢ。</p><span class="scenario-flow">fixed state → sample zᵢ · local move</span></article>
+        <article class="scenario-card" style="--accent:#d97993"><span class="scenario-index">02</span><h3>MH：沒有簡單 conditional</h3><p>Metropolis–Hastings 適合 tree topology 或 prevalence 沒有閉式條件分布時。現在提出 η / topology 候選，再用 target 與 forward/reverse proposal correction 決定接受或拒絕。</p><span class="scenario-flow">proposal → score → accept / reject</span></article>
+        <article class="scenario-card" style="--accent:#df7656"><span class="scenario-index">03</span><h3>Split–merge move：聯合跳出局部模式</h3><p>它不是獨立完整演算法，而是 MH 裡的 block move；適合 assignment、branch、prevalence 需要一起變動時。節點全占滿時可能只交換 assignment / prevalence。</p><span class="scenario-flow">joint block → reversible MH move</span></article>
+      </div>
+      <div class="method-note">
+        <div><strong>目前實作的正確稱呼</strong><span>finite-K TSSB-inspired prior + raw-count likelihood + Gibbs assignment + MH topology/prevalence moves + restricted split–merge；可視為 compound Metropolis-within-Gibbs 結構。</span></div>
+        <div><strong>不要混為一談</strong><span>Likelihood 不是抽樣器；Gibbs 不是完整模型；pairwise guide 不是 lineage constraint；目前也不是原始 PhyloWGS TSSB 的逐位元重作。</span></div>
+      </div>
+      </details>
+    </section>
+
+    <section class="footer-grid" aria-label="說明與來源">
+      <div class="foot-card">
+        <strong>一眼版結論</strong>
+        <span>這是一個「原 HCC1395 tumor tree model + long-read evidence」的整合方向。目前推理引擎仍未收斂，所以畫面上的 tree 都是 candidate / abstention level。</span>
+        <details><summary>查看資料與模型文件</summary><div class="detail-text"><a href="data.md">data.md</a> · <a href="model.md">model.md</a> · <code>output/longphase_clone/i6_automation_tmp/run_20260816_002_longchain_eta1</code></div></details>
+      </div>
+      <div class="foot-card">
+        <strong>Flaticon icon references</strong>
+        <div class="source-list">
+          <a href="https://www.flaticon.com/free-icon/dna_6167041" target="_blank" rel="noopener">DNA · Icongeek26</a>
+          <a href="https://www.flaticon.com/free-icon/file-format_7465988" target="_blank" rel="noopener">File · Design Circle</a>
+          <a href="https://www.flaticon.com/free-icon/algorithm_3195640" target="_blank" rel="noopener">Algorithm · Eucalyp</a>
+          <a href="https://www.flaticon.com/free-icon/neural-network_10321552" target="_blank" rel="noopener">Network · Iconpro86</a>
+        </div>
+        <strong style="margin-top:14px">Algorithm visual references</strong>
+        <div class="source-list">
+          <a href="https://commons.wikimedia.org/wiki/File:Flowchart-of-Metropolis-Hastings-M-H-algorithm-for-the-parameter-estimation-using-the.png" target="_blank" rel="noopener">MH flow · Wikimedia Commons</a>
+          <a href="https://seeing-theory.brown.edu/bayesian-inference/" target="_blank" rel="noopener">Prior → posterior · Seeing Theory</a>
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4359439/" target="_blank" rel="noopener">Clone tree · PhyloWGS</a>
+        </div>
+        <strong style="margin-top:14px">Method background</strong>
+        <div class="source-list">
+          <a href="https://doi.org/10.1093/biomet/57.1.97" target="_blank" rel="noopener">MH acceptance · Hastings</a>
+          <a href="https://www.pymc.io/projects/examples/en/latest/samplers/sampling_compound_step.html" target="_blank" rel="noopener">Compound sampler · PyMC</a>
+          <a href="https://mc-stan.org/bayesplot/articles/visual-mcmc-diagnostics.html" target="_blank" rel="noopener">Trace diagnostics · bayesplot</a>
+        </div>
+        <p style="margin:9px 0 0">本頁圖示皆重新繪製為 inline SVG；網路來源只作構圖參考，不直接載入外部圖片。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
