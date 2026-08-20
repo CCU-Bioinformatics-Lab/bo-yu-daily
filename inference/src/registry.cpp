@@ -5,14 +5,14 @@
 
 namespace tumor_tree_inference {
 
-AlgorithmPtr make_plain_metropolis_hastings();
+AlgorithmPtr make_phylowgs_inspired_tssb_mcmc();
 
 struct AlgorithmRegistry::Impl {
     std::map<std::string, AlgorithmPtr (*)()> factories;
 };
 
 AlgorithmRegistry::AlgorithmRegistry() : impl_(std::make_unique<Impl>()) {
-    impl_->factories.emplace("plain_metropolis_hastings", &make_plain_metropolis_hastings);
+    impl_->factories.emplace("phylowgs_inspired_tssb_mcmc", &make_phylowgs_inspired_tssb_mcmc);
 }
 
 AlgorithmRegistry& AlgorithmRegistry::instance() {
@@ -22,7 +22,7 @@ AlgorithmRegistry& AlgorithmRegistry::instance() {
 
 AlgorithmPtr AlgorithmRegistry::create(const std::string& algorithm) const {
     const auto found = impl_->factories.find(algorithm);
-    if (found == impl_->factories.end()) throw std::runtime_error("unknown algorithm " + algorithm + "; available: plain_metropolis_hastings");
+    if (found == impl_->factories.end()) throw std::runtime_error("unknown algorithm " + algorithm + "; available: phylowgs_inspired_tssb_mcmc");
     return found->second();
 }
 

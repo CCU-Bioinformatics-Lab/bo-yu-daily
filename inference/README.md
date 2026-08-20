@@ -9,7 +9,7 @@ provenance, and diagnostics; its default chain runner calls this executable.
 ```text
 CanonicalTable loader  ->  AlgorithmRegistry  ->  Algorithm::run
         |                         |
-        +-- immutable sites       +-- plain_metropolis_hastings
+        +-- immutable sites       +-- phylowgs_inspired_tssb_mcmc
                                   +-- future algorithm implementations
 ```
 
@@ -20,16 +20,24 @@ mutable state. The likelihood scorer parallelizes independent site rows; its
 final state score is reduced in site order, so `--threads 1` and `--threads 2`
 are deterministic for the same chain configuration.
 
-The current state is exactly `(parents, eta, z)`. Every iteration chooses one
-of three proposal moves with probability 1/3 and performs one MH decision:
+The current state is exactly `(parents, eta, z)`, where `eta` is the simplex
+of local clone masses and `phi` is the descendant-sum frequency for each node.
+This is a finite-truncated, TSSB-inspired approximation of PhyloWGS, not a
+claim to reproduce its full infinite tree implementation. Every iteration is
+a compound MCMC sweep:
 
-- assignment: move one SNV to another clone;
-- eta: Dirichlet random walk, concentration 80, with proposal correction;
-- topology: one valid parent reassignment, with finite-support correction.
+- assignment: categorical Gibbs update for every SNV using local mass and the
+  ASCAT/HP/CN emission;
+- eta: Dirichlet proposal centred on assignment counts and TSSB-shaped depth/
+  width prior, accepted with an MH emission correction;
+- topology: conditional subtree prune-and-regraft Gibbs draw over every legal
+  parent for one selected node.
 
-There is no Gibbs sweep, eta bridge, assignment mixture, split-merge move, or
-overdispersed initialization in this backend. Multiplicity is a CN-only prior
-and is marginalized inside the site emission calculation.
+The original PhyloWGS uses TSSB assignments, stick/order resampling and
+hyperparameter updates. This backend keeps a fixed finite K for the current
+workflow and preserves its existing ASCAT purity, HP-count and CN-only
+multiplicity emission. PS is upstream provenance for HP counts, not a direct
+tree-likelihood column.
 
 ## Build
 
@@ -51,7 +59,7 @@ The only external library is zlib, used for `.tsv.gz`, `samples.jsonl.gz`, and
 
 ```bash
 inference/build/tumor_tree_inference \
-  --algorithm plain_metropolis_hastings \
+  --algorithm phylowgs_inspired_tssb_mcmc \
   --input likelihood_input.tsv.gz \
   --outdir output/cpp_smoke \
   --seed 20260820 --num-nodes 6 --iterations 1500 --burnin 1000 \

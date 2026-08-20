@@ -13,7 +13,7 @@
 - observation：bulk REF/ALT、`HP:Z:1-1/2-1` counts、ASCAT allele-specific CN 與 ASCAT purity。
 - inference：有限節點 clone tree、mutation assignment 與 clone prevalence posterior。
 - output：只能稱為 **candidate tumor-tree posterior**；不能稱為 single-cell lineage truth。
-- `eta[0]`：未由任何建模 clone解釋的 residual tumor mass；它不承載 SNV，也不是 founding clone。normal contamination只由 `rho_ASCAT` 處理。
+- `eta`：K 個 clone local masses 的 simplex；`phi` 由 descendants sum 推導。structural tumor root 不承載 SNV，normal contamination 只由 `rho_ASCAT` 處理。
 
 ## 2. 正式模型輸入
 
@@ -124,9 +124,9 @@ Smoke 只驗證 schema、排除規則、prior 與短鏈 I/O，不判斷收斂或
 
 ## 5. 推理演算法與 root 定義
 
-### 5.1 Plain Metropolis–Hastings：單條 chain
+### 5.1 PhyloWGS-inspired compound MCMC：單條 chain
 
-每條 chain 由 `inference/` 的 C++17 plain Metropolis–Hastings (MH) backend 執行。Python workflow 只負責 canonical table、holdout、provenance 與 diagnostics；它的輸入只有已驗證的 `canonical likelihood_input.tsv.gz`、一份 `ChainConfig`，以及 workflow 的 holdout 控制：
+每條 chain 由 `inference/` 的 C++17 finite-K PhyloWGS-inspired compound MCMC backend 執行。Python workflow 只負責 canonical table、holdout、provenance 與 diagnostics；它的輸入只有已驗證的 `canonical likelihood_input.tsv.gz`、一份 `ChainConfig`，以及 workflow 的 holdout 控制：
 
 | 輸入 | 實際內容 |
 |---|---|
@@ -139,7 +139,8 @@ latent state 只有：
 ```text
 x = (T, eta, z)
 T   = finite-K tree parents
-eta = clone exclusive fractions（含 residual eta[0]）
+eta = K 個 clone local masses，sum(eta)=1
+phi = eta 加上 descendants 的 local masses
 z   = 每個 SNV 的 clone assignment
 ```
 
@@ -147,20 +148,28 @@ z   = 每個 SNV 的 clone assignment
 
 ```text
 log p(T, z, eta | data)
-  = tree prior + eta prior + fixed assignment prior
+  = finite-truncated TSSB-inspired tree prior
+    + eta prior + sum_i log eta[z_i]
     + sum_i log[ sum_m multiplicity_prior_i(m)
         * P_obs(D_i, H_i | phi_z(i), C_i, m, rho_ASCAT) ]
 ```
 
-`m` 不進 latent state；`multiplicity_prior` 在每個 site likelihood 內 marginalize。每次 iteration 只提出一個候選 move，再依 MH acceptance ratio 接受或拒絕：
+`m` 不進 latent state；`multiplicity_prior` 在每個 site likelihood 內 marginalize。每次 iteration 執行一個 compound sweep：
 
-1. 選一個 SNV，將 `z_i` 提議到另一個 clone。
-2. 在 simplex 上對 `eta` 提出 Dirichlet random-walk；不對稱 proposal 納入 reverse/forward density ratio。
-3. 在有限合法 parent support 中提議 topology 變更；納入 reverse/forward support ratio。
+1. **all-SNV categorical Gibbs assignment**：固定 `T, eta, phi`，以
+   `eta_v × P_obs(D_i,H_i | phi_v,...)` 對每個 SNV 直接抽樣 `z_i`。
+2. **local-mass independence MH**：從 TSSB-shaped depth/width Dirichlet
+   proposal 更新 `eta`，再以 emission 改變做 MH correction。
+3. **conditional subtree prune-and-regraft Gibbs**：選一個 node，保留其
+   subtree，對所有合法 parent 依 posterior score 抽樣。
 
-這三種是同一個 plain MH transition 中的 proposal move type。此 baseline 不另外抽樣 assignment-mixture 參數或 multiplicity；所有 state 都以同一個 posterior target 判定。acceptance rate 只描述 proposal 行為，不是 convergence proof。
+這是固定 K 的可驗證近似，不宣稱完整重現原始 PhyloWGS 的 infinite TSSB、slice
+birth/cull、stick order 與 hyperparameter updates。acceptance／change rate 只描述
+kernel 行為，不是 convergence proof。
 
-`phi_v` 由 clone `v` 與所有 descendants 的 `eta` 相加得到。`eta[0]` 是未由建模 clone 解釋的 residual tumor mass，不承載 SNV；normal fraction `1-rho_ASCAT` 只存在於 emission denominator。
+`phi_v` 由 clone `v` 與所有 descendants 的 `eta` 相加得到。`eta` 不含 residual
+mass 或 normal fraction；structural `tumor_root` 頻率概念上為 1，normal fraction
+`1-rho_ASCAT` 只存在於 emission denominator。
 
 ### 5.2 單條 chain 的輸出
 
@@ -176,7 +185,7 @@ PS 不會以欄位直接傳入這個 downstream sampler。它在 LongPhase-S 上
 
 ### 5.3 單條 chain 與外層 convergence check
 
-單條 chain 只產生一條 posterior sample stream。外層 workflow 才用相同 canonical table/config、不同 seed 啟動多條獨立 MH chains，並計算 rank-normalized R-hat、bulk/tail ESS、label-invariant assignment agreement、edge support 與 holdout predictive metrics。多條 chain 是 convergence check 的執行包裝，不是把單條 sampler 改成另一種推理演算法。
+單條 chain 只產生一條 posterior sample stream。外層 workflow 才用相同 canonical table/config、不同 seed 啟動多條獨立 compound-MCMC chains，並計算 rank-normalized R-hat、bulk/tail ESS、label-invariant assignment agreement、edge support 與 holdout predictive metrics。多條 chain 是 convergence check 的執行包裝，不是把單條 sampler 改成另一種推理演算法。
 
 ## 6. 唯一正式 wrapper
 
@@ -232,7 +241,7 @@ output/tumor_tree_pipeline/<run_id>/
 
 1. **Smoke**：20-site fixture，僅驗證 I/O 與契約。
 2. **Synthetic prerequisite**：外部 simulation流程先產生並通過manifest；本wrapper只驗證manifest與hash，不會自行模擬資料。
-3. **HCC pilot**：`K=4,6,8`，各 4 條獨立 plain-MH chains；pilot R-hat `<=1.10` 只用來決定是否延長，不是正式通過。
+3. **HCC pilot**：`K=4,6,8`，各 4 條獨立 compound-MCMC chains；pilot R-hat `<=1.10` 只用來決定是否延長，不是正式通過。
 4. **Full K=6**：先跑主設定；通過後才追加 `K=4,8` sensitivity。
 5. **Purity sensitivity**：主分析 `0.99` 通過後，再跑 `0.97`、`0.95`；各設定分別報告 occupied clones、CCF、assignment、edge support 與 predictive score。
 

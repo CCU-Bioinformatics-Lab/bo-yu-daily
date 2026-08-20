@@ -271,7 +271,7 @@ class WorkflowContractTests(unittest.TestCase):
             ]
             self.assertEqual(len(diagnostics), 2)
             for payload in diagnostics:
-                self.assertEqual(payload["model"], "finite_K_metropolis_hastings")
+                self.assertEqual(payload["model"], "finite_K_tssb_inspired")
                 self.assertEqual(
                     set(payload["counters"]),
                     {
@@ -285,7 +285,7 @@ class WorkflowContractTests(unittest.TestCase):
                 )
                 self.assertNotIn("eta_bridge_acceptance", payload)
                 self.assertNotIn("eta_bridge_proposals", payload)
-                self.assertNotIn("gibbs", json.dumps(payload).lower())
+                self.assertIn("gibbs", json.dumps(payload).lower())
 
     def test_formal_gate_failure_is_non_success_and_stops_matrix(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

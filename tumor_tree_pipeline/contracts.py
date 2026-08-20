@@ -86,9 +86,11 @@ class BuildInputs:
 class ChainConfig:
     """One finite-K chain configuration.
 
-    Each chain is a seeded plain Metropolis-Hastings chain.  The workflow may
-    run several independent seeds so that convergence diagnostics can compare
-    chains, but that outer wrapper is not part of this per-chain contract.
+    Each chain is a seeded finite-K PhyloWGS-inspired compound MCMC chain:
+    assignment Gibbs, local-mass independence MH, and conditional topology
+    Gibbs. The workflow may run several independent seeds so that convergence
+    diagnostics can compare chains, but that outer wrapper is not part of this
+    per-chain contract.
 
     The defaults are the agreed formal lower bound, not a claim that a fixed
     number of iterations proves convergence.

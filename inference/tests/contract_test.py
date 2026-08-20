@@ -130,7 +130,7 @@ def invoke(
     chains: int = 1,
     threads: int = 1,
     rho_ascat: str = "0.99",
-    algorithm: str = "plain_metropolis_hastings",
+    algorithm: str = "phylowgs_inspired_tssb_mcmc",
 ) -> subprocess.CompletedProcess[str]:
     command = [
         str(binary),
@@ -233,14 +233,14 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
     algorithm = str(diagnostics.get("algorithm", ""))
     model = str(diagnostics.get("model", ""))
     check(
-        "metropolis_hastings" in algorithm or "metropolis_hastings" in model,
-        f"diagnostics do not identify plain MH: {chain_dir}",
+        "phylowgs_inspired_tssb_mcmc" in algorithm,
+        f"diagnostics do not identify the PhyloWGS-inspired sampler: {chain_dir}",
     )
     check(diagnostics.get("input_schema") == SCHEMA_VERSION, "input schema is not recorded")
     check(diagnostics.get("observed_sites") == expected_sites, "observed site count is wrong")
     check(
         diagnostics.get("state_variables") == ["parents", "eta", "z"],
-        "plain MH state must be parents/eta/z",
+        "the sampler state must be parents/eta/z",
     )
     config = diagnostics.get("config")
     check(isinstance(config, dict), "diagnostics.config is missing")
@@ -268,7 +268,7 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
             "topology_accepted",
             "topology_proposals",
         },
-        "plain MH counters contain an unexpected non-active move field",
+        "sampler counters contain an unexpected move field",
     )
     check(completion.get("status") == "complete", "chain completion status is not complete")
     check(tree.get("model") == diagnostics.get("model"), "tree/model contract mismatch")

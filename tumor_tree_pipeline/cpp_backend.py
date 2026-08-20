@@ -2,8 +2,8 @@
 
 The Python layer remains responsible for canonical-table construction,
 holdout selection, provenance, and diagnostics.  The C++ executable owns the
-stateful plain-MH chain.  Keeping this adapter small makes the algorithm seam
-replaceable without duplicating the workflow.
+stateful finite-K TSSB-inspired compound MCMC chain. Keeping this adapter
+small makes the algorithm seam replaceable without duplicating the workflow.
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ def run_chain_cpp(
     integrated_input: Path,
     outdir: Path,
     config: ChainConfig,
-    algorithm: str = "plain_metropolis_hastings",
+    algorithm: str = "phylowgs_inspired_tssb_mcmc",
     exclude_ids: frozenset[str] = frozenset(),
     resume: bool = False,
 ) -> ChainResult:

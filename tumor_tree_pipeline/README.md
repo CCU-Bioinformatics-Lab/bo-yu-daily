@@ -7,8 +7,8 @@ This package is the version-controlled execution source for the HCC1395
 
 - `input_table.build_model_table(...)`: validated bulk/HP counts plus ASCAT
   CN/purity → canonical site-level table and provenance manifest.
-- `cpp_backend.run_chain_cpp(...)`: the active C++17 finite-K plain
-  Metropolis-Hastings chain backend from the canonical table.
+- `cpp_backend.run_chain_cpp(...)`: the active C++17 finite-K
+  PhyloWGS-inspired TSSB compound MCMC backend from the canonical table.
 - `sampler.run_chain(...)`: retained Python reference implementation used for
   model-contract tests and numerical comparison; the default workflow does
   not use it for inference.
@@ -27,7 +27,7 @@ canonical likelihood_input.tsv.gz + ChainConfig
         ▼
 latent state: finite-K topology T, SNV assignment z, prevalence eta
         │
-        │  C++ plain MH proposal and accept/reject per iteration
+        │  C++ Gibbs assignment + eta MH + conditional subtree Gibbs sweep
         ▼
 samples.jsonl.gz + diagnostics.json + representative_tree.json
         + checkpoint.json.gz + chain_complete.json
@@ -35,7 +35,8 @@ samples.jsonl.gz + diagnostics.json + representative_tree.json
 
 The baseline uses the canonical table as its observed-data input. The latent
 state contains only the tree topology, the clone assignment of each included
-SNV, and the prevalence vector `eta` (with the root as residual tumor mass).
+SNV, and the local clone-mass vector `eta`; `phi` is derived by summation over
+descendants and the structural tumor root has frequency one.
 Multiplicity is integrated using the fixed CN-only prior; it is not a separate
 sampled state. The chain output contains retained posterior draws, acceptance
 diagnostics, a representative tree, and checkpoint audit metadata. C++ resume
@@ -47,9 +48,11 @@ is currently fail-closed until its versioned restore reader is implemented.
   `tumor_dna_fraction` compatibility interface.
 - Multiplicity enters as a CN-only `multiplicity_prior`. Bulk REF/ALT counts are
   used once in the observation likelihood.
-- The active inference method is one plain finite-K Metropolis-Hastings kernel:
-  each iteration proposes one update to the topology, one SNV assignment, or
-  `eta`, then applies the usual posterior-ratio accept/reject rule.
+- The active inference method is a finite-K TSSB-inspired compound MCMC
+  kernel: each iteration performs an all-SNV categorical Gibbs assignment
+  sweep, a TSSB-shaped local-mass independence MH update, and a conditional
+  subtree prune-and-regraft Gibbs update. It is a finite approximation, not a
+  claim to be the complete nonparametric PhyloWGS implementation.
 - PS is LongPhase-S upstream phasing metadata. It helps establish consistent
   HP labels/counts and therefore can affect the derived `H_i` indirectly. Once
   the table is built, PS is not a direct downstream likelihood column, a
@@ -58,7 +61,8 @@ is currently fail-closed until its versioned restore reader is implemented.
 - Canonical loading is fail closed: no legacy files, diploid CN, or point
   multiplicity fallbacks.
 - Normal contamination is handled only by `rho_ASCAT` in the emission model;
-  the eta root is residual tumor-population mass.
+  `eta` contains clone masses and is not a purity or normal-contamination
+  parameter.
 - Production output directories are immutable and receive `_SUCCESS` only
   after every required gate passes.
 

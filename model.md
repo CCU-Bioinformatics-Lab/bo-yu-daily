@@ -28,7 +28,7 @@ links:
 2. `multiplicity_prior` 只由 ASCAT major/minor CN 建立，不讀 VAF、bulk counts或 purity。
 3. `rho_ASCAT=0.99` 是固定的 purity input，只在 emission 中使用，並在 manifest 中留存 provenance。
 4. PS block 是建立 HP1-1/HP2-1 labels/counts 的上游 phase 資訊；因此會透過 `H_i` 間接影響 likelihood，但 PS 本身不作為 downstream likelihood 欄位、MCMC state 或 topology edge constraint。它也可供 grouped holdout 與 provenance 使用。
-5. `eta[0]` 是未由任何建模 clone 解釋的 residual tumor mass，不是可承載 SNV 的 founding clone；normal contamination只由 purity處理。
+5. `eta` 只保存 finite-K clone 的 local mass；`phi` 由樹上的 descendant sum 推導，結構性 `tumor_root` 的頻率固定為 1。normal contamination 只由 purity 處理。
 
 輸出是 candidate tumor-tree posterior，不是 single-cell lineage truth，也不是 HCC1395 唯一真實演化樹。
 
@@ -37,18 +37,18 @@ links:
 ```text
 P(T, z, eta | D, H, C, P_M, rho_ASCAT)
   proportional to
-P(T) * P(eta | T) * P(z | T)
+P_TSSB^K(T) * P(eta | T) * product_i eta_{z_i}
      * product_i sum_m P_M,i(m)
          P_obs(D_i, H_i | phi_z(i), C_i, m, rho_ASCAT)
 ```
 
-PS 不出現在 downstream likelihood 的條件集合；它在上游 phase/tagging 階段影響 `H_i` 的產生。`P_M,i(m)` 是 CN-only `multiplicity_prior`，不是用同一組 `D_i` 先算出的 posterior。`P(z | T)` 是固定的 assignment prior，不是另外抽樣的 `pi` 參數。
+PS 不出現在 downstream likelihood 的條件集合；它在上游 phase/tagging 階段影響 `H_i` 的產生。`P_M,i(m)` 是 CN-only `multiplicity_prior`，不是用同一組 `D_i` 先算出的 posterior。`product_i eta_{z_i}` 是 TSSB-inspired local-node mass assignment，不另建立一個獨立的 `pi` state。
 
 | 符號 | 定義 |
 |---|---|
 | `T` | rooted parent-child clone tree |
 | `z_i` | mutation `i` 的 clone assignment |
-| `eta_v` | clone `v` 的 exclusive tumor fraction |
+| `eta_v` | clone `v` 的 local／exclusive tumor mass；全體 clone `eta` 為 simplex |
 | `phi_v` | clone `v` 與 descendants 的 cumulative prevalence／CCF |
 | `D_i` | bulk REF/ALT counts |
 | `H_i` | HP1-1/HP2-1 conditional allocation counts |
@@ -63,7 +63,7 @@ PS 不出現在 downstream likelihood 的條件集合；它在上游 phase/taggi
 phi_v = eta_v + sum(eta_w for w in descendants(v))
 ```
 
-`eta[0]` 是 tumor population內未由任何建模 clone解釋的 residual mass；它不承載 SNV，也不加入任何 clone的 `phi_v`，因此不能稱為 founding clone。`1-rho_ASCAT` 是 normal contamination，不放進 `eta` simplex，只出現在 observation emission。
+`eta_v` 是 clone `v` 的 local mass，所有 K 個 clone 的 `eta` 組成 simplex；`phi_v` 是該節點加上 descendants 的總 mass。結構性 `tumor_root` 不承載 SNV assignment，頻率概念上為 1；`1-rho_ASCAT` 是 normal contamination，不放進 `eta` simplex，只出現在 observation emission。
 
 ### 2.2 Purity-aware allele emission
 
@@ -189,24 +189,41 @@ Loader必須 fail closed：
 
 模型不會從這批資料自動推導 ASCAT purity、major/minor CN、跨PS的全球 HP identity或唯一真實clone數。
 
-## 6. 推理演算法：plain Metropolis–Hastings
+## 6. 推理演算法：PhyloWGS-inspired compound MCMC
 
-目前的 baseline 是一條 chain 使用單一 plain Metropolis–Hastings (MH) kernel。它直接在下列 latent state 上提出整體新 state，再以同一個 posterior target 接受或拒絕：
+目前 C++ active sampler 使用有限 K 的 TSSB-inspired compound MCMC。它保留
+PhyloWGS 的核心分工：用樹狀 local mass 產生 descendant-sum prevalence，讓
+assignment／樹結構探索與 continuous mass 更新分開。這不是完整的無限 TSSB
+實作；目前 K 仍由 workflow 的 `K=4/6/8` sensitivity 固定。
 
 ```text
 x = (T, eta, z)
 T   = finite-K tree parents
-eta = clone exclusive fractions（含 residual eta[0]）
+eta = K 個 clone local masses，sum(eta)=1
+phi = eta + descendants 的 local masses（自動推導）
 z   = 每個 SNV 的 clone assignment
 ```
 
-每次 iteration 只提出一個候選 move；move type 可以是固定比例的三種 proposal，但都屬於同一個 MH transition：
+每次 iteration 執行一個 compound sweep，而不是只隨機挑一個 proposal：
 
-1. **SNV assignment move**：選一個 SNV，將 `z_i` 提議到另一個 clone。對稱 proposal 直接比較 target ratio。
-2. **`eta` move**：在 simplex 上提出 Dirichlet random-walk；若 proposal 不對稱，接受率包含 reverse/forward proposal-density ratio。
-3. **Topology move**：在有限合法 parent support 中提出一個 parent 變更；接受率包含正確的 reverse/forward support ratio。
+1. **All-SNV assignment Gibbs sweep**：固定目前 `T, eta, phi`，對每個 SNV
+   直接從
+   `P(z_i=v) ∝ eta_v × P_obs(D_i,H_i | phi_v,C_i,rho_ASCAT)`
+   的 categorical distribution 抽樣。這取代原本「隨機換一個 clone 再 MH」的
+   單點 assignment move。
+2. **Local-mass independence MH**：依目前 tree 的 depth/width TSSB-shaped
+   Dirichlet prior，加上各 clone 的 assignment counts 產生 `eta` proposal；
+   emission 改變仍以 MH posterior ratio 校正。`eta` 是 local clone mass，
+   不是 purity、normal fraction 或額外的 assignment `pi`。
+3. **Conditional subtree prune-and-regraft Gibbs**：選一個 clone node，保留
+   其 descendants 的 subtree，列舉所有不會形成 cycle 的合法 parent，依完整
+   posterior score 抽樣。這是 finite-K 的 topology conditional update，與舊版
+   uniform parent-reassignment MH 不同。
 
-這個 baseline 不另外抽樣 assignment mixture 或 multiplicity。`z` 的 assignment prior 是固定部分；`m` 則在每個 site likelihood 內用 `multiplicity_prior` 邊際化。每條 chain 的 acceptance rate只描述 proposal行為，不是 convergence proof。
+每條 chain 的 acceptance／change rate只描述各 kernel 的更新行為，不是
+convergence proof。原始 PhyloWGS 還會使用 slice assignment、empty-node culling、
+stick/order 與 hyperparameter 更新；本版以固定 K 的 subtree conditional kernel
+作為可驗證的第一版近似，不能宣稱已完整重現原始 PhyloWGS。
 
 ### 6.1 一條 chain 的輸入
 
@@ -230,11 +247,13 @@ PS 不需再作為 downstream table 欄位傳入 sampler。它已在上游 LongP
 
 ### 6.3 單條 chain 與外層 convergence check
 
-單條 chain sampler 只產生一個 posterior sample stream，不自行宣稱收斂。workflow 另外用相同 canonical table/config 啟動多條不同 seed 的獨立 MH chains，再由外層 diagnostics 計算 R-hat、bulk/tail ESS、label-invariant assignment agreement、edge support 與 holdout predictive metrics。這些 convergence checks 是 workflow 層，不是 MH kernel 的輸入或內部更新。
+單條 chain sampler 只產生一個 posterior sample stream，不自行宣稱收斂。workflow 另外用相同 canonical table/config 啟動多條不同 seed 的獨立 compound-MCMC chains，再由外層 diagnostics 計算 R-hat、bulk/tail ESS、label-invariant assignment agreement、edge support 與 holdout predictive metrics。這些 convergence checks 是 workflow 層，不是 MCMC kernel 的輸入或內部更新。
 
 ## 7. 正式實驗設定與 gate
 
-唯一正式執行來源是 [`tumor_tree_pipeline/`](tumor_tree_pipeline/) wrapper。其tree prior是自訂finite-K depth/branching penalty，不是TSSB stick-breaking。舊 `multi_evol_tree/tools/` runner只留作歷史比對。
+唯一正式執行來源是 [`tumor_tree_pipeline/`](tumor_tree_pipeline/) wrapper。其 tree
+prior 是 finite-K TSSB-inspired depth/width approximation，不是完整的原始
+PhyloWGS infinite TSSB。舊 `multi_evol_tree/tools/` runner只留作歷史比對。
 
 ### 7.1 Staged design
 
@@ -247,7 +266,7 @@ PS 不需再作為 downstream table 欄位傳入 sampler。它已在上游 LongP
 正式長鏈起始下限：
 
 ```text
-4 independent MH chains
+4 independent compound-MCMC chains
 1500 iterations
 1000 burn-in
 thin = 1

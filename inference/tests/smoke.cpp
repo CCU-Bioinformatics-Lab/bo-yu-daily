@@ -66,7 +66,7 @@ int main() {
     config.checkpoint_every = 2;
     config.threads = 1;
     config.chains = 1;
-    auto algorithm = tti::AlgorithmRegistry::instance().create("plain_metropolis_hastings");
+    auto algorithm = tti::AlgorithmRegistry::instance().create("phylowgs_inspired_tssb_mcmc");
     tti::RunOptions one_options{root / "one", {}};
     algorithm->run(tti::load_canonical_table(compressed_input, 0.99, {}), config, one_options, 0);
     config.threads = 2;
@@ -96,7 +96,9 @@ int main() {
     std::ifstream diagnostics(one_options.outdir / "diagnostics.json");
     std::stringstream diagnostic_text;
     diagnostic_text << diagnostics.rdbuf();
-    assert(diagnostic_text.str().find("finite_K_metropolis_hastings") != std::string::npos);
+    assert(diagnostic_text.str().find("finite_K_tssb_inspired") != std::string::npos);
+    assert(diagnostic_text.str().find("single_chain_phylowgs_inspired_tssb_mcmc") != std::string::npos);
+    assert(diagnostic_text.str().find("all_SNV_categorical_Gibbs_sweep") != std::string::npos);
 
     config.resume = true;
     bool resume_rejected = false;

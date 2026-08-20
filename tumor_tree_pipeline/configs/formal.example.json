@@ -6,7 +6,7 @@
   "ps_audit_manifest": "/absolute/path/to/stage_02_ps_audit.json",
   "simulation_manifest": "/absolute/path/to/synthetic_recovery_gate.json",
   "mode": "formal",
-  "inference_algorithm": "plain_metropolis_hastings",
+  "inference_algorithm": "phylowgs_inspired_tssb_mcmc",
   "seed": 20260819,
   "main_purity": 0.99,
   "pilot_nodes": [4, 6, 8],

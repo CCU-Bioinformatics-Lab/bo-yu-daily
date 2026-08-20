@@ -19,7 +19,7 @@ namespace tti = tumor_tree_inference;
 namespace {
 
 struct Cli {
-    std::string algorithm = "plain_metropolis_hastings";
+    std::string algorithm = "phylowgs_inspired_tssb_mcmc";
     std::filesystem::path input;
     std::filesystem::path outdir;
     tti::InferenceConfig config;
@@ -67,9 +67,9 @@ std::string require_value(int& index, int argc, char** argv, const std::string& 
 }
 
 void print_help() {
-    std::cout << "tumor_tree_inference (C++17 plain finite-K MH backend)\n\n"
+    std::cout << "tumor_tree_inference (C++17 finite-K TSSB-inspired MCMC backend)\n\n"
               << "Required:\n"
-              << "  --algorithm plain_metropolis_hastings\n"
+              << "  --algorithm phylowgs_inspired_tssb_mcmc\n"
               << "  --input canonical.tsv[.gz]\n"
               << "  --outdir OUTPUT_DIR\n\n"
               << "Options:\n"
@@ -104,7 +104,7 @@ Cli parse_cli(int argc, char** argv) {
     }
     if (cli.input.empty()) usage_error("--input is required");
     if (cli.outdir.empty()) usage_error("--outdir is required");
-    if (cli.algorithm != "plain_metropolis_hastings") usage_error("only plain_metropolis_hastings is currently implemented");
+    if (cli.algorithm != "phylowgs_inspired_tssb_mcmc") usage_error("only phylowgs_inspired_tssb_mcmc is currently implemented");
     return cli;
 }
 

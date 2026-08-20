@@ -68,10 +68,10 @@ model_include model_status
 
 `multiplicity_prior`只由ASCAT major/minor CN建立：extant major/minor side先等權，再於各side的`m=1..side_CN`均分。`major/minor=3/1`時為`m=1:2/3, m=2:1/6, m=3:1/6`。它不使用VAF、bulk counts或purity；`rho_ASCAT`只進emission。PS 是 LongPhase-S 的上游 phasing metadata，會影響 HP label/count 的形成，因此間接影響 `H_i`；但建表後不直接進 downstream likelihood schema、不作 clone assignment prior 或 topology edge constraint。它仍可存在於 read audit、provenance 與 grouped holdout artifact。
 
-### 1.3 目前 plain finite-K Metropolis-Hastings baseline
+### 1.3 目前 finite-K PhyloWGS-inspired compound MCMC
 
-目前先把推理固定成最簡單的單一 MH chain；多條 chain 只是用不同 seed
-重複這個相同 kernel，供收斂診斷，不代表另一種 sampler。
+目前 active C++ inference 參考 PhyloWGS 的樹狀 local mass 與 assignment
+更新方式；保留固定 finite K，並非完整 infinite TSSB。
 
 ```text
 canonical likelihood_input.tsv.gz + ChainConfig
@@ -81,8 +81,8 @@ canonical likelihood_input.tsv.gz + ChainConfig
         ▼
 latent state = topology T + SNV assignment z + prevalence eta
         │
-        │  每回合提出一個 topology / z / eta 的 MH proposal，
-        │  依 posterior ratio 加上 proposal ratio 接受或拒絕
+        │  每回合執行：all-SNV assignment Gibbs、
+        │  eta independence MH、conditional subtree Gibbs
         ▼
 samples.jsonl.gz、diagnostics.json、representative_tree.json
 checkpoint.json.gz、chain_complete.json
@@ -90,9 +90,11 @@ checkpoint.json.gz、chain_complete.json
 
 輸入是已驗證的單位點整合表與 `ChainConfig`，不是 BAM/VCF 本身。輸出是保留的
 posterior draws、接受率與收斂診斷、代表性演化樹，以及可續跑的 checkpoint。
-每回合只提出一個 topology、SNV assignment 或 `eta` 更新，依 posterior ratio
-與 proposal ratio 接受或拒絕；multiplicity 由固定的 CN-only prior 在 observation
-likelihood 內邊際化，不另外抽樣成 latent state。
+assignment 以 `eta_v × emission(phi_v)` 的 categorical distribution 更新；`eta`
+以 TSSB-shaped Dirichlet proposal 加上 emission MH correction 更新；topology
+則在合法 parent support 中做 conditional subtree prune-and-regraft Gibbs update。
+`phi` 是 `eta` 的 descendant sum。multiplicity 由固定的 CN-only prior 在
+observation likelihood 內邊際化，不另外抽樣成 latent state。
 
 ## 2. 必要原始資料與路徑
 
@@ -134,7 +136,7 @@ LongPhase-S tagged tumor BAM：
 /big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/HCC1395BL.bam.bai
 ```
 
-用途：matched-normal baseline、germline allele、tumor/normal CNV calling。正式流程需要 normal BAM，但目前 plain finite-K Metropolis-Hastings sampler 不會直接讀 BAM，而是讀上游整理後的 canonical 表格。
+用途：matched-normal baseline、germline allele、tumor/normal CNV calling。正式流程需要 normal BAM，但 active finite-K compound-MCMC sampler 不會直接讀 BAM，而是讀上游整理後的 canonical 表格。
 
 ### 2.4 Somatic VCF
 
@@ -404,7 +406,7 @@ output/longphase_clone/stage_06_likelihood_20260815_binomial/likelihood_input.ts
 
 這張表**不再是新版正式輸入**：它的 `multiplicity_posteriors` 由相同bulk observations形成，舊sampler又使用這些counts計算likelihood，可能重複使用資料。新版必須由 `tumor_tree_pipeline` 重建CN-only `multiplicity_prior`，並在新schema/QA通過後才可啟動長鏈。
 
-歷史 sampler 讀取 TSV，而不會在每次 sampler iteration 重掃 BAM；下列程式只作歷史稽核，不是目前 plain finite-K Metropolis-Hastings baseline 的正式入口：
+歷史 sampler 讀取 TSV，而不會在每次 sampler iteration 重掃 BAM；下列程式只作歷史稽核，不是目前 finite-K compound-MCMC 的正式入口：
 
 ```text
 tools/run_longphase_clone_m3_tssb_mcmc.py
@@ -794,10 +796,10 @@ python3 tools/validate_hcc1395_m3_pipeline.py \
 
 該歷史gate要求`major_cn`、`minor_cn`、`total_cn`與舊multiplicity欄位；它沒有Beta-Binomial overdispersion欄位，但仍不符合新版CN-only prior契約。
 
-目前 plain finite-K Metropolis-Hastings baseline 的命令與 artifact 只需記錄
-MH proposal 的種類、機率與 tuning（例如 simplex `eta` proposal 的
-concentration）。這些設定只控制 proposal，不是新的觀測輸入，也不會把 bulk
-counts 重複拿去建立 multiplicity。
+目前 active finite-K compound MCMC 的命令與 artifact 需記錄三個 kernel：
+all-SNV assignment Gibbs、TSSB-shaped `eta` independence MH、以及 conditional
+subtree topology Gibbs。這些 sampler 設定只控制推理，不是新的觀測輸入，也
+不會把 bulk counts 重複拿去建立 multiplicity。
 
 ### 10.9 已執行與尚未執行
 
@@ -814,7 +816,7 @@ counts 重複拿去建立 multiplicity。
 | 新版CN-only multiplicity input | **待`tumor_tree_pipeline`重建與驗收** | 需要`multiplicity_prior`、`rho_ASCAT=0.99`與新版manifest；尚未宣稱完成 |
 | 歷史 convergence/simulation/held-out | **已執行但未通過gate** | [`convergence.md`](convergence.md)；歷史 baseline 最大 label-invariant R-hat=24.983、最低 ESS/chain=3.1 |
 
-因此目前的資料流程結論是：**30,490-site counts與ASCAT CN/purity來源可重用；CN-only `multiplicity_prior`正式表、20-site fixture與新版wrapper gate完成前，不得啟動或解讀正式 plain finite-K Metropolis-Hastings run。R-hat=24.983／ESS=3.1只屬歷史 baseline。**
+因此目前的資料流程結論是：**30,490-site counts與ASCAT CN/purity來源可重用；CN-only `multiplicity_prior`正式表、20-site fixture與新版wrapper gate完成前，不得啟動或解讀正式 compound-MCMC run。R-hat=24.983／ESS=3.1只屬歷史 plain-MH baseline。**
 
 ### 10.11 歷史 production-like posterior run（2026-08-14）
 
@@ -878,7 +880,7 @@ tools/run_hcc1395_m3_input_validation.sh --mode all --threads 8 --rebuild-counts
 - holdout：PS-grouped、chromosome-grouped、ASCAT-segment-grouped 分開報告。PS block 是 LongPhase-S 的上游 phasing metadata，會間接影響 HP label/count 的形成；在 downstream sampler 中不直接作 likelihood 欄位、clone-assignment prior 或 topology edge constraint，僅作 provenance、read audit 與 grouped holdout metadata。
 - K：pilot `4/6/8`；full先K=6，通過後追加K=4/8。
 - purity：主分析0.99；通過後做0.97與0.95 sensitivity。
-- chains：4 條以不同 seed 執行同一 plain finite-K Metropolis-Hastings baseline 的 chains；起始 1500 iterations、1000 burn-in、thin=1、每鏈至少 500 retained draws。
+- chains：4 條以不同 seed 執行同一 finite-K PhyloWGS-inspired compound-MCMC kernel 的 chains；起始 1500 iterations、1000 burn-in、thin=1、每鏈至少 500 retained draws。
 - formal gate：rank-normalized split/folded R-hat `<1.01`、bulk/tail ESS total各`>=400`、assignment agreement`>=0.90`，並通過simulation與strict holdout。
 - wrapper：immutable run ID、lock、checkpoint、atomic writes、hash manifest；失敗建立`_FAILED`並回傳非零exit，全部通過才建立`_SUCCESS`。
 - Git保存pipeline、tests、configs、fixture、manifest與小型摘要；大型BAM、完整chains與可重建中間表只由path/hash引用。

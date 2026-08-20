@@ -1,8 +1,9 @@
-"""Fail-closed multi-chain diagnostics for finite-K MH tumor-tree inference.
+"""Fail-closed multi-chain diagnostics for finite-K tumor-tree inference.
 
-The sampler itself is one plain Metropolis-Hastings chain.  This module only
-compares separately seeded chain outputs for convergence and holdout gates; it
-does not add another transition kernel to the posterior sampler.
+The active C++ sampler is a finite-K TSSB-inspired compound MCMC chain. This
+module only compares separately seeded chain outputs for convergence and
+holdout gates; it does not add another transition kernel to the posterior
+sampler.
 
 The implementation intentionally depends only on NumPy and SciPy.  It follows
 the rank-normalized split/folded R-hat and rank-based bulk/tail ESS definitions
@@ -260,10 +261,10 @@ def strict_holdout_predictive_metrics(
 ) -> dict[str, float]:
     """Score sites excluded from fitting under the posterior clone mixture.
 
-    The log score uses the complete bulk+conditional-HP emission.  Coverage is
-    the legacy-compatible central 90% interval of the posterior VAF mixture,
-    now using the CN-only multiplicity prior rather than a data-derived
-    multiplicity posterior.
+    The log score uses the complete bulk+conditional-HP emission. Coverage is
+    the central 90% interval of the posterior VAF mixture, using the sampler's
+    local clone masses when present. The CN-only multiplicity prior remains
+    the only multiplicity distribution in this predictive calculation.
     """
 
     from .model import ModelData, compile_model, expected_alt_probability, load_model_table
@@ -284,7 +285,14 @@ def strict_holdout_predictive_metrics(
         occupancy = np.asarray(sample["occupancy"], dtype=float)
         if phi.ndim != 1 or occupancy.shape != phi.shape:
             raise DiagnosticError("sample phi/occupancy dimensions are inconsistent")
-        weights = occupancy + 1.0
+        local_mass = sample.get("eta")
+        if local_mass is not None:
+            weights = np.asarray(local_mass, dtype=float)
+            if weights.shape != phi.shape or not np.isfinite(weights).all() or np.any(weights <= 0.0):
+                raise DiagnosticError("sample eta/phi dimensions or positivity are inconsistent")
+        else:
+            # Compatibility path for the legacy Python reference sampler only.
+            weights = occupancy + 1.0
         weights /= weights.sum()
         matrix = compiled.likelihood_matrix(phi)
         sample_scores.append(scipy_logsumexp(matrix + np.log(weights)[None, :], axis=1))

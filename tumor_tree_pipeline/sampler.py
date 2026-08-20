@@ -1,11 +1,10 @@
-"""Python reference implementation of the plain finite-``K`` MH sampler.
+"""Legacy Python reference implementation of the former plain finite-``K`` MH sampler.
 
 The active workflow uses :mod:`tumor_tree_pipeline.cpp_backend`, which invokes
-the C++17 implementation under ``inference/``.  This module remains a
-reference seam for unit tests, numerical comparisons, and checkpoint-contract
-tests.  Its public :func:`run_chain` accepts one canonical model table,
-owns one immutable output directory, and can resume only from its own
-atomically written checkpoint.
+the C++17 finite-K PhyloWGS-inspired compound MCMC implementation under
+``inference/``. This module is retained only as a legacy reference seam for
+unit tests, numerical comparisons, and checkpoint-contract tests; it is not
+the formal inference entry point.
 
 The sampled state is deliberately small and explicit::
 

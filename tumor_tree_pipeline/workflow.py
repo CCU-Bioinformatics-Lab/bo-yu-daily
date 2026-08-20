@@ -52,8 +52,8 @@ class ExperimentConfig:
     """Configuration for one staged experiment matrix.
 
     ``mode=all`` performs smoke, K=4/6/8 pilots, then the dependency-ordered
-    formal matrix.  Each outer chain is a plain Metropolis-Hastings chain with
-    a distinct derived seed.  Formal execution keeps multiple chains only as
+    formal matrix. Each outer chain uses the finite-K TSSB-inspired compound
+    MCMC kernel with a distinct derived seed. Formal execution keeps multiple chains only as
     a convergence-diagnostic wrapper, starts at K=6/rho=0.99, and stops
     immediately if a required gate fails.
     """
@@ -66,7 +66,7 @@ class ExperimentConfig:
     ps_audit_manifest: Path | None = None
     simulation_manifest: Path | None = None
     mode: str = "formal"
-    inference_algorithm: str = "plain_metropolis_hastings"
+    inference_algorithm: str = "phylowgs_inspired_tssb_mcmc"
     seed: int = 20_260_819
     main_purity: float = 0.99
     pilot_nodes: tuple[int, ...] = (4, 6, 8)
@@ -109,10 +109,10 @@ class ExperimentConfig:
             raise ValueError("the agreed finite-K sensitivity matrix is K=4,6,8")
         if tuple(self.sensitivity_purities) != (0.97, 0.95):
             raise ValueError("the agreed purity sensitivity values are 0.97 and 0.95")
-        if self.inference_algorithm != "plain_metropolis_hastings":
+        if self.inference_algorithm != "phylowgs_inspired_tssb_mcmc":
             raise ValueError(
                 "the current workflow supports only inference_algorithm="
-                "'plain_metropolis_hastings'"
+                "'phylowgs_inspired_tssb_mcmc'"
             )
         if self.formal_chains < 4:
             raise ValueError(

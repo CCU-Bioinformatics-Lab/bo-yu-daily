@@ -1,6 +1,7 @@
 # C++ inference contract tests
 
-These are black-box tests for the C++ plain Metropolis--Hastings executable.
+These are black-box tests for the C++ finite-K PhyloWGS-inspired compound
+MCMC executable.
 They use only Python's standard library and do not import the Python pipeline.
 The tests deliberately live under `inference/tests/` so the C++ implementation
 can be replaced without changing the test seam.
@@ -13,7 +14,7 @@ The executable is invoked as:
 inference_binary run \
   --input canonical.tsv \
   --output output_dir \
-  --algorithm plain_metropolis_hastings \
+  --algorithm phylowgs_inspired_tssb_mcmc \
   --seed 20260820 \
   --chains 1 --threads 1 \
   --iterations 24 --burnin 8 --thin 1 --num-nodes 2 \
@@ -43,7 +44,8 @@ chain_complete.json
 
 For `--chains 2`, the same five artifacts are required under `chain_01/` and
 `chain_02/`. Each chain's `diagnostics.json` records a distinct derived seed.
-The diagnostics also identify plain MH, schema `v2`, the observed site count,
+The diagnostics also identify the finite-K PhyloWGS-inspired compound MCMC,
+schema `v2`, the observed site count,
 state variables `[parents, eta, z]`, ASCAT purity, and the CN-only
 multiplicity-marginalized site term.
 
