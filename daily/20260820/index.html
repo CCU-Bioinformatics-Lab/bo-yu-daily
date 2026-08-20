@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-08-20｜腫瘤演化樹研究日誌</title>
+  <style>
+    :root { --ink:#182230; --muted:#667085; --line:#e5e7eb; --bg:#f6f8fb; --card:#fff; --blue:#2563eb; --green:#15803d; --amber:#b45309; --red:#b42318; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font:15px/1.6 system-ui,-apple-system,"Noto Sans TC",sans-serif; }
+    main { max-width:1100px; margin:auto; padding:32px 20px 56px; }
+    header { display:flex; gap:18px; align-items:flex-start; padding:24px; color:white; background:linear-gradient(135deg,#172554,#2563eb); border-radius:22px; box-shadow:0 14px 35px #1e3a8a25; }
+    .mark { flex:none; width:58px; height:58px; display:grid; place-items:center; border-radius:16px; background:#ffffff22; }
+    h1,h2,h3,p { margin-top:0; } h1 { margin-bottom:4px; font-size:clamp(25px,4vw,38px); letter-spacing:.02em; } h2 { margin:30px 0 14px; font-size:21px; } h3 { margin-bottom:5px; font-size:16px; }
+    .sub { margin:0; color:#dbeafe; } .summary { margin:17px 0 0; color:#eff6ff; font-size:17px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:0 5px 18px #10182808; }
+    .card p:last-child, .card ul:last-child { margin-bottom:0; } .card p { color:#475467; }
+    .icon { width:34px; height:34px; display:grid; place-items:center; border-radius:10px; background:#eff6ff; color:var(--blue); margin-bottom:10px; }
+    .badge { display:inline-block; padding:2px 9px; border-radius:99px; font-size:12px; font-weight:700; margin-bottom:9px; } .ok { color:var(--green); background:#ecfdf3; } .warn { color:var(--amber); background:#fffaeb; } .fail { color:var(--red); background:#fef3f2; } .info { color:#1d4ed8; background:#eff6ff; }
+    ul { padding-left:19px; margin:8px 0 0; } li { margin:4px 0; }
+    a { color:#1d4ed8; text-decoration:none; border-bottom:1px solid #bfdbfe; } a:hover { color:#1e3a8a; }
+    code { padding:2px 5px; border-radius:5px; background:#f2f4f7; font-size:.92em; } .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px; overflow-wrap:anywhere; }
+    .metric { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #f0f2f5; } .metric:last-child { border-bottom:0; } .metric b { white-space:nowrap; }
+    footer { margin-top:28px; color:var(--muted); font-size:13px; }
+    @media (max-width:620px) { header { padding:20px; } main { padding:20px 13px 40px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="mark" aria-hidden="true">
+      <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><path d="M24 6v10M24 32v10M6 24h10M32 24h10M11.3 11.3l7.1 7.1M29.6 29.6l7.1 7.1M36.7 11.3l-7.1 7.1M18.4 29.6l-7.1 7.1" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="24" r="7" fill="currentColor"/></svg>
+    </div>
+    <div>
+      <h1>腫瘤演化樹研究日誌</h1>
+      <p class="sub">2026-08-20 · ASCAT purity × C++ plain MH</p>
+      <p class="summary">完成 C++17 inference backend 與正式流程整合；fresh formal run 已執行，但第一個 convergence gate 未通過，因此保留為 failed artifact。</p>
+    </div>
+  </header>
+
+  <h2>今日完成</h2>
+  <div class="grid">
+    <article class="card"><div class="icon">①</div><span class="badge ok">完成</span><h3>模型輸入重新定義</h3><p>確認目前模型使用 canonical SNV table、ASCAT CN、ASCAT purity <code>rho_ASCAT=0.99</code>、HP counts 與 CN-only multiplicity prior；不再使用 tumor DNA fraction。</p></article>
+    <article class="card"><div class="icon">②</div><span class="badge ok">完成</span><h3>推理後端 C++ 化</h3><p>新增 <code>inference/</code>；目前 active algorithm 是 plain Metropolis-Hastings，支援 site scoring threads、multi-chain CLI、輸出鎖與 fail-closed resume。</p></article>
+    <article class="card"><div class="icon">③</div><span class="badge ok">完成</span><h3>流程與測試接線</h3><p>Python workflow 以 <code>cpp_backend.py</code> 呼叫 C++，正式設定使用 <code>formal_20260820.json</code>，輸出 run ID 綁定 Git SHA。</p></article>
+    <article class="card"><div class="icon">④</div><span class="badge fail">正式 gate 未通過</span><h3>Fresh formal run</h3><p>完成第一個 cell 的 4 chains；PS holdout 的 R-hat、ESS 與 predictive gates 未達標，流程正確停止並寫入 <code>_FAILED</code>。</p></article>
+  </div>
+
+  <h2>主要產出</h2>
+  <div class="grid">
+    <article class="card"><span class="badge info">模型與資料</span><h3><a href="../../model.md">model.md</a> · <a href="../../data.md">data.md</a></h3><p>記錄 active model inputs、SNV-level canonical format、ASCAT purity 與資料轉換邊界。</p></article>
+    <article class="card"><span class="badge info">推理程式</span><h3><a href="../../inference/README.md">inference/README.md</a></h3><p>說明 C++17 backend、plain MH state、平行化方式與 chain artifacts。</p></article>
+    <article class="card"><span class="badge info">流程設定</span><h3><a href="../../ascat_purity_experiment_workflow.md">ascat_purity_experiment_workflow.md</a></h3><p>正式實驗入口、ASCAT purity 設定、prerequisite 與 fresh-run 規則。</p></article>
+    <article class="card"><span class="badge info">正式輸出</span><h3><a href="../../output/tumor_tree_pipeline/20260820T110728Z_fb4f01792d18_rho0p99-0p97-0p95_K6-4-8_seed20260820/status.json">status.json</a> · <a href="../../output/tumor_tree_pipeline/20260820T110728Z_fb4f01792d18_rho0p99-0p97-0p95_K6-4-8_seed20260820/runs/formal_main_20260820T110728Z_fb4f01792d18_rho0p99_K6_seed882227064/ps/diagnostics.json">diagnostics.json</a></h3><p>保留 failed run 的狀態與第一個 formal cell 的 gate 指標。</p></article>
+  </div>
+
+  <h2>驗證結果</h2>
+  <div class="grid">
+    <article class="card"><span class="badge ok">通過</span><h3>Build / C++ contract</h3><ul><li>CMake Release build</li><li>CTest smoke：1/1 passed</li><li><code>inference/tests/contract_test.py</code>：schema、likelihood、threads、chains、artifacts、fail-closed 均通過</li></ul></article>
+    <article class="card"><span class="badge ok">通過</span><h3>Python contract tests</h3><p><code>python3 -m unittest discover -s tumor_tree_pipeline/tests -v</code>：31 tests，全部 OK。</p><p>另完成 ASAN/UBSAN smoke、Valgrind leak/error check、output lock race 與 partial-chain cleanup check。</p></article>
+    <article class="card"><span class="badge fail">未通過</span><h3>Formal PS holdout gate</h3><div class="metric"><span>max R-hat</span><b>7.685 / &lt;1.01</b></div><div class="metric"><span>min bulk ESS</span><b>4.08 / ≥400</b></div><div class="metric"><span>min tail ESS</span><b>4.01 / ≥400</b></div><div class="metric"><span>coverage</span><b>0.759–0.770 / 0.85–0.95</b></div><div class="metric"><span>log score</span><b>-57.67 / ≥-5</b></div></article>
+  </div>
+
+  <h2>目前狀態與下一步</h2>
+  <div class="grid">
+    <article class="card"><span class="badge ok">完成</span><h3>版本整合</h3><p>研究程式與文件已提交：</p><ul><li><code>fb4f017</code> — Replace tumor-tree inference with parallel C++ backend</li><li><code>3d9f9a1</code> — Ignore generated experiment run directories</li></ul></article>
+    <article class="card"><span class="badge warn">待補</span><h3>Formal inference tuning</h3><p>目前 plain MH 可執行但 mixing 不足；下一步應先檢查 proposal / iteration / burn-in 設定，再重新跑正式 gate。</p></article>
+    <article class="card"><span class="badge info">保留</span><h3>研究紀錄</h3><p>failed run 不刪除、不視為成功；輸出目錄仍可作為後續診斷與比較基準。</p></article>
+  </div>
+
+  <footer>本頁為 repository-local daily record；內容只摘要今日可由 commit、測試輸出與 formal run artifacts 支持的結果。</footer>
+</main>
+</body>
+</html>
