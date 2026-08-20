@@ -13,6 +13,6 @@
 !**/_SUCCESS
 !**/_FAILED
 
-# An abandoned pre-commit run is retained locally for audit, but its
-# generated manifests must not make future formal runs appear dirty.
-tumor_tree_pipeline/20260820T065834Z_f4894377aea3_rho0p99-0p97-0p95_K6-4-8_seed20260820/
+# Timestamped experiment run directories are retained locally for audit, but
+# their generated receipts must not make future formal runs appear dirty.
+/tumor_tree_pipeline/20*T*_rho*_K*_seed*/
