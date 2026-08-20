@@ -52,7 +52,9 @@ class ExperimentConfig:
     """Configuration for one staged experiment matrix.
 
     ``mode=all`` performs smoke, K=4/6/8 pilots, then the dependency-ordered
-    formal matrix.  Formal execution always starts at K=6/rho=0.99 and stops
+    formal matrix.  Each outer chain is a plain Metropolis-Hastings chain with
+    a distinct derived seed.  Formal execution keeps multiple chains only as
+    a convergence-diagnostic wrapper, starts at K=6/rho=0.99, and stops
     immediately if a required gate fails.
     """
 
@@ -64,6 +66,7 @@ class ExperimentConfig:
     ps_audit_manifest: Path | None = None
     simulation_manifest: Path | None = None
     mode: str = "formal"
+    inference_algorithm: str = "plain_metropolis_hastings"
     seed: int = 20_260_819
     main_purity: float = 0.99
     pilot_nodes: tuple[int, ...] = (4, 6, 8)
@@ -106,8 +109,15 @@ class ExperimentConfig:
             raise ValueError("the agreed finite-K sensitivity matrix is K=4,6,8")
         if tuple(self.sensitivity_purities) != (0.97, 0.95):
             raise ValueError("the agreed purity sensitivity values are 0.97 and 0.95")
+        if self.inference_algorithm != "plain_metropolis_hastings":
+            raise ValueError(
+                "the current workflow supports only inference_algorithm="
+                "'plain_metropolis_hastings'"
+            )
         if self.formal_chains < 4:
-            raise ValueError("formal inference requires at least four overdispersed chains")
+            raise ValueError(
+                "formal convergence diagnostics require at least four independent chains"
+            )
         if self.formal_iterations < 1_500 or self.formal_burnin < 1_000:
             raise ValueError("formal lower bounds are 1500 iterations and 1000 burn-in")
         if self.formal_iterations <= self.formal_burnin or self.formal_thin != 1:
@@ -636,20 +646,11 @@ def _default_chain_runner(
     holdout_path: Path | None,
     holdout_kind: str,
     chain_index: int,
-    initialization: str,
+    algorithm: str,
     resume: bool,
 ) -> Any:
-    from .sampler import run_chain
+    from .cpp_backend import run_chain_cpp
 
-    if initialization != "overdispersed":
-        raise WorkflowError("workflow chains must request overdispersed initialization")
-    sampler_signature = inspect.signature(run_chain)
-    supports_initialization = "initialization" in sampler_signature.parameters
-    if holdout_kind != "none" and not supports_initialization:
-        raise WorkflowError(
-            "formal execution is blocked: sampler.run_chain does not yet expose "
-            "an explicit overdispersed initialization contract"
-        )
     holdout_ids = _read_identifier_file(holdout_path)
     complete = output_dir / "chain_complete.json"
     if resume and complete.is_file():
@@ -666,16 +667,14 @@ def _default_chain_runner(
             },
         )()
     else:
-        sampler_arguments = {
-            "integrated_input": table_path,
-            "outdir": output_dir,
-            "config": config,
-            "exclude_ids": holdout_ids,
-            "resume": resume,
-        }
-        if supports_initialization:
-            sampler_arguments["initialization"] = initialization
-        result = run_chain(**sampler_arguments)
+        result = run_chain_cpp(
+            integrated_input=table_path,
+            outdir=output_dir,
+            config=config,
+            algorithm=algorithm,
+            exclude_ids=holdout_ids,
+            resume=resume,
+        )
     if holdout_kind == "none":
         # Smoke/pilot diagnostics still need a scoring partition.  They do not
         # control a formal pass and use a deterministic small pseudo-holdout.
@@ -714,6 +713,11 @@ def _promote_checkpoint_iterations(
     if not checkpoint.is_file():
         raise WorkflowError(f"ESS extension checkpoint is missing: {checkpoint}")
     payload = _checkpoint_payload(checkpoint)
+    if "requested_seed" in payload or "chain_index" in payload:
+        raise WorkflowError(
+            "C++ inference backend does not support ESS extension/resume yet; "
+            "start a fresh output directory"
+        )
     observed = payload.get("config")
     if observed != dataclasses.asdict(old_config):
         raise WorkflowError("checkpoint config does not match the completed extension batch")
@@ -897,12 +901,12 @@ def _run_cell(
                     "holdout_path": holdout.get("holdout_path"),
                     "holdout_kind": holdout_kind,
                     "chain_index": chain_index,
-                    "initialization": "overdispersed",
+                    "algorithm": config.inference_algorithm,
                     "resume": chain_resume,
                 }
                 ledger.append(
                     {
-                        "adapter": "sampler.run_chain",
+                        "adapter": "cpp_backend.run_chain_cpp",
                         "action": "ess_extension" if extension_round else ("resume" if chain_resume else "start"),
                         "extension_round": extension_round,
                         "from_iterations": prior_iterations,
@@ -911,6 +915,8 @@ def _run_cell(
                         "holdout": holdout_kind,
                         "chain": chain_index,
                         "seed": seed,
+                        "inference_algorithm": config.inference_algorithm,
+                        "multi_chain_role": "convergence_diagnostic_wrapper",
                         "config": _jsonable(chain_config),
                     }
                 )
@@ -934,6 +940,12 @@ def _run_cell(
                     }
                 else:
                     raise
+            diagnostics = {
+                "inference_algorithm": config.inference_algorithm,
+                "multi_chain_role": "convergence_diagnostic_wrapper",
+                "chain_count": chain_count,
+                **diagnostics,
+            }
             if cell.formal:
                 assert config.min_predictive_log_score is not None
                 gate = evaluate_formal_gates(
@@ -1173,6 +1185,8 @@ def run_experiment(
             "run_id": run_id,
             "status": "success",
             "git_sha": resolved_git_sha,
+            "inference_algorithm": config.inference_algorithm,
+            "multi_chain_role": "convergence_diagnostic_wrapper",
             "input_tables": input_validations,
             "cells": cell_summaries,
         }

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import gzip
+import json
 import math
 import tempfile
 import unittest
@@ -131,39 +132,21 @@ class CanonicalSamplerContracts(unittest.TestCase):
             self.assertAlmostEqual(float(eta.sum()), 1.0)
             self.assertTrue(np.all(sampler.cumulative_phi(parents, eta) <= 1.0))
 
-    def test_overdispersed_initialization_is_seeded_and_chain_specific(self):
+    def test_initial_state_has_only_tree_population_and_site_assignments(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "canonical.tsv.gz"
             write_table(path, [canonical_row(index) for index in range(1, 7)])
             compiled = compile_model(load_model_table(path, 0.99))
 
-            state_a = sampler._initial_state(
-                compiled,
-                6,
-                initialization="overdispersed",
-                rng=np.random.default_rng(101),
-            )
-            state_a_repeat = sampler._initial_state(
-                compiled,
-                6,
-                initialization="overdispersed",
-                rng=np.random.default_rng(101),
-            )
-            state_b = sampler._initial_state(
-                compiled,
-                6,
-                initialization="overdispersed",
-                rng=np.random.default_rng(202),
-            )
+            state = sampler._initial_state(compiled, 6)
 
-            self.assertEqual(state_a[0], state_a_repeat[0])
-            np.testing.assert_array_equal(state_a[1], state_a_repeat[1])
-            np.testing.assert_array_equal(state_a[2], state_a_repeat[2])
-            self.assertFalse(
-                state_a[0] == state_b[0] and np.array_equal(state_a[1], state_b[1]),
-                "different chain seeds must not collapse to one shared initial state",
-            )
-            self.assertAlmostEqual(float(state_a[1].sum()), 1.0)
+            self.assertEqual(len(state), 3)
+            parents, eta, z = state
+            self.assertEqual(len(parents), 6)
+            self.assertEqual(len(eta), 7)
+            self.assertEqual(len(z), len(compiled.data.sites))
+            self.assertAlmostEqual(float(eta.sum()), 1.0)
+            self.assertTrue(np.issubdtype(np.asarray(z).dtype, np.integer))
 
     def test_vectorized_production_likelihood_matches_scalar_contract(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -174,23 +157,6 @@ class CanonicalSamplerContracts(unittest.TestCase):
             scalar = np.asarray(likelihood_matrix(data, phi))
             vectorized = compile_model(data).likelihood_matrix(phi)
             np.testing.assert_allclose(vectorized, scalar, rtol=0.0, atol=1e-10)
-
-    def test_independent_eta_bridge_includes_reverse_over_forward_q(self):
-        reference = np.asarray([0.10, 0.55, 0.35])
-        current = np.asarray([0.15, 0.50, 0.35])
-        proposed = np.asarray([0.08, 0.62, 0.30])
-        alpha = sampler.eta_bridge_alpha(reference, concentration=40.0)
-        expected = (
-            3.5
-            - 1.25
-            + sampler.dirichlet_logpdf(current, alpha)
-            - sampler.dirichlet_logpdf(proposed, alpha)
-        )
-        observed = sampler.independent_eta_bridge_log_acceptance(
-            1.25, 3.5, current, proposed, reference, concentration=40.0
-        )
-        self.assertAlmostEqual(observed, expected, places=12)
-        self.assertNotAlmostEqual(observed, 3.5 - 1.25)
 
     def test_run_chain_writes_required_outputs_and_completed_dir_is_immutable(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -214,6 +180,46 @@ class CanonicalSamplerContracts(unittest.TestCase):
             self.assertTrue((outdir / "representative_tree.json").is_file())
             self.assertTrue((outdir / "checkpoint.json.gz").is_file())
             self.assertTrue((outdir / "chain_complete.json").is_file())
+
+            with gzip.open(outdir / "checkpoint.json.gz", "rt", encoding="utf-8") as handle:
+                checkpoint = json.load(handle)
+            self.assertGreaterEqual(int(checkpoint["checkpoint_version"]), 2)
+            self.assertTrue({"parents", "eta", "z"}.issubset(checkpoint))
+            self.assertFalse(
+                {"assignment_weights", "reference_eta", "initialization"}.intersection(checkpoint)
+            )
+
+            diagnostics = json.loads((outdir / "diagnostics.json").read_text(encoding="utf-8"))
+            self.assertEqual(diagnostics["model"], "finite_K_metropolis_hastings")
+            self.assertEqual(
+                set(diagnostics["counters"]),
+                {
+                    "assignment_proposals",
+                    "assignment_accepted",
+                    "eta_proposals",
+                    "eta_accepted",
+                    "topology_proposals",
+                    "topology_accepted",
+                },
+            )
+            self.assertEqual(
+                sum(diagnostics["counters"][name] for name in (
+                    "assignment_proposals",
+                    "eta_proposals",
+                    "topology_proposals",
+                )),
+                config.iterations,
+            )
+            self.assertNotIn("eta_bridge_acceptance", diagnostics)
+            self.assertNotIn("eta_bridge_proposals", diagnostics)
+            self.assertNotIn("eta_bridge_accepted", diagnostics)
+            self.assertNotIn("gibbs", json.dumps(diagnostics).lower())
+
+            with gzip.open(outdir / "samples.jsonl.gz", "rt", encoding="utf-8") as handle:
+                sample = json.loads(next(handle))
+            self.assertTrue({"parents", "eta", "phi", "occupancy"}.issubset(sample))
+            self.assertNotIn("assignment_weights", sample)
+            self.assertNotIn("reference_eta", sample)
             with self.assertRaisesRegex(FileExistsError, "immutable"):
                 sampler.run_chain(table, outdir, config)
             with self.assertRaisesRegex(FileExistsError, "immutable"):

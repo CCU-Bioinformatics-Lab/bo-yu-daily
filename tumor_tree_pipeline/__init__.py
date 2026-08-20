@@ -5,8 +5,10 @@ The package exposes three deep-module seams:
 ``build_model_table``
     Convert validated site counts and ASCAT projection into the canonical
     likelihood table.
+``run_chain_cpp``
+    Invoke the active C++17 finite-K posterior-chain backend.
 ``run_chain``
-    Fit one finite-K posterior chain from that table.
+    Access the Python reference implementation used by contract tests.
 ``run_experiment``
     Orchestrate immutable, gated multi-chain experiments.
 

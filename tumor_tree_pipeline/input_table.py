@@ -2,7 +2,9 @@
 
 Multiplicity is a CN-only prior.  Bulk counts and ASCAT purity are never used
 to construct it; they remain observations/parameters for the downstream
-likelihood and therefore enter the statistical model exactly once.
+likelihood and therefore enter the statistical model exactly once.  LongPhase-S
+PS blocks are upstream phasing metadata used when HP1-1/HP2-1 counts are
+formed; the PS label itself is not copied into the downstream likelihood row.
 """
 
 from __future__ import annotations

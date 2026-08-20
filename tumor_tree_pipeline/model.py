@@ -276,7 +276,9 @@ def load_model_table(
 
     Every active likelihood value must be present in the table.  In
     particular, there is no total-CN=2, multiplicity-map, posterior, or legacy
-    file fallback.  Additional metadata columns (including PS) are ignored.
+    file fallback.  Additional metadata columns (including PS) are ignored by
+    the downstream sampler: PS is upstream phasing provenance used to derive
+    HP labels/counts, not a direct likelihood state variable.
     """
 
     path = Path(path)

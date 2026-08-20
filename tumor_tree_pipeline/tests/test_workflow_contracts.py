@@ -265,6 +265,27 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertTrue((output / "_SUCCESS").is_file())
             completed = list(output.glob("runs/**/chain_complete.json"))
             self.assertEqual(len(completed), 2)
+            diagnostics = [
+                json.loads((path.parent / "diagnostics.json").read_text(encoding="utf-8"))
+                for path in completed
+            ]
+            self.assertEqual(len(diagnostics), 2)
+            for payload in diagnostics:
+                self.assertEqual(payload["model"], "finite_K_metropolis_hastings")
+                self.assertEqual(
+                    set(payload["counters"]),
+                    {
+                        "assignment_proposals",
+                        "assignment_accepted",
+                        "eta_proposals",
+                        "eta_accepted",
+                        "topology_proposals",
+                        "topology_accepted",
+                    },
+                )
+                self.assertNotIn("eta_bridge_acceptance", payload)
+                self.assertNotIn("eta_bridge_proposals", payload)
+                self.assertNotIn("gibbs", json.dumps(payload).lower())
 
     def test_formal_gate_failure_is_non_success_and_stops_matrix(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -325,7 +346,6 @@ class WorkflowContractTests(unittest.TestCase):
                 with Path(kwargs["table_path"]).open("r", encoding="utf-8") as handle:
                     first = next(csv.DictReader(handle, delimiter="\t"))
                 self.assertAlmostEqual(float(first["rho_ASCAT"]), kwargs["config"].ascat_purity)
-                self.assertEqual(kwargs["initialization"], "overdispersed")
                 return {}
 
             with mock.patch(

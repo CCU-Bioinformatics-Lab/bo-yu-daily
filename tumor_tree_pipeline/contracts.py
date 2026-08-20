@@ -60,8 +60,11 @@ class PuritySpec:
 class BuildInputs:
     """Validated files required by ``build_model_table``.
 
-    PS is deliberately absent: it may be carried as audit metadata but is not
-    an active likelihood input.
+    PS is deliberately absent from the canonical downstream likelihood table.
+    The upstream phase block still matters when it is used to derive the HP
+    labels and counts; downstream, those resulting counts are the observed
+    haplotype evidence.  PS can also be retained as audit and grouped-holdout
+    metadata, but is not an explicit sampler state or likelihood column.
     """
 
     counts_dir: Path
@@ -82,6 +85,10 @@ class BuildInputs:
 @dataclass(frozen=True)
 class ChainConfig:
     """One finite-K chain configuration.
+
+    Each chain is a seeded plain Metropolis-Hastings chain.  The workflow may
+    run several independent seeds so that convergence diagnostics can compare
+    chains, but that outer wrapper is not part of this per-chain contract.
 
     The defaults are the agreed formal lower bound, not a claim that a fixed
     number of iterations proves convergence.

@@ -361,6 +361,7 @@
         <div><div class="section-kicker">01 / upstream provenance → direct inputs</div><h2>上游來源與 wrapper 真正讀取的檔案</h2></div>
         <div class="section-lede">BAM／VCF／FASTA是產生validated counts的上游provenance；目前wrapper直接讀counts_dir、site_cnv_qc與ASCAT purity file。</div>
       </div>
+      <div class="scope-note"><strong>PS 的位置</strong><span>LongPhase-S 先用 PS phase block 統一 read 的 HP label；因此 PS 會影響產生的 H<sub>i</sub> counts。下游 sampler 不把 PS 當成 state 或 edge constraint；PS 只保留作 grouped holdout 與 provenance。</span></div>
       <div class="input-grid">
         <article class="data-card" style="--accent:#2878a9">
           <div class="icon-box"><svg><use href="#i-dna"/></svg></div><h3>Reference FASTA</h3><p>固定 GRCh38 座標與 REF allele。</p><span class="tag">coordinate</span><span class="path">/big8_disk/ref/GRCh38_no_alt_analysis_set.fasta</span>
@@ -437,6 +438,7 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
             <div class="chip"><span>ASCAT major / minor / total CN</span><span>Cᵢ</span></div>
             <div class="chip"><span>CN-only multiplicity prior</span><span>P<sub>M,i</sub>(m)</span></div>
             <div class="chip"><span>ASCAT tumor purity</span><span>rho_ASCAT = 0.99</span></div>
+            <div class="chip"><span>PS phasing metadata → H<sub>i</sub></span><span>upstream provenance</span></div>
           </div>
         </div>
         <div class="panel light">
@@ -446,7 +448,6 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
             <article class="auto-card"><h3>Assignment zᵢ</h3><p>每個 SNV 屬於哪個 clone node</p><div class="mini-value">mutation → node</div></article>
             <article class="auto-card"><h3>ηᵥ</h3><p>clone exclusive fraction；η₀ 是不承載 SNV 的 residual mass</p><div class="mini-value">tumor fraction</div></article>
             <article class="auto-card"><h3>ϕᵥ / CCF</h3><p>由 T、η 與 observations 推導的 prevalence</p><div class="mini-value">derived quantity</div></article>
-            <article class="auto-card"><h3>πᵥ</h3><p>mutation assignment mixture weight</p><div class="mini-value">posterior weight</div></article>
             <article class="auto-card"><h3>Edge posterior</h3><p>候選 parent → child 分枝的不確定性</p><div class="mini-value">branch support</div></article>
           </div>
           <div class="formula-strip">
@@ -471,9 +472,9 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
     <section class="section" id="inference">
       <div class="section-head">
         <div><div class="section-kicker">04 / inference engine</div><h2>推理演算法怎麼猜出參數</h2></div>
-        <div class="section-lede">先把 site-level observations 變成 likelihood，再探索 candidate tree；下圖是主要流程摘要。</div>
+        <div class="section-lede">基本版只用 plain Metropolis–Hastings：輸入 observations，提議一個新 state，接受或拒絕，留下 posterior samples。</div>
       </div>
-      <div class="inference-visual" role="img" aria-label="從 SNV 計數、CN、ASCAT purity 與 CN-only multiplicity prior 建立 likelihood，再用 Metropolis-Hastings 與 Gibbs MCMC 探索 clone tree 參數並產生 posterior samples 的流程圖">
+      <div class="inference-visual" role="img" aria-label="從 SNV counts、CN、ASCAT purity、multiplicity prior 與由 PS 影響的 HP counts 建立 likelihood，再用 plain Metropolis-Hastings 產生 clone tree posterior samples 的流程圖">
         <svg viewBox="0 0 1320 390" xmlns="http://www.w3.org/2000/svg">
           <rect x="0" y="0" width="1320" height="390" rx="15" fill="#fbfdfe"/>
 
@@ -531,7 +532,7 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
             <rect x="600" y="172" width="66" height="24" rx="12" fill="#edf6ed"/><text x="617" y="188" class="svg-mono">η,ϕ</text><text x="674" y="188" class="svg-copy">fractions</text>
             <path d="M 704 132H735M735 132V112M735 132V152M735 112H770M735 152H770" class="svg-line"/>
             <circle cx="704" cy="132" r="6" fill="#2878a9"/><circle cx="735" cy="112" r="5" fill="#35b5b2"/><circle cx="735" cy="152" r="5" fill="#e6a93a"/><circle cx="770" cy="112" r="5" fill="#d97993"/><circle cx="770" cy="152" r="5" fill="#4d9b76"/>
-            <text x="600" y="230" class="svg-copy">Gibbs sweep：重新分配 SNV</text><text x="600" y="249" class="svg-copy">MH move：重新提議 tree / fractions</text>
+            <text x="600" y="230" class="svg-copy">MH proposal：改動一個 state 元件</text><text x="600" y="249" class="svg-copy">assignment / η / topology 都用同一個 MH 規則</text>
             <rect x="600" y="262" width="165" height="20" rx="10" fill="#fff7df"/><text x="612" y="276" class="svg-mono">θ → log posterior</text>
           </g>
 
@@ -551,7 +552,7 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
             <text x="855" y="178" class="svg-copy">reject → 留在 current</text>
             <path d="M 855 272 C 880 250 902 286 927 268 S 974 251 996 273 S 1042 287 1062 264 S 1090 250 1101 270" fill="none" stroke="#2878a9" stroke-width="2.2"/>
             <circle cx="855" cy="272" r="4" fill="#4d9b76"/><circle cx="880" cy="264" r="4" fill="#d2dce2"/><circle cx="905" cy="278" r="4" fill="#4d9b76"/><circle cx="927" cy="268" r="4" fill="#4d9b76"/><circle cx="950" cy="259" r="4" fill="#d2dce2"/><circle cx="974" cy="263" r="4" fill="#4d9b76"/><circle cx="996" cy="273" r="4" fill="#4d9b76"/><circle cx="1020" cy="281" r="4" fill="#d2dce2"/><circle cx="1042" cy="279" r="4" fill="#4d9b76"/><circle cx="1062" cy="264" r="4" fill="#4d9b76"/><circle cx="1084" cy="258" r="4" fill="#d2dce2"/><circle cx="1101" cy="270" r="4" fill="#4d9b76"/>
-            <text x="855" y="286" class="svg-copy">accepted samples → posterior</text>
+            <text x="855" y="286" class="svg-copy">retained states → posterior</text>
           </g>
 
           <path d="M 1120 170H1150" fill="none" class="svg-arrow"/><polygon points="1150,170 1140,164 1140,176" fill="#2878a9"/>
@@ -574,24 +575,24 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
       <div class="algo-flow">
         <article class="algo-card" style="--accent:#2878a9"><div class="step"><span class="step-num">01</span><span class="step-icon"><svg><use href="#i-file"/></svg></span></div><h3>把資料變成機率</h3><p>用 REF/ALT counts 建立 Binomial likelihood；HP counts 提供條件式分配。</p><span class="metric">30,006 eligible SNVs</span></article>
         <article class="algo-card" style="--accent:#35b5b2"><div class="step"><span class="step-num">02</span><span class="step-icon"><svg><use href="#i-tree"/></svg></span></div><h3>產生參數候選</h3><p>用 purity、CN、multiplicity 把 counts 轉成 CCF-aware 的預期 ALT fraction。</p><span class="metric">VAF → CCF-aware</span></article>
-        <article class="algo-card" style="--accent:#e6a93a"><div class="step"><span class="step-num">03</span><span class="step-icon"><svg><use href="#i-tag"/></svg></span></div><h3>把 SNV 放進 clone</h3><p>提出 parent move，再用 Gibbs sweep 更新每個 SNV 屬於哪個 clone。</p><span class="metric">tree + assignment</span></article>
+        <article class="algo-card" style="--accent:#e6a93a"><div class="step"><span class="step-num">03</span><span class="step-icon"><svg><use href="#i-tag"/></svg></span></div><h3>提出一個新 state</h3><p>一次改動一個 SNV assignment、η 或 tree topology，形成 proposal。</p><span class="metric">T / zᵢ / η</span></article>
         <article class="algo-card" style="--accent:#df7656"><div class="step"><span class="step-num">04</span><span class="step-icon"><svg><use href="#i-mcmc"/></svg></span></div><h3>調整 clone 比例</h3><p>更新 clone 的 exclusive fraction 與 cumulative prevalence，必要時調整分枝。</p><span class="metric">ηᵥ / ϕᵥ</span></article>
-        <article class="algo-card" style="--accent:#d97993"><div class="step"><span class="step-num">05</span><span class="step-icon"><svg><use href="#i-mcmc"/></svg></span></div><h3>反覆探索候選</h3><p>Metropolis–Hastings / MCMC 接受或拒絕候選；正式比較 K=4/6/8。</p><span class="metric">4 chains · 1500 / 1000</span></article>
+        <article class="algo-card" style="--accent:#d97993"><div class="step"><span class="step-num">05</span><span class="step-icon"><svg><use href="#i-mcmc"/></svg></span></div><h3>接受或拒絕</h3><p>比較新舊 state 的 posterior 與 proposal ratio；接受就移動，拒絕就留在 current。</p><span class="metric">plain MH · 4 chains</span></article>
         <article class="algo-card" style="--accent:#4d9b76"><div class="step"><span class="step-num">06</span><span class="step-icon"><svg><use href="#i-gauge"/></svg></span></div><h3>外部 QC 再判讀</h3><p>R-hat、ESS、simulation、holdout 由外部 workflow 檢查；未通過仍只保留 candidate。</p><span class="metric">candidate / abstain</span></article>
       </div>
       <div class="status-band">
-        <svg width="28" height="28"><use href="#i-alert"/></svg>
-        <div><strong>NEW RUN · PENDING</strong><span>新版 CN-only input 尚待 wrapper 重建；右側數字只屬舊 run，不能當 ASCAT 0.99 結果。</span></div>
-        <div class="status-metrics"><b>historical R-hat 24.983</b><b>historical ESS 3.1</b><b>NOT CONVERGED</b></div>
+        <svg width="28" height="28"><use href="#i-check"/></svg>
+        <div><strong>BASELINE · PLAIN MH</strong><span>每條 chain 以同一個 plain MH kernel 探索；完成後輸出 samples、代表樹與 diagnostics。</span></div>
+        <div class="status-metrics"><b>input: likelihood table</b><b>state: T · zᵢ · η</b><b>output: posterior</b></div>
       </div>
     </section>
 
     <section class="section" id="background">
       <div class="section-head">
-        <div><div class="section-kicker">05 / methods background</div><h2>這不是一個演算法，是一組互相配合的零件</h2></div>
-      <div class="section-lede">Likelihood 負責評分；Gibbs 與 Metropolis–Hastings (MH) moves 負責探索；diagnostics 負責判斷結果是否可信。</div>
+        <div><div class="section-kicker">05 / methods background</div><h2>Plain Metropolis–Hastings 一眼版</h2></div>
+      <div class="section-lede">Likelihood 評分目前 state；MH proposal 產生候選；accept / reject 決定下一步；留下的 states 就是 posterior samples。</div>
       </div>
-      <div class="method-visual" role="img" aria-label="目前推理方法的背景架構：likelihood與tree prior定義目標posterior，Gibbs、Metropolis-Hastings與independent eta bridge作為更新方法，最後輸出posterior samples與診斷結果">
+      <div class="method-visual" role="img" aria-label="plain Metropolis-Hastings 背景流程：likelihood與tree prior定義目標posterior，proposal產生候選，accept或reject後輸出posterior samples與診斷結果">
         <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg">
           <rect x="0" y="0" width="1200" height="360" rx="15" fill="#fbfdfe"/>
           <text x="30" y="28" class="m-kicker">TARGET + UPDATE KERNELS + DIAGNOSTICS</text>
@@ -624,11 +625,11 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
 
           <g>
             <rect x="630" y="48" width="205" height="69" rx="14" fill="#e8f3f7" stroke="#b8d1dc"/>
-            <text x="650" y="76" class="m-title">Gibbs sampling</text><text x="650" y="96" class="m-copy">固定其他變數，更新 zᵢ</text>
+            <text x="650" y="76" class="m-title">1 · Proposal</text><text x="650" y="96" class="m-copy">改動一個 T / zᵢ / η 元件</text>
             <rect x="630" y="132" width="205" height="69" rx="14" fill="#fff0f4" stroke="#e2c1cb"/>
-            <text x="650" y="160" class="m-title">Metropolis–Hastings (MH)</text><text x="650" y="180" class="m-copy">提議 T / η / ϕ，再接受或拒絕</text>
+            <text x="650" y="160" class="m-title">2 · Score</text><text x="650" y="180" class="m-copy">比較 target posterior 與 q ratio</text>
             <rect x="630" y="216" width="205" height="69" rx="14" fill="#fff0e8" stroke="#e4c1af"/>
-            <text x="650" y="244" class="m-title">independent eta bridge</text><text x="650" y="264" class="m-copy">MH jump：較遠的 prevalence 候選</text>
+            <text x="650" y="244" class="m-title">3 · Accept / reject</text><text x="650" y="264" class="m-copy">接受就移動；拒絕就留在 current</text>
           </g>
 
           <path d="M 835 82H875M 835 166H875M 835 250H875" fill="none" stroke="#9db2bf" stroke-width="2"/>
@@ -638,7 +639,7 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
           <g>
             <rect x="920" y="74" width="245" height="185" rx="17" fill="#fff" stroke="#b9d6c1"/>
             <text x="944" y="103" class="m-title">共同輸出</text>
-            <text x="944" y="123" class="m-copy">accepted states / samples</text>
+            <text x="944" y="123" class="m-copy">retained states / samples</text>
             <path d="M 944 167 C 966 143 980 181 1002 157 S 1035 143 1055 169 S 1090 184 1138 146" fill="none" stroke="#2878a9" stroke-width="2.2"/>
             <circle cx="944" cy="167" r="4" fill="#4d9b76"/><circle cx="980" cy="181" r="4" fill="#d2dce2"/><circle cx="1002" cy="157" r="4" fill="#4d9b76"/><circle cx="1035" cy="143" r="4" fill="#4d9b76"/><circle cx="1055" cy="169" r="4" fill="#d2dce2"/><circle cx="1090" cy="184" r="4" fill="#4d9b76"/><circle cx="1138" cy="146" r="4" fill="#4d9b76"/>
             <path d="M 944 210H974M974 210V192M974 210V228M974 192H1032M974 228H1032" fill="none" stroke="#9db2bf" stroke-width="2"/>
@@ -646,8 +647,8 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
             <text x="1050" y="202" class="m-mono">T, zᵢ</text><text x="1050" y="221" class="m-mono">η, ϕ</text><text x="1050" y="240" class="m-copy">tree samples</text>
           </g>
 
-          <path d="M 745 300 C 800 320 885 312 920 272" fill="none" stroke="#9db2bf" stroke-width="1.8" stroke-dasharray="5 5"/><text x="630" y="323" class="m-copy">eta bridge：固定 reference proposal + Hastings correction</text>
-          <rect x="30" y="294" width="535" height="38" rx="12" fill="#11263d"/><text x="52" y="318" fill="#fff" font-size="12" font-weight="800">Likelihood = 評分</text><text x="183" y="318" fill="#c6d7df" font-size="12">Gibbs / MH = 更新</text><text x="357" y="318" fill="#c6d7df" font-size="12">Diagnostics = 檢查</text>
+          <path d="M 745 300 C 800 320 885 312 920 272" fill="none" stroke="#9db2bf" stroke-width="1.8" stroke-dasharray="5 5"/><text x="630" y="323" class="m-copy">同一個 plain MH kernel：proposal → score → accept / reject</text>
+          <rect x="30" y="294" width="535" height="38" rx="12" fill="#11263d"/><text x="52" y="318" fill="#fff" font-size="12" font-weight="800">Input = observations</text><text x="183" y="318" fill="#c6d7df" font-size="12">MH = update</text><text x="357" y="318" fill="#c6d7df" font-size="12">Output = posterior</text>
         </svg>
       </div>
       <details class="advanced-details">
@@ -655,20 +656,19 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
       <div class="method-grid">
         <article class="method-card" style="--accent:#2878a9"><span class="method-symbol">L</span><h3>Likelihood</h3><p>計算目前參數能否解釋 REF/ALT、HP、CN 與 purity 觀測。</p><span class="role">Binomial + HP conditional allocation</span></article>
         <article class="method-card" style="--accent:#e6a93a"><span class="method-symbol">P</span><h3>Tree prior</h3><p>在資料之外，以自訂penalty對有限clone tree的深度與分枝給出偏好。</p><span class="role">finite-K depth / branching penalty</span></article>
-        <article class="method-card" style="--accent:#35b5b2"><span class="method-symbol">G</span><h3>Gibbs sampling</h3><p>固定其他參數，直接依條件分布重新抽 SNV → clone assignment。</p><span class="role">local conditional update</span></article>
-        <article class="method-card" style="--accent:#d97993"><span class="method-symbol">MH</span><h3>Metropolis–Hastings (MH)</h3><p>提出 topology、clone proportion 等候選，依 target 與 proposal correction 接受或拒絕。</p><span class="role">proposal kernel / Hastings correction</span></article>
-        <article class="method-card" style="--accent:#df7656"><span class="method-symbol">↔</span><h3>Independent eta bridge</h3><p>從固定 reference proposal 提出較遠的 prevalence 候選，並以完整 Hastings ratio 校正。</p><span class="role">active independent MH proposal</span></article>
+        <article class="method-card" style="--accent:#35b5b2"><span class="method-symbol">I</span><h3>Input</h3><p>一列一個 SNV：Dᵢ、Hᵢ、Cᵢ、CN-only multiplicity prior、rho_ASCAT。</p><span class="role">observed data + fixed parameters</span></article>
+        <article class="method-card" style="--accent:#d97993"><span class="method-symbol">MH</span><h3>Metropolis–Hastings</h3><p>從 current state 提議新 state，依 target posterior 與 proposal ratio 接受或拒絕。</p><span class="role">single baseline sampler</span></article>
+        <article class="method-card" style="--accent:#df7656"><span class="method-symbol">O</span><h3>Output</h3><p>保留 burn-in 後的 current states；被拒絕時會重複上一個 state。</p><span class="role">samples · representative_tree · diagnostics · checkpoint</span></article>
         <article class="method-card" style="--accent:#4d9b76"><span class="method-symbol">QC</span><h3>Diagnostics</h3><p>R-hat、ESS、simulation 與 holdout 不會猜參數，只判斷 samples 能否採信。</p><span class="role">convergence / abstention gate</span></article>
       </div>
-      <div class="scenario-head"><strong>三個方法各自什麼時候用？</strong><span>MH = Metropolis–Hastings；eta bridge 也是 MH proposal。</span></div>
+      <div class="scenario-head"><strong>一個 state 怎麼走一輪？</strong><span>MH = Metropolis–Hastings。</span></div>
       <div class="scenario-grid">
-        <article class="scenario-card" style="--accent:#35b5b2"><span class="scenario-index">01</span><h3>Gibbs：大量局部離散更新</h3><p>適合 SNV → clone assignment 這種大量離散變數，而且 conditional distribution 可以直接抽樣時。現在固定 T、η、π，重新抽 zᵢ。</p><span class="scenario-flow">fixed state → sample zᵢ · local move</span></article>
-        <article class="scenario-card" style="--accent:#d97993"><span class="scenario-index">02</span><h3>MH：沒有簡單 conditional</h3><p>Metropolis–Hastings 適合 tree topology 或 prevalence 沒有閉式條件分布時。現在提出 η / topology 候選，再用 target 與 forward/reverse proposal correction 決定接受或拒絕。</p><span class="scenario-flow">proposal → score → accept / reject</span></article>
-        <article class="scenario-card" style="--accent:#df7656"><span class="scenario-index">03</span><h3>Eta bridge：較遠的連續跳轉</h3><p>local eta random walk 移動太慢時，偶爾從固定 reference proposal 提出較遠候選；forward/reverse proposal density 都必須納入。</p><span class="scenario-flow">independent proposal → Hastings correction</span></article>
+        <article class="scenario-card" style="--accent:#35b5b2"><span class="scenario-index">01</span><h3>Current state</h3><p>目前的 T、zᵢ、η 代表一個完整的候選解。</p><span class="scenario-flow">T + zᵢ + η → current</span></article>
+        <article class="scenario-card" style="--accent:#d97993"><span class="scenario-index">02</span><h3>Proposal → score</h3><p>只改動一個元件，重新計算 likelihood、prior 與 proposal ratio。</p><span class="scenario-flow">current → proposal → score</span></article>
+        <article class="scenario-card" style="--accent:#df7656"><span class="scenario-index">03</span><h3>Accept / reject</h3><p>接受候選就更新 current；拒絕候選就保留原 state，然後進入下一輪。</p><span class="scenario-flow">accept → new state · reject → same state</span></article>
       </div>
       <div class="method-note">
-        <div><strong>目前實作的正確稱呼</strong><span>finite-K depth/branching prior + raw-count likelihood + Gibbs assignment + MH topology/prevalence + independent eta bridge；可視為 compound Metropolis-within-Gibbs 結構。</span></div>
-        <div><strong>不要混為一談</strong><span>Likelihood 不是抽樣器；Gibbs 不是完整模型；目前沒有 split–merge kernel，也不是原始 PhyloWGS TSSB 的逐位元重作。</span></div>
+        <div><strong>目前 baseline</strong><span>finite-K tree prior + raw-count likelihood；以同一個 plain Metropolis–Hastings kernel 更新 T、zᵢ、η，burn-in 後的 retained states 形成 posterior samples。</span></div>
       </div>
       </details>
     </section>
@@ -676,7 +676,7 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
     <section class="footer-grid" aria-label="說明與來源">
       <div class="foot-card">
         <strong>一眼版結論</strong>
-        <span>這是一個「原 HCC1395 tumor tree model + long-read evidence」的整合方向。歷史推理鏈未收斂，新版尚待重跑；畫面上的 tree 只到 candidate / abstention level。</span>
+        <span>這是一個「原 HCC1395 tumor tree model + long-read evidence」的 plain MH baseline；輸出先以 posterior samples、代表樹與 diagnostics 描述。</span>
         <details><summary>查看資料與模型文件</summary><div class="detail-text"><a href="../data.md">data.md</a> · <a href="../model.md">model.md</a> · <a href="../ascat_purity_experiment_workflow.md">workflow</a> · <code>python3 -m tumor_tree_pipeline</code></div></details>
       </div>
       <div class="foot-card">
@@ -696,7 +696,6 @@ chr1:789012:C&gt;T,<span class="csv-value">11,0,11,0,0,0,0,0,0,0,0.99,,,no,exclu
         <strong style="margin-top:14px">Method background</strong>
         <div class="source-list">
           <a href="https://doi.org/10.1093/biomet/57.1.97" target="_blank" rel="noopener">MH acceptance · Hastings</a>
-          <a href="https://www.pymc.io/projects/examples/en/latest/samplers/sampling_compound_step.html" target="_blank" rel="noopener">Compound sampler · PyMC</a>
           <a href="https://mc-stan.org/bayesplot/articles/visual-mcmc-diagnostics.html" target="_blank" rel="noopener">Trace diagnostics · bayesplot</a>
         </div>
         <p style="margin:9px 0 0">本頁圖示皆重新繪製為 inline SVG；網路來源只作構圖參考，不直接載入外部圖片。</p>

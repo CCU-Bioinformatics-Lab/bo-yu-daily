@@ -1,6 +1,6 @@
 # HCC1395 LongPhase-Clone 模型設計
 
-更新日期：2026-08-19
+更新日期：2026-08-20
 
 > [!WARNING]
 > 本文件定義 active model；輸入與 provenance以 [`data.md`](data.md) 為準，正式執行契約以 [`ascat_purity_experiment_workflow.md`](ascat_purity_experiment_workflow.md) 為準。舊 M3／Stage 6 artifact只可作歷史比較。
@@ -26,8 +26,8 @@ links:
 
 1. bulk counts只在 allele-count likelihood 使用一次。
 2. `multiplicity_prior` 只由 ASCAT major/minor CN 建立，不讀 VAF、bulk counts或 purity。
-3. `rho_ASCAT=0.99` 只在 emission 與 provenance 生效。
-4. PS 不進 likelihood或 MCMC state，只作 read audit、grouped holdout與 provenance。
+3. `rho_ASCAT=0.99` 是固定的 purity input，只在 emission 中使用，並在 manifest 中留存 provenance。
+4. PS block 是建立 HP1-1/HP2-1 labels/counts 的上游 phase 資訊；因此會透過 `H_i` 間接影響 likelihood，但 PS 本身不作為 downstream likelihood 欄位、MCMC state 或 topology edge constraint。它也可供 grouped holdout 與 provenance 使用。
 5. `eta[0]` 是未由任何建模 clone 解釋的 residual tumor mass，不是可承載 SNV 的 founding clone；normal contamination只由 purity處理。
 
 輸出是 candidate tumor-tree posterior，不是 single-cell lineage truth，也不是 HCC1395 唯一真實演化樹。
@@ -35,14 +35,14 @@ links:
 ## 2. Active posterior
 
 ```text
-P(T, z, eta, pi | D, H, C, P_M, rho_ASCAT)
+P(T, z, eta | D, H, C, P_M, rho_ASCAT)
   proportional to
-P(T) * P(eta | T) * P(pi) * P(z | pi)
+P(T) * P(eta | T) * P(z | T)
      * product_i sum_m P_M,i(m)
          P_obs(D_i, H_i | phi_z(i), C_i, m, rho_ASCAT)
 ```
 
-PS 不出現在條件集合。`P_M,i(m)` 是 CN-only `multiplicity_prior`，不是用同一組 `D_i` 先算出的 posterior。
+PS 不出現在 downstream likelihood 的條件集合；它在上游 phase/tagging 階段影響 `H_i` 的產生。`P_M,i(m)` 是 CN-only `multiplicity_prior`，不是用同一組 `D_i` 先算出的 posterior。`P(z | T)` 是固定的 assignment prior，不是另外抽樣的 `pi` 參數。
 
 | 符號 | 定義 |
 |---|---|
@@ -50,7 +50,6 @@ PS 不出現在條件集合。`P_M,i(m)` 是 CN-only `multiplicity_prior`，不�
 | `z_i` | mutation `i` 的 clone assignment |
 | `eta_v` | clone `v` 的 exclusive tumor fraction |
 | `phi_v` | clone `v` 與 descendants 的 cumulative prevalence／CCF |
-| `pi_v` | mutation assignment mixture weight |
 | `D_i` | bulk REF/ALT counts |
 | `H_i` | HP1-1/HP2-1 conditional allocation counts |
 | `C_i` | `major_cn`, `minor_cn`, `total_cn` context |
@@ -96,7 +95,7 @@ untagged_REF, untagged_ALT
 
 不能把 bulk counts與其子集合 HP counts當成兩批獨立 reads重複相乘。`HP:Z:1-2/2-2`、germline-only `HP:Z:1/2` 與 RR/RA/AR/AA不是目前 likelihood輸入。
 
-PS不決定 mutation side，不建立 PS-wide orientation variable，也不形成 clone或 edge。
+PS block 先讓同一 phase block 內的 `HP1-1`／`HP2-1` labels 維持一致；跨不同 PS block 的 HP label 不假設具有全球一致方向。PS 不直接決定 mutation side、不建立 downstream 的 PS-wide orientation variable，也不形成 clone 或 edge。
 
 ## 3. CN-only multiplicity prior
 
@@ -157,7 +156,7 @@ model_include model_status
 
 每列是一個 SNV。只有 `model_include=yes`、`model_status=eligible` 的列進 likelihood；CN=0、unmapped、zero-depth或其他排除列留在表與 manifest中供 audit。
 
-PS欄位不屬於 active likelihood schema。若為 grouped holdout攜帶 PS metadata，必須存於獨立 split/audit artifact，不能讓 sampler loader把它當模型參數。
+PS欄位不屬於 active likelihood schema。PS block 可在上游 artifact 中用來產生 HP counts，也可在 grouped holdout／audit artifact 中保存；canonical likelihood table 的 sampler loader 不把 PS 當成模型參數或 state。
 
 Loader必須 fail closed：
 
@@ -185,21 +184,53 @@ Loader必須 fail closed：
 | `z_i` | mutation-to-clone assignment |
 | `eta_v` | exclusive tumor fraction |
 | `phi_v`／CCF | cumulative prevalence |
-| `pi_v` | chain內部更新的 assignment mixture weight；目前不逐draw保存 |
 | topology draws | retained samples保存 `parents`、`eta`、`phi`、`occupancy` |
 | assignment summary | 每個 SNV的posterior aggregate與MAP node；不保存逐draw `z_i` |
 
 模型不會從這批資料自動推導 ASCAT purity、major/minor CN、跨PS的全球 HP identity或唯一真實clone數。
 
-## 6. 推理演算法
+## 6. 推理演算法：plain Metropolis–Hastings
 
-目前使用 compound Metropolis-within-Gibbs：
+目前的 baseline 是一條 chain 使用單一 plain Metropolis–Hastings (MH) kernel。它直接在下列 latent state 上提出整體新 state，再以同一個 posterior target 接受或拒絕：
 
-- **Gibbs sampling**：在其餘 state固定時更新 `z_i` 與 assignment mixture。
-- **Metropolis–Hastings**：更新 `eta` 與離散 topology；非對稱 proposal必須加入完整 Hastings correction。
-- **Independent eta bridge**：從固定 reference proposal提出較遠的 `eta` 候選，並加入 reverse/forward proposal-density ratio。
+```text
+x = (T, eta, z)
+T   = finite-K tree parents
+eta = clone exclusive fractions（含 residual eta[0]）
+z   = 每個 SNV 的 clone assignment
+```
 
-目前 sampler 沒有 restricted split–merge kernel；split–merge 只是可供未來改善跨 mode移動的 MH block-move背景。現有更新共享第2節 posterior target。acceptance rate只反映 proposal行為，不證明收斂。
+每次 iteration 只提出一個候選 move；move type 可以是固定比例的三種 proposal，但都屬於同一個 MH transition：
+
+1. **SNV assignment move**：選一個 SNV，將 `z_i` 提議到另一個 clone。對稱 proposal 直接比較 target ratio。
+2. **`eta` move**：在 simplex 上提出 Dirichlet random-walk；若 proposal 不對稱，接受率包含 reverse/forward proposal-density ratio。
+3. **Topology move**：在有限合法 parent support 中提出一個 parent 變更；接受率包含正確的 reverse/forward support ratio。
+
+這個 baseline 不另外抽樣 assignment mixture 或 multiplicity。`z` 的 assignment prior 是固定部分；`m` 則在每個 site likelihood 內用 `multiplicity_prior` 邊際化。每條 chain 的 acceptance rate只描述 proposal行為，不是 convergence proof。
+
+### 6.1 一條 chain 的輸入
+
+`inference/` 的 C++ sampler 只讀 validated `canonical likelihood_input.tsv.gz` 與一份 `ChainConfig`：
+
+| 輸入 | 內容 |
+|---|---|
+| canonical table | 每列一個 eligible SNV：site key、bulk counts、四個 HP counts、ASCAT major/minor/total CN、`rho_ASCAT`、`multiplicity_candidates`、`multiplicity_prior`、eligibility flags |
+| `ChainConfig` | `seed`、finite `num_nodes`、`iterations`、`burnin`、`thin`、固定 `ascat_purity`／`rho_ASCAT` 與 `checkpoint_every` |
+| workflow control | 可選 `exclude_ids`（holdout）；這不是新的 biological model parameter。C++ backend 對未完成 chain 的 `resume` 目前 fail-closed |
+
+PS 不需再作為 downstream table 欄位傳入 sampler。它已在上游 LongPhase-S tagging 中協助產生一致的 HP labels，對 sampler 的可見效果只透過 canonical table 的 `H_i` counts 傳遞。
+
+### 6.2 一條 chain 的輸出
+
+- `samples.jsonl.gz`：burn-in 後每個 retained draw 的 `log_posterior`、`parents`、`eta`、`phi`、`occupancy`；assignment 以 posterior summary 與 representative tree 彙整。
+- `checkpoint.json.gz`：iteration、目前 `(T, eta, z)`、random-generator state、retained draws、canonical table hash 與 ChainConfig 的 audit/state snapshot；目前不宣稱可由 C++ restore。
+- `diagnostics.json`：input/schema/hash、chain config、proposal counters、acceptance rates、posterior sample摘要與 PS 的 upstream/holdout role。
+- `representative_tree.json`：由 retained draws 選出的代表 tree、best sample及每個 SNV 的 assignment aggregate/MAP node。
+- `chain_complete.json`：完成狀態與已發布 artifact 清單；只有 chain 完整寫出後才存在。
+
+### 6.3 單條 chain 與外層 convergence check
+
+單條 chain sampler 只產生一個 posterior sample stream，不自行宣稱收斂。workflow 另外用相同 canonical table/config 啟動多條不同 seed 的獨立 MH chains，再由外層 diagnostics 計算 R-hat、bulk/tail ESS、label-invariant assignment agreement、edge support 與 holdout predictive metrics。這些 convergence checks 是 workflow 層，不是 MH kernel 的輸入或內部更新。
 
 ## 7. 正式實驗設定與 gate
 
@@ -216,7 +247,7 @@ Loader必須 fail closed：
 正式長鏈起始下限：
 
 ```text
-4 overdispersed chains
+4 independent MH chains
 1500 iterations
 1000 burn-in
 thin = 1
@@ -232,7 +263,7 @@ ESS不足時延長至每鏈至少1,000 retained draws。
 - label-invariant assignment agreement `>=0.90`。
 - max edge-support difference `<=0.10`。
 - strict holdout 90% predictive coverage `0.85–0.95`，並報告 predictive log score。
-- PS-grouped、chromosome-grouped與ASCAT-segment-grouped holdout分別報告。
+- PS-grouped、chromosome-grouped與ASCAT-segment-grouped holdout分別報告；PS-grouped split 以 phase block 為群組，不把 PS 當 likelihood covariate。
 - 任一正式gate失敗即回傳非零exit、建立 `_FAILED`，不建立 `_SUCCESS`。
 
 Pilot R-hat `<=1.10` 只用來決定是否繼續，不是正式收斂標準。

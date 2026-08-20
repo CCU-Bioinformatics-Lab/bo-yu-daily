@@ -417,7 +417,13 @@ def audit_ps_site(
 def summarize_ps_audit(
     rows: Iterable[Mapping[str, Any]], *, max_discordance_fraction: float = 0.01
 ) -> dict[str, Any]:
-    """Summarize PS audit rows; PS remains QC metadata, never model input."""
+    """Summarize PS audit rows.
+
+    PS is upstream phasing metadata: it helps establish consistent HP labels
+    before the count table is built.  The PS value itself remains QC,
+    provenance, and grouped-holdout metadata rather than a direct downstream
+    model variable.
+    """
 
     if not 0.0 <= max_discordance_fraction <= 1.0:
         raise ValueError("max_discordance_fraction must be in [0, 1]")

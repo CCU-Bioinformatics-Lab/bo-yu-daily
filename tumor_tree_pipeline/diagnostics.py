@@ -1,4 +1,8 @@
-"""Fail-closed multi-chain diagnostics for finite-K tumor-tree inference.
+"""Fail-closed multi-chain diagnostics for finite-K MH tumor-tree inference.
+
+The sampler itself is one plain Metropolis-Hastings chain.  This module only
+compares separately seeded chain outputs for convergence and holdout gates; it
+does not add another transition kernel to the posterior sampler.
 
 The implementation intentionally depends only on NumPy and SciPy.  It follows
 the rank-normalized split/folded R-hat and rank-based bulk/tail ESS definitions
