@@ -75,6 +75,14 @@ std::vector<double> cumulative_phi(const std::vector<int>& parents, const std::v
     auto child_list = children(parents);
     std::vector<double> phi(parents.size(), 0.0);
     for (std::size_t node = 0; node < parents.size(); ++node) if (parents[node] == -1) visit_phi(static_cast<int>(node), child_list, eta, phi);
+    // Descendant sums are mathematically bounded by one because eta is a
+    // simplex.  Clamp only floating-point roundoff at the boundary so the
+    // serialized C++ artifact satisfies the Python predictive scorer's
+    // closed [0, 1] contract without hiding a real invalid state.
+    for (double& value : phi) {
+        if (value < -1e-12 || value > 1.0 + 1e-12) throw std::runtime_error("derived phi is outside [0,1]");
+        value = std::clamp(value, 0.0, 1.0);
+    }
     return phi;
 }
 
