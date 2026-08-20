@@ -16,12 +16,13 @@
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; }
     .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:0 5px 18px #10182808; }
     .card p:last-child, .card ul:last-child { margin-bottom:0; } .card p { color:#475467; }
-    .icon { width:34px; height:34px; display:grid; place-items:center; border-radius:10px; background:#eff6ff; color:var(--blue); margin-bottom:10px; }
+    .icon { width:34px; height:34px; display:grid; place-items:center; border-radius:10px; background:#eff6ff; color:var(--blue); margin-bottom:10px; font-weight:700; }
     .badge { display:inline-block; padding:2px 9px; border-radius:99px; font-size:12px; font-weight:700; margin-bottom:9px; } .ok { color:var(--green); background:#ecfdf3; } .warn { color:var(--amber); background:#fffaeb; } .fail { color:var(--red); background:#fef3f2; } .info { color:#1d4ed8; background:#eff6ff; }
     ul { padding-left:19px; margin:8px 0 0; } li { margin:4px 0; }
     a { color:#1d4ed8; text-decoration:none; border-bottom:1px solid #bfdbfe; } a:hover { color:#1e3a8a; }
     code { padding:2px 5px; border-radius:5px; background:#f2f4f7; font-size:.92em; } .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px; overflow-wrap:anywhere; }
     .metric { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #f0f2f5; } .metric:last-child { border-bottom:0; } .metric b { white-space:nowrap; }
+    .callout { padding:14px 16px; border-left:4px solid var(--amber); background:#fffbeb; border-radius:10px; color:#713f12; }
     footer { margin-top:28px; color:var(--muted); font-size:13px; }
     @media (max-width:620px) { header { padding:20px; } main { padding:20px 13px 40px; } }
   </style>
@@ -34,42 +35,43 @@
     </div>
     <div>
       <h1>腫瘤演化樹研究日誌</h1>
-      <p class="sub">2026-08-20 · ASCAT purity × C++ plain MH</p>
-      <p class="summary">完成 C++17 inference backend 與正式流程整合；fresh formal run 已執行，但第一個 convergence gate 未通過，因此保留為 failed artifact。</p>
+      <p class="sub">2026-08-20 · ASCAT purity × PhyloWGS-inspired C++ inference</p>
+      <p class="summary">完成可平行化的 compound Metropolis-within-Gibbs sampler；拓撲探索已開始運作，但正式 K=6 的 PS holdout convergence / predictive gates 仍未通過，流程正確 fail-closed。</p>
     </div>
   </header>
 
   <h2>今日完成</h2>
   <div class="grid">
-    <article class="card"><div class="icon">①</div><span class="badge ok">完成</span><h3>模型輸入重新定義</h3><p>確認目前模型使用 canonical SNV table、ASCAT CN、ASCAT purity <code>rho_ASCAT=0.99</code>、HP counts 與 CN-only multiplicity prior；不再使用 tumor DNA fraction。</p></article>
-    <article class="card"><div class="icon">②</div><span class="badge ok">完成</span><h3>推理後端 C++ 化</h3><p>新增 <code>inference/</code>；目前 active algorithm 是 plain Metropolis-Hastings，支援 site scoring threads、multi-chain CLI、輸出鎖與 fail-closed resume。</p></article>
-    <article class="card"><div class="icon">③</div><span class="badge ok">完成</span><h3>流程與測試接線</h3><p>Python workflow 以 <code>cpp_backend.py</code> 呼叫 C++，正式設定使用 <code>formal_20260820.json</code>，輸出 run ID 綁定 Git SHA。</p></article>
-    <article class="card"><div class="icon">④</div><span class="badge fail">正式 gate 未通過</span><h3>Fresh formal run</h3><p>完成第一個 cell 的 4 chains；PS holdout 的 R-hat、ESS 與 predictive gates 未達標，流程正確停止並寫入 <code>_FAILED</code>。</p></article>
+    <article class="card"><div class="icon">①</div><span class="badge ok">完成</span><h3>模型重新對齊</h3><p>依 PhyloWGS 研究整理 TSSB、descendant-sum prevalence 與 assignment 更新概念；目前實作標示為 <code>phylowgs_inspired_tssb_mcmc</code>，不是完整 PhyloWGS 重製。</p></article>
+    <article class="card"><div class="icon">②</div><span class="badge ok">完成</span><h3>C++ 推理後端</h3><p>active state 為 <code>(parents, eta, z)</code>：SNV assignment 用 Gibbs、clone mass <code>eta</code> 用 TSSB-shaped independence MH、拓撲用 conditional subtree prune-and-regraft Gibbs；site scoring 可平行執行。</p></article>
+    <article class="card"><div class="icon">③</div><span class="badge ok">完成</span><h3>數值邊界與契約修正</h3><p>修正 descendant-sum prevalence 因浮點誤差變成 <code>1.0000000000000002</code> 而中止的問題：只在極小數值邊界內 clamp，並保留真正越界為錯誤。</p></article>
+    <article class="card"><div class="icon">④</div><span class="badge fail">正式 gate 未通過</span><h3>Fresh formal run</h3><p>修正後的 K=6、<code>rho=0.99</code>、PS holdout 完成 4 條 chain artifact；診斷 gate 未通過後立即停止，K=4/8 與 purity sensitivity 尚未執行。</p></article>
   </div>
 
   <h2>主要產出</h2>
   <div class="grid">
-    <article class="card"><span class="badge info">模型與資料</span><h3><a href="../../model.md">model.md</a> · <a href="../../data.md">data.md</a></h3><p>記錄 active model inputs、SNV-level canonical format、ASCAT purity 與資料轉換邊界。</p></article>
-    <article class="card"><span class="badge info">推理程式</span><h3><a href="../../inference/README.md">inference/README.md</a></h3><p>說明 C++17 backend、plain MH state、平行化方式與 chain artifacts。</p></article>
-    <article class="card"><span class="badge info">流程設定</span><h3><a href="../../ascat_purity_experiment_workflow.md">ascat_purity_experiment_workflow.md</a></h3><p>正式實驗入口、ASCAT purity 設定、prerequisite 與 fresh-run 規則。</p></article>
-    <article class="card"><span class="badge info">正式輸出</span><h3><a href="../../output/tumor_tree_pipeline/20260820T110728Z_fb4f01792d18_rho0p99-0p97-0p95_K6-4-8_seed20260820/status.json">status.json</a> · <a href="../../output/tumor_tree_pipeline/20260820T110728Z_fb4f01792d18_rho0p99-0p97-0p95_K6-4-8_seed20260820/runs/formal_main_20260820T110728Z_fb4f01792d18_rho0p99_K6_seed882227064/ps/diagnostics.json">diagnostics.json</a></h3><p>保留 failed run 的狀態與第一個 formal cell 的 gate 指標。</p></article>
+    <article class="card"><span class="badge info">研究與模型</span><h3><a href="../../research/phylowgs_model_review.md">PhyloWGS model review</a> · <a href="../../model.md">model.md</a></h3><p>保存外部模型背景與本 repo 的有限 K、compound sampler 對照。</p></article>
+    <article class="card"><span class="badge info">程式與測試</span><h3><a href="../../inference/README.md">inference/README.md</a> · <a href="../../inference/src/algorithm.cpp">algorithm.cpp</a></h3><p>記錄 C++17 sampler、平行 site scoring、multi-chain artifacts 與 fail-closed 行為。</p></article>
+    <article class="card"><span class="badge info">流程設定</span><h3><a href="../../ascat_purity_experiment_workflow.md">ascat_purity_experiment_workflow.md</a> · <a href="../../tumor_tree_pipeline/configs/formal_20260820.json">formal_20260820.json</a></h3><p>正式實驗仍以 ASCAT purity 為 purity input，主 cell 是 K=6、rho=0.99。</p></article>
+    <article class="card"><span class="badge info">正式輸出</span><h3><a href="../../output/tumor_tree_pipeline/20260820T122332Z_afce5dea2c6e_rho0p99-0p97-0p95_K6-4-8_seed20260820/status.json">status.json</a> · <a href="../../output/tumor_tree_pipeline/20260820T122332Z_afce5dea2c6e_rho0p99-0p97-0p95_K6-4-8_seed20260820/runs/formal_main_20260820T122332Z_afce5dea2c6e_rho0p99_K6_seed882227064/ps/diagnostics.json">diagnostics.json</a></h3><p>保留 failed run 的 status、aggregate diagnostics 與 4 條完成的 chain artifacts。</p></article>
   </div>
 
-  <h2>驗證結果</h2>
+  <h2>驗證與正式結果</h2>
   <div class="grid">
-    <article class="card"><span class="badge ok">通過</span><h3>Build / C++ contract</h3><ul><li>CMake Release build</li><li>CTest smoke：1/1 passed</li><li><code>inference/tests/contract_test.py</code>：schema、likelihood、threads、chains、artifacts、fail-closed 均通過</li></ul></article>
-    <article class="card"><span class="badge ok">通過</span><h3>Python contract tests</h3><p><code>python3 -m unittest discover -s tumor_tree_pipeline/tests -v</code>：31 tests，全部 OK。</p><p>另完成 ASAN/UBSAN smoke、Valgrind leak/error check、output lock race 與 partial-chain cleanup check。</p></article>
-    <article class="card"><span class="badge fail">未通過</span><h3>Formal PS holdout gate</h3><div class="metric"><span>max R-hat</span><b>7.685 / &lt;1.01</b></div><div class="metric"><span>min bulk ESS</span><b>4.08 / ≥400</b></div><div class="metric"><span>min tail ESS</span><b>4.01 / ≥400</b></div><div class="metric"><span>coverage</span><b>0.759–0.770 / 0.85–0.95</b></div><div class="metric"><span>log score</span><b>-57.67 / ≥-5</b></div></article>
+    <article class="card"><span class="badge ok">通過</span><h3>程式與流程驗證</h3><ul><li>CMake build、CTest smoke</li><li>C++ contract test：schema、likelihood、threads、chains、artifacts、fail-closed</li><li>Python workflow contracts：15 tests OK</li><li>Python compile check 與 <code>git diff --check</code></li></ul></article>
+    <article class="card"><span class="badge ok">改善</span><h3>拓撲探索</h3><p>相較原本 topology acceptance 為零的版本，新的 restricted split–merge / prune-regraft 路徑已產生多個 topology 狀態；4 條 chain 都能完成輸出。</p></article>
+    <article class="card"><span class="badge fail">未通過</span><h3>PS holdout gate</h3><div class="metric"><span>max R-hat</span><b>8.170 / &lt;1.01</b></div><div class="metric"><span>min bulk ESS</span><b>4.83 / ≥400</b></div><div class="metric"><span>min tail ESS</span><b>4.25 / ≥400</b></div><div class="metric"><span>assignment agreement</span><b>0.855 / ≥0.90</b></div><div class="metric"><span>edge support diff</span><b>1.00 / ≤0.10</b></div><div class="metric"><span>coverage</span><b>0.669–0.683 / 0.85–0.95</b></div><div class="metric"><span>min log score</span><b>-59.28 / ≥-5</b></div></article>
   </div>
+  <p class="callout"><strong>判讀：</strong>這次不是程式崩潰；chain artifact 已產生，但 eta / prevalence mixing、chain 間拓撲一致性與 predictive calibration 不足，所以正式 gate 正確拒絕結果。</p>
 
-  <h2>目前狀態與下一步</h2>
+  <h2>版本與下一步</h2>
   <div class="grid">
-    <article class="card"><span class="badge ok">完成</span><h3>版本整合</h3><p>研究程式與文件已提交：</p><ul><li><code>fb4f017</code> — Replace tumor-tree inference with parallel C++ backend</li><li><code>3d9f9a1</code> — Ignore generated experiment run directories</li></ul></article>
-    <article class="card"><span class="badge warn">待補</span><h3>Formal inference tuning</h3><p>目前 plain MH 可執行但 mixing 不足；下一步應先檢查 proposal / iteration / burn-in 設定，再重新跑正式 gate。</p></article>
-    <article class="card"><span class="badge info">保留</span><h3>研究紀錄</h3><p>failed run 不刪除、不視為成功；輸出目錄仍可作為後續診斷與比較基準。</p></article>
+    <article class="card"><span class="badge ok">已提交</span><h3>研究程式整合</h3><p><code>9d103df</code>：加入 PhyloWGS-inspired compound C++ sampler；<code>afce5de</code>：修正 clone frequency 浮點邊界。</p></article>
+    <article class="card"><span class="badge warn">待修</span><h3>Inference mixing</h3><p>先改善 eta / mass proposal 與 chain 間混合，再檢查 topology label symmetry、assignment agreement 與 predictive calibration。</p></article>
+    <article class="card"><span class="badge info">待重跑</span><h3>完整 formal matrix</h3><p>上述修正完成並通過 smoke / contract 後，才重跑 K=6 主 cell，再讓 K=4/8 與 rho=0.97/0.95 sensitivity 繼續。</p></article>
   </div>
 
-  <footer>本頁為 repository-local daily record；內容只摘要今日可由 commit、測試輸出與 formal run artifacts 支持的結果。</footer>
+  <footer>本頁是 repository-local daily record；狀態以 commit、測試輸出與 formal run artifacts 為準。正式 run ID：<span class="mono">20260820T122332Z_afce5dea2c6e_rho0p99-0p97-0p95_K6-4-8_seed20260820</span></footer>
 </main>
 </body>
 </html>
