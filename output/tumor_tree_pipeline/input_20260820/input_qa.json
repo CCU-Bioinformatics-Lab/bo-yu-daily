@@ -1,0 +1,61 @@
+{
+  "active_model_columns": [
+    "mutation_id",
+    "chrom",
+    "pos",
+    "ref",
+    "alt",
+    "bulk_ref",
+    "bulk_alt",
+    "bulk_depth",
+    "hp1_1_ref",
+    "hp1_1_alt",
+    "hp2_1_ref",
+    "hp2_1_alt",
+    "major_cn",
+    "minor_cn",
+    "total_cn",
+    "rho_ASCAT",
+    "multiplicity_candidates",
+    "multiplicity_prior",
+    "model_include",
+    "model_status"
+  ],
+  "checks": {
+    "all_rows_valid": true,
+    "eligible_sites_present": true,
+    "expected_site_count": true,
+    "forbidden_columns_absent": true,
+    "required_columns_declared": true,
+    "unique_mutation_ids": true
+  },
+  "eligible_rows": 30006,
+  "excluded_rows": 484,
+  "forbidden_columns": [
+    "tumor_dna_fraction",
+    "multiplicity_posteriors"
+  ],
+  "issues_preview": [],
+  "model_status_counts": {
+    "eligible": 30006,
+    "excluded_cn_zero": 399,
+    "excluded_unmapped_segment": 85
+  },
+  "optional_audit_columns": [
+    "phased_gt",
+    "cnv_status",
+    "segment_id",
+    "loh_state",
+    "cnv_confidence",
+    "somatic_hp_evidence_status"
+  ],
+  "ps_model_role": "provenance_qc_and_grouped_holdout_only",
+  "rows": 30490,
+  "schema_version": "hcc1395_tumor_tree_input/v2",
+  "source_status_counts": {
+    "eligible": 30006,
+    "excluded_cn_zero": 399,
+    "excluded_unmapped_segment": 85
+  },
+  "status": "pass"
+}

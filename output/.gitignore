@@ -1,0 +1,14 @@
+# Generated matrices and posterior chains stay local.  Keep directories
+# traversable so a small reproducibility receipt can be allow-listed.
+*
+!*/
+!.gitignore
+!**/manifest.json
+!**/command.txt
+!**/input_qa.json
+!**/gate_summary.json
+!**/diagnostics_summary.json
+!**/representative_tree.json
+!**/README.md
+!**/_SUCCESS
+!**/_FAILED

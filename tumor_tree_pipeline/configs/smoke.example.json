@@ -1,0 +1,12 @@
+{
+  "output_root": "../../output/tumor_tree_pipeline",
+  "table_path": "/absolute/path/to/tp20_model_input.tsv.gz",
+  "validation_manifest": "/absolute/path/to/tp20_model_input.manifest.json",
+  "mode": "smoke",
+  "seed": 20260819,
+  "main_purity": 0.99,
+  "smoke_chains": 2,
+  "smoke_iterations": 20,
+  "smoke_burnin": 5,
+  "allow_dirty_worktree": true
+}

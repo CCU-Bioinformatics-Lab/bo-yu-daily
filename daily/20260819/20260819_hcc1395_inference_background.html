@@ -72,8 +72,8 @@
     <section>
       <div class="eyebrow">Inference background / why it is not plain MCMC</div>
       <h1>不是一個演算法，<br><span style="color:var(--blue)">而是一組更新方法</span></h1>
-      <p class="lede"><strong>Likelihood + prior</strong> 先定義要找的 posterior；<strong>Gibbs、Metropolis–Hastings (MH)、restricted split–merge move</strong> 再輪流探索它；最後用 diagnostics 判斷 samples 是否可信。</p>
-      <div class="hero-note"><span class="pill">target = posterior</span><span class="pill">local + optional bridge moves</span><span class="pill">diagnostics can abstain</span></div>
+      <p class="lede"><strong>Likelihood + prior</strong> 先定義要找的 posterior；<strong>Gibbs 與 Metropolis–Hastings (MH) moves</strong> 再輪流探索它；最後用 diagnostics 判斷 samples 是否可信。</p>
+      <div class="hero-note"><span class="pill">target = posterior</span><span class="pill">CN-only multiplicity prior</span><span class="pill">diagnostics can abstain</span></div>
     </section>
 
     <section class="visual" aria-label="推理方法組合流程圖">
@@ -95,7 +95,7 @@
         <text x="332" y="136" fill="#fff" class="v-title on-dark">target posterior</text>
         <text x="332" y="168" fill="#8fe0d5" font-size="16" font-weight="800">π(θ | D) ∝ L × P(θ)</text>
         <text x="332" y="197" fill="#c6d7df" class="v-copy on-dark">這是所有更新方法共同瞄準的目標。</text>
-        <text x="332" y="217" fill="#c6d7df" class="v-copy on-dark">Mpost / HP 在 likelihood 內邊際化。</text>
+        <text x="332" y="217" fill="#c6d7df" class="v-copy on-dark">CN-only M prior / HP 在 likelihood 內邊際化。</text>
         <rect x="332" y="225" width="150" height="8" rx="4" fill="#35b5b2"/><rect x="487" y="225" width="47" height="8" rx="4" fill="#e6a93a"/>
 
         <path d="M560 137C590 100 602 86 628 86" fill="none" stroke="#35b5b2" stroke-width="2"/><polygon points="628,86 618,80 618,92" fill="#35b5b2"/>
@@ -107,7 +107,7 @@
         <rect x="638" y="141" width="226" height="68" rx="14" fill="#fff0f4" stroke="#e2c1cb"/>
         <text x="660" y="169" class="v-title">Metropolis–Hastings (MH)</text><text x="660" y="190" class="v-copy">proposal → accept / reject</text>
         <rect x="638" y="230" width="226" height="68" rx="14" fill="#fff0e8" stroke="#e4c1af"/>
-        <text x="660" y="258" class="v-title">restricted split–merge move</text><text x="660" y="279" class="v-copy">MH block：assignment + prevalence</text>
+        <text x="660" y="258" class="v-title">independent eta bridge</text><text x="660" y="279" class="v-copy">MH jump：較遠的 prevalence 候選</text>
 
         <path d="M864 86H900M864 175H900M864 264H900M900 86V264" fill="none" stroke="#9db2bf" stroke-width="2" stroke-dasharray="5 5"/>
         <path d="M900 175H925" fill="none" stroke="#4d9b76" stroke-width="2.2"/><polygon points="925,175 915,169 915,181" fill="#4d9b76"/>
@@ -115,10 +115,10 @@
         <text x="957" y="115" class="v-title">posterior samples</text>
         <path d="M957 166C974 144 987 180 1004 157S1032 145 1048 170S1080 182 1125 145" fill="none" stroke="#2878a9" stroke-width="2.2"/>
         <circle cx="957" cy="166" r="4" fill="#4d9b76"/><circle cx="987" cy="180" r="4" fill="#d2dce2"/><circle cx="1004" cy="157" r="4" fill="#4d9b76"/><circle cx="1032" cy="145" r="4" fill="#4d9b76"/><circle cx="1048" cy="170" r="4" fill="#d2dce2"/><circle cx="1080" cy="182" r="4" fill="#4d9b76"/><circle cx="1125" cy="145" r="4" fill="#4d9b76"/>
-        <text x="957" y="216" class="v-mono">R-hat / ESS</text><text x="957" y="237" class="v-copy">pass → summarize tree</text><text x="957" y="254" class="v-copy">fail → abstain</text>
+        <text x="957" y="216" class="v-mono">R-hat / ESS</text><text x="957" y="237" class="v-copy">formal pass → summarize</text><text x="957" y="254" class="v-copy">fail → abstain</text>
 
         <path d="M760 319C810 342 875 338 935 278" fill="none" stroke="#9db2bf" stroke-width="1.8" stroke-dasharray="5 5"/>
-        <text x="638" y="345" class="v-copy">soft pairwise guide：只幫助 proposal，不是 hard lineage constraint</text>
+        <text x="638" y="345" class="v-copy">eta bridge：固定 reference proposal + Hastings correction</text>
         <rect x="28" y="312" width="530" height="42" rx="12" fill="#11263d"/>
         <text x="51" y="338" fill="#fff" font-size="12" font-weight="800">Likelihood = 評分</text><text x="185" y="338" fill="#c6d7df" font-size="12">Gibbs / MH = 更新</text><text x="367" y="338" fill="#c6d7df" font-size="12">Diagnostics = 檢查</text>
       </svg>
@@ -150,12 +150,12 @@
     <section class="scenario-grid" aria-label="三個方法的應用場景">
       <article class="scenario-card" style="--accent:#35b5b2"><span class="scenario-index">01</span><h2>Gibbs：大量局部離散更新</h2><p>適合 SNV → clone assignment 這種大量離散變數，而且 conditional distribution 可以直接抽樣時。現在固定 T、η、π，重新抽 zᵢ。</p><span class="scenario-flow">fixed state → sample zᵢ · local move</span></article>
       <article class="scenario-card" style="--accent:#d97993"><span class="scenario-index">02</span><h2>MH：沒有簡單 conditional</h2><p>Metropolis–Hastings 適合 tree topology 或 prevalence 沒有閉式條件分布時。現在提出 η / topology 候選，再用 target 與 forward/reverse proposal correction 決定接受或拒絕。</p><span class="scenario-flow">proposal → score → accept / reject</span></article>
-      <article class="scenario-card" style="--accent:#df7656"><span class="scenario-index">03</span><h2>Split–merge move：聯合跳出局部模式</h2><p>它不是獨立完整演算法，而是 MH 裡的 block move；適合 assignment、branch、prevalence 需要一起變動時。節點全占滿時可能只交換 assignment / prevalence。</p><span class="scenario-flow">joint block → reversible MH move</span></article>
+      <article class="scenario-card" style="--accent:#df7656"><span class="scenario-index">03</span><h2>Eta bridge：較遠的連續跳轉</h2><p>local eta random walk 移動太慢時，從固定 reference proposal 提出較遠候選；forward/reverse proposal density 都必須納入。</p><span class="scenario-flow">independent proposal → Hastings correction</span></article>
     </section>
 
     <section class="takeaway">
-      <div><strong>目前實作的正確稱呼</strong><span>finite-K TSSB-inspired prior + raw-count likelihood + Gibbs assignment + MH topology/prevalence moves + restricted split–merge；可視為 compound Metropolis-within-Gibbs。</span></div>
-      <div><strong>一句話分工</strong><span>Likelihood 決定分數；Gibbs 做局部更新；MH 做候選跳轉；split–merge 做區塊移動；diagnostics 決定能否採信。</span></div>
+      <div><strong>目前實作的正確稱呼</strong><span>finite-K depth/branching prior + raw-count likelihood + Gibbs assignment + MH topology/prevalence + independent eta bridge；可視為 compound Metropolis-within-Gibbs。</span></div>
+      <div><strong>一句話分工</strong><span>Likelihood 決定分數；Gibbs 做局部更新；MH 做候選跳轉；eta bridge 幫助較遠跳轉；diagnostics 決定能否採信。Split–merge 目前未實作。</span></div>
     </section>
 
     <footer class="sources">

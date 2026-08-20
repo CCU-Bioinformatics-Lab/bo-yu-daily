@@ -1,0 +1,32 @@
+{
+  "output_root": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline",
+  "table_path": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/input_20260820/likelihood_input.tsv.gz",
+  "validation_manifest": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/input_20260820/manifest.json",
+  "holdout_metadata": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/metadata_20260820/hcc1395_holdout_metadata.tsv.gz",
+  "ps_audit_manifest": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/prerequisites_20260820/formal_ps_audit_manifest.json",
+  "simulation_manifest": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/simulation_20260820/synthetic_recovery_gate.json",
+  "mode": "formal",
+  "seed": 20260820,
+  "main_purity": 0.99,
+  "pilot_nodes": [4, 6, 8],
+  "sensitivity_purities": [0.97, 0.95],
+  "formal_chains": 4,
+  "formal_iterations": 1500,
+  "formal_burnin": 1000,
+  "formal_thin": 1,
+  "checkpoint_every": 100,
+  "ess_extension_batch": 500,
+  "formal_max_iterations": 5000,
+  "holdout_fraction": 0.2,
+  "min_predictive_log_score": -5.0,
+  "git_root": "/bip8_disk/boyu114/main_work",
+  "gate_thresholds": {
+    "max_rank_normalized_rhat": 1.01,
+    "min_bulk_ess_total": 400.0,
+    "min_tail_ess_total": 400.0,
+    "min_assignment_agreement": 0.9,
+    "max_edge_support_difference": 0.1,
+    "min_predictive_coverage": 0.85,
+    "max_predictive_coverage": 0.95
+  }
+}

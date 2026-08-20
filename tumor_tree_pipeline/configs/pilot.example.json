@@ -1,0 +1,13 @@
+{
+  "output_root": "../../output/tumor_tree_pipeline",
+  "table_path": "/absolute/path/to/hcc1395_model_input.tsv.gz",
+  "validation_manifest": "/absolute/path/to/hcc1395_model_input.manifest.json",
+  "mode": "pilot",
+  "seed": 20260819,
+  "main_purity": 0.99,
+  "pilot_nodes": [4, 6, 8],
+  "pilot_chains": 4,
+  "pilot_iterations": 300,
+  "pilot_burnin": 100,
+  "allow_dirty_worktree": true
+}

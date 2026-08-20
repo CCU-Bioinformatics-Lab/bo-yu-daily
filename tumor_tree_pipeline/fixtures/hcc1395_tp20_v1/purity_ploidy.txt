@@ -1,0 +1,2 @@
+sample	purity	ploidy	goodnessOfFit
+HCC1395_5khz	0.99	2.89591670005995	92.5999403270063

@@ -1,0 +1,27 @@
+{
+  "fixture": "hcc1395_tp20_v1",
+  "hp_domain": [
+    ".",
+    "1",
+    "2",
+    "3",
+    "4",
+    "1-1",
+    "2-1",
+    "1-2",
+    "2-2",
+    "other"
+  ],
+  "hp_rows": 200,
+  "output_sites": 20,
+  "same_read_joint_evidence": false,
+  "sample": "HCC1395",
+  "selection_seed": "hcc1395_tp20_v1",
+  "single_site_only": true,
+  "source_count_manifest": {
+    "mtime_ns": 1786702935058369473,
+    "path": "/bip8_disk/boyu114/multi_evol_tree/output/longphase_clone/canonical_counts_20260814/site_counts_manifest.json",
+    "sha256": "4d08440555796010b36e9897c733cc030e955e5c3cedde00b8f931704ad9e2c3",
+    "size_bytes": 1303
+  }
+}

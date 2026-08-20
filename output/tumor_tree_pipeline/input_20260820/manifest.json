@@ -1,0 +1,147 @@
+{
+  "active_model_columns": [
+    "mutation_id",
+    "chrom",
+    "pos",
+    "ref",
+    "alt",
+    "bulk_ref",
+    "bulk_alt",
+    "bulk_depth",
+    "hp1_1_ref",
+    "hp1_1_alt",
+    "hp2_1_ref",
+    "hp2_1_alt",
+    "major_cn",
+    "minor_cn",
+    "total_cn",
+    "rho_ASCAT",
+    "multiplicity_candidates",
+    "multiplicity_prior",
+    "model_include",
+    "model_status"
+  ],
+  "command": {
+    "argv": [
+      "python3",
+      "-m",
+      "tumor_tree_pipeline"
+    ],
+    "shell_rendered": "python3 -m tumor_tree_pipeline"
+  },
+  "created_at_utc": "2026-08-20T06:46:17.419867+00:00",
+  "forbidden_columns": [
+    "tumor_dna_fraction",
+    "multiplicity_posteriors"
+  ],
+  "multiplicity": {
+    "does_not_use": [
+      "bulk_ref",
+      "bulk_alt",
+      "bulk_depth",
+      "VAF",
+      "rho_ASCAT"
+    ],
+    "field": "multiplicity_prior",
+    "rule": "equal mass across extant major/minor homolog sides, then uniform over m=1..side_CN",
+    "uses": [
+      "major_cn",
+      "minor_cn"
+    ]
+  },
+  "optional_audit_columns": [
+    "phased_gt",
+    "cnv_status",
+    "segment_id",
+    "loh_state",
+    "cnv_confidence",
+    "somatic_hp_evidence_status"
+  ],
+  "outputs": {
+    "input_qa": {
+      "mtime_ns": 1787208377415402667,
+      "path": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/input_20260820/input_qa.json",
+      "sha256": "e8e9edcf7c504066f139cac0872624f942bcc0eeb9f7d5a23d79f7c80b43c5a0",
+      "size_bytes": 1316
+    },
+    "likelihood_input": {
+      "mtime_ns": 1787208377415402667,
+      "path": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/input_20260820/likelihood_input.tsv.gz",
+      "sha256": "b33e21afc9b38c88da700ef6589096347f61bd78f7d682594ab966366b07bffe",
+      "size_bytes": 581461
+    }
+  },
+  "ps": {
+    "active_model_input": false,
+    "role": "provenance_qc_and_grouped_holdout_only"
+  },
+  "purity": {
+    "expected_sample": "HCC1395",
+    "observed_sample": "HCC1395_5khz",
+    "parameter": "rho_ASCAT",
+    "role": "fixed global likelihood input; never used to build multiplicity_prior",
+    "source_path": "/bip8_disk/boyu114/multi_evol_tree/output/cnv_callers/ascat_hcc1395_5khz_t4/purity_ploidy.txt",
+    "source_sha256": "2637b1585ee6001a7edd7f41f462ee100b21f4f5bae9391388adc3f0c2a6d151",
+    "value": 0.99
+  },
+  "schema_version": "hcc1395_tumor_tree_input/v2",
+  "site_universe": {
+    "eligible_sites": 30006,
+    "expected_sites": 30490,
+    "model_status_counts": {
+      "eligible": 30006,
+      "excluded_cn_zero": 399,
+      "excluded_unmapped_segment": 85
+    },
+    "observed_sites": 30490
+  },
+  "software": {
+    "implementation_sha256": {
+      "contracts.py": "6a7250466f42ec3de0e934ca73e75481d97205c6aac17c81a73204f144b6bf62",
+      "input_table.py": "c22f92ef706da6b79a7e727569ddfddb31cd4c079200838aa0fc3a8c1b890a4f",
+      "provenance.py": "0ee08a8a72b7e65cea84a3508bd36a9c380aaf8378029aa5fc219b555eb86c82"
+    },
+    "package": "tumor_tree_pipeline",
+    "python": "3.10.12",
+    "version": "0.1.0"
+  },
+  "sources": {
+    "ascat_purity": {
+      "mtime_ns": 1786621077047128692,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/cnv_callers/ascat_hcc1395_5khz_t4/purity_ploidy.txt",
+      "sha256": "2637b1585ee6001a7edd7f41f462ee100b21f4f5bae9391388adc3f0c2a6d151",
+      "size_bytes": 87
+    },
+    "bulk_counts": {
+      "mtime_ns": 1786702931713369218,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/longphase_clone/canonical_counts_20260814/snv_bulk_counts.tsv.gz",
+      "sha256": "999e485296da045f940283458d01c5e24fdb7b99b1e9d0155bfdb6754f0ba5f4",
+      "size_bytes": 851057
+    },
+    "count_manifest": {
+      "mtime_ns": 1786702935058369473,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/longphase_clone/canonical_counts_20260814/site_counts_manifest.json",
+      "sha256": "4d08440555796010b36e9897c733cc030e955e5c3cedde00b8f931704ad9e2c3",
+      "size_bytes": 1303
+    },
+    "hp_counts": {
+      "mtime_ns": 1786702934606369439,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/longphase_clone/canonical_counts_20260814/snv_hp_counts.tsv.gz",
+      "sha256": "e433f72f947a3490a8f4ea382fdd7a94b4e0a8203415590d3e4a15a276fa1854",
+      "size_bytes": 1335225
+    },
+    "hp_qc": {
+      "mtime_ns": 1786702935057369473,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/longphase_clone/canonical_counts_20260814/snv_hp_qc.tsv.gz",
+      "sha256": "7b6da60d212ac20d75d6eaee71fc368ac6f90790b7bbaa112c81fd738ae37d77",
+      "size_bytes": 641882
+    },
+    "site_cnv_qc": {
+      "mtime_ns": 1787207701400136244,
+      "path": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/prerequisites_20260820/site_cnv_qc.tsv.gz",
+      "sha256": "3fb619fe307153f4b3de690fa724a609f1155f5d2f82216ac5c34528af22b684",
+      "size_bytes": 229970
+    }
+  },
+  "status": "pass"
+}

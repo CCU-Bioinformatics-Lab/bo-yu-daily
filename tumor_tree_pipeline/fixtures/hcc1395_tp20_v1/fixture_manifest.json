@@ -1,0 +1,330 @@
+{
+  "bam_read_required": false,
+  "expected": {
+    "eligible": 16,
+    "excluded_cn_zero": 2,
+    "excluded_unmapped_segment": 2,
+    "hp_rows": 200,
+    "rows": 20
+  },
+  "fixture": "hcc1395_tp20_v1",
+  "fixture_artifacts": {
+    "ascat_purity": {
+      "path": "purity_ploidy.txt",
+      "sha256": "2637b1585ee6001a7edd7f41f462ee100b21f4f5bae9391388adc3f0c2a6d151",
+      "size_bytes": 87
+    },
+    "bulk_counts": {
+      "path": "counts/snv_bulk_counts.tsv.gz",
+      "sha256": "1f8aa7a867b86ca48728699331a7684bc343df1f0c1c0cbdf04c049efb32683c",
+      "size_bytes": 1021
+    },
+    "count_manifest": {
+      "path": "counts/site_counts_manifest.json",
+      "sha256": "0f2df06042231d08bf24ed79560c1e2ef1c814e708beb54c8b536b08460d0e3c",
+      "size_bytes": 626
+    },
+    "hp_counts": {
+      "path": "counts/snv_hp_counts.tsv.gz",
+      "sha256": "1279f9a0c0f9218a6487c803b96a692bb1bc671c6d65c83597b5c086f6137b44",
+      "size_bytes": 1245
+    },
+    "hp_qc": {
+      "path": "counts/snv_hp_qc.tsv.gz",
+      "sha256": "4e42822c7888405e6b7e2ff2bbcb68c12b373711974cea53b49a9e3e12813ada",
+      "size_bytes": 874
+    },
+    "site_cnv_qc": {
+      "path": "site_cnv_qc.tsv.gz",
+      "sha256": "f02857528f7d3e23cbf3d70beee5ea3b7bd3a59b69b391d2ad58aa780efa21c9",
+      "size_bytes": 672
+    }
+  },
+  "mutation_ids": [
+    "chr1:149930147:G>C",
+    "chr10:118779296:C>T",
+    "chr15:68728095:A>T",
+    "chr2:58312119:A>C",
+    "chr2:103308157:C>G",
+    "chr2:142303313:T>G",
+    "chr2:176760840:T>C",
+    "chr2:227893863:C>T",
+    "chr20:1217817:C>T",
+    "chr20:14297202:A>G",
+    "chr21:9784044:A>T",
+    "chr4:18199598:C>T",
+    "chr4:45211698:G>A",
+    "chr4:109954087:T>C",
+    "chr5:25019557:G>T",
+    "chr5:91439244:G>A",
+    "chr5:178862561:G>C",
+    "chr6:70585725:G>A",
+    "chr6:115923684:C>T",
+    "chr7:147832704:A>C"
+  ],
+  "purity": {
+    "sample": "HCC1395_5khz",
+    "value": 0.99
+  },
+  "required_eligible_features": [
+    "major3_minor1",
+    "cn1",
+    "cn_gain",
+    "diploid",
+    "loh_like",
+    "hp1_alt",
+    "hp2_alt",
+    "primary_hp_missing"
+  ],
+  "selection": [
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr1:149930147:G>C",
+      "selection_sha256": "0008142cf969e4e61b7db51126b1ddebd2a190cb470e787ab7a0dd91953af3b6",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp2_alt",
+        "major2_minor1"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr10:118779296:C>T",
+      "selection_sha256": "00023e51301c7f88c70194aeaaac0553a451739d4cf879ffe46bf46110f9bdac",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn1",
+        "hp1_alt",
+        "loh_like",
+        "major1_minor0"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr15:68728095:A>T",
+      "selection_sha256": "0003e1b2b887be1c7cf5a70ca6b62132b8e6a470082875d424789b243f93aac3",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp1_alt",
+        "major2_minor2"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr2:58312119:A>C",
+      "selection_sha256": "000cd87f257a5df76de52817cf0b3475d32dad5baee558c24642d875bcb622e4",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp1_alt",
+        "major2_minor1"
+      ]
+    },
+    {
+      "expected_model_status": "excluded_cn_zero",
+      "mutation_id": "chr2:103308157:C>G",
+      "selection_sha256": "0037856cef3d703d20131cf0742b97c1b728a4cd3dbc85a5d99576db24fd377c",
+      "source_cnv_status": "cn_zero",
+      "strata": []
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr2:142303313:T>G",
+      "selection_sha256": "0173ba59a5372db517244f02ccb421c92e4dc9598a9425e38ca85112301ae812",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn1",
+        "loh_like",
+        "major1_minor0",
+        "primary_hp_missing"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr2:176760840:T>C",
+      "selection_sha256": "0002d30def8be7220ef766b68731942ee8a038127292673526be4f752ade73ed",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp2_alt",
+        "major2_minor2"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr2:227893863:C>T",
+      "selection_sha256": "0002c75918d1f434e9c8a9356c5b8a6eece57c492878e6ac644c967a55897eb6",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp2_alt",
+        "major3_minor2"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr20:1217817:C>T",
+      "selection_sha256": "00e9ee1fa48d21bcd5b24cd6085cfe9b7b1853957e0c3d1b8c4f745ca1cd0c6b",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp1_alt",
+        "major3_minor1"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr20:14297202:A>G",
+      "selection_sha256": "0009702787ce66b6290ba421af60ed187c37f5a0c702af8c0758415fa7d72671",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp1_alt",
+        "major2_minor2"
+      ]
+    },
+    {
+      "expected_model_status": "excluded_unmapped_segment",
+      "mutation_id": "chr21:9784044:A>T",
+      "selection_sha256": "052a9baf7292dc20f77ca34ad9d5254ca5b6672508c3b212e8972d4db543e0b9",
+      "source_cnv_status": "unmapped_segment",
+      "strata": []
+    },
+    {
+      "expected_model_status": "excluded_cn_zero",
+      "mutation_id": "chr4:18199598:C>T",
+      "selection_sha256": "01f8066962f287fe3700f7bddd4a26a4112e4e37bbc6471baed390d4acb6fa8c",
+      "source_cnv_status": "cn_zero",
+      "strata": []
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr4:45211698:G>A",
+      "selection_sha256": "0002b8361c2d1a4dc0f4ad8a577252679cbc7fa21a2bdce1629b1e97cac7ddb4",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp2_alt",
+        "major2_minor1"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr4:109954087:T>C",
+      "selection_sha256": "00103de047cc254674771b8608018d774cb93f0567cb566eecec1108b9ebb8ce",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp1_alt",
+        "major2_minor1"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr5:25019557:G>T",
+      "selection_sha256": "000b9ad71ac278fc40ce0fe02bbdf82f153b907480a115b755f6e44113f95176",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp1_alt",
+        "major3_minor2"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr5:91439244:G>A",
+      "selection_sha256": "00050517c0fa73e2ce7b1d6f47a18056ad607cc74c1e978d6fd7f6513b4284b5",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn1",
+        "hp1_alt",
+        "loh_like",
+        "major1_minor0"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr5:178862561:G>C",
+      "selection_sha256": "0053cbe1461d3aa0af50c1a0ef93b634d064973c4e985d4a2feea6b781a6da0a",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "diploid",
+        "hp2_alt",
+        "loh_like",
+        "major2_minor0"
+      ]
+    },
+    {
+      "expected_model_status": "excluded_unmapped_segment",
+      "mutation_id": "chr6:70585725:G>A",
+      "selection_sha256": "04f58ad3d2f767452533e8df8d52f7d64e24d9bed35af904b943045fb96799ba",
+      "source_cnv_status": "unmapped_segment",
+      "strata": []
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr6:115923684:C>T",
+      "selection_sha256": "000910bd80210d64581afba19dc72904c8b811036601c50297f528efa8cd0e2b",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp2_alt",
+        "loh_like",
+        "major4_minor0"
+      ]
+    },
+    {
+      "expected_model_status": "eligible",
+      "mutation_id": "chr7:147832704:A>C",
+      "selection_sha256": "000ced8cd89c897fef9fc97ca17c03c28f4c5f973a3cb34e4ef2b73c431a5171",
+      "source_cnv_status": "mapped_nonzero_cn",
+      "strata": [
+        "cn_gain",
+        "hp1_alt",
+        "major7_minor2"
+      ]
+    }
+  ],
+  "selection_rule": "minimum SHA256(seed|mutation_id), with distinct required strata selected first",
+  "selection_seed": "hcc1395_tp20_v1",
+  "source_artifacts": {
+    "ascat_purity": {
+      "mtime_ns": 1786621077047128692,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/cnv_callers/ascat_hcc1395_5khz_t4/purity_ploidy.txt",
+      "sha256": "2637b1585ee6001a7edd7f41f462ee100b21f4f5bae9391388adc3f0c2a6d151",
+      "size_bytes": 87
+    },
+    "ascat_segments": {
+      "mtime_ns": 1786621062423127577,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/cnv_callers/ascat_hcc1395_5khz_t4/HCC1395_5khz.segments.txt",
+      "sha256": "f3a9c0de4c20f1710fb899c7ef4af64b8884e6e2b475331bfb062f443c8a32b1",
+      "size_bytes": 24575
+    },
+    "bulk_counts": {
+      "mtime_ns": 1786702931713369218,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/longphase_clone/canonical_counts_20260814/snv_bulk_counts.tsv.gz",
+      "sha256": "999e485296da045f940283458d01c5e24fdb7b99b1e9d0155bfdb6754f0ba5f4",
+      "size_bytes": 851057
+    },
+    "count_manifest": {
+      "mtime_ns": 1786702935058369473,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/longphase_clone/canonical_counts_20260814/site_counts_manifest.json",
+      "sha256": "4d08440555796010b36e9897c733cc030e955e5c3cedde00b8f931704ad9e2c3",
+      "size_bytes": 1303
+    },
+    "hp_counts": {
+      "mtime_ns": 1786702934606369439,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/longphase_clone/canonical_counts_20260814/snv_hp_counts.tsv.gz",
+      "sha256": "e433f72f947a3490a8f4ea382fdd7a94b4e0a8203415590d3e4a15a276fa1854",
+      "size_bytes": 1335225
+    },
+    "hp_qc": {
+      "mtime_ns": 1786702935057369473,
+      "path": "/bip8_disk/boyu114/multi_evol_tree/output/longphase_clone/canonical_counts_20260814/snv_hp_qc.tsv.gz",
+      "sha256": "7b6da60d212ac20d75d6eaee71fc368ac6f90790b7bbaa112c81fd738ae37d77",
+      "size_bytes": 641882
+    }
+  }
+}
