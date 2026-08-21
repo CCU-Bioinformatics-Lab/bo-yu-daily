@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2026-08-21 Daily Work Log</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#172033;--muted:#65718a;--line:#dfe5ef;--blue:#2f6fed;--green:#16845b;--amber:#b56a00;--violet:#7257c7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Noto Sans TC",sans-serif}
+main{max-width:1080px;margin:auto;padding:34px 20px 60px}header{background:linear-gradient(135deg,#172b4d,#3264bb);color:#fff;border-radius:20px;padding:28px 30px;margin-bottom:20px}
+h1,h2,h3{line-height:1.25;margin:0 0 12px}h1{font-size:clamp(25px,4vw,40px)}h2{font-size:22px;margin-top:4px}h3{font-size:17px}.subtitle{opacity:.86;margin:6px 0 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:14px 0 24px}.card,section{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:0 5px 18px #243b6410}.card h3{display:flex;justify-content:space-between;gap:10px}.badge{font-size:12px;border-radius:999px;padding:2px 9px;white-space:nowrap;font-weight:700}.done{background:#dff5e9;color:var(--green)}.todo{background:#fff0d3;color:var(--amber)}.ref{background:#eee9ff;color:var(--violet)}.muted{color:var(--muted)}ul{margin:8px 0 0;padding-left:20px}li+li{margin-top:5px}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 4px}.node{border:1px solid #bfd0ef;border-radius:10px;padding:8px 12px;background:#f3f7ff;font-weight:650}.arrow{color:var(--blue);font-size:20px}table{width:100%;border-collapse:collapse;margin-top:8px}th,td{text-align:left;border-bottom:1px solid var(--line);padding:8px 6px;vertical-align:top}th{color:var(--muted);font-size:13px}code{background:#eef2f8;border-radius:5px;padding:1px 5px;font-size:.92em}.callout{border-left:4px solid var(--amber);padding:10px 14px;background:#fff8ea;border-radius:8px;margin-top:12px}.small{font-size:14px;color:var(--muted)}footer{margin-top:20px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>2026-08-21</h1>
+  <p class="subtitle">研究主題：實驗流程模組化 × 腫瘤演化樹輸出驗證</p>
+  <p>今日把 model、inference workflow、output 與 support evidence 的責任邊界拆開，建立可追溯的驗證主線。</p>
+</header>
+
+<section>
+  <h2>今日完成</h2>
+  <div class="grid">
+    <article class="card">
+      <h3>模組化研究架構 <span class="badge done">完成</span></h3>
+      <p>整理四個可替換模塊與文件引用：</p>
+      <div class="flow"><span class="node">data input</span><span class="arrow">→</span><span class="node">model</span><span class="arrow">→</span><span class="node">output</span></div>
+      <div class="flow"><span class="node">model</span><span class="arrow">↔</span><span class="node">inference_algo</span></div>
+      <p class="small"><a href="../../arch.md">arch.md</a>、<a href="../../arch.png">arch.png</a>、<a href="../../model.md">model.md</a></p>
+    </article>
+    <article class="card">
+      <h3>實驗流程拆分 <span class="badge done">完成</span></h3>
+      <p>將 workflow 從 sampler 細節抽離，改由 <code>inference_algo.md</code> 定義推理演算法；保留 canonical input、holdout、purity 與 workflow gate。</p>
+      <p class="small"><a href="../../ascat_purity_experiment_workflow.md">ascat_purity_experiment_workflow.md</a> · <a href="../../tumor_tree_pipeline/README.md">pipeline README</a></p>
+    </article>
+    <article class="card">
+      <h3>Output support 流程 <span class="badge done">完成</span></h3>
+      <p>建立 output 後獨立驗證規格，覆蓋 topology、CCF/φ、SNV assignment、holdout、stability 與 claim grade。</p>
+      <p class="small"><a href="../../support.md">support.md</a> · <a href="../../README.md">README.md</a></p>
+    </article>
+    <article class="card">
+      <h3>HCC1395 證據整理 <span class="badge done">完成</span></h3>
+      <p>保存 golden-tree 論文、研究章節與 PhyloWGS/CNV/LOH 證據，作為 bulk-only candidate topology 的外部背景。</p>
+      <p class="small"><a href="../../golden_tree/golden_tree.html">golden_tree.html</a> · <a href="../../golden_tree/research/hcc1395_tumor_evolution_tree_review/README.md">review README</a></p>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2>Support evaluator 的核心邊界</h2>
+  <div class="grid">
+    <article class="card"><h3>Core output</h3><ul><li>normal cells → tumor_root → clone topology</li><li>CCF/φ：node 加 descendants 的 cumulative fraction</li><li>SNV → clone assignment</li></ul></article>
+    <article class="card"><h3>Evidence layers</h3><ul><li>model fit</li><li>inference reliability</li><li>biological/evolutionary compatibility</li></ul></article>
+    <article class="card"><h3>Optional evidence</h3><ul><li>CNV event → node：目前 UNKNOWN</li><li>driver annotation：獨立 interpretation layer</li><li>single-cell CNV：只支持 heterogeneity</li></ul></article>
+  </div>
+  <div class="callout"><strong>目前 claim ceiling：</strong>最新 formal run failed，eta independence-MH proposal cancellation 尚未完成數學 audit；目前不能宣稱 exact posterior MCMC、Grade A 或 high-confidence candidate branching tree topology。</div>
+</section>
+
+<section>
+  <h2>今日產出與狀態</h2>
+  <table>
+    <thead><tr><th>類別</th><th>檔案</th><th>用途／狀態</th></tr></thead>
+    <tbody>
+      <tr><td>模組化文件</td><td><a href="../../model.md">model.md</a>、<a href="../../ascat_purity_experiment_workflow.md">ascat_purity_experiment_workflow.md</a>、<a href="../../tumor_tree_pipeline/README.md">tumor_tree_pipeline/README.md</a></td><td>已拆分 model、workflow、inference contract。</td></tr>
+      <tr><td>架構導覽</td><td><a href="../../arch.md">arch.md</a>、<a href="../../arch.png">arch.png</a>、<a href="../../README.md">README.md</a></td><td>已更新文件引用與閱讀順序。</td></tr>
+      <tr><td>驗證規格</td><td><a href="../../support.md">support.md</a></td><td>已完成 writer 草稿整合與多 reviewer 修正；尚未實作成 evaluator 程式。</td></tr>
+      <tr><td>研究參考</td><td><a href="../../golden_tree/research/">golden_tree/research/</a>、<a href="../../golden_tree/hcc1395_golden_tree.pdf">PDF</a></td><td>HCC1395/PhyloWGS/callset/CNA/LOH/限制與 legacy inventory。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>驗證結果</h2>
+  <ul>
+    <li><span class="badge done">完成</span> 多個 subagent 完成文件盤點、writer 撰寫、三輪 reviewer 檢查與最終修正。</li>
+    <li><span class="badge done">完成</span> support.md 的 Markdown 結構、code fence 數量與 source links 已檢查。</li>
+    <li><span class="badge ref">參考</span> <code>output.md</code> 的 C1–C3、CCF 與 SNV_A–SNV_E 是 illustration，不是 formal run 結果。</li>
+    <li><span class="badge todo">待補</span> topology class scoring、canonicalization、<code>topology_selection_margin</code> 尚未正式實作。</li>
+    <li><span class="badge todo">待補</span> per-site predictive table、完整跨 chain assignment summary、正式 rerun 與成功的 R-hat/ESS/holdout 結果尚未完成。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Git 整合</h2>
+  <p class="small">本次工作已依語意分組完成 commit；<code>inference_algo.md</code> 本身沒有今日未提交差異，列為模組化後的核心參考文件。</p>
+  <table>
+    <thead><tr><th>分組</th><th>預計訊息</th><th>檔案範圍</th></tr></thead>
+    <tbody>
+      <tr><td>模組化文件</td><td><code>389a688</code> · <code>docs: separate model and inference contracts</code></td><td>model.md、ascat workflow、pipeline README</td></tr>
+      <tr><td>架構圖</td><td><code>b61e3ab</code> · <code>docs: update research architecture diagram</code></td><td>arch.md、arch.png</td></tr>
+      <tr><td>Support 與導覽</td><td><code>3acd121</code> · <code>docs: add output support validation workflow</code></td><td>support.md、README.md</td></tr>
+      <tr><td>HCC1395 研究資料</td><td><code>6cf4490</code> · <code>docs: add HCC1395 golden-tree validation records</code></td><td>golden_tree/ 與 PhyloWGS 路徑搬移</td></tr>
+      <tr><td>每日紀錄</td><td><code>待建立</code> · <code>docs(daily): update 20260821 work log</code></td><td>本頁</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>本頁只摘要今日可由對話、文件與 git 狀態支持的工作；未將未完成實驗或歷史 artifact 寫成成功結果。</footer>
+</main>
+</body>
+</html>
