@@ -124,52 +124,19 @@ Smoke 只驗證 schema、排除規則、prior 與短鏈 I/O，不判斷收斂或
 
 ## 5. 推理演算法與 root 定義
 
-### 5.1 PhyloWGS-inspired compound MCMC：單條 chain
+### 5.1 Inference algorithm contract
 
-每條 chain 由 `inference/` 的 C++17 finite-K PhyloWGS-inspired compound MCMC backend 執行。Python workflow 只負責 canonical table、holdout、provenance 與 diagnostics；它的輸入只有已驗證的 `canonical likelihood_input.tsv.gz`、一份 `ChainConfig`，以及 workflow 的 holdout 控制：
+每條 chain 由 `inference/` 的 C++17 finite-K PhyloWGS-inspired compound MCMC
+backend 執行。其 algorithm identity、state transition、`ChainConfig`、輸出
+artifact 與目前 `eta` proposal correctness audit，統一記錄在
+[`inference_algo.md`](inference_algo.md)。本 workflow 只負責把已驗證的 canonical
+table、holdout control 與 workflow config 交給 backend，不在此重複定義 sampler
+kernel。
 
-| 輸入 | 實際內容 |
-|---|---|
-| canonical table | 每列一個 eligible SNV：`mutation_id`、`chrom/pos/ref/alt`、`bulk_ref/bulk_alt/bulk_depth`、`hp1_1_ref/hp1_1_alt/hp2_1_ref/hp2_1_alt`、`major_cn/minor_cn/total_cn`、`rho_ASCAT`、`multiplicity_candidates/multiplicity_prior`、`model_include/model_status` |
-| `ChainConfig` | `seed`、`num_nodes`、`iterations`、`burnin`、`thin`、程式欄位 `ascat_purity`（對應模型的 `rho_ASCAT`）與 `checkpoint_every` |
-| workflow control | 可選 `exclude_ids`；它是資料切分控制，不是新的模型參數。C++ backend 對未完成 chain 的 `resume` 目前 fail-closed |
-
-latent state 只有：
-
-```text
-x = (T, eta, z)
-T   = finite-K tree parents
-eta = K 個 clone local masses，sum(eta)=1
-phi = eta 加上 descendants 的 local masses
-z   = 每個 SNV 的 clone assignment
-```
-
-對每個候選 state，sampler 以同一個 target 比較：
-
-```text
-log p(T, z, eta | data)
-  = finite-truncated TSSB-inspired tree prior
-    + eta prior + sum_i log eta[z_i]
-    + sum_i log[ sum_m multiplicity_prior_i(m)
-        * P_obs(D_i, H_i | phi_z(i), C_i, m, rho_ASCAT) ]
-```
-
-`m` 不進 latent state；`multiplicity_prior` 在每個 site likelihood 內 marginalize。每次 iteration 執行一個 compound sweep：
-
-1. **all-SNV categorical Gibbs assignment**：固定 `T, eta, phi`，以
-   `eta_v × P_obs(D_i,H_i | phi_v,...)` 對每個 SNV 直接抽樣 `z_i`。
-2. **local-mass independence MH**：從 TSSB-shaped depth/width Dirichlet
-   proposal 更新 `eta`，再以 emission 改變做 MH correction。
-3. **conditional subtree prune-and-regraft Gibbs**：選一個 node，保留其
-   subtree，對所有合法 parent 依 posterior score 抽樣。
-
-這是固定 K 的可驗證近似，不宣稱完整重現原始 PhyloWGS 的 infinite TSSB、slice
-birth/cull、stick order 與 hyperparameter updates。acceptance／change rate 只描述
-kernel 行為，不是 convergence proof。
-
-`phi_v` 由 clone `v` 與所有 descendants 的 `eta` 相加得到。`eta` 不含 residual
-mass 或 normal fraction；structural `tumor_root` 頻率概念上為 1，normal fraction
-`1-rho_ASCAT` 只存在於 emission denominator。
+模型 posterior target、`T/z/eta/phi` 的意義、ASCAT purity、HP observation 與
+CN-only multiplicity prior 見 [`model.md`](model.md)。PS 仍只透過上游產生的 HP
+counts 間接影響 downstream observation；PS block 不直接進 sampler state 或
+topology edge constraint。
 
 ### 5.2 單條 chain 的輸出
 

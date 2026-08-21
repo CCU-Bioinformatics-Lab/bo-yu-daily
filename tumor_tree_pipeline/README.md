@@ -3,12 +3,19 @@
 This package is the version-controlled execution source for the HCC1395
 30,490-site finite-K candidate tumor-tree analysis.
 
+The model contract is [`../model.md`](../model.md); the replaceable inference
+algorithm contract is [`../inference_algo.md`](../inference_algo.md). This
+package owns table construction, workflow control, holdout handling and
+diagnostics rather than redefining the model or sampler specification.
+
 ## Module interfaces
 
 - `input_table.build_model_table(...)`: validated bulk/HP counts plus ASCAT
   CN/purity → canonical site-level table and provenance manifest.
 - `cpp_backend.run_chain_cpp(...)`: the active C++17 finite-K
-  PhyloWGS-inspired TSSB compound MCMC backend from the canonical table.
+  PhyloWGS-inspired TSSB compound MCMC backend from the canonical table;
+  algorithm details and output contract are specified in
+  [`../inference_algo.md`](../inference_algo.md).
 - `sampler.run_chain(...)`: retained Python reference implementation used for
   model-contract tests and numerical comparison; the default workflow does
   not use it for inference.

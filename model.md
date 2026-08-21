@@ -14,6 +14,8 @@ implementation: tumor_tree_pipeline
 links:
   - relation: uses_data_from
     target: data.md
+  - relation: inferred_by
+    target: inference_algo.md
   - relation: executed_by
     target: ascat_purity_experiment_workflow.md
 ```
@@ -27,7 +29,7 @@ links:
 1. bulk counts只在 allele-count likelihood 使用一次。
 2. `multiplicity_prior` 只由 ASCAT major/minor CN 建立，不讀 VAF、bulk counts或 purity。
 3. `rho_ASCAT=0.99` 是固定的 purity input，只在 emission 中使用，並在 manifest 中留存 provenance。
-4. PS block 是建立 HP1-1/HP2-1 labels/counts 的上游 phase 資訊；因此會透過 `H_i` 間接影響 likelihood，但 PS 本身不作為 downstream likelihood 欄位、MCMC state 或 topology edge constraint。它也可供 grouped holdout 與 provenance 使用。
+4. PS block 是建立 HP1-1/HP2-1 labels/counts 的上游 phase 資訊；因此會透過 `H_i` 間接影響 likelihood，但 PS 本身不作為 downstream likelihood 欄位、inference state 或 topology edge constraint。它也可供 grouped holdout 與 provenance 使用。
 5. `eta` 只保存 finite-K clone 的 local mass；`phi` 由樹上的 descendant sum 推導，結構性 `tumor_root` 的頻率固定為 1。normal contamination 只由 purity 處理。
 
 輸出是 candidate tumor-tree posterior，不是 single-cell lineage truth，也不是 HCC1395 唯一真實演化樹。
@@ -53,7 +55,7 @@ PS 不出現在 downstream likelihood 的條件集合；它在上游 phase/taggi
 | `D_i` | bulk REF/ALT counts |
 | `H_i` | HP1-1/HP2-1 conditional allocation counts |
 | `C_i` | `major_cn`, `minor_cn`, `total_cn` context |
-| `M_i` | mutated-copy multiplicity；sampler以固定 prior邊際化 |
+| `M_i` | mutated-copy multiplicity；由固定 `multiplicity_prior` 邊際化 |
 | `P_M,i(m)` | CN-only multiplicity prior |
 | `rho_ASCAT` | 外部固定 ASCAT tumor purity；主分析為 `0.99` |
 
@@ -81,7 +83,7 @@ r_i = e_i + (1-2*e_i)*q_i
 ALT_i ~ Binomial(bulk_depth_i, r_i)
 ```
 
-`rho_ASCAT` 不用來建立 multiplicity prior，也不由 sampler重新估計。LongPhase-S DNA fraction `0.958936` 只留在歷史 provenance。
+`rho_ASCAT` 不用來建立 multiplicity prior，也不由 inference algorithm 重新估計。LongPhase-S DNA fraction `0.958936` 只留在歷史 provenance。
 
 ### 2.3 HP observation
 
@@ -156,7 +158,7 @@ model_include model_status
 
 每列是一個 SNV。只有 `model_include=yes`、`model_status=eligible` 的列進 likelihood；CN=0、unmapped、zero-depth或其他排除列留在表與 manifest中供 audit。
 
-PS欄位不屬於 active likelihood schema。PS block 可在上游 artifact 中用來產生 HP counts，也可在 grouped holdout／audit artifact 中保存；canonical likelihood table 的 sampler loader 不把 PS 當成模型參數或 state。
+PS欄位不屬於 active likelihood schema。PS block 可在上游 artifact 中用來產生 HP counts，也可在 grouped holdout／audit artifact 中保存；canonical likelihood table 的 inference loader 不把 PS 當成模型參數或 state。
 
 Loader必須 fail closed：
 
@@ -164,7 +166,7 @@ Loader必須 fail closed：
 - 必要欄位缺失、purity不一致、CN非法或 prior錯誤就停止。
 - 不使用 `CN=2`、point multiplicity或舊欄位 fallback。
 
-## 5. 固定輸入與自動推導
+## 5. 固定輸入與模型狀態
 
 ### 固定輸入
 
@@ -176,118 +178,28 @@ Loader必須 fail closed：
 | `multiplicity_prior` | 固定 marginalization weights |
 | `rho_ASCAT` | 固定 purity-aware emission參數 |
 
-### sampler自動推導
+### 模型未知量與結構性推導量
 
 | 項目 | 意義 |
 |---|---|
-| `T` | clone tree topology |
-| `z_i` | mutation-to-clone assignment |
-| `eta_v` | exclusive tumor fraction |
-| `phi_v`／CCF | cumulative prevalence |
-| topology draws | retained samples保存 `parents`、`eta`、`phi`、`occupancy` |
-| assignment summary | 每個 SNV的posterior aggregate與MAP node；不保存逐draw `z_i` |
+| `T` | clone tree topology；由 inference algorithm 估計或抽樣 |
+| `z_i` | mutation-to-clone assignment；由 inference algorithm 估計或抽樣 |
+| `eta_v` | exclusive/local clone mass；由 inference algorithm 估計或抽樣 |
+| `phi_v`／CCF | 由 `T` 與 `eta` 結構性推導的 cumulative prevalence |
 
-模型不會從這批資料自動推導 ASCAT purity、major/minor CN、跨PS的全球 HP identity或唯一真實clone數。
+具體使用哪一種抽樣、最佳化或近似推理方法，見 [`inference_algo.md`](inference_algo.md)。模型本身不規定 MCMC，也不會從這批資料自動推導 ASCAT purity、major/minor CN、跨PS的全球 HP identity或唯一真實clone數。
 
-## 6. 推理演算法：PhyloWGS-inspired compound MCMC
+## 6. 推理演算法文件
 
-目前 C++ active sampler 使用有限 K 的 TSSB-inspired compound MCMC。它保留
-PhyloWGS 的核心分工：用樹狀 local mass 產生 descendant-sum prevalence，讓
-assignment／樹結構探索與 continuous mass 更新分開。這不是完整的無限 TSSB
-實作；目前 K 仍由 workflow 的 `K=4/6/8` sensitivity 固定。
+本模型文件只定義 posterior target、觀測 likelihood、prior、latent quantities
+與資料邊界，不規定要用 MCMC、MAP、Variational Inference 或其他 inference
+algorithm。當前 active algorithm、chain input/output、平行化邊界與 algorithm
+backend abstraction 見 [`inference_algo.md`](inference_algo.md)。
 
-```text
-x = (T, eta, z)
-T   = finite-K tree parents
-eta = K 個 clone local masses，sum(eta)=1
-phi = eta + descendants 的 local masses（自動推導）
-z   = 每個 SNV 的 clone assignment
-```
+正式執行入口、K／purity sensitivity、chain 數、holdout、convergence metrics
+與 fail-closed gates 見 [`ascat_purity_experiment_workflow.md`](ascat_purity_experiment_workflow.md)；這些是 workflow contract，不在 model spec 內重複定義。
 
-每次 iteration 執行一個 compound sweep，而不是只隨機挑一個 proposal：
-
-1. **All-SNV assignment Gibbs sweep**：固定目前 `T, eta, phi`，對每個 SNV
-   直接從
-   `P(z_i=v) ∝ eta_v × P_obs(D_i,H_i | phi_v,C_i,rho_ASCAT)`
-   的 categorical distribution 抽樣。這取代原本「隨機換一個 clone 再 MH」的
-   單點 assignment move。
-2. **Local-mass independence MH**：依目前 tree 的 depth/width TSSB-shaped
-   Dirichlet prior，加上各 clone 的 assignment counts 產生 `eta` proposal；
-   emission 改變仍以 MH posterior ratio 校正。`eta` 是 local clone mass，
-   不是 purity、normal fraction 或額外的 assignment `pi`。
-3. **Conditional subtree prune-and-regraft Gibbs**：選一個 clone node，保留
-   其 descendants 的 subtree，列舉所有不會形成 cycle 的合法 parent，依完整
-   posterior score 抽樣。這是 finite-K 的 topology conditional update，與舊版
-   uniform parent-reassignment MH 不同。
-
-每條 chain 的 acceptance／change rate只描述各 kernel 的更新行為，不是
-convergence proof。原始 PhyloWGS 還會使用 slice assignment、empty-node culling、
-stick/order 與 hyperparameter 更新；本版以固定 K 的 subtree conditional kernel
-作為可驗證的第一版近似，不能宣稱已完整重現原始 PhyloWGS。
-
-### 6.1 一條 chain 的輸入
-
-`inference/` 的 C++ sampler 只讀 validated `canonical likelihood_input.tsv.gz` 與一份 `ChainConfig`：
-
-| 輸入 | 內容 |
-|---|---|
-| canonical table | 每列一個 eligible SNV：site key、bulk counts、四個 HP counts、ASCAT major/minor/total CN、`rho_ASCAT`、`multiplicity_candidates`、`multiplicity_prior`、eligibility flags |
-| `ChainConfig` | `seed`、finite `num_nodes`、`iterations`、`burnin`、`thin`、固定 `ascat_purity`／`rho_ASCAT` 與 `checkpoint_every` |
-| workflow control | 可選 `exclude_ids`（holdout）；這不是新的 biological model parameter。C++ backend 對未完成 chain 的 `resume` 目前 fail-closed |
-
-PS 不需再作為 downstream table 欄位傳入 sampler。它已在上游 LongPhase-S tagging 中協助產生一致的 HP labels，對 sampler 的可見效果只透過 canonical table 的 `H_i` counts 傳遞。
-
-### 6.2 一條 chain 的輸出
-
-- `samples.jsonl.gz`：burn-in 後每個 retained draw 的 `log_posterior`、`parents`、`eta`、`phi`、`occupancy`；assignment 以 posterior summary 與 representative tree 彙整。
-- `checkpoint.json.gz`：iteration、目前 `(T, eta, z)`、random-generator state、retained draws、canonical table hash 與 ChainConfig 的 audit/state snapshot；目前不宣稱可由 C++ restore。
-- `diagnostics.json`：input/schema/hash、chain config、proposal counters、acceptance rates、posterior sample摘要與 PS 的 upstream/holdout role。
-- `representative_tree.json`：由 retained draws 選出的代表 tree、best sample及每個 SNV 的 assignment aggregate/MAP node。
-- `chain_complete.json`：完成狀態與已發布 artifact 清單；只有 chain 完整寫出後才存在。
-
-### 6.3 單條 chain 與外層 convergence check
-
-單條 chain sampler 只產生一個 posterior sample stream，不自行宣稱收斂。workflow 另外用相同 canonical table/config 啟動多條不同 seed 的獨立 compound-MCMC chains，再由外層 diagnostics 計算 R-hat、bulk/tail ESS、label-invariant assignment agreement、edge support 與 holdout predictive metrics。這些 convergence checks 是 workflow 層，不是 MCMC kernel 的輸入或內部更新。
-
-## 7. 正式實驗設定與 gate
-
-唯一正式執行來源是 [`tumor_tree_pipeline/`](tumor_tree_pipeline/) wrapper。其 tree
-prior 是 finite-K TSSB-inspired depth/width approximation，不是完整的原始
-PhyloWGS infinite TSSB。舊 `multi_evol_tree/tools/` runner只留作歷史比對。
-
-### 7.1 Staged design
-
-- deterministic 20-site fixture先驗證 schema與 I/O。
-- synthetic baseline、topology ambiguity與 CN/LOH+HP missingness情境先過 recovery gate。
-- HCC pilot比較 `K=4,6,8`。
-- full analysis先跑 `K=6`；通過後追加 `K=4,8`。
-- 主 purity為 `0.99`；主分析通過後，再以 `0.97`、`0.95` 做 sensitivity。
-
-正式長鏈起始下限：
-
-```text
-4 independent compound-MCMC chains
-1500 iterations
-1000 burn-in
-thin = 1
->=500 retained draws per chain
-```
-
-ESS不足時延長至每鏈至少1,000 retained draws。
-
-### 7.2 Formal gates
-
-- rank-normalized split/folded R-hat `<1.01`。
-- bulk與tail ESS total各 `>=400`。
-- label-invariant assignment agreement `>=0.90`。
-- max edge-support difference `<=0.10`。
-- strict holdout 90% predictive coverage `0.85–0.95`，並報告 predictive log score。
-- PS-grouped、chromosome-grouped與ASCAT-segment-grouped holdout分別報告；PS-grouped split 以 phase block 為群組，不把 PS 當 likelihood covariate。
-- 任一正式gate失敗即回傳非零exit、建立 `_FAILED`，不建立 `_SUCCESS`。
-
-Pilot R-hat `<=1.10` 只用來決定是否繼續，不是正式收斂標準。
-
-## 8. 已知限制
+## 7. 已知限制
 
 1. finite `K` 是模型容量，不是真實clone數；必須比較 `K=4,6,8`。
 2. major/minor CN不能轉稱HP1/HP2 CN；retained-allele orientation仍未識別。
@@ -295,7 +207,7 @@ Pilot R-hat `<=1.10` 只用來決定是否繼續，不是正式收斂標準。
 4. single bulk sample對部分tree topology不可辨識；topology recovery應單獨報告。
 5. HP1-1/HP2-1是read evidence，不是clone label或lineage truth。
 
-## 9. 歷史結果與不相容介面
+## 8. 歷史結果與不相容介面
 
 2026-08-15 的歷史 integrated table使用 `multiplicity_posteriors`：它由同一組bulk counts形成權重，之後舊sampler又使用bulk likelihood。該artifact可能重複使用觀測，不能作為本模型輸入。
 
@@ -303,7 +215,7 @@ Pilot R-hat `<=1.10` 只用來決定是否繼續，不是正式收斂標準。
 
 歷史PS-wide orientation、Beta-Binomial table、Stage 6 production-like output與experiment-loop pass都不代表目前模型。新版正式輸入只接受 `multiplicity_prior` 與 `rho_ASCAT`，並由 `tumor_tree_pipeline` wrapper驗收。
 
-## 10. 維護規則
+## 9. 維護規則
 
 1. canonical input變更：同步更新 `data.md`、schema與fixture。
 2. likelihood、latent state或proposal變更：同步更新本文件與contract tests。
