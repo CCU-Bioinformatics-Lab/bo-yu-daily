@@ -2,6 +2,7 @@
 
 目前 repo 的研究輸入、模型、推理與輸出文件：
 
+- [arch.md](arch.md)：整體研究架構；說明 `data input`、`model`、`inference_algo` 與 `output` 四個可替換模塊，以及它們之間的文件引用與資料流向
 - [data.md](data.md)：canonical data/provenance
 - [model.md](model.md)：model specification（posterior、likelihood、prior 與 latent quantities）
 - [inference_algo.md](inference_algo.md)：inference algorithm specification；說明如何以目前 finite-K compound MCMC 從 model posterior 推理 `T`、`eta` 與 SNV assignment `z`，以及可替換 backend 的 input/output contract
@@ -11,5 +12,5 @@
 - [inference/](inference/)：active C++17 finite-K compound MCMC backend，提供 AlgorithmRegistry、chain/site 平行化與五個 inference artifacts
 - `daily/`：每天產生的 HTML的相關資料和每日總結。
 
-文件閱讀順序是 `data.md` → `model.md` → `inference_algo.md` → `output.md`：
-先確認資料表，再確認 posterior model，接著確認推理演算法，最後解讀模型輸出。
+建議文件閱讀順序是 `arch.md` → `data.md` → `model.md` → `inference_algo.md` → `output.md`：
+先從 `arch.md` 掌握四個模塊的分工與連線，再確認資料表、posterior model、推理演算法，最後解讀模型輸出。
