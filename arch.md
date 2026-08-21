@@ -2,7 +2,7 @@
 
 更新日期：2026-08-21
 
-![alt text](image.png)
+![alt text](arch.png)
 
 ## 四個模塊與文件引用
 
