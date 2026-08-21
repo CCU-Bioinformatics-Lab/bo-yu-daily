@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HCC1395 high-confidence candidate branching tree topology | 論文證據</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #162235;
+      --muted: #5f7187;
+      --line: #d9e2ec;
+      --paper: #f6f8fb;
+      --card: #ffffff;
+      --navy: #13263e;
+      --blue: #276fbf;
+      --teal: #168f8a;
+      --green: #2a9561;
+      --amber: #c67b1b;
+      --red: #b84b4b;
+      --purple: #7254a6;
+      --shadow: 0 16px 45px rgba(25, 51, 78, .09);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 85% 0%, rgba(39, 111, 191, .12), transparent 32rem),
+        var(--paper);
+    }
+
+    a { color: var(--blue); }
+    a:hover { color: #164b86; }
+
+    .hero {
+      padding: 76px max(24px, calc((100% - 1180px) / 2)) 58px;
+      color: #f6fbff;
+      background: linear-gradient(135deg, #122842 0%, #1b4167 62%, #1a7580 100%);
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: #a9e0e1;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 820px; margin-bottom: 18px; font-size: clamp(32px, 5vw, 64px); line-height: 1.05; letter-spacing: -.04em; }
+    h2 { margin-bottom: 10px; font-size: clamp(25px, 3vw, 38px); line-height: 1.1; letter-spacing: -.03em; }
+    h3 { margin-bottom: 8px; font-size: 17px; line-height: 1.25; }
+    .hero p { max-width: 770px; margin-bottom: 24px; color: #d8e8f4; font-size: 17px; }
+
+    .hero-meta, .chips, .legend, .source-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid rgba(255, 255, 255, .25);
+      border-radius: 999px;
+      color: #f3fbff;
+      background: rgba(255, 255, 255, .1);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .92);
+      box-shadow: 0 4px 18px rgba(30, 55, 80, .05);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      display: flex;
+      gap: 18px;
+      max-width: 1180px;
+      margin: auto;
+      padding: 12px 24px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .nav a { color: var(--muted); font-size: 13px; font-weight: 750; text-decoration: none; }
+    .nav a:hover { color: var(--blue); }
+
+    main { max-width: 1180px; margin: auto; padding: 28px 24px 80px; }
+    section { scroll-margin-top: 70px; margin: 26px 0 68px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .section-head p { max-width: 640px; margin-bottom: 0; color: var(--muted); }
+    .kicker { margin: 0 0 7px; color: var(--blue); font-size: 12px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .pad { padding: 22px; }
+    .hero-card { margin-top: -24px; padding: 24px; border: 1px solid rgba(255, 255, 255, .18); border-radius: 18px; background: rgba(255, 255, 255, .1); }
+    .hero-card strong { display: block; margin-bottom: 5px; color: #fff; font-size: 14px; }
+    .hero-card span { color: #cfe1ed; font-size: 13px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .visual-card { padding: 18px; }
+    .visual-card p { margin-bottom: 0; color: var(--muted); font-size: 13px; }
+    .visual-card svg { display: block; width: 100%; height: auto; margin-bottom: 14px; }
+
+    .wide-card { padding: 16px; overflow: hidden; }
+    .wide-svg { display: block; width: 100%; min-width: 900px; height: auto; }
+    .scroll-x { overflow-x: auto; }
+
+    .stat-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 20px 0; }
+    .stat { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: #fbfdff; }
+    .stat b { display: block; margin-bottom: 3px; color: var(--navy); font-size: 25px; line-height: 1; }
+    .stat span { color: var(--muted); font-size: 12px; }
+
+    .callout { padding: 17px 19px; border-left: 4px solid var(--blue); border-radius: 0 12px 12px 0; background: #edf5fd; }
+    .callout strong { display: block; margin-bottom: 5px; }
+    .callout p { margin: 0; color: #3e556c; font-size: 14px; }
+    .callout.warn { border-left-color: var(--amber); background: #fff7e9; }
+    .callout.danger { border-left-color: var(--red); background: #fff0f0; }
+    .callout.good { border-left-color: var(--green); background: #edf9f1; }
+
+    .badge { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+    .badge.direct { color: #176443; background: #dff4e8; }
+    .badge.support { color: #8b5b0f; background: #fff0c9; }
+    .badge.boundary { color: #913d3d; background: #ffe1e1; }
+
+    .evidence-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .evidence-list li { display: grid; grid-template-columns: 24px 1fr; gap: 8px; align-items: start; color: #40556a; font-size: 14px; }
+    .evidence-list li::before { content: "✓"; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: #fff; background: var(--green); font-size: 12px; font-weight: 900; }
+    .evidence-list.support li::before { content: "＋"; background: var(--amber); }
+    .evidence-list.boundary li::before { content: "!"; background: var(--red); }
+
+    .role { display: flex; align-items: start; gap: 12px; }
+    .role-icon { display: grid; flex: 0 0 38px; place-items: center; width: 38px; height: 38px; border-radius: 12px; color: #fff; background: var(--blue); font-weight: 850; }
+    .role:nth-child(2) .role-icon { background: var(--purple); }
+    .role:nth-child(3) .role-icon { background: var(--teal); }
+    .role:nth-child(4) .role-icon { background: var(--amber); }
+    .role p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+
+    details { border-top: 1px solid var(--line); }
+    details:first-of-type { border-top: 0; }
+    summary { cursor: pointer; padding: 14px 0; color: var(--navy); font-weight: 800; }
+    details p, details ul { color: var(--muted); font-size: 13px; }
+
+    .reference-card { display: flex; flex-direction: column; min-height: 180px; padding: 18px; }
+    .reference-card p { flex: 1; margin-bottom: 14px; color: var(--muted); font-size: 13px; }
+    .reference-card a { font-size: 12px; font-weight: 800; }
+
+    .source-row { gap: 6px; }
+    .source-row a { padding: 5px 8px; border: 1px solid var(--line); border-radius: 7px; background: #fff; font-size: 11px; text-decoration: none; }
+    .source-note { margin: 10px 0 0; color: var(--muted); font-size: 11px; }
+    footer { max-width: 1180px; margin: auto; padding: 0 24px 46px; color: var(--muted); font-size: 12px; }
+
+    .svg-label { fill: #22364d; font-size: 15px; font-weight: 750; }
+    .svg-small { fill: #60758a; font-size: 12px; }
+    .svg-tiny { fill: #6d8094; font-size: 10px; }
+    .svg-white { fill: #fff; font-size: 14px; font-weight: 800; }
+    .svg-box { fill: #fff; stroke: #cbd8e4; stroke-width: 1.5; }
+    .svg-node { fill: #fff; stroke: #276fbf; stroke-width: 4; }
+    .svg-line { fill: none; stroke: #46647e; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .svg-dash { fill: none; stroke: #a6b4c2; stroke-width: 2; stroke-dasharray: 6 6; }
+
+    @media (max-width: 820px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .section-head { display: block; }
+      .section-head p { margin-top: 10px; }
+      .hero { padding-top: 50px; }
+    }
+
+    @media (max-width: 500px) {
+      main { padding-right: 14px; padding-left: 14px; }
+      .nav { padding-right: 14px; padding-left: 14px; }
+      .stat-row { gap: 8px; }
+      .stat { padding: 12px; }
+      .stat b { font-size: 21px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero" id="top">
+    <p class="eyebrow">HCC1395 · paper evidence map</p>
+    <h1>HCC1395 high-confidence candidate branching tree topology 是怎麼被建立的？</h1>
+    <p>把 Fang et al. 的 HCC1395 論文拆成「資料 → call-set → clonality inference → tree → validation」五個視覺層次。重點是看清楚：mutation call 的高可信度，和 tree topology 的可信度不是同一件事。</p>
+    <div class="hero-meta">
+      <span class="chip">21 WGS replicates</span>
+      <span class="chip">3 aligners × 6 callers = 378 call sets</span>
+      <span class="chip">SNV validation 99.93%</span>
+      <span class="chip">high-confidence candidate branching tree topology · PhyloWGS</span>
+    </div>
+    <div class="hero-card">
+      <strong>閱讀結論</strong>
+      <span>這是由多平台 mutation evidence、bulk clonality、CNA 與 single-cell CNV 共同支持的 high-confidence candidate branching tree topology；不是逐個 SNV、逐條 branch 都有獨立 truth 的唯一 lineage tree。</span>
+    </div>
+  </header>
+
+  <div class="topbar">
+    <nav class="nav" aria-label="頁面導覽">
+      <a href="#pipeline">資料層</a>
+      <a href="#tree">candidate branching tree topology</a>
+      <a href="#roles">方法分工</a>
+      <a href="#validation">驗證</a>
+      <a href="#boundary">可信度邊界</a>
+      <a href="#repo">對目前 repo</a>
+      <a href="#references">圖式參考</a>
+    </nav>
+  </div>
+
+  <main>
+    <section id="pipeline">
+      <div class="section-head">
+        <div>
+          <p class="kicker">01 · data becomes evidence</p>
+          <h2>先把「資料可信」做出來</h2>
+        </div>
+        <p>這條 pipeline 是論文最強的部分：先降低 caller、aligner、center、低 VAF 與 mapping artifact，再把結果交給演化樹分析。</p>
+      </div>
+
+      <div class="card wide-card scroll-x">
+        <svg class="wide-svg" viewBox="0 0 1180 330" role="img" aria-labelledby="pipeline-title pipeline-desc">
+          <title id="pipeline-title">HCC1395 高可信度 somatic call-set pipeline</title>
+          <desc id="pipeline-desc">從配對 tumor-normal 細胞株開始，經過多 replicate、多 aligner、多 caller、深度 rescue、PacBio filter 和 callable region，產生 HighConf 與 MedConf reference call set。</desc>
+          <defs>
+            <marker id="arrow-blue" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+              <path d="M0,0 L9,4.5 L0,9 Z" fill="#276fbf"></path>
+            </marker>
+          </defs>
+          <text x="20" y="35" class="svg-small">DISCOVERY → FILTER → REFERENCE CALL SET</text>
+          <g transform="translate(20 88)">
+            <rect class="svg-box" x="0" y="0" width="140" height="112" rx="14"></rect>
+            <circle cx="25" cy="28" r="11" fill="#276fbf"></circle>
+            <text x="47" y="34" class="svg-label">樣本</text>
+            <text x="16" y="65" class="svg-small">HCC1395</text>
+            <text x="16" y="84" class="svg-small">HCC1395BL</text>
+            <text x="16" y="103" class="svg-tiny">paired gDNA</text>
+          </g>
+          <path d="M160 144 H178" class="svg-line" marker-end="url(#arrow-blue)"></path>
+          <g transform="translate(180 88)">
+            <rect class="svg-box" x="0" y="0" width="150" height="112" rx="14"></rect>
+            <text x="16" y="32" class="svg-label">21 WGS</text>
+            <text x="16" y="55" class="svg-small">replicates</text>
+            <text x="16" y="82" class="svg-tiny">multi-center</text>
+            <text x="16" y="99" class="svg-tiny">multi-platform</text>
+          </g>
+          <path d="M330 144 H348" class="svg-line" marker-end="url(#arrow-blue)"></path>
+          <g transform="translate(350 88)">
+            <rect class="svg-box" x="0" y="0" width="155" height="112" rx="14"></rect>
+            <text x="16" y="32" class="svg-label">63 BAM pairs</text>
+            <text x="16" y="58" class="svg-small">3 aligners</text>
+            <text x="16" y="83" class="svg-tiny">BWA-MEM · Bowtie2</text>
+            <text x="16" y="100" class="svg-tiny">NovoAlign</text>
+          </g>
+          <path d="M505 144 H523" class="svg-line" marker-end="url(#arrow-blue)"></path>
+          <g transform="translate(525 88)">
+            <rect class="svg-box" x="0" y="0" width="160" height="112" rx="14"></rect>
+            <text x="16" y="32" class="svg-label">378 calls</text>
+            <text x="16" y="58" class="svg-small">6 somatic callers</text>
+            <text x="16" y="83" class="svg-tiny">reproducibility</text>
+            <text x="16" y="100" class="svg-tiny">across paths</text>
+          </g>
+          <path d="M685 144 H703" class="svg-line" marker-end="url(#arrow-blue)"></path>
+          <g transform="translate(705 88)">
+            <rect class="svg-box" x="0" y="0" width="155" height="112" rx="14"></rect>
+            <text x="16" y="32" class="svg-label">ML filter</text>
+            <text x="16" y="58" class="svg-small">SomaticSeq</text>
+            <text x="16" y="80" class="svg-small">NeuSomatic</text>
+            <text x="16" y="101" class="svg-tiny">High / Med / Low</text>
+          </g>
+          <path d="M860 144 H878" class="svg-line" marker-end="url(#arrow-blue)"></path>
+          <g transform="translate(880 88)">
+            <rect class="svg-box" x="0" y="0" width="140" height="112" rx="14"></rect>
+            <text x="16" y="32" class="svg-label">rescue</text>
+            <text x="16" y="58" class="svg-small">350× · 400×</text>
+            <text x="16" y="80" class="svg-small">1,500×</text>
+            <text x="16" y="101" class="svg-tiny">low-VAF</text>
+          </g>
+          <path d="M1020 144 H1038" class="svg-line" marker-end="url(#arrow-blue)"></path>
+          <g transform="translate(1040 88)">
+            <rect x="0" y="0" width="120" height="112" rx="14" fill="#e6f6ed" stroke="#78bf98" stroke-width="1.5"></rect>
+            <text x="16" y="32" class="svg-label">reference</text>
+            <text x="16" y="59" class="svg-small">PacBio filter</text>
+            <text x="16" y="82" class="svg-small">callable region</text>
+            <text x="16" y="101" class="svg-tiny">High + Med</text>
+          </g>
+          <text x="20" y="252" class="svg-tiny">核心：高可信度先建立在 mutation call-set；之後才進入 clonality / tree inference。</text>
+          <text x="20" y="278" class="svg-tiny">Paper source: Fig. 1–2, Table 1–2, Methods PDF pp. 2–5, 12–13.</text>
+        </svg>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat"><b>21</b><span>WGS replicates</span></div>
+        <div class="stat"><b>378</b><span>caller/alignment call sets</span></div>
+        <div class="stat"><b>1,417/1,418</b><span>可判讀 SNV confirmed</span></div>
+        <div class="stat"><b>99%</b><span>CNA-based purity estimate</span></div>
+      </div>
+      <div class="callout good">
+        <strong>這一步真正保證什麼？</strong>
+        <p>更有信心地說「這些 somatic mutations 確實存在」。它還沒有保證每個 mutation 應該位於哪一條 tree branch。</p>
+      </div>
+      <div class="callout warn" style="margin-top: 12px;">
+        <strong>Confidence labels 的讀法</strong>
+        <p><code>HighConf + MedConf</code> 才組成後續使用的 somatic reference call set；<code>LowConf</code> 與 <code>Unclassified</code> 不應被讀成高可信度突變。</p>
+      </div>
+    </section>
+
+    <section id="tree">
+      <div class="section-head">
+        <div>
+          <p class="kicker">02 · inferred tumor phylogeny</p>
+          <h2>high-confidence candidate branching tree topology：先看樹的形狀</h2>
+        </div>
+        <p>以下是依原論文第 4a 圖重畫的原創 SVG，呈現 high-confidence candidate branching tree topology；節點比例是 cancer cell fraction，不是直接數到的單細胞比例。</p>
+      </div>
+      <div class="card wide-card scroll-x">
+        <svg class="wide-svg" viewBox="0 0 1100 540" role="img" aria-labelledby="tree-title tree-desc">
+          <title id="tree-title">HCC1395 high-confidence candidate branching tree topology</title>
+          <desc id="tree-desc">Normal cells root to S1 MRCA, then split into a left branch S2 to S4 and a right branch S8 to S10. S5 and S7 branch from S4.</desc>
+          <text x="24" y="35" class="svg-small">HIGH-CONFIDENCE CANDIDATE BRANCHING TREE TOPOLOGY · PAPER SOURCE</text>
+          <path d="M115 92 V178" class="svg-line"></path>
+          <path d="M115 196 L300 286 M115 196 L695 286" class="svg-line"></path>
+          <path d="M300 304 V370 M300 370 L160 458 M300 370 L450 458" class="svg-line"></path>
+          <path d="M695 304 L830 380 M830 398 L965 458" class="svg-line"></path>
+
+          <circle cx="115" cy="78" r="14" class="svg-node"></circle>
+          <circle cx="115" cy="192" r="14" class="svg-node"></circle>
+          <circle cx="300" cy="292" r="14" class="svg-node"></circle>
+          <circle cx="300" cy="370" r="14" class="svg-node"></circle>
+          <circle cx="160" cy="466" r="14" class="svg-node"></circle>
+          <circle cx="450" cy="466" r="14" class="svg-node"></circle>
+          <circle cx="695" cy="292" r="14" class="svg-node"></circle>
+          <circle cx="830" cy="389" r="14" class="svg-node"></circle>
+          <circle cx="965" cy="466" r="14" class="svg-node"></circle>
+
+          <text x="145" y="76" class="svg-label">Normal cells</text>
+          <text x="145" y="99" class="svg-small">reference root</text>
+          <rect x="145" y="155" width="160" height="48" rx="10" fill="#edf5fd" stroke="#9ebfe0"></rect>
+          <text x="160" y="177" class="svg-label">S1 · MRCA</text>
+          <text x="160" y="194" class="svg-tiny">all tumor cells</text>
+
+          <rect x="330" y="255" width="150" height="48" rx="10" fill="#edf5fd" stroke="#9ebfe0"></rect>
+          <text x="345" y="277" class="svg-label">S2 · 60%</text>
+          <text x="345" y="294" class="svg-tiny">CCF label</text>
+          <rect x="330" y="336" width="150" height="48" rx="10" fill="#eef8f3" stroke="#9ecfb4"></rect>
+          <text x="345" y="358" class="svg-label">S4 · 51%</text>
+          <text x="345" y="375" class="svg-tiny">branch ancestor</text>
+
+          <rect x="22" y="430" width="150" height="48" rx="10" fill="#fff7e9" stroke="#e3bd75"></rect>
+          <text x="37" y="452" class="svg-label">S5 · 14%</text>
+          <text x="37" y="469" class="svg-tiny">minor branch</text>
+          <rect x="472" y="430" width="150" height="48" rx="10" fill="#fff7e9" stroke="#e3bd75"></rect>
+          <text x="487" y="452" class="svg-label">S7 · 29%</text>
+          <text x="487" y="469" class="svg-tiny">minor branch</text>
+
+          <rect x="725" y="255" width="150" height="48" rx="10" fill="#f2edfb" stroke="#c2b3df"></rect>
+          <text x="740" y="277" class="svg-label">S8 · 34%</text>
+          <text x="740" y="294" class="svg-tiny">second major branch</text>
+          <rect x="860" y="365" width="150" height="48" rx="10" fill="#f2edfb" stroke="#c2b3df"></rect>
+          <text x="875" y="387" class="svg-label">S9 · 27%</text>
+          <text x="875" y="404" class="svg-tiny">descendant</text>
+          <rect x="920" y="430" width="150" height="48" rx="10" fill="#f2edfb" stroke="#c2b3df"></rect>
+          <text x="935" y="452" class="svg-label">S10 · 25%</text>
+          <text x="935" y="469" class="svg-tiny">descendant</text>
+
+          <text x="15" y="520" class="svg-tiny">Driver labels in the paper: TP53 · PTEN · GATA3 · NF1 · MAP3K1 · PIK3CA · KRAS · CASP8 · SF3B1</text>
+          <text x="715" y="520" class="svg-tiny">S3 / S6 omitted: CCF &lt; 10%</text>
+        </svg>
+      </div>
+      <div class="source-row" style="margin-top: 12px;">
+        <a href="golden_tree/hcc1395_golden_tree.pdf">原始 PDF · Fig. 4 · p. 7</a>
+        <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md">樹重建章節</a>
+      </div>
+    </section>
+
+    <section id="roles">
+      <div class="section-head">
+        <div>
+          <p class="kicker">03 · methods have different jobs</p>
+          <h2>四種分析，不是四個同義詞</h2>
+        </div>
+        <p>把「產生樹」與「確認異質性」分開，才不會把 single-cell CNV heatmap 誤稱為 SNV lineage truth。</p>
+      </div>
+      <div class="grid-4">
+        <article class="card visual-card">
+          <svg viewBox="0 0 220 120" role="img" aria-label="PhyloWGS tree icon">
+            <path d="M110 20 V45 M110 45 L65 82 M110 45 L155 82" class="svg-line"></path>
+            <circle cx="110" cy="20" r="9" class="svg-node"></circle><circle cx="65" cy="82" r="9" class="svg-node"></circle><circle cx="155" cy="82" r="9" class="svg-node"></circle>
+            <text x="15" y="110" class="svg-small">tree + CCF + assignment</text>
+          </svg>
+          <h3>PhyloWGS</h3>
+          <p>論文用 bulk clonality evidence 產生 high-confidence candidate branching tree topology。完整 input、參數與 posterior summary 未在本文公開。</p>
+        </article>
+        <article class="card visual-card">
+          <svg viewBox="0 0 220 120" role="img" aria-label="SuperFreq clonality river icon">
+            <path d="M12 80 C54 18 82 106 114 43 S176 28 208 76" fill="none" stroke="#7254a6" stroke-width="12" stroke-linecap="round" opacity=".72"></path>
+            <path d="M12 88 C55 38 92 113 126 68 S177 49 208 90" fill="none" stroke="#a98bd2" stroke-width="5" stroke-linecap="round"></path>
+            <text x="18" y="22" class="svg-small">VAF + local CN</text>
+          </svg>
+          <h3>SuperFreq</h3>
+          <p>用 capture WES、VAF、local copy number 與 uncertainty 做 clonality clustering；是 bulk cross-check。</p>
+        </article>
+        <article class="card visual-card">
+          <svg viewBox="0 0 220 120" role="img" aria-label="Copy number segmentation icon">
+            <path d="M10 85 H48 V53 H87 V68 H126 V28 H164 V49 H210" fill="none" stroke="#168f8a" stroke-width="5"></path>
+            <path d="M10 94 H210" class="svg-dash"></path>
+            <text x="12" y="20" class="svg-small">log OR / log R → HMM</text>
+          </svg>
+          <h3>ASCAT + subHMM</h3>
+          <p>確認 ploidy、LOH 與 clonal/subclonal CNA；不是直接輸出 SNV tree branch。</p>
+        </article>
+        <article class="card visual-card">
+          <svg viewBox="0 0 220 120" role="img" aria-label="Single-cell CNV heatmap icon">
+            <g transform="translate(28 23)">
+              <rect width="18" height="15" fill="#f1c27d"></rect><rect x="21" width="18" height="15" fill="#88b6d9"></rect><rect x="42" width="18" height="15" fill="#f1c27d"></rect><rect x="63" width="18" height="15" fill="#ef8d6d"></rect><rect x="84" width="18" height="15" fill="#88b6d9"></rect><rect x="105" width="18" height="15" fill="#f1c27d"></rect>
+              <rect y="19" width="18" height="15" fill="#f1c27d"></rect><rect x="21" y="19" width="18" height="15" fill="#f1c27d"></rect><rect x="42" y="19" width="18" height="15" fill="#88b6d9"></rect><rect x="63" y="19" width="18" height="15" fill="#ef8d6d"></rect><rect x="84" y="19" width="18" height="15" fill="#ef8d6d"></rect><rect x="105" y="19" width="18" height="15" fill="#88b6d9"></rect>
+              <rect y="38" width="18" height="15" fill="#88b6d9"></rect><rect x="21" y="38" width="18" height="15" fill="#f1c27d"></rect><rect x="42" y="38" width="18" height="15" fill="#f1c27d"></rect><rect x="63" y="38" width="18" height="15" fill="#88b6d9"></rect><rect x="84" y="38" width="18" height="15" fill="#ef8d6d"></rect><rect x="105" y="38" width="18" height="15" fill="#ef8d6d"></rect>
+              <rect y="57" width="18" height="15" fill="#f1c27d"></rect><rect x="21" y="57" width="18" height="15" fill="#88b6d9"></rect><rect x="42" y="57" width="18" height="15" fill="#88b6d9"></rect><rect x="63" y="57" width="18" height="15" fill="#f1c27d"></rect><rect x="84" y="57" width="18" height="15" fill="#ef8d6d"></rect><rect x="105" y="57" width="18" height="15" fill="#f1c27d"></rect>
+            </g>
+            <text x="156" y="50" class="svg-small">1,270</text><text x="156" y="68" class="svg-small">cells</text>
+          </svg>
+          <h3>10x single-cell CNV</h3>
+          <p>顯示每個細胞的 CNV profile 與異質性；不是每個 SNV 的單細胞 assignment。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="validation">
+      <div class="section-head">
+        <div>
+          <p class="kicker">04 · validation is layered</p>
+          <h2>哪些是直接驗證？哪些只是支持？</h2>
+        </div>
+        <p>同一個數字只放在它真正能支持的層級，避免把 call-set rate 變成 topology rate。</p>
+      </div>
+      <div class="grid-2">
+        <article class="card pad">
+          <span class="badge direct">DIRECTLY TESTED</span>
+          <h3 style="margin-top: 12px;">Mutation call credibility</h3>
+          <ul class="evidence-list">
+            <li>AmpliSeq、Ion Torrent WES、HiSeq WES 與 PacBio 交叉確認 SNV / indel。</li>
+            <li>HighConf + MedConf：可判讀 SNV <strong>1,417 / 1,418 = 99.93%</strong>。</li>
+            <li>titration：100%、75%、50%、20%、10%、5%、0% purity 檢查 VAF 隨 tumor fraction 的行為。</li>
+            <li>GATK CallableLoci 與多數決建立 consensus-callable regions。</li>
+          </ul>
+        </article>
+        <article class="card pad">
+          <span class="badge support">SUPPORTIVE CORROBORATION</span>
+          <h3 style="margin-top: 12px;">Tree / heterogeneity plausibility</h3>
+          <ul class="evidence-list support">
+            <li>SuperFreq 也觀察到 clonal / subclonal population。</li>
+            <li>ASCATNgs、subHMM、karyotype / CytoScan 支持複雜 CNV、LOH 與約 99% purity。</li>
+            <li>10x：HCC1395 1,270 cells、HCC1395BL 638 cells 的 single-cell CNV pattern。</li>
+            <li>這些證據支持「存在異質性與 branching model」，不是逐條驗證 high-confidence candidate branching tree topology 的 edge。</li>
+          </ul>
+        </article>
+      </div>
+      <div class="card pad" style="margin-top: 18px;">
+        <svg viewBox="0 0 1000 180" width="100%" role="img" aria-labelledby="validation-title validation-desc">
+          <title id="validation-title">Validation layers</title>
+          <desc id="validation-desc">Mutation call validation is direct, while tree topology support is indirect and has a claim boundary.</desc>
+          <defs>
+            <marker id="arrow-green" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2a9561"></path></marker>
+            <marker id="arrow-amber" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#c67b1b"></path></marker>
+          </defs>
+          <text x="20" y="25" class="svg-small">DIRECT EVIDENCE</text>
+          <rect x="20" y="45" width="180" height="64" rx="12" fill="#e6f6ed" stroke="#78bf98"></rect><text x="42" y="73" class="svg-label">real SNV?</text><text x="42" y="93" class="svg-small">99.93% interpretable</text>
+          <path d="M200 77 H330" stroke="#2a9561" stroke-width="3" marker-end="url(#arrow-green)"></path>
+          <rect x="335" y="45" width="180" height="64" rx="12" fill="#e6f6ed" stroke="#78bf98"></rect><text x="357" y="73" class="svg-label">VAF behaves?</text><text x="357" y="93" class="svg-small">titration + platforms</text>
+          <path d="M515 77 H645" stroke="#2a9561" stroke-width="3" marker-end="url(#arrow-green)"></path>
+          <rect x="650" y="45" width="180" height="64" rx="12" fill="#fff7e9" stroke="#e3bd75"></rect><text x="672" y="73" class="svg-label">tree plausible?</text><text x="672" y="93" class="svg-small">indirect support only</text>
+          <path d="M830 77 H955" stroke="#c67b1b" stroke-width="3" marker-end="url(#arrow-amber)"></path>
+          <text x="20" y="145" class="svg-tiny">Do not convert a call-set validation rate into a branch/topology validation rate.</text>
+          <text x="20" y="164" class="svg-tiny">Single-cell CNV confirms heterogeneity, not every SNV-to-clone assignment.</text>
+        </svg>
+      </div>
+    </section>
+
+    <section id="boundary">
+      <div class="section-head">
+        <div>
+          <p class="kicker">05 · claim boundary</p>
+          <h2>最容易講錯的三件事</h2>
+        </div>
+        <p>這一段把六份 Markdown 的 reviewer conclusion 壓成三個視覺化判斷。</p>
+      </div>
+      <div class="grid-3">
+        <article class="card visual-card">
+          <svg viewBox="0 0 260 105" role="img" aria-label="Callset is not topology icon">
+            <rect x="18" y="24" width="90" height="48" rx="10" fill="#e6f6ed" stroke="#78bf98"></rect>
+            <text x="38" y="53" class="svg-label">call-set</text>
+            <path d="M116 48 H142" class="svg-line"></path>
+            <rect x="150" y="24" width="90" height="48" rx="10" fill="#fff0f0" stroke="#dd9a9a"></rect>
+            <text x="166" y="53" class="svg-label">topology</text>
+            <text x="19" y="94" class="svg-tiny">high-confidence ≠ ground-truth tree</text>
+          </svg>
+          <h3>Call-set ≠ tree truth</h3>
+          <p>99.93% 是可判讀 SNV call 的確認率，不是每條 branch 的 posterior support。</p>
+        </article>
+        <article class="card visual-card">
+          <svg viewBox="0 0 260 105" role="img" aria-label="Single-cell CNV is not single-cell SNV tree icon">
+            <g transform="translate(18 24)"><rect width="18" height="14" fill="#f1c27d"></rect><rect x="22" width="18" height="14" fill="#88b6d9"></rect><rect x="44" width="18" height="14" fill="#ef8d6d"></rect><rect y="19" width="18" height="14" fill="#88b6d9"></rect><rect x="22" y="19" width="18" height="14" fill="#f1c27d"></rect><rect x="44" y="19" width="18" height="14" fill="#ef8d6d"></rect><rect y="38" width="18" height="14" fill="#f1c27d"></rect><rect x="22" y="38" width="18" height="14" fill="#88b6d9"></rect><rect x="44" y="38" width="18" height="14" fill="#ef8d6d"></rect></g>
+            <path d="M92 50 H120" class="svg-line"></path>
+            <path d="M137 24 V44 M137 44 L118 72 M137 44 L157 72" class="svg-line"></path><circle cx="137" cy="24" r="7" class="svg-node"></circle><circle cx="118" cy="72" r="7" class="svg-node"></circle><circle cx="157" cy="72" r="7" class="svg-node"></circle>
+            <text x="174" y="54" class="svg-tiny">not a direct mapping</text>
+          </svg>
+          <h3>CNV heatmap ≠ SNV lineage</h3>
+          <p>10x 單細胞資料支持 CNV heterogeneity，不能直接回答哪個細胞帶有 S2 或 S8 的 SNV。</p>
+        </article>
+        <article class="card visual-card">
+          <svg viewBox="0 0 260 105" role="img" aria-label="High-confidence candidate branching tree topology boundary icon">
+            <path d="M26 72 V45 M26 45 L74 22 M26 45 L74 68" class="svg-line"></path><circle cx="26" cy="72" r="8" class="svg-node"></circle><circle cx="74" cy="22" r="8" class="svg-node"></circle><circle cx="74" cy="68" r="8" class="svg-node"></circle>
+            <rect x="110" y="25" width="124" height="48" rx="10" fill="#fff7e9" stroke="#e3bd75"></rect><text x="127" y="54" class="svg-label">candidate topology</text>
+            <text x="29" y="96" class="svg-tiny">inferred · not unique lineage</text>
+          </svg>
+          <h3>branching 是 model result</h3>
+          <p>作者用 inferred / suggests branching；不能把 S1–S10 宣稱成已逐節點觀察到的唯一祖先樹。</p>
+        </article>
+      </div>
+      <div class="callout danger" style="margin-top: 18px;">
+        <strong>最精確的一句話</strong>
+        <p>HCC1395 存在一個由多平台 mutation evidence、bulk clonality、CNV 與 single-cell CNV 共同支持的 branching clonal model；其命名為 high-confidence candidate branching tree topology，不是已被逐節點證明的 lineage ground truth。</p>
+      </div>
+    </section>
+
+    <section id="repo">
+      <div class="section-head">
+        <div>
+          <p class="kicker">06 · mapping to this repository</p>
+          <h2>對目前 ASCAT + long-read repo 的啟示</h2>
+        </div>
+        <p>這篇論文提供的是方法背景與驗證分層；目前 repo 的 model 不等於論文的完整 PhyloWGS 重現。</p>
+      </div>
+      <div class="card pad">
+        <table>
+          <thead><tr><th>面向</th><th>論文 HCC1395 tree</th><th>目前 repo</th></tr></thead>
+          <tbody>
+            <tr><td>主要 observation</td><td>bulk WGS/WES VAF + local CN</td><td>bulk REF/ALT、ASCAT CN、ASCAT purity、multiplicity、HP1/HP2 counts</td></tr>
+            <tr><td>long read</td><td>PacBio 主要作 mutation validation / filter</td><td>LongPhase-S HP counts 是 likelihood observation</td></tr>
+            <tr><td>tree inference</td><td>PhyloWGS；本文未公開完整 input/設定</td><td>finite-K、PhyloWGS-inspired C++ MCMC backend</td></tr>
+            <tr><td>single-cell</td><td>10x CNV corroboration</td><td>目前 model 不吃 single-cell CNV</td></tr>
+            <tr><td>輸出定位</td><td>inferred tree + CCF</td><td>candidate topology + CCF + SNV assignment</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn" style="margin-top: 18px;">
+          <strong>可移植原則</strong>
+          <p>先固定 canonical site-level evidence，再推理 topology；把 model output、inference diagnostics 與外部/holdout validation 分開報告。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="references">
+      <div class="section-head">
+        <div>
+          <p class="kicker">07 · visual references</p>
+          <h2>SVG 圖式參考來源</h2>
+        </div>
+        <p>以下只取「如何畫清楚」的視覺語法；本頁沒有嵌入外部論文圖片，所有主圖均為本頁自行重畫的 inline SVG。</p>
+      </div>
+      <div class="grid-4">
+        <article class="card reference-card">
+          <span class="badge direct">TREE + VAF + CNV</span>
+          <h3>PhyloWGS</h3>
+          <p>參考其「演化示意 → VAF measurement → subclonal reconstruction」的連續敘事，重畫本頁資料 pipeline 與 tree flow。</p>
+          <a href="https://link.springer.com/article/10.1186/s13059-015-0602-8" target="_blank" rel="noreferrer">Genome Biology 2015 ↗</a>
+        </article>
+        <article class="card reference-card">
+          <span class="badge support">CLONE TREE + FREQUENCY</span>
+          <h3>CITUP</h3>
+          <p>參考「subclonal frequencies 與 clone tree 並列」的圖式，轉化成本頁 high-confidence candidate branching tree topology 的 CCF 標籤呈現。</p>
+          <a href="https://academic.oup.com/bioinformatics/article/31/9/1349/200674" target="_blank" rel="noreferrer">Bioinformatics 2015 ↗</a>
+        </article>
+        <article class="card reference-card">
+          <span class="badge support">CCF DISTRIBUTION</span>
+          <h3>PyClone</h3>
+          <p>參考以 cellular prevalence 與 copy-number-aware inference 表達 clonal clusters 的圖式語法。</p>
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4864026/" target="_blank" rel="noreferrer">Genome Biology 2014 ↗</a>
+        </article>
+        <article class="card reference-card">
+          <span class="badge support">SINGLE-CELL + CNA</span>
+          <h3>Single-cell DNA phylogeny</h3>
+          <p>參考將單細胞 CNV/SNV profile 與 tree 分開呈現的方式；本頁因此把 CNV heatmap 和 SNV tree 分成兩個 evidence layer。</p>
+          <a href="https://genome.cshlp.org/content/33/11/2002" target="_blank" rel="noreferrer">Genome Research 2023 ↗</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="sources">
+      <div class="section-head">
+        <div>
+          <p class="kicker">08 · local source map</p>
+          <h2>每一層可以回到哪裡查</h2>
+        </div>
+        <p>HTML 是視覺索引；細節、頁碼與限制仍保留在可閱讀的 Markdown 章節。</p>
+      </div>
+      <div class="card pad">
+        <details open>
+          <summary>論文與圖</summary>
+          <p><a href="golden_tree/hcc1395_golden_tree.pdf">golden_tree/hcc1395_golden_tree.pdf</a> · Fig. 1–2（call-set）、Fig. 4（tree + single-cell CNV）、Extended Data Fig. 9（SuperFreq + subHMM）。</p>
+        </details>
+        <details>
+          <summary>六份研究章節</summary>
+          <div class="source-row">
+            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/README.md">README.md</a>
+            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md">01 data</a>
+            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md">02 tree</a>
+            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md">03 validation</a>
+            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/04_confidence_and_limits.md">04 limits</a>
+            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md">05 repo lessons</a>
+          </div>
+        </details>
+        <details>
+          <summary>目前 repo 的模型文件</summary>
+          <div class="source-row">
+            <a href="data.md">data.md</a>
+            <a href="model.md">model.md</a>
+            <a href="inference_algo.md">inference_algo.md</a>
+            <a href="output.md">output.md</a>
+            <a href="golden_tree/research/phylowgs_model_review.md">PhyloWGS model review</a>
+          </div>
+        </details>
+        <details>
+          <summary>論文數字的閱讀邊界</summary>
+          <p>本頁採用主文和研究章節交叉確認後的核心敘述；不同段落對 sequencing center 數、63 tumor-normal pairs 與 126 BAM files、WES replicate 數及部分 coverage 的寫法有小幅差異。這些差異不改變「多路徑 call-set → 分層過濾 → clonality/tree」的主線；但 <code>99.93%</code> 只代表可判讀 SNV 的 call-set confirmation rate，不是 tree topology accuracy。</p>
+        </details>
+        <p class="source-note">本頁 SVG 為依本地 PDF Fig. 4 與外部原始論文圖式原創重畫；外部連結僅作文獻與 visual grammar reference。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Updated 2026-08-21 · Offline single-file visualization · Sources: local HCC1395 paper PDF, golden_tree research chapters, and linked primary tumor-phylogeny papers.
+  </footer>
+</body>
+</html>
