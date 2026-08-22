@@ -19,16 +19,16 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
-SCHEMA_VERSION = "hcc1395_tumor_tree_input/v2"
+SCHEMA_VERSION = "hcc1395_tumor_tree_input/v4"
 REQUIRED_COLUMNS = (
     "mutation_id",
     "chrom",
     "pos",
     "ref",
     "alt",
-    "bulk_ref",
-    "bulk_alt",
-    "bulk_depth",
+    "ref_reads",
+    "alt_reads",
+    "total_reads",
     "hp1_1_ref",
     "hp1_1_alt",
     "hp2_1_ref",
@@ -37,14 +37,13 @@ REQUIRED_COLUMNS = (
     "minor_cn",
     "total_cn",
     "rho_ASCAT",
-    "multiplicity_candidates",
-    "multiplicity_prior",
     "model_include",
     "model_status",
 )
 
 ARTIFACTS = (
     "samples.jsonl.gz",
+    "multiplicity_posterior.tsv.gz",
     "diagnostics.json",
     "representative_tree.json",
     "checkpoint.json.gz",
@@ -83,8 +82,8 @@ def fixture_rows(*, hp_shift: int = 0, purity: str = "0.99") -> list[dict[str, s
 
     rows: list[dict[str, str]] = []
     for index in range(1, 7):
-        bulk_ref = 22 + index
-        bulk_alt = 8 + (index % 3)
+        ref_reads = 22 + index
+        alt_reads = 8 + (index % 3)
         hp1_ref = 3 + (index % 2)
         hp1_alt = 2 + (index % 3)
         hp2_ref = 2 + ((index + 1) % 2)
@@ -101,9 +100,9 @@ def fixture_rows(*, hp_shift: int = 0, purity: str = "0.99") -> list[dict[str, s
                 "pos": str(1000 + index),
                 "ref": "A",
                 "alt": "T",
-                "bulk_ref": str(bulk_ref),
-                "bulk_alt": str(bulk_alt),
-                "bulk_depth": str(bulk_ref + bulk_alt),
+                "ref_reads": str(ref_reads),
+                "alt_reads": str(alt_reads),
+                "total_reads": str(ref_reads + alt_reads),
                 "hp1_1_ref": str(hp1_ref),
                 "hp1_1_alt": str(hp1_alt),
                 "hp2_1_ref": str(hp2_ref),
@@ -112,8 +111,6 @@ def fixture_rows(*, hp_shift: int = 0, purity: str = "0.99") -> list[dict[str, s
                 "minor_cn": "1",
                 "total_cn": "4",
                 "rho_ASCAT": purity,
-                "multiplicity_candidates": "1;2;3",
-                "multiplicity_prior": "1=0.6;2=0.3;3=0.1",
                 "model_include": "yes",
                 "model_status": "eligible",
             }
@@ -229,6 +226,23 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
     tree = read_json(chain_dir / "representative_tree.json")
     read_gzip_json(chain_dir / "checkpoint.json.gz")
     samples = read_jsonl_gz(chain_dir / "samples.jsonl.gz")
+    with gzip.open(chain_dir / "multiplicity_posterior.tsv.gz", "rt", encoding="utf-8") as handle:
+        posterior_lines = [line.rstrip("\n") for line in handle if line.strip()]
+    check(
+        posterior_lines
+        and posterior_lines[0] == "mutation_id\tmultiplicity\tprior\tposterior_mean",
+        "multiplicity posterior artifact has the wrong header",
+    )
+    posterior_by_site: dict[str, float] = {}
+    for line in posterior_lines[1:]:
+        fields = line.split("\t")
+        check(len(fields) == 4, "multiplicity posterior row has the wrong field count")
+        posterior_by_site[fields[0]] = posterior_by_site.get(fields[0], 0.0) + float(fields[3])
+    check(posterior_by_site, "multiplicity posterior artifact is empty")
+    check(
+        all(abs(value - 1.0) < 1e-9 for value in posterior_by_site.values()),
+        "multiplicity posterior probabilities do not normalize per SNV",
+    )
 
     algorithm = str(diagnostics.get("algorithm", ""))
     model = str(diagnostics.get("model", ""))
@@ -255,8 +269,14 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
     target = diagnostics.get("target")
     check(isinstance(target, dict), "diagnostics.target is missing")
     check(
-        "CN_only_multiplicity_prior" in str(target.get("site_terms", "")),
-        "CN-only multiplicity prior is not recorded as the site likelihood term",
+        "CN_constrained_multiplicity_candidates_marginalized_with_emission_posterior"
+        in str(target.get("site_terms", "")),
+        "CN-constrained multiplicity posterior is not recorded as the site likelihood term",
+    )
+    check(
+        diagnostics.get("multiplicity_role")
+        == "CN_constrained_latent_state_with_per_site_posterior; not_a_table_column",
+        "diagnostics do not record model-owned multiplicity posterior derivation",
     )
     check(
         set(diagnostics.get("counters", {}))
@@ -271,6 +291,10 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
         "sampler counters contain an unexpected move field",
     )
     check(completion.get("status") == "complete", "chain completion status is not complete")
+    check(
+        "multiplicity_posterior.tsv.gz" in completion.get("artifacts", []),
+        "completion manifest does not list multiplicity posterior output",
+    )
     check(tree.get("model") == diagnostics.get("model"), "tree/model contract mismatch")
     check(len(samples) > 0, "no retained posterior samples")
     return diagnostics
@@ -382,6 +406,19 @@ def test_fail_closed(binary: Path, root: Path) -> None:
         "missing required schema column",
     )
     assert_failed_output_is_not_complete(invalid_out)
+
+    legacy_multiplicity = root / "legacy_multiplicity_columns.tsv"
+    write_tsv(
+        legacy_multiplicity,
+        fixture_rows(),
+        [*REQUIRED_COLUMNS, "multiplicity_candidates", "multiplicity_prior"],
+    )
+    legacy_out = root / "legacy_multiplicity_columns_out"
+    assert_failure(
+        invoke(binary, input_path=legacy_multiplicity, output_path=legacy_out),
+        "removed multiplicity table columns",
+    )
+    assert_failed_output_is_not_complete(legacy_out)
 
     mismatch = root / "purity_mismatch.tsv"
     write_tsv(mismatch, fixture_rows(purity="0.95"), REQUIRED_COLUMNS)

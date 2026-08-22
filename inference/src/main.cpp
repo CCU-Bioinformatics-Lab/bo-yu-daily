@@ -76,8 +76,8 @@ void print_help() {
               << "  --seed N --num-nodes N --iterations N --burnin N --thin N\n"
               << "  --purity RHO --checkpoint-every N --threads N --chains N\n"
               << "  --exclude-file IDS.txt --resume\n\n"
-              << "Each completed chain writes samples.jsonl.gz, diagnostics.json,\n"
-              << "representative_tree.json, checkpoint.json.gz, chain_complete.json.\n";
+              << "Each completed chain writes samples.jsonl.gz, multiplicity_posterior.tsv.gz,\n"
+              << "diagnostics.json, representative_tree.json, checkpoint.json.gz, chain_complete.json.\n";
 }
 
 Cli parse_cli(int argc, char** argv) {

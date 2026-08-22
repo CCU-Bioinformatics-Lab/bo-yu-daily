@@ -263,8 +263,10 @@ def strict_holdout_predictive_metrics(
 
     The log score uses the complete bulk+conditional-HP emission. Coverage is
     the central 90% interval of the posterior VAF mixture, using the sampler's
-    local clone masses when present. The CN-only multiplicity prior remains
-    the only multiplicity distribution in this predictive calculation.
+    local clone masses when present. Holdout prediction starts from the
+    CN-constrained candidate prior because holdout sites are excluded from
+    fitting; fitted-site multiplicity responsibilities are emitted separately
+    by the C++ sampler.
     """
 
     from .model import ModelData, compile_model, expected_alt_probability, load_model_table
@@ -291,8 +293,7 @@ def strict_holdout_predictive_metrics(
             if weights.shape != phi.shape or not np.isfinite(weights).all() or np.any(weights <= 0.0):
                 raise DiagnosticError("sample eta/phi dimensions or positivity are inconsistent")
         else:
-            # Compatibility path for the legacy Python reference sampler only.
-            weights = occupancy + 1.0
+            raise DiagnosticError("sample is missing eta; legacy occupancy-only artifacts are unsupported")
         weights /= weights.sum()
         matrix = compiled.likelihood_matrix(phi)
         sample_scores.append(scipy_logsumexp(matrix + np.log(weights)[None, :], axis=1))
@@ -321,7 +322,7 @@ def strict_holdout_predictive_metrics(
         cumulative /= cumulative[-1]
         low = float(ordered_values[np.searchsorted(cumulative, 0.05, side="left")])
         high = float(ordered_values[np.searchsorted(cumulative, 0.95, side="left")])
-        observed = site.bulk_alt / site.bulk_depth
+        observed = site.alt_reads / site.total_reads
         covered += int(low <= observed <= high)
     return {
         "predictive_coverage": covered / len(sites),

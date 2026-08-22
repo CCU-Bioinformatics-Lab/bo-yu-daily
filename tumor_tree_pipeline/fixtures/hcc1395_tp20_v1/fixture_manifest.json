@@ -16,8 +16,8 @@
     },
     "bulk_counts": {
       "path": "counts/snv_bulk_counts.tsv.gz",
-      "sha256": "1f8aa7a867b86ca48728699331a7684bc343df1f0c1c0cbdf04c049efb32683c",
-      "size_bytes": 1021
+      "sha256": "e9aa38461afd4a0b38b5dbc609d51691579cb0da7aa2bb65bf0c434edcb9aa9b",
+      "size_bytes": 1023
     },
     "count_manifest": {
       "path": "counts/site_counts_manifest.json",
@@ -31,8 +31,8 @@
     },
     "hp_qc": {
       "path": "counts/snv_hp_qc.tsv.gz",
-      "sha256": "4e42822c7888405e6b7e2ff2bbcb68c12b373711974cea53b49a9e3e12813ada",
-      "size_bytes": 874
+      "sha256": "b32e913ff5fd40a67b7be9e9380368ddc2bf0e0f81792dfe6f0c484c2c9632a0",
+      "size_bytes": 872
     },
     "site_cnv_qc": {
       "path": "site_cnv_qc.tsv.gz",

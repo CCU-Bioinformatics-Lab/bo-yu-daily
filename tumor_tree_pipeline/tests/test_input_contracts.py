@@ -16,8 +16,11 @@ from tumor_tree_pipeline.contracts import (
 )
 from tumor_tree_pipeline.input_table import (
     build_model_table,
-    multiplicity_prior,
-    parse_prior,
+)
+from tumor_tree_pipeline.model import (
+    CanonicalInputError,
+    derive_cn_multiplicity_prior,
+    load_model_table,
 )
 from tumor_tree_pipeline.provenance import (
     atomic_write_gzip_tsv,
@@ -48,14 +51,17 @@ class InputContractTests(unittest.TestCase):
         )
 
     def test_cn_only_hierarchical_prior_has_equal_side_mass(self):
-        prior = multiplicity_prior(3, 1)
-        self.assertEqual(set(prior), {1, 2, 3})
-        self.assertAlmostEqual(prior[1], 2.0 / 3.0)
+        candidates, prior = derive_cn_multiplicity_prior(3.0, 1.0)
+        self.assertEqual(candidates, (1.0, 2.0, 3.0))
+        self.assertAlmostEqual(prior[0], 2.0 / 3.0)
+        self.assertAlmostEqual(prior[1], 1.0 / 6.0)
         self.assertAlmostEqual(prior[2], 1.0 / 6.0)
-        self.assertAlmostEqual(prior[3], 1.0 / 6.0)
-        self.assertEqual(multiplicity_prior(3, 0), {1: 1 / 3, 2: 1 / 3, 3: 1 / 3})
+        self.assertEqual(
+            derive_cn_multiplicity_prior(3.0, 0.0)[1],
+            (1 / 3, 1 / 3, 1 / 3),
+        )
 
-    def test_fixture_build_is_20_rows_with_16_eligible_and_no_posterior(self):
+    def test_fixture_build_is_20_rows_with_16_eligible_and_no_multiplicity_columns(self):
         with tempfile.TemporaryDirectory() as temporary:
             result = self.build(Path(temporary) / "bundle")
             rows = read_tsv(result.table)
@@ -74,18 +80,49 @@ class InputContractTests(unittest.TestCase):
             self.assertTrue(set(MODEL_REQUIRED_COLUMNS).issubset(rows[0]))
             self.assertFalse(set(MODEL_FORBIDDEN_COLUMNS) & set(rows[0]))
             self.assertNotIn("ps", MODEL_REQUIRED_COLUMNS)
+            self.assertNotIn("multiplicity_candidates", rows[0])
+            self.assertNotIn("multiplicity_prior", rows[0])
             self.assertTrue(all(float(row["rho_ASCAT"]) == 0.99 for row in rows))
-            excluded = [row for row in rows if row["model_include"] == "no"]
-            self.assertTrue(all(not row["multiplicity_prior"] for row in excluded))
             for row in rows:
                 if row["major_cn"] == "3" and row["minor_cn"] == "1":
-                    prior = parse_prior(row["multiplicity_prior"])
-                    self.assertAlmostEqual(prior[1], 2 / 3, places=10)
+                    candidates, prior = derive_cn_multiplicity_prior(3.0, 1.0)
+                    self.assertEqual(candidates, (1.0, 2.0, 3.0))
+                    self.assertAlmostEqual(prior[0], 2 / 3, places=10)
+                    self.assertAlmostEqual(prior[1], 1 / 6, places=10)
                     self.assertAlmostEqual(prior[2], 1 / 6, places=10)
-                    self.assertAlmostEqual(prior[3], 1 / 6, places=10)
                     break
             else:
                 self.fail("fixture lacks the major=3/minor=1 contract case")
+
+    def test_python_loader_parses_built_table_without_multiplicity_columns(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            result = self.build(Path(temporary) / "bundle")
+            model = load_model_table(result.table, 0.99)
+            site = next(
+                site
+                for site in model.sites
+                if site.major_cn == 3.0 and site.minor_cn == 1.0
+            )
+            self.assertEqual(site.multiplicities, (1.0, 2.0, 3.0))
+            self.assertAlmostEqual(site.multiplicity_prior[0], 2 / 3)
+            self.assertAlmostEqual(site.multiplicity_prior[1], 1 / 6)
+            self.assertAlmostEqual(site.multiplicity_prior[2], 1 / 6)
+
+    def test_python_loader_rejects_legacy_multiplicity_columns(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            result = self.build(Path(temporary) / "bundle")
+            rows = read_tsv(result.table)
+            old_table = Path(temporary) / "old_multiplicity.tsv.gz"
+            old_fields = list(MODEL_REQUIRED_COLUMNS) + [
+                "multiplicity_candidates",
+                "multiplicity_prior",
+            ]
+            for row in rows:
+                row["multiplicity_candidates"] = "1;2;3"
+                row["multiplicity_prior"] = "1=0.6666666667;2=0.1666666667;3=0.1666666666"
+            atomic_write_gzip_tsv(old_table, rows, old_fields)
+            with self.assertRaisesRegex(CanonicalInputError, "forbidden legacy columns"):
+                load_model_table(old_table, 0.99)
 
     def test_manifest_records_command_schema_sources_outputs_and_purity(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -129,7 +166,7 @@ class InputContractTests(unittest.TestCase):
             bulk_path = copied / "counts" / "snv_bulk_counts.tsv.gz"
             rows = read_tsv(bulk_path)
             fields = list(rows[0])
-            rows[0]["bulk_usable_depth"] = str(int(rows[0]["bulk_usable_depth"]) + 1)
+            rows[0]["total_reads"] = str(int(rows[0]["total_reads"]) + 1)
             atomic_write_gzip_tsv(bulk_path, rows, fields)
             with self.assertRaisesRegex(ValueError, "bulk count conservation failed"):
                 self.build(Path(temporary) / "bundle", fixture=copied)

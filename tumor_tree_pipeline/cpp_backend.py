@@ -11,15 +11,30 @@ from __future__ import annotations
 import os
 import subprocess
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from .contracts import ChainConfig
-from .sampler import ChainResult
+
+
+@dataclass(frozen=True)
+class ChainResult:
+    """Stable workflow result contract returned by the active C++ backend."""
+
+    outdir: Path
+    samples: Path
+    multiplicity_posterior: Path
+    diagnostics: Path
+    representative_tree: Path
+    checkpoint: Path
+    posterior_samples: int
+    resumed: bool
 
 
 _ARTIFACTS = (
     "samples.jsonl.gz",
+    "multiplicity_posterior.tsv.gz",
     "diagnostics.json",
     "representative_tree.json",
     "checkpoint.json.gz",
@@ -152,6 +167,7 @@ def run_chain_cpp(
     return ChainResult(
         outdir=output_path,
         samples=output_path / "samples.jsonl.gz",
+        multiplicity_posterior=output_path / "multiplicity_posterior.tsv.gz",
         diagnostics=output_path / "diagnostics.json",
         representative_tree=output_path / "representative_tree.json",
         checkpoint=output_path / "checkpoint.json.gz",

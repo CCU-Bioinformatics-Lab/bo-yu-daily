@@ -13,9 +13,9 @@ struct Site {
     long long pos = 0;
     std::string ref;
     std::string alt;
-    int bulk_ref = 0;
-    int bulk_alt = 0;
-    int bulk_depth = 0;
+    int ref_reads = 0;
+    int alt_reads = 0;
+    int total_reads = 0;
     int hp1_1_ref = 0;
     int hp1_1_alt = 0;
     int hp2_1_ref = 0;
@@ -24,6 +24,8 @@ struct Site {
     double minor_cn = 0.0;
     double total_cn = 0.0;
     double purity = 0.0;
+    // Internal CN-constrained candidate support and initial weights.  These
+    // are derived by the loader and never read from the canonical table.
     std::vector<int> multiplicity_candidates;
     std::vector<double> multiplicity_prior;
 };
@@ -33,6 +35,11 @@ struct CanonicalTable {
     double requested_purity = 0.0;
     std::string input_sha256;
 };
+
+// Return the normalized posterior responsibility of each loader-derived
+// multiplicity candidate at a fixed clone prevalence.  The observed VAF is
+// never modified; this is a model-implied latent-state posterior.
+std::vector<double> site_multiplicity_posterior(const Site& site, double phi);
 
 // The loader is fail-closed: it validates all required active fields before
 // returning.  It owns all Site memory; callers only borrow const references.
