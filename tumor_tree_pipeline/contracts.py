@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-MODEL_INPUT_SCHEMA_VERSION = "hcc1395_tumor_tree_input/v2"
+MODEL_INPUT_SCHEMA_VERSION = "hcc1395_tumor_tree_input/v4"
 
 MODEL_REQUIRED_COLUMNS = (
     "mutation_id",
@@ -18,9 +18,9 @@ MODEL_REQUIRED_COLUMNS = (
     "pos",
     "ref",
     "alt",
-    "bulk_ref",
-    "bulk_alt",
-    "bulk_depth",
+    "ref_reads",
+    "alt_reads",
+    "total_reads",
     "hp1_1_ref",
     "hp1_1_alt",
     "hp2_1_ref",
@@ -29,14 +29,14 @@ MODEL_REQUIRED_COLUMNS = (
     "minor_cn",
     "total_cn",
     "rho_ASCAT",
-    "multiplicity_candidates",
-    "multiplicity_prior",
     "model_include",
     "model_status",
 )
 
 MODEL_FORBIDDEN_COLUMNS = (
     "tumor_dna_fraction",
+    "multiplicity_candidates",
+    "multiplicity_prior",
     "multiplicity_posteriors",
 )
 

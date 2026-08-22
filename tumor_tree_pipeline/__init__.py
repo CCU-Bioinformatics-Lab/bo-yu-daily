@@ -7,8 +7,6 @@ The package exposes three deep-module seams:
     likelihood table.
 ``run_chain_cpp``
     Invoke the active C++17 finite-K posterior-chain backend.
-``run_chain``
-    Access the Python reference implementation used by contract tests.
 ``run_experiment``
     Orchestrate immutable, gated multi-chain experiments.
 

@@ -8,6 +8,7 @@
 #include <cstring>
 #include <fstream>
 #include <fcntl.h>
+#include <iomanip>
 #include <map>
 #include <numeric>
 #include <random>
@@ -277,6 +278,36 @@ std::string samples_jsonl(const std::vector<SampleRecord>& samples) {
     return result;
 }
 
+std::string multiplicity_posterior_tsv(
+    const CanonicalTable& table,
+    const std::vector<std::vector<double>>& posterior_sums,
+    std::uint64_t posterior_draws) {
+    if (posterior_draws == 0 || posterior_sums.size() != table.sites.size()) {
+        throw std::runtime_error("cannot write multiplicity posterior without matching posterior draws");
+    }
+    std::ostringstream output;
+    output << "mutation_id\tmultiplicity\tprior\tposterior_mean\n";
+    output << std::setprecision(17);
+    for (std::size_t site_index = 0; site_index < table.sites.size(); ++site_index) {
+        const Site& site = table.sites[site_index];
+        if (posterior_sums[site_index].size() != site.multiplicity_candidates.size()) {
+            throw std::runtime_error("multiplicity posterior candidate dimensions do not match site");
+        }
+        for (std::size_t candidate = 0; candidate < site.multiplicity_candidates.size(); ++candidate) {
+            const double posterior = posterior_sums[site_index][candidate] /
+                static_cast<double>(posterior_draws);
+            if (!std::isfinite(posterior) || posterior < 0.0) {
+                throw std::runtime_error("multiplicity posterior contains an invalid value");
+            }
+            output << site.mutation_id << '\t'
+                   << site.multiplicity_candidates[candidate] << '\t'
+                   << site.multiplicity_prior[candidate] << '\t'
+                   << posterior << '\n';
+        }
+    }
+    return output.str();
+}
+
 void initialize_counters(Counters& counters) {
     for (const auto& move : kMoveTypes) {
         counters[move + "_proposals"] = 0;
@@ -332,6 +363,11 @@ public:
         initialize_counters(counters);
         std::vector<SampleRecord> retained;
         std::vector<std::vector<std::uint64_t>> assignment_counts(table.sites.size(), std::vector<std::uint64_t>(config.num_nodes, 0));
+        std::vector<std::vector<double>> multiplicity_posterior_sums;
+        multiplicity_posterior_sums.reserve(table.sites.size());
+        for (const Site& site : table.sites) {
+            multiplicity_posterior_sums.emplace_back(site.multiplicity_candidates.size(), 0.0);
+        }
         SampleRecord best_sample;
         std::vector<int> best_assignments;
         bool has_best = false;
@@ -415,7 +451,14 @@ public:
                 sample.occupancy.assign(config.num_nodes, 0);
                 for (int node : state.z) ++sample.occupancy[static_cast<std::size_t>(node)];
                 retained.push_back(sample);
-                for (std::size_t site = 0; site < state.z.size(); ++site) ++assignment_counts[site][static_cast<std::size_t>(state.z[site])];
+                for (std::size_t site = 0; site < state.z.size(); ++site) {
+                    ++assignment_counts[site][static_cast<std::size_t>(state.z[site])];
+                    const auto multiplicity_posterior = site_multiplicity_posterior(
+                        table.sites[site], phi[static_cast<std::size_t>(state.z[site])]);
+                    for (std::size_t candidate = 0; candidate < multiplicity_posterior.size(); ++candidate) {
+                        multiplicity_posterior_sums[site][candidate] += multiplicity_posterior[candidate];
+                    }
+                }
                 if (!has_best || current_score > best_sample.log_posterior) { best_sample = sample; best_assignments = state.z; has_best = true; }
             }
             if (completed_iteration % config.checkpoint_every == 0U) write_checkpoint(completed_iteration);
@@ -425,6 +468,9 @@ public:
 
         const auto samples_path = options.outdir / "samples.jsonl.gz";
         atomic_write_gzip(samples_path, samples_jsonl(retained));
+        atomic_write_gzip(
+            options.outdir / "multiplicity_posterior.tsv.gz",
+            multiplicity_posterior_tsv(table, multiplicity_posterior_sums, retained.size()));
         double minimum = retained.front().log_posterior, maximum = minimum, mean = 0.0;
         for (const auto& sample : retained) { minimum = std::min(minimum, sample.log_posterior); maximum = std::max(maximum, sample.log_posterior); mean += sample.log_posterior; }
         mean /= static_cast<double>(retained.size());
@@ -444,7 +490,7 @@ public:
         const auto assignment_rate = static_cast<double>(counters["assignment_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["assignment_proposals"]));
         const auto eta_rate = static_cast<double>(counters["eta_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["eta_proposals"]));
         const auto topology_rate = static_cast<double>(counters["topology_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["topology_proposals"]));
-        std::string diagnostics = "{\"model\":" + json_string(model_name) + ",\"algorithm\":\"single_chain_phylowgs_inspired_tssb_mcmc\",\"input_schema\":\"hcc1395_tumor_tree_input/v2\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"observed_sites\":" + json_u64(table.sites.size()) + ",\"excluded_sites\":" + json_u64(options.exclude_ids.size()) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"config\":" + config_json(reported_config) + ",\"requested_seed\":" + json_u64(config.seed) + ",\"chain_index\":" + std::to_string(chain_index) + ",\"derived_seed\":" + json_u64(derived_seed) + ",\"resumed\":false,\"state_variables\":[\"parents\",\"eta\",\"z\"],\"target\":{\"tree_prior\":\"finite_truncated_TSSB_depth_and_branching_prior\",\"eta_prior\":\"TSSB_shaped_depth_width_Dirichlet\",\"assignment_prior\":\"categorical_local_node_mass\",\"site_terms\":\"CN_only_multiplicity_prior_marginalized_bulk_and_HP_emission\"},\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"multiplicity_role\":\"CN_only_prior_marginalization\",\"ps_role\":\"upstream_phase_block_used_to_derive_HP_counts; not_an_explicit_downstream_state_or_tree_constraint\",\"proposal_kernel\":{\"compound_sweep_per_iteration\":true,\"assignment\":\"all_SNV_categorical_Gibbs_sweep\",\"eta\":\"TSSB_shaped_Dirichlet_independence_MH_with_emission_correction\",\"topology\":\"conditional_subtree_prune_and_regraft_Gibbs_over_valid_parents\"},\"hastings_correction\":{\"assignment_gibbs\":true,\"eta_independence_MH\":true,\"topology_gibbs\":true},\"assignment_acceptance\":" + json_number(assignment_rate) + ",\"eta_acceptance\":" + json_number(eta_rate) + ",\"topology_acceptance\":" + json_number(topology_rate) + ",\"acceptance_semantics\":{\"assignment\":\"fraction_of_SNV_Gibbs_updates_that_changed_label\",\"eta\":\"MH_acceptance\",\"topology\":\"fraction_of_conditional_parent_updates_that_changed_parent\"},\"counters\":" + counters_json(counters) + ",\"log_posterior\":{\"minimum\":" + json_number(minimum) + ",\"maximum\":" + json_number(maximum) + ",\"mean\":" + json_number(mean) + "},\"checkpoint\":\"checkpoint.json.gz\"}\n";
+        std::string diagnostics = "{\"model\":" + json_string(model_name) + ",\"algorithm\":\"single_chain_phylowgs_inspired_tssb_mcmc\",\"input_schema\":\"hcc1395_tumor_tree_input/v4\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"observed_sites\":" + json_u64(table.sites.size()) + ",\"excluded_sites\":" + json_u64(options.exclude_ids.size()) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"config\":" + config_json(reported_config) + ",\"requested_seed\":" + json_u64(config.seed) + ",\"chain_index\":" + std::to_string(chain_index) + ",\"derived_seed\":" + json_u64(derived_seed) + ",\"resumed\":false,\"state_variables\":[\"parents\",\"eta\",\"z\"],\"target\":{\"tree_prior\":\"finite_truncated_TSSB_depth_and_branching_prior\",\"eta_prior\":\"TSSB_shaped_depth_width_Dirichlet\",\"assignment_prior\":\"categorical_local_node_mass\",\"site_terms\":\"CN_constrained_multiplicity_candidates_marginalized_with_emission_posterior\"},\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"multiplicity_role\":\"CN_constrained_latent_state_with_per_site_posterior; not_a_table_column\",\"multiplicity_posterior_artifact\":\"multiplicity_posterior.tsv.gz\",\"ps_role\":\"upstream_phase_block_used_to_derive_HP_counts; not_an_explicit_downstream_state_or_tree_constraint\",\"proposal_kernel\":{\"compound_sweep_per_iteration\":true,\"assignment\":\"all_SNV_categorical_Gibbs_sweep\",\"eta\":\"TSSB_shaped_Dirichlet_independence_MH_with_emission_correction\",\"topology\":\"conditional_subtree_prune_and_regraft_Gibbs_over_valid_parents\"},\"hastings_correction\":{\"assignment_gibbs\":true,\"eta_independence_MH\":true,\"topology_gibbs\":true},\"assignment_acceptance\":" + json_number(assignment_rate) + ",\"eta_acceptance\":" + json_number(eta_rate) + ",\"topology_acceptance\":" + json_number(topology_rate) + ",\"acceptance_semantics\":{\"assignment\":\"fraction_of_SNV_Gibbs_updates_that_changed_label\",\"eta\":\"MH_acceptance\",\"topology\":\"fraction_of_conditional_parent_updates_that_changed_parent\"},\"counters\":" + counters_json(counters) + ",\"log_posterior\":{\"minimum\":" + json_number(minimum) + ",\"maximum\":" + json_number(maximum) + ",\"mean\":" + json_number(mean) + "},\"checkpoint\":\"checkpoint.json.gz\"}\n";
         const std::string checkpoint_marker = ",\"checkpoint\":\"checkpoint.json.gz\"";
         const auto marker_position = diagnostics.rfind(checkpoint_marker);
         if (marker_position == std::string::npos) throw std::runtime_error("internal diagnostics checkpoint marker is missing");
@@ -469,7 +515,7 @@ public:
         }
         representative += "}}\n";
         atomic_write_text(options.outdir / "representative_tree.json", representative);
-        atomic_write_text(options.outdir / "chain_complete.json", "{\"status\":\"complete\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"artifacts\":[\"samples.jsonl.gz\",\"diagnostics.json\",\"representative_tree.json\",\"checkpoint.json.gz\"]}\n");
+        atomic_write_text(options.outdir / "chain_complete.json", "{\"status\":\"complete\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"artifacts\":[\"samples.jsonl.gz\",\"multiplicity_posterior.tsv.gz\",\"diagnostics.json\",\"representative_tree.json\",\"checkpoint.json.gz\"]}\n");
         return {options.outdir, retained.size()};
     }
 };

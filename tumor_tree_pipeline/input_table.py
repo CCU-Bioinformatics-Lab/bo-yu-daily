@@ -1,10 +1,16 @@
 """Build the fail-closed site table consumed by tumor-tree inference.
 
-Multiplicity is a CN-only prior.  Bulk counts and ASCAT purity are never used
-to construct it; they remain observations/parameters for the downstream
-likelihood and therefore enter the statistical model exactly once.  LongPhase-S
-PS blocks are upstream phasing metadata used when HP1-1/HP2-1 counts are
-formed; the PS label itself is not copied into the downstream likelihood row.
+The canonical table stores ASCAT ``major_cn``/``minor_cn`` only.  Multiplicity
+is a CN-only latent distribution derived inside the Python/C++ model loader;
+the builder deliberately does not materialize multiplicity columns.  Bulk
+counts and ASCAT purity remain observations/parameters for the downstream
+likelihood and therefore enter the statistical model exactly once.
+LongPhase-S PS blocks are upstream phasing metadata used when HP1-1/HP2-1
+counts are formed; the PS label itself is not copied into the downstream
+likelihood row. Supplementary information columns (not used in likelihood)
+ remain available for QC, provenance, and result interpretation only.  The
+ ``cnv_status`` value is also used upstream as an eligibility gate that sets
+ ``model_include``/``model_status``; it is still not a likelihood feature.
 """
 
 from __future__ import annotations
@@ -38,6 +44,9 @@ from .provenance import (
 
 
 ALL_HP_TAGS = (".", "1", "2", "3", "4", "1-1", "2-1", "1-2", "2-2", "other")
+# Supplementary information columns (not used in likelihood): these fields
+# support QC/provenance and interpretation, but are not likelihood features.
+# ``cnv_status`` additionally controls upstream eligibility via model status.
 OPTIONAL_AUDIT_COLUMNS = (
     "phased_gt",
     "cnv_status",
@@ -124,55 +133,6 @@ def _load_hp(
     return grouped
 
 
-def multiplicity_prior(major_cn: int, minor_cn: int) -> dict[int, float]:
-    """Return the hierarchical CN-only prior over mutation multiplicity.
-
-    Extant major/minor homolog sides receive equal total mass.  Each side's
-    mass is then uniform over ``m=1..side_CN``.  Equal multiplicities from the
-    two sides are summed.  With major=3/minor=1 this yields 2/3, 1/6, 1/6.
-    """
-
-    if major_cn < minor_cn or minor_cn < 0 or major_cn <= 0:
-        raise ValueError(f"invalid major/minor CN: {major_cn}/{minor_cn}")
-    sides = [major_cn] + ([minor_cn] if minor_cn > 0 else [])
-    side_mass = 1.0 / len(sides)
-    weights: Counter[int] = Counter()
-    for copy_count in sides:
-        within_side_mass = side_mass / copy_count
-        for multiplicity in range(1, copy_count + 1):
-            weights[multiplicity] += within_side_mass
-    total = sum(weights.values())
-    prior = {key: value / total for key, value in sorted(weights.items())}
-    if abs(sum(prior.values()) - 1.0) > 1e-12:
-        raise AssertionError("internal multiplicity-prior normalization failure")
-    return prior
-
-
-def _format_prior(prior: Mapping[int, float]) -> str:
-    return ";".join(f"{key}={prior[key]:.12g}" for key in sorted(prior))
-
-
-def parse_prior(text: str) -> dict[int, float]:
-    parsed: dict[int, float] = {}
-    for token in str(text).split(";"):
-        if not token:
-            continue
-        if "=" not in token:
-            raise ValueError(f"invalid multiplicity-prior token: {token!r}")
-        raw_key, raw_value = token.split("=", 1)
-        try:
-            key = int(raw_key)
-            value = float(raw_value)
-        except ValueError as exc:
-            raise ValueError(f"invalid multiplicity-prior token: {token!r}") from exc
-        if key <= 0 or not math.isfinite(value) or value < 0:
-            raise ValueError(f"invalid multiplicity-prior token: {token!r}")
-        if key in parsed:
-            raise ValueError(f"duplicate multiplicity in prior: {key}")
-        parsed[key] = value
-    return parsed
-
-
 def _validate_count_manifest(path: Path, expected_sites: int) -> dict[str, Any]:
     try:
         manifest = json.loads(path.read_text(encoding="utf-8"))
@@ -222,21 +182,21 @@ def _build_rows(
         bulk = bulk_rows[key]
         hp = hp_rows[key]
         cn = cn_rows[key]
-        bulk_ref = _strict_integer(bulk.get("bulk_ref"), "bulk_ref")
-        bulk_alt = _strict_integer(bulk.get("bulk_alt"), "bulk_alt")
-        raw_depth = bulk.get("bulk_depth", bulk.get("bulk_usable_depth"))
-        bulk_depth = _strict_integer(raw_depth, "bulk_depth")
-        if bulk_depth != bulk_ref + bulk_alt:
+        ref_reads = _strict_integer(bulk.get("ref_reads"), "ref_reads")
+        alt_reads = _strict_integer(bulk.get("alt_reads"), "alt_reads")
+        raw_total_reads = bulk.get("total_reads")
+        total_reads = _strict_integer(raw_total_reads, "total_reads")
+        if total_reads != ref_reads + alt_reads:
             raise ValueError(
                 f"bulk count conservation failed for {_mutation_id(key)}: "
-                f"depth={bulk_depth}, ref+alt={bulk_ref + bulk_alt}"
+                f"total_reads={total_reads}, ref+alt={ref_reads + alt_reads}"
             )
         hp_ref = sum(hp[f"{tag}_ref"] for tag in ALL_HP_TAGS)
         hp_alt = sum(hp[f"{tag}_alt"] for tag in ALL_HP_TAGS)
-        if (hp_ref, hp_alt) != (bulk_ref, bulk_alt):
+        if (hp_ref, hp_alt) != (ref_reads, alt_reads):
             raise ValueError(
                 f"bulk/HP conservation failed for {_mutation_id(key)}: "
-                f"bulk=({bulk_ref},{bulk_alt}), hp=({hp_ref},{hp_alt})"
+                f"bulk=({ref_reads},{alt_reads}), hp=({hp_ref},{hp_alt})"
             )
         hp1_ref, hp1_alt = hp["1-1_ref"], hp["1-1_alt"]
         hp2_ref, hp2_alt = hp["2-1_ref"], hp["2-1_alt"]
@@ -263,8 +223,6 @@ def _build_rows(
         minor: int | str = ""
         total: int | str = ""
         model_include = "no"
-        prior_text = ""
-        candidates = ""
         if cnv_status in {"unmapped_segment", "segment_overlap"}:
             model_status = f"excluded_{cnv_status}"
         else:
@@ -284,14 +242,11 @@ def _build_rows(
                     raise ValueError(
                         f"mapped_nonzero_cn row has zero CN for {_mutation_id(key)}"
                     )
-                if bulk_depth == 0:
+                if total_reads == 0:
                     model_status = "excluded_zero_depth"
                 else:
                     model_include = "yes"
                     model_status = "eligible"
-                    prior = multiplicity_prior(major, minor)
-                    candidates = ";".join(str(value) for value in prior)
-                    prior_text = _format_prior(prior)
 
         row = {
             "mutation_id": _mutation_id(key),
@@ -299,9 +254,9 @@ def _build_rows(
             "pos": key[1],
             "ref": key[2],
             "alt": key[3],
-            "bulk_ref": bulk_ref,
-            "bulk_alt": bulk_alt,
-            "bulk_depth": bulk_depth,
+            "ref_reads": ref_reads,
+            "alt_reads": alt_reads,
+            "total_reads": total_reads,
             "hp1_1_ref": hp1_ref,
             "hp1_1_alt": hp1_alt,
             "hp2_1_ref": hp2_ref,
@@ -310,12 +265,11 @@ def _build_rows(
             "minor_cn": minor,
             "total_cn": total,
             "rho_ASCAT": f"{rho_ascat:.12g}",
-            "multiplicity_candidates": candidates,
-            "multiplicity_prior": prior_text,
             "model_include": model_include,
             "model_status": model_status,
-            # Optional audit metadata.  It is intentionally outside
-            # MODEL_REQUIRED_COLUMNS and must not enter the likelihood.
+            # Supplementary information columns (not used in likelihood).
+            # They are intentionally outside MODEL_REQUIRED_COLUMNS and serve
+            # QC/provenance only; they must not enter the likelihood.
             "phased_gt": bulk.get("phased_gt", ""),
             "cnv_status": cnv_status,
             "segment_id": cn.get("segment_id", ""),
@@ -346,20 +300,15 @@ def _validate_output_rows(
         if include != (row.get("model_status") == "eligible"):
             issues.append(f"{identifier}: model_include/status mismatch")
         if include:
-            prior = parse_prior(str(row.get("multiplicity_prior", "")))
-            candidates = [
-                int(value)
-                for value in str(row.get("multiplicity_candidates", "")).split(";")
-                if value
-            ]
-            if not prior or sorted(prior) != candidates:
-                issues.append(f"{identifier}: multiplicity support mismatch")
-            elif abs(sum(prior.values()) - 1.0) > 1e-9:
-                issues.append(f"{identifier}: multiplicity prior does not sum to one")
-            elif max(prior) > int(row["major_cn"]):
-                issues.append(f"{identifier}: multiplicity exceeds major CN")
-        elif row.get("multiplicity_prior") or row.get("multiplicity_candidates"):
-            issues.append(f"{identifier}: excluded row carries multiplicity prior")
+            try:
+                major = _strict_integer(row.get("major_cn"), "major_cn")
+                minor = _strict_integer(row.get("minor_cn"), "minor_cn")
+                total = _strict_integer(row.get("total_cn"), "total_cn")
+            except ValueError as exc:
+                issues.append(f"{identifier}: invalid CN state: {exc}")
+            else:
+                if major < minor or total != major + minor or total <= 0:
+                    issues.append(f"{identifier}: invalid CN state {major}/{minor}/{total}")
     forbidden = sorted(set(OUTPUT_COLUMNS) & set(MODEL_FORBIDDEN_COLUMNS))
     checks = {
         "expected_site_count": len(rows) == expected_sites,
@@ -474,13 +423,15 @@ def build_model_table(
             "observed_sample": observed_purity["sample"],
             "source_path": str(inputs.purity.source.resolve()),
             "source_sha256": source_records["ascat_purity"]["sha256"],
-            "role": "fixed global likelihood input; never used to build multiplicity_prior",
+            "role": "fixed global likelihood input; never used to derive CN multiplicity",
         },
         "multiplicity": {
-            "field": "multiplicity_prior",
+            "field": None,
+            "derived_in": ["python_model_loader", "cpp_model_loader"],
             "rule": "equal mass across extant major/minor homolog sides, then uniform over m=1..side_CN",
             "uses": ["major_cn", "minor_cn"],
-            "does_not_use": ["bulk_ref", "bulk_alt", "bulk_depth", "VAF", "rho_ASCAT"],
+            "does_not_use": ["ref_reads", "alt_reads", "total_reads", "VAF", "rho_ASCAT"],
+            "table_columns": [],
         },
         "ps": {
             "active_model_input": False,

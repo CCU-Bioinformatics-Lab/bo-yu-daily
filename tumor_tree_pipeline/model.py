@@ -2,7 +2,10 @@
 
 This module owns the narrow boundary between the versioned site table and the
 sampler.  It deliberately has no legacy loader: malformed or incomplete
-canonical input is an error, never a request to synthesize CN or multiplicity.
+canonical input is an error.  The loader derives CN-constrained multiplicity
+candidate support/prior from the canonical ASCAT major/minor CN fields instead
+of accepting a precomputed multiplicity table column; the emission can then
+return a posterior responsibility for each candidate.
 """
 
 from __future__ import annotations
@@ -33,8 +36,8 @@ class SiteObservation:
     pos: int
     ref: str
     alt: str
-    bulk_ref: int
-    bulk_alt: int
+    ref_reads: int
+    alt_reads: int
     hp1_ref: int
     hp1_alt: int
     hp2_ref: int
@@ -47,8 +50,8 @@ class SiteObservation:
     multiplicity_prior: tuple[float, ...]
 
     @property
-    def bulk_depth(self) -> int:
-        return self.bulk_ref + self.bulk_alt
+    def total_reads(self) -> int:
+        return self.ref_reads + self.alt_reads
 
 
 @dataclass(frozen=True)
@@ -194,76 +197,46 @@ def _number(row: Mapping[str, str], key: str, mutation_id: str) -> float:
     return value
 
 
-def parse_multiplicity_candidates(text: str, mutation_id: str = "<unknown>") -> tuple[float, ...]:
-    """Parse the canonical ``1;2;...`` multiplicity support strictly."""
-
-    values: list[float] = []
-    for token in text.split(";"):
-        token = token.strip()
-        if not token:
-            continue
-        try:
-            value = float(token)
-        except ValueError as exc:
-            raise CanonicalInputError(
-                f"row {mutation_id!r} has invalid multiplicity candidate {token!r}"
-            ) from exc
-        if not math.isfinite(value) or value <= 0 or not value.is_integer():
-            raise CanonicalInputError(
-                f"row {mutation_id!r} multiplicity candidates must be positive integers"
-            )
-        values.append(value)
-    if not values or len(values) != len(set(values)) or values != sorted(values):
-        raise CanonicalInputError(
-            f"row {mutation_id!r} multiplicity_candidates must be sorted, unique, and non-empty"
-        )
-    return tuple(values)
-
-
-def parse_probability_map(
-    text: str, mutation_id: str = "<unknown>"
+def derive_cn_multiplicity_prior(
+    major_cn: float, minor_cn: float, mutation_id: str = "<unknown>"
 ) -> tuple[tuple[float, ...], tuple[float, ...]]:
-    """Parse a normalized ``multiplicity_prior`` without silently repairing it."""
+    """Derive CN-constrained multiplicity candidates and initial prior.
 
-    values: dict[float, float] = {}
-    for token in text.split(";"):
-        token = token.strip()
-        if not token:
-            continue
-        if token.count("=") != 1:
-            raise CanonicalInputError(
-                f"row {mutation_id!r} has invalid multiplicity_prior token {token!r}"
-            )
-        raw_key, raw_probability = token.split("=", 1)
-        try:
-            key = float(raw_key)
-            probability = float(raw_probability)
-        except ValueError as exc:
-            raise CanonicalInputError(
-                f"row {mutation_id!r} has non-numeric multiplicity_prior token {token!r}"
-            ) from exc
-        if (
-            not math.isfinite(key)
-            or key <= 0
-            or not key.is_integer()
-            or not math.isfinite(probability)
-            or probability <= 0
-            or key in values
-        ):
-            raise CanonicalInputError(
-                f"row {mutation_id!r} has invalid multiplicity_prior token {token!r}"
-            )
-        values[key] = probability
-    if not values:
-        raise CanonicalInputError(f"row {mutation_id!r} has empty multiplicity_prior")
-    keys = tuple(sorted(values))
-    probabilities = tuple(values[key] for key in keys)
-    total = math.fsum(probabilities)
-    if not math.isclose(total, 1.0, rel_tol=0.0, abs_tol=1e-6):
+    Each extant ASCAT homolog side receives equal total mass, then uniform
+    mass over ``m=1..side_CN``.  Equal multiplicities are combined.  Thus
+    major=3/minor=1 gives ``m=(1, 2, 3)`` and initial
+    ``P=(2/3, 1/6, 1/6)``.  The final data-conditioned responsibility is
+    returned by :func:`site_multiplicity_posterior`.
+    """
+
+    if (
+        not math.isfinite(major_cn)
+        or not math.isfinite(minor_cn)
+        or not major_cn.is_integer()
+        or not minor_cn.is_integer()
+        or major_cn <= 0
+        or minor_cn < 0
+        or major_cn < minor_cn
+    ):
         raise CanonicalInputError(
-            f"row {mutation_id!r} multiplicity_prior sums to {total:.12g}, not 1"
+            f"row {mutation_id!r} has invalid major/minor CN state "
+            f"{major_cn}/{minor_cn}"
         )
-    return keys, probabilities
+    sides = [int(major_cn)] + ([int(minor_cn)] if minor_cn > 0 else [])
+    side_mass = 1.0 / len(sides)
+    weights: dict[int, float] = {}
+    for copy_count in sides:
+        within_side_mass = side_mass / copy_count
+        for multiplicity in range(1, copy_count + 1):
+            weights[multiplicity] = weights.get(multiplicity, 0.0) + within_side_mass
+    total = math.fsum(weights.values())
+    if not math.isfinite(total) or total <= 0.0:
+        raise CanonicalInputError(f"row {mutation_id!r} has invalid multiplicity normalization")
+    candidates = tuple(float(value) for value in sorted(weights))
+    prior = tuple(weights[int(value)] / total for value in candidates)
+    if not math.isclose(math.fsum(prior), 1.0, rel_tol=0.0, abs_tol=1e-12):
+        raise CanonicalInputError(f"row {mutation_id!r} multiplicity prior is not normalized")
+    return candidates, prior
 
 
 def load_model_table(
@@ -274,11 +247,14 @@ def load_model_table(
 ) -> ModelData:
     """Load eligible observations from the sole supported canonical schema.
 
-    Every active likelihood value must be present in the table.  In
-    particular, there is no total-CN=2, multiplicity-map, posterior, or legacy
-    file fallback.  Additional metadata columns (including PS) are ignored by
-    the downstream sampler: PS is upstream phasing provenance used to derive
-    HP labels/counts, not a direct likelihood state variable.
+    Every active likelihood observation must be present in the table.  The
+    loader derives the multiplicity candidate map from ASCAT major/minor CN;
+    there is no total-CN=2 fallback, precomputed multiplicity-map column, or
+    legacy file fallback.  The data-conditioned candidate posterior is
+    computed by :func:`site_multiplicity_posterior`, not loaded from a file.
+    Additional metadata columns (including PS) are
+    ignored by the downstream sampler: PS is upstream phasing provenance used
+    to derive HP labels/counts, not a direct likelihood state variable.
     """
 
     path = Path(path)
@@ -320,18 +296,18 @@ def load_model_table(
             if include != "yes" or status != "eligible":
                 continue
 
-            bulk_ref = _integer(row, "bulk_ref", mutation_id)
-            bulk_alt = _integer(row, "bulk_alt", mutation_id)
-            bulk_depth = _integer(row, "bulk_depth", mutation_id)
-            if bulk_depth != bulk_ref + bulk_alt or bulk_depth <= 0:
+            ref_reads = _integer(row, "ref_reads", mutation_id)
+            alt_reads = _integer(row, "alt_reads", mutation_id)
+            total_reads = _integer(row, "total_reads", mutation_id)
+            if total_reads != ref_reads + alt_reads or total_reads <= 0:
                 raise CanonicalInputError(
-                    f"row {mutation_id!r} bulk_depth must equal bulk_ref + bulk_alt and be positive"
+                    f"row {mutation_id!r} total_reads must equal ref_reads + alt_reads and be positive"
                 )
             hp1_ref = _integer(row, "hp1_1_ref", mutation_id)
             hp1_alt = _integer(row, "hp1_1_alt", mutation_id)
             hp2_ref = _integer(row, "hp2_1_ref", mutation_id)
             hp2_alt = _integer(row, "hp2_1_alt", mutation_id)
-            if hp1_ref + hp2_ref > bulk_ref or hp1_alt + hp2_alt > bulk_alt:
+            if hp1_ref + hp2_ref > ref_reads or hp1_alt + hp2_alt > alt_reads:
                 raise CanonicalInputError(
                     f"row {mutation_id!r} HP allocations exceed the corresponding bulk counts"
                 )
@@ -357,16 +333,9 @@ def load_model_table(
                     f"ASCAT purity={requested_purity}"
                 )
 
-            candidates = parse_multiplicity_candidates(
-                _required_text(row, "multiplicity_candidates", mutation_id), mutation_id
+            candidates, prior = derive_cn_multiplicity_prior(
+                major_cn, minor_cn, mutation_id
             )
-            prior_candidates, prior = parse_probability_map(
-                _required_text(row, "multiplicity_prior", mutation_id), mutation_id
-            )
-            if candidates != prior_candidates:
-                raise CanonicalInputError(
-                    f"row {mutation_id!r} multiplicity_candidates disagree with multiplicity_prior"
-                )
             if candidates[-1] > total_cn + 1e-9:
                 raise CanonicalInputError(
                     f"row {mutation_id!r} multiplicity exceeds total_cn"
@@ -381,8 +350,8 @@ def load_model_table(
                     pos=_integer(row, "pos", mutation_id),
                     ref=_required_text(row, "ref", mutation_id),
                     alt=_required_text(row, "alt", mutation_id),
-                    bulk_ref=bulk_ref,
-                    bulk_alt=bulk_alt,
+                    ref_reads=ref_reads,
+                    alt_reads=alt_reads,
                     hp1_ref=hp1_ref,
                     hp1_alt=hp1_alt,
                     hp2_ref=hp2_ref,
@@ -435,8 +404,8 @@ def bulk_log_likelihood(
     site: SiteObservation, phi: float, multiplicity: float, *, error_rate: float = DEFAULT_ERROR_RATE
 ) -> float:
     return log_binomial(
-        site.bulk_ref,
-        site.bulk_alt,
+        site.ref_reads,
+        site.alt_reads,
         expected_alt_probability(site, phi, multiplicity, error_rate=error_rate),
     )
 
@@ -476,11 +445,11 @@ def conditional_hp_log_likelihood(
     q_bulk = expected_alt_probability(site, phi, multiplicity, error_rate=error_rate)
     q_mut = q_bulk
     q_ref = error_rate
-    tag_fraction = min(1.0 - 1e-9, max(1e-9, tagged / site.bulk_depth))
+    tag_fraction = min(1.0 - 1e-9, max(1e-9, tagged / site.total_reads))
     half_tag = tag_fraction / 2.0
     untagged = 1.0 - tag_fraction
-    untag_alt = site.bulk_alt - site.hp1_alt - site.hp2_alt
-    untag_ref = site.bulk_ref - site.hp1_ref - site.hp2_ref
+    untag_alt = site.alt_reads - site.hp1_alt - site.hp2_alt
+    untag_ref = site.ref_reads - site.hp1_ref - site.hp2_ref
     if mutated_side == 0:
         hp1_q, hp2_q = q_mut, q_ref
     elif mutated_side == 1:
@@ -498,13 +467,11 @@ def conditional_hp_log_likelihood(
     return alt_term + ref_term
 
 
-def site_log_likelihood(
+def _multiplicity_log_components(
     site: SiteObservation, phi: float, *, error_rate: float = DEFAULT_ERROR_RATE
-) -> float:
-    """Marginalize the CN-only multiplicity prior and unknown HP side."""
-
+) -> list[float]:
     if not 0.0 <= phi <= 1.0:
-        return float("-inf")
+        return [float("-inf")] * len(site.multiplicities)
     components: list[float] = []
     for multiplicity, prior in zip(site.multiplicities, site.multiplicity_prior):
         bulk = bulk_log_likelihood(site, phi, multiplicity, error_rate=error_rate)
@@ -516,6 +483,32 @@ def site_log_likelihood(
         )
         hp_marginal = logsumexp((math.log(0.5) + hp0, math.log(0.5) + hp1))
         components.append(math.log(prior) + bulk + hp_marginal)
+    return components
+
+
+def site_multiplicity_posterior(
+    site: SiteObservation, phi: float, *, error_rate: float = DEFAULT_ERROR_RATE
+) -> tuple[float, ...]:
+    """Return ``P(m | D, H, CN, purity, phi)`` for loader-derived candidates.
+
+    This is a model-implied latent-state posterior responsibility.  It does
+    not overwrite the observed ``alt_reads / total_reads`` fraction and does
+    not add a multiplicity column to the canonical input table.
+    """
+
+    components = _multiplicity_log_components(site, phi, error_rate=error_rate)
+    normalizer = logsumexp(components)
+    if not math.isfinite(normalizer):
+        return tuple(0.0 for _ in components)
+    return tuple(math.exp(component - normalizer) for component in components)
+
+
+def site_log_likelihood(
+    site: SiteObservation, phi: float, *, error_rate: float = DEFAULT_ERROR_RATE
+) -> float:
+    """Marginalize the CN-constrained multiplicity candidates and HP side."""
+
+    components = _multiplicity_log_components(site, phi, error_rate=error_rate)
     return logsumexp(components)
 
 
@@ -547,8 +540,8 @@ def compile_model(data: ModelData) -> CompiledModel:
     for row_index, site in enumerate(data.sites):
         for multiplicity, probability in zip(site.multiplicities, site.multiplicity_prior):
             log_prior[row_index, support_index[multiplicity]] = math.log(probability)
-    ref = np.asarray([site.bulk_ref for site in data.sites], dtype=float)
-    alt = np.asarray([site.bulk_alt for site in data.sites], dtype=float)
+    ref = np.asarray([site.ref_reads for site in data.sites], dtype=float)
+    alt = np.asarray([site.alt_reads for site in data.sites], dtype=float)
     hp1_ref = np.asarray([site.hp1_ref for site in data.sites], dtype=float)
     hp1_alt = np.asarray([site.hp1_alt for site in data.sites], dtype=float)
     hp2_ref = np.asarray([site.hp2_ref for site in data.sites], dtype=float)
@@ -573,11 +566,11 @@ def compile_model(data: ModelData) -> CompiledModel:
         log_prior=log_prior,
         binomial_coefficient=binomial_coefficient,
         alt_allocation_coefficient=_log_factorial_coefficients(
-            [(site.hp1_alt, site.hp2_alt, site.bulk_alt - site.hp1_alt - site.hp2_alt)
+            [(site.hp1_alt, site.hp2_alt, site.alt_reads - site.hp1_alt - site.hp2_alt)
              for site in data.sites]
         ),
         ref_allocation_coefficient=_log_factorial_coefficients(
-            [(site.hp1_ref, site.hp2_ref, site.bulk_ref - site.hp1_ref - site.hp2_ref)
+            [(site.hp1_ref, site.hp2_ref, site.ref_reads - site.hp1_ref - site.hp2_ref)
              for site in data.sites]
         ),
     )

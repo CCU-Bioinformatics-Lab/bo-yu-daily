@@ -8,6 +8,7 @@
 #include <cmath>
 #include <fstream>
 #include <limits>
+#include <map>
 #include <numeric>
 #include <sstream>
 #include <stdexcept>
@@ -22,10 +23,11 @@ namespace {
 
 constexpr double kErrorRate = 0.005;
 const std::vector<std::string> kRequiredColumns = {
-    "mutation_id", "chrom", "pos", "ref", "alt", "bulk_ref", "bulk_alt", "bulk_depth",
+    "mutation_id", "chrom", "pos", "ref", "alt", "ref_reads", "alt_reads", "total_reads",
     "hp1_1_ref", "hp1_1_alt", "hp2_1_ref", "hp2_1_alt", "major_cn", "minor_cn", "total_cn",
-    "rho_ASCAT", "multiplicity_candidates", "multiplicity_prior", "model_include", "model_status"};
-const std::vector<std::string> kForbiddenColumns = {"tumor_dna_fraction", "multiplicity_posteriors"};
+    "rho_ASCAT", "model_include", "model_status"};
+const std::vector<std::string> kForbiddenColumns = {
+    "tumor_dna_fraction", "multiplicity_posteriors", "multiplicity_candidates", "multiplicity_prior"};
 
 class GzipInput final {
 public:
@@ -119,50 +121,59 @@ double parse_number(const std::string& raw, const std::string& label, const std:
     return parsed;
 }
 
-std::vector<int> parse_candidates(const std::string& raw, const std::string& id) {
-    std::vector<int> values;
-    std::stringstream stream(raw);
-    std::string token;
-    while (std::getline(stream, token, ';')) {
-        token = trim(token);
-        if (token.empty()) continue;
-        const long long value = parse_integer(token, "multiplicity_candidates", id);
-        if (value <= 0 || value > std::numeric_limits<int>::max()) throw std::runtime_error("row " + id + " has invalid multiplicity candidate");
-        values.push_back(static_cast<int>(value));
-    }
-    if (values.empty() || !std::is_sorted(values.begin(), values.end()) || std::adjacent_find(values.begin(), values.end()) != values.end()) {
-        throw std::runtime_error("row " + id + " multiplicity_candidates must be sorted, unique and non-empty");
-    }
-    return values;
-}
+struct MultiplicityDistribution {
+    std::vector<int> candidates;
+    std::vector<double> prior;
+};
 
-std::vector<double> parse_prior(const std::string& raw, const std::vector<int>& candidates, const std::string& id) {
-    std::vector<std::pair<int, double>> entries;
-    std::stringstream stream(raw);
-    std::string token;
-    while (std::getline(stream, token, ';')) {
-        token = trim(token);
-        if (token.empty()) continue;
-        const auto equals = token.find('=');
-        if (equals == std::string::npos || token.find('=', equals + 1) != std::string::npos) throw std::runtime_error("row " + id + " has invalid multiplicity_prior token");
-        const long long key = parse_integer(token.substr(0, equals), "multiplicity_prior key", id);
-        const double probability = parse_number(token.substr(equals + 1), "multiplicity_prior probability", id);
-        if (key <= 0 || probability <= 0.0) throw std::runtime_error("row " + id + " has invalid multiplicity_prior value");
-        entries.emplace_back(static_cast<int>(key), probability);
+MultiplicityDistribution derive_multiplicity_distribution(
+    const double major_cn, const double minor_cn, const std::string& id) {
+    const auto integral_cn = [&](const double value, const char* label) -> int {
+        if (!std::isfinite(value) || value < 0.0 || value > static_cast<double>(INT_MAX)) {
+            throw std::runtime_error("row " + id + " has invalid " + label + " for multiplicity derivation");
+        }
+        const double rounded = std::round(value);
+        if (value != rounded) {
+            throw std::runtime_error("row " + id + " requires integer " + label + " for multiplicity derivation");
+        }
+        return static_cast<int>(rounded);
+    };
+
+    const int major = integral_cn(major_cn, "major_cn");
+    const int minor = integral_cn(minor_cn, "minor_cn");
+    if (major <= 0 || major < minor) {
+        throw std::runtime_error("row " + id + " has invalid major/minor CN for multiplicity derivation");
     }
-    std::sort(entries.begin(), entries.end(), [](const auto& left, const auto& right) { return left.first < right.first; });
-    if (entries.empty() || std::adjacent_find(entries.begin(), entries.end(), [](const auto& left, const auto& right) { return left.first == right.first; }) != entries.end()) {
-        throw std::runtime_error("row " + id + " multiplicity_prior keys are duplicated");
+
+    const std::vector<int> sides = minor > 0 ? std::vector<int>{major, minor} : std::vector<int>{major};
+    const double side_mass = 1.0 / static_cast<double>(sides.size());
+    std::map<int, double> weights;
+    for (const int side_cn : sides) {
+        const double within_side_mass = side_mass / static_cast<double>(side_cn);
+        for (int multiplicity = 1; multiplicity <= side_cn; ++multiplicity) {
+            weights[multiplicity] += within_side_mass;
+        }
     }
-    std::vector<int> keys;
-    std::vector<double> probabilities;
-    keys.reserve(entries.size());
-    probabilities.reserve(entries.size());
-    for (const auto& [key, probability] : entries) { keys.push_back(key); probabilities.push_back(probability); }
-    if (keys != candidates) throw std::runtime_error("row " + id + " multiplicity_prior keys disagree with candidates");
-    const double total = std::accumulate(probabilities.begin(), probabilities.end(), 0.0);
-    if (!std::isfinite(total) || std::abs(total - 1.0) > 1e-6) throw std::runtime_error("row " + id + " multiplicity_prior must sum to 1");
-    return probabilities;
+
+    const double total = std::accumulate(
+        weights.begin(), weights.end(), 0.0,
+        [](const double sum, const auto& entry) { return sum + entry.second; });
+    if (!std::isfinite(total) || !(total > 0.0)) {
+        throw std::runtime_error("row " + id + " failed to derive a valid multiplicity prior");
+    }
+
+    MultiplicityDistribution result;
+    result.candidates.reserve(weights.size());
+    result.prior.reserve(weights.size());
+    for (const auto& [multiplicity, weight] : weights) {
+        result.candidates.push_back(multiplicity);
+        result.prior.push_back(weight / total);
+    }
+    const double normalized = std::accumulate(result.prior.begin(), result.prior.end(), 0.0);
+    if (!std::isfinite(normalized) || std::abs(normalized - 1.0) > 1e-12) {
+        throw std::runtime_error("row " + id + " failed multiplicity-prior normalization");
+    }
+    return result;
 }
 
 std::size_t column_index(const std::vector<std::string>& header, const std::string& name) {
@@ -210,11 +221,11 @@ double expected_alt_probability(const Site& site, double phi, int multiplicity) 
 double conditional_hp(const Site& site, double q_bulk, int side) {
     const std::int64_t tagged = static_cast<std::int64_t>(site.hp1_1_ref) + site.hp1_1_alt + site.hp2_1_ref + site.hp2_1_alt;
     if (tagged == 0) return 0.0;
-    const double tag_fraction = std::clamp(static_cast<double>(tagged) / site.bulk_depth, 1e-9, 1.0 - 1e-9);
+    const double tag_fraction = std::clamp(static_cast<double>(tagged) / site.total_reads, 1e-9, 1.0 - 1e-9);
     const double half_tag = tag_fraction * 0.5;
     const double untagged = 1.0 - tag_fraction;
-    const int untag_alt = site.bulk_alt - site.hp1_1_alt - site.hp2_1_alt;
-    const int untag_ref = site.bulk_ref - site.hp1_1_ref - site.hp2_1_ref;
+    const int untag_alt = site.alt_reads - site.hp1_1_alt - site.hp2_1_alt;
+    const int untag_ref = site.ref_reads - site.hp1_1_ref - site.hp2_1_ref;
     const double hp1_q = side == 0 ? q_bulk : kErrorRate;
     const double hp2_q = side == 0 ? kErrorRate : q_bulk;
     return log_multinomial3(
@@ -226,34 +237,56 @@ double conditional_hp(const Site& site, double q_bulk, int side) {
                untagged * (1.0 - q_bulk));
 }
 
-double site_log_likelihood_impl(const Site& site, double phi) {
-    double top = -std::numeric_limits<double>::infinity();
-    double scaled_sum = 0.0;
+std::vector<double> multiplicity_log_components(const Site& site, double phi) {
+    if (!(phi >= 0.0 && phi <= 1.0) || !std::isfinite(phi)) {
+        return std::vector<double>(site.multiplicity_candidates.size(), -std::numeric_limits<double>::infinity());
+    }
+    std::vector<double> components;
+    components.reserve(site.multiplicity_candidates.size());
     for (std::size_t i = 0; i < site.multiplicity_candidates.size(); ++i) {
         const int multiplicity = site.multiplicity_candidates[i];
         const double q_bulk = expected_alt_probability(site, phi, multiplicity);
-        const double bulk = log_binomial(site.bulk_ref, site.bulk_alt, q_bulk);
+        const double bulk = log_binomial(site.ref_reads, site.alt_reads, q_bulk);
         const double hp0 = conditional_hp(site, q_bulk, 0);
         const double hp1 = conditional_hp(site, q_bulk, 1);
-        const double hp = std::log(0.5) + std::max(hp0, hp1) + std::log(std::exp(hp0 - std::max(hp0, hp1)) + std::exp(hp1 - std::max(hp0, hp1)));
-        const double component = std::log(site.multiplicity_prior[i]) + bulk + hp;
-        if (!std::isfinite(top)) {
-            top = component;
-            scaled_sum = 1.0;
-        } else if (component <= top) {
-            scaled_sum += std::exp(component - top);
-        } else {
-            scaled_sum = 1.0 + scaled_sum * std::exp(top - component);
-            top = component;
-        }
+        const double hp_top = std::max(hp0, hp1);
+        const double hp = std::log(0.5) + hp_top +
+            std::log(std::exp(hp0 - hp_top) + std::exp(hp1 - hp_top));
+        components.push_back(std::log(site.multiplicity_prior[i]) + bulk + hp);
     }
-    return top + std::log(scaled_sum);
+    return components;
 }
 
 }  // namespace
 
+std::vector<double> site_multiplicity_posterior(const Site& site, double phi) {
+    const auto components = multiplicity_log_components(site, phi);
+    if (components.empty()) return {};
+    const double top = *std::max_element(components.begin(), components.end());
+    if (!std::isfinite(top)) return std::vector<double>(components.size(), 0.0);
+    double normalizer = 0.0;
+    std::vector<double> posterior;
+    posterior.reserve(components.size());
+    for (const double component : components) {
+        const double weight = std::exp(component - top);
+        posterior.push_back(weight);
+        normalizer += weight;
+    }
+    if (!(normalizer > 0.0) || !std::isfinite(normalizer)) {
+        throw std::runtime_error("multiplicity posterior has invalid normalization");
+    }
+    for (double& value : posterior) value /= normalizer;
+    return posterior;
+}
+
 double site_log_likelihood(const Site& site, double phi) {
-    return site_log_likelihood_impl(site, phi);
+    const auto components = multiplicity_log_components(site, phi);
+    if (components.empty()) return -std::numeric_limits<double>::infinity();
+    const double top = *std::max_element(components.begin(), components.end());
+    if (!std::isfinite(top)) return top;
+    double scaled_sum = 0.0;
+    for (const double component : components) scaled_sum += std::exp(component - top);
+    return top + std::log(scaled_sum);
 }
 
 CanonicalTable load_canonical_table(const std::filesystem::path& path,
@@ -299,25 +332,26 @@ CanonicalTable load_canonical_table(const std::filesystem::path& path,
         site.pos = parse_integer(field("pos"), "pos", id);
         site.ref = trim(field("ref")); site.alt = trim(field("alt"));
         if (site.chrom.empty() || site.ref.empty() || site.alt.empty() || site.pos < 1) throw std::runtime_error("row " + id + " has invalid genomic key");
-        site.bulk_ref = parse_count(field("bulk_ref"), "bulk_ref", id);
-        site.bulk_alt = parse_count(field("bulk_alt"), "bulk_alt", id);
-        site.bulk_depth = parse_count(field("bulk_depth"), "bulk_depth", id);
-        const std::int64_t bulk_total = static_cast<std::int64_t>(site.bulk_ref) + static_cast<std::int64_t>(site.bulk_alt);
-        if (site.bulk_depth <= 0 || static_cast<std::int64_t>(site.bulk_depth) != bulk_total) throw std::runtime_error("row " + id + " violates bulk depth conservation");
+        site.ref_reads = parse_count(field("ref_reads"), "ref_reads", id);
+        site.alt_reads = parse_count(field("alt_reads"), "alt_reads", id);
+        site.total_reads = parse_count(field("total_reads"), "total_reads", id);
+        const std::int64_t total_reads = static_cast<std::int64_t>(site.ref_reads) + static_cast<std::int64_t>(site.alt_reads);
+        if (site.total_reads <= 0 || static_cast<std::int64_t>(site.total_reads) != total_reads) throw std::runtime_error("row " + id + " violates total reads conservation");
         site.hp1_1_ref = parse_count(field("hp1_1_ref"), "hp1_1_ref", id);
         site.hp1_1_alt = parse_count(field("hp1_1_alt"), "hp1_1_alt", id);
         site.hp2_1_ref = parse_count(field("hp2_1_ref"), "hp2_1_ref", id);
         site.hp2_1_alt = parse_count(field("hp2_1_alt"), "hp2_1_alt", id);
-        if (static_cast<std::int64_t>(site.hp1_1_ref) + site.hp2_1_ref > site.bulk_ref || static_cast<std::int64_t>(site.hp1_1_alt) + site.hp2_1_alt > site.bulk_alt) throw std::runtime_error("row " + id + " HP counts exceed bulk counts");
+        if (static_cast<std::int64_t>(site.hp1_1_ref) + site.hp2_1_ref > site.ref_reads || static_cast<std::int64_t>(site.hp1_1_alt) + site.hp2_1_alt > site.alt_reads) throw std::runtime_error("row " + id + " HP counts exceed bulk counts");
         site.major_cn = parse_number(field("major_cn"), "major_cn", id);
         site.minor_cn = parse_number(field("minor_cn"), "minor_cn", id);
         site.total_cn = parse_number(field("total_cn"), "total_cn", id);
         if (site.minor_cn < 0.0 || site.major_cn < site.minor_cn || site.total_cn <= 0.0 || std::abs(site.major_cn + site.minor_cn - site.total_cn) > 1e-6) throw std::runtime_error("row " + id + " has invalid ASCAT CN state");
         site.purity = parse_number(field("rho_ASCAT"), "rho_ASCAT", id);
         if (!(site.purity > 0.0 && site.purity <= 1.0) || std::abs(site.purity - requested_purity) > 1e-9) throw std::runtime_error("row " + id + " rho_ASCAT disagrees with requested purity");
-        site.multiplicity_candidates = parse_candidates(field("multiplicity_candidates"), id);
-        site.multiplicity_prior = parse_prior(field("multiplicity_prior"), site.multiplicity_candidates, id);
-        if (static_cast<double>(site.multiplicity_candidates.back()) > site.total_cn + 1e-9) throw std::runtime_error("row " + id + " multiplicity exceeds total_cn");
+        auto multiplicity = derive_multiplicity_distribution(site.major_cn, site.minor_cn, id);
+        site.multiplicity_candidates = std::move(multiplicity.candidates);
+        site.multiplicity_prior = std::move(multiplicity.prior);
+        if (static_cast<double>(site.multiplicity_candidates.back()) > site.major_cn + 1e-9) throw std::runtime_error("row " + id + " derived multiplicity exceeds major_cn");
         if (!excluded.count(id)) table.sites.push_back(std::move(site));
     }
     if (table.sites.empty()) throw std::runtime_error("canonical input has no eligible non-excluded observations");

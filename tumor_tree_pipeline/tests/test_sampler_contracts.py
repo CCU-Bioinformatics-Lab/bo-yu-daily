@@ -2,16 +2,14 @@ from __future__ import annotations
 
 import csv
 import gzip
-import json
 import math
 import tempfile
 import unittest
 from pathlib import Path
-from unittest import mock
 
 import numpy as np
 
-from tumor_tree_pipeline.contracts import ChainConfig, MODEL_REQUIRED_COLUMNS
+from tumor_tree_pipeline.contracts import MODEL_REQUIRED_COLUMNS
 from tumor_tree_pipeline.model import (
     CanonicalInputError,
     bulk_log_likelihood,
@@ -20,22 +18,22 @@ from tumor_tree_pipeline.model import (
     load_model_table,
     logsumexp,
     site_log_likelihood,
+    site_multiplicity_posterior,
 )
-from tumor_tree_pipeline import sampler
 
 
 def canonical_row(index: int = 1, *, purity: float = 0.99) -> dict[str, str]:
-    bulk_ref = 24 + index
-    bulk_alt = 6 + index
+    ref_reads = 24 + index
+    alt_reads = 6 + index
     return {
         "mutation_id": f"chr1:{100 + index}:A>T",
         "chrom": "chr1",
         "pos": str(100 + index),
         "ref": "A",
         "alt": "T",
-        "bulk_ref": str(bulk_ref),
-        "bulk_alt": str(bulk_alt),
-        "bulk_depth": str(bulk_ref + bulk_alt),
+        "ref_reads": str(ref_reads),
+        "alt_reads": str(alt_reads),
+        "total_reads": str(ref_reads + alt_reads),
         "hp1_1_ref": str(3 + index % 2),
         "hp1_1_alt": str(2 + index % 3),
         "hp2_1_ref": str(4 + index % 3),
@@ -44,8 +42,6 @@ def canonical_row(index: int = 1, *, purity: float = 0.99) -> dict[str, str]:
         "minor_cn": "1",
         "total_cn": "4",
         "rho_ASCAT": str(purity),
-        "multiplicity_candidates": "1;2;3",
-        "multiplicity_prior": "1=0.6666666667;2=0.1666666667;3=0.1666666666",
         "model_include": "yes",
         "model_status": "eligible",
     }
@@ -71,7 +67,24 @@ def write_table(
         writer.writerows(rows)
 
 
-class CanonicalSamplerContracts(unittest.TestCase):
+class CanonicalModelContracts(unittest.TestCase):
+    def test_loader_rejects_pre_v4_bulk_column_names(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "pre_v4.tsv.gz"
+            row = canonical_row()
+            row["bulk_ref"] = row.pop("ref_reads")
+            row["bulk_alt"] = row.pop("alt_reads")
+            row["bulk_depth"] = row.pop("total_reads")
+            old_names = {
+                "ref_reads": "bulk_ref",
+                "alt_reads": "bulk_alt",
+                "total_reads": "bulk_depth",
+            }
+            fields = [old_names.get(field, field) for field in MODEL_REQUIRED_COLUMNS]
+            write_table(path, [row], fields=fields)
+            with self.assertRaisesRegex(CanonicalInputError, "missing required columns"):
+                load_model_table(path, 0.99)
+
     def test_loader_has_no_missing_file_or_schema_fallback(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -92,7 +105,19 @@ class CanonicalSamplerContracts(unittest.TestCase):
             with self.assertRaisesRegex(CanonicalInputError, "forbidden legacy columns"):
                 load_model_table(forbidden, 0.99)
 
-    def test_bulk_counts_enter_once_under_cn_only_multiplicity_prior(self):
+            old_multiplicity = root / "old_multiplicity.tsv.gz"
+            fields = list(MODEL_REQUIRED_COLUMNS) + [
+                "multiplicity_candidates",
+                "multiplicity_prior",
+            ]
+            row = canonical_row()
+            row["multiplicity_candidates"] = "1;2;3"
+            row["multiplicity_prior"] = "1=0.6666666667;2=0.1666666667;3=0.1666666666"
+            write_table(old_multiplicity, [row], fields=fields)
+            with self.assertRaisesRegex(CanonicalInputError, "forbidden legacy columns"):
+                load_model_table(old_multiplicity, 0.99)
+
+    def test_loader_derives_cn_only_multiplicity_prior_before_likelihood(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "canonical.tsv.gz"
             row = canonical_row()
@@ -109,7 +134,14 @@ class CanonicalSamplerContracts(unittest.TestCase):
             write_table(path, [row], fields=list(MODEL_REQUIRED_COLUMNS) + ["ps"])
             data = load_model_table(path, 0.99)
             site = data.sites[0]
+            self.assertEqual(site.multiplicities, (1.0, 2.0, 3.0))
+            self.assertAlmostEqual(site.multiplicity_prior[0], 2.0 / 3.0)
+            self.assertAlmostEqual(site.multiplicity_prior[1], 1.0 / 6.0)
+            self.assertAlmostEqual(site.multiplicity_prior[2], 1.0 / 6.0)
             phi = 0.43
+            posterior = site_multiplicity_posterior(site, phi)
+            self.assertAlmostEqual(sum(posterior), 1.0, places=12)
+            self.assertTrue(all(0.0 <= value <= 1.0 for value in posterior))
             expected = logsumexp(
                 [
                     math.log(probability) + bulk_log_likelihood(site, phi, multiplicity)
@@ -121,33 +153,6 @@ class CanonicalSamplerContracts(unittest.TestCase):
             self.assertAlmostEqual(site_log_likelihood(site, phi), expected, places=10)
             self.assertFalse(hasattr(site, "ps"))
 
-    def test_eta_root_is_tumor_residual_and_not_one_minus_purity(self):
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "canonical.tsv.gz"
-            write_table(path, [canonical_row(index) for index in range(1, 5)])
-            compiled = compile_model(load_model_table(path, 0.99))
-            parents, eta, _ = sampler._initial_state(compiled, 2)
-            self.assertAlmostEqual(float(eta[0]), 0.10)
-            self.assertNotAlmostEqual(float(eta[0]), 1.0 - 0.99)
-            self.assertAlmostEqual(float(eta.sum()), 1.0)
-            self.assertTrue(np.all(sampler.cumulative_phi(parents, eta) <= 1.0))
-
-    def test_initial_state_has_only_tree_population_and_site_assignments(self):
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "canonical.tsv.gz"
-            write_table(path, [canonical_row(index) for index in range(1, 7)])
-            compiled = compile_model(load_model_table(path, 0.99))
-
-            state = sampler._initial_state(compiled, 6)
-
-            self.assertEqual(len(state), 3)
-            parents, eta, z = state
-            self.assertEqual(len(parents), 6)
-            self.assertEqual(len(eta), 7)
-            self.assertEqual(len(z), len(compiled.data.sites))
-            self.assertAlmostEqual(float(eta.sum()), 1.0)
-            self.assertTrue(np.issubdtype(np.asarray(z).dtype, np.integer))
-
     def test_vectorized_production_likelihood_matches_scalar_contract(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "canonical.tsv.gz"
@@ -157,112 +162,6 @@ class CanonicalSamplerContracts(unittest.TestCase):
             scalar = np.asarray(likelihood_matrix(data, phi))
             vectorized = compile_model(data).likelihood_matrix(phi)
             np.testing.assert_allclose(vectorized, scalar, rtol=0.0, atol=1e-10)
-
-    def test_run_chain_writes_required_outputs_and_completed_dir_is_immutable(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            table = root / "canonical.tsv.gz"
-            write_table(table, [canonical_row(index) for index in range(1, 7)])
-            outdir = root / "chain"
-            config = ChainConfig(
-                seed=7,
-                num_nodes=2,
-                iterations=8,
-                burnin=2,
-                thin=1,
-                ascat_purity=0.99,
-                checkpoint_every=2,
-            )
-            result = sampler.run_chain(table, outdir, config)
-            self.assertEqual(result.posterior_samples, 6)
-            self.assertTrue((outdir / "samples.jsonl.gz").is_file())
-            self.assertTrue((outdir / "diagnostics.json").is_file())
-            self.assertTrue((outdir / "representative_tree.json").is_file())
-            self.assertTrue((outdir / "checkpoint.json.gz").is_file())
-            self.assertTrue((outdir / "chain_complete.json").is_file())
-
-            with gzip.open(outdir / "checkpoint.json.gz", "rt", encoding="utf-8") as handle:
-                checkpoint = json.load(handle)
-            self.assertGreaterEqual(int(checkpoint["checkpoint_version"]), 2)
-            self.assertTrue({"parents", "eta", "z"}.issubset(checkpoint))
-            self.assertFalse(
-                {"assignment_weights", "reference_eta", "initialization"}.intersection(checkpoint)
-            )
-
-            diagnostics = json.loads((outdir / "diagnostics.json").read_text(encoding="utf-8"))
-            self.assertEqual(diagnostics["model"], "finite_K_metropolis_hastings")
-            self.assertEqual(
-                set(diagnostics["counters"]),
-                {
-                    "assignment_proposals",
-                    "assignment_accepted",
-                    "eta_proposals",
-                    "eta_accepted",
-                    "topology_proposals",
-                    "topology_accepted",
-                },
-            )
-            self.assertEqual(
-                sum(diagnostics["counters"][name] for name in (
-                    "assignment_proposals",
-                    "eta_proposals",
-                    "topology_proposals",
-                )),
-                config.iterations,
-            )
-            self.assertNotIn("eta_bridge_acceptance", diagnostics)
-            self.assertNotIn("eta_bridge_proposals", diagnostics)
-            self.assertNotIn("eta_bridge_accepted", diagnostics)
-            self.assertNotIn("gibbs", json.dumps(diagnostics).lower())
-
-            with gzip.open(outdir / "samples.jsonl.gz", "rt", encoding="utf-8") as handle:
-                sample = json.loads(next(handle))
-            self.assertTrue({"parents", "eta", "phi", "occupancy"}.issubset(sample))
-            self.assertNotIn("assignment_weights", sample)
-            self.assertNotIn("reference_eta", sample)
-            with self.assertRaisesRegex(FileExistsError, "immutable"):
-                sampler.run_chain(table, outdir, config)
-            with self.assertRaisesRegex(FileExistsError, "immutable"):
-                sampler.run_chain(table, outdir, config, resume=True)
-
-    def test_atomic_checkpoint_resume_matches_uninterrupted_chain(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            table = root / "canonical.tsv.gz"
-            write_table(table, [canonical_row(index) for index in range(1, 7)])
-            config = ChainConfig(
-                seed=17,
-                num_nodes=2,
-                iterations=10,
-                burnin=2,
-                thin=1,
-                ascat_purity=0.99,
-                checkpoint_every=2,
-            )
-            clean = root / "clean"
-            sampler.run_chain(table, clean, config)
-
-            interrupted = root / "interrupted"
-            real_checkpoint = sampler._write_checkpoint_atomic
-
-            def write_then_interrupt(path, payload):
-                real_checkpoint(path, payload)
-                if payload["next_iteration"] == 2:
-                    raise RuntimeError("simulated interruption")
-
-            with mock.patch.object(
-                sampler, "_write_checkpoint_atomic", side_effect=write_then_interrupt
-            ):
-                with self.assertRaisesRegex(RuntimeError, "simulated interruption"):
-                    sampler.run_chain(table, interrupted, config)
-
-            resumed = sampler.run_chain(table, interrupted, config, resume=True)
-            self.assertTrue(resumed.resumed)
-            with gzip.open(clean / "samples.jsonl.gz", "rt") as handle:
-                clean_samples = handle.read()
-            with gzip.open(interrupted / "samples.jsonl.gz", "rt") as handle:
-                resumed_samples = handle.read()
-            self.assertEqual(resumed_samples, clean_samples)
 
 
 if __name__ == "__main__":

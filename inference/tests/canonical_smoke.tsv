@@ -1,3 +1,3 @@
-mutation_id	chrom	pos	ref	alt	bulk_ref	bulk_alt	bulk_depth	hp1_1_ref	hp1_1_alt	hp2_1_ref	hp2_1_alt	major_cn	minor_cn	total_cn	rho_ASCAT	multiplicity_candidates	multiplicity_prior	model_include	model_status
-chr1:10:A>G	chr1	10	A	G	3	2	5	0	2	0	0	2	1	3	0.99	1;2	1=0.75;2=0.25	yes	eligible
-chr1:20:C>T	chr1	20	C	T	4	1	5	0	0	0	1	2	0	2	0.99	1;2	1=0.5;2=0.5	yes	eligible
+mutation_id	chrom	pos	ref	alt	ref_reads	alt_reads	total_reads	hp1_1_ref	hp1_1_alt	hp2_1_ref	hp2_1_alt	major_cn	minor_cn	total_cn	rho_ASCAT	model_include	model_status
+chr1:10:A>G	chr1	10	A	G	3	2	5	0	2	0	0	2	1	3	0.99	yes	eligible
+chr1:20:C>T	chr1	20	C	T	4	1	5	0	0	0	1	2	0	2	0.99	yes	eligible

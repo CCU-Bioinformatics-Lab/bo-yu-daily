@@ -118,7 +118,7 @@ def _select(
         key
         for key in bulk
         if cn[key].get("cnv_status") == "mapped_nonzero_cn"
-        and int(bulk[key].get("bulk_usable_depth", bulk[key].get("bulk_depth", "0"))) > 0
+        and int(bulk[key].get("total_reads", "0")) > 0
     ]
     eligible.sort(key=lambda key: _score(key, seed))
     selected: list[tuple[str, int, str, str]] = []
