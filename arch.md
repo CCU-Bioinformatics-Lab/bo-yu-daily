@@ -48,3 +48,11 @@ output         可替換結果呈現方式
 四個文件各自描述一個模塊的 contract，不在彼此之間重複實作細節。研究流程
 只需要確認相鄰模塊的輸入／輸出 contract 相容，就能替換其中一個模塊而不必
 重寫整個研究架構。
+
+## 實驗流程與紀錄
+
+[`experiment_workflow.md`](experiment_workflow.md) 是這四個模塊之上的編排與
+稽核文件：它固定資料如何交給 model、inference algorithm 如何執行、output
+如何驗收，並要求每個階段留下輸入 provenance、設定、QA、diagnostic 與錯誤
+receipt。它不屬於四個可替換模塊本身，因此替換任一模塊時，只要維持相鄰
+contract 與紀錄格式，整體實驗流程仍可追溯。

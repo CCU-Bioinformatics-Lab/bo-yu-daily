@@ -1,886 +1,951 @@
-# HCC1395 演化樹資料清單
+# HCC1395 腫瘤演化樹資料輸入契約
 
-更新日期：2026-08-19  
-判定基準：[from_variants_to_tumor_evolution_tree.md](from_variants_to_tumor_evolution_tree.md)
+更新日期：2026-08-22
 
-> [!WARNING]
-> **文件依賴警告：請勿單獨刪除或改名本文件、[`model.md`](model.md)、[`longphase-clone.md`](longphase-clone.md) 或 [`convergence_cleanup_20260816.md`](convergence_cleanup_20260816.md)。**
-> 本文件是模型輸入與 provenance 的唯一清單；模型公式見 `model.md`，研究／實作進度見 `longphase-clone.md`，輸出保留／待刪除政策見 `convergence_cleanup_20260816.md`。若搬移任一文件，請同步更新三者連結。
+本文件只描述目前 repo 的 active data boundary：
 
-```yaml
-document_id: data_manifest
-document_type: data_provenance
-links:
-  - relation: provides_inputs_to
-    target: model.md
-  - relation: supports_experiments_in
-    target: longphase-clone.md
-  - relation: output_retention_policy
-    target: convergence_cleanup_20260816.md
-```
+1. 上游資料如何轉成 canonical SNV-level table。
+2. 哪些欄位會被 model／C++ inference 讀取。
+3. 哪些資料只作 provenance、QC 或 holdout。
+4. 哪些舊介面目前禁止使用。
 
-這份文件只回答三件事：
+相關文件：
 
-1. 正式重建演化樹需要哪些輸入。
-2. 目前實際有哪些檔案、還缺哪些檔案。
-3. 哪些資料不是模型輸入，但值得保留作驗證或未來擴充。
+- [model.md](model.md)：模型、likelihood、prior 與 latent quantity。
+- [inference_algo.md](inference_algo.md)：推理演算法與 posterior artifact。
+- [experiment_workflow.md](experiment_workflow.md)：正式 workflow、holdout 與可追溯 run records。
+- [tumor_tree_pipeline/README.md](tumor_tree_pipeline/README.md)：資料建表與 workflow module。
+- [inference/README.md](inference/README.md)：目前 C++ inference backend。
+- [legacy_data.md](legacy_data.md)：可能含舊資料或錯誤資料的低權重歷史邊界。
 
-## 1. 一頁結論
+---
 
-### 1.1 正式流程必要輸入
+## 1. 一頁版 active data contract
 
-| 資料 | 目前狀態 | 主要用途 |
+目前資料流：
+
+~~~text
+upstream biological sources
+        ↓
+derived builder artifacts
+        ↓
+canonical likelihood_input.tsv.gz
+        ↓
+eligible SNV rows
+        ↓
+C++ Site
+        ↓
+model likelihood
+~~~
+
+C++ sampler 不直接讀取 raw BAM、raw VCF 或 ASCAT 原始 segment 檔；這些來源先經過資料整理流程，產生 derived artifacts，再由 tumor_tree_pipeline 建立 canonical table。
+
+目前 canonical schema version（由 manifest／validation manifest 宣告，並非 TSV 內的欄位）：
+
+~~~text
+hcc1395_tumor_tree_input/v2
+~~~
+
+基本規則：
+
+- 每一列代表一個 SNV。
+- chrom、pos、ref、alt 定義 site identity。
+- table 同時保留 eligible 與 excluded rows，方便 QA。
+- 只有 model_include=yes 且 model_status=eligible 的 rows 可以進入 sampler。
+- chain-specific holdout 會再從 eligible rows 排除指定 mutation_id。
+- excluded rows 不會進入 sampler，但保留排除原因。
+- mutation_id 必須唯一。
+- canonical table 不得包含已禁止的 legacy columns。
+
+正式 primary purity：
+
+~~~text
+rho_ASCAT = 0.99
+~~~
+
+---
+
+## 2. 目前資料分層
+
+### 2.1 Upstream biological sources
+
+這些來源提供建立 derived artifacts 所需的原始證據：
+
+| 來源 | 提供內容 | 是否直接進 C++ sampler |
 |---|---|---|
-| Reference FASTA | 已有 | 固定 GRCh38 座標與 REF allele |
-| Raw tumor BAM + index | 已有 | 腫瘤 REF/ALT、depth、LongPhase-S 上游輸入 |
-| Raw normal BAM + index | 已有 | matched-normal baseline、germline/CN 校正 |
-| 最新同分支 ClairS `tp.vcf` | 已找到；ClairS v0.4.1、29,860 SNV，但尚非 model-ready | 最新 benchmark TP 來源候選 |
-| 歷史流程的 indexed TP SNV VCF | 已有；ClairS v0.4.1、30,490 SNV | 既有 PS annotation 流程的實際基礎輸入 |
-| BAM-derived PS TP VCF + index | 已重建；30,490 SNV，30,123 個有 PS | 固定 site universe 並提供 PS audit／grouped holdout metadata；PS 會影響上游 HP label/count 形成，但不作 downstream likelihood 欄位 |
-| 歷史 `annotated_with_PS.vcf.gz` | **原路徑目前遺失** | 舊流程曾使用的 PS-annotated 衍生檔 |
-| Phased germline VCF + index | 已有 | normal heterozygous phase backbone |
-| LongPhase-S tagged tumor BAM + index | 已有 | 提供 read-level HP counts；PS 是上游 phasing metadata，會間接影響 HP counts，並可供 read audit 與 grouped holdout 使用 |
-| 正式 allele-specific CNV/LOH segment 檔 | **ASCAT canonical 5kHz 結果已取得；正式 purity input 固定為 `0.99`；segment schema/QA 仍標記 review** | 提供每個區段的 total/major/minor CN 與 LOH |
-| ASCAT tumor purity | 已取得；HCC1395_5khz `purity=0.99` | 正式全域 input；只在 purity-aware emission 與 provenance 生效，不用來建立 multiplicity prior |
+| Reference FASTA | reference build、contig、座標基準 | 否 |
+| Tumor BAM | tumor reads、REF/ALT 與 depth 原始證據 | 否 |
+| Normal BAM | matched-normal、germline 與 CN 分析原始證據 | 否 |
+| Somatic SNV VCF | SNV site universe 與 allele identity | 否 |
+| Phased germline VCF | germline phase backbone | 否 |
+| Phase-tagged tumor BAM | HP／PS read-level evidence | 否 |
+| ASCAT segment output | segment-level major/minor/total CN、LOH context | 否 |
+| ASCAT purity output | rho_ASCAT 的數值與 provenance | 否，builder 會讀取 |
 
-歷史流程中間表已移除。新的正式流程固定為七個 gate（第 10 節有可直接重跑的命令與輸出契約）：
+目前指定的 phase-tagged tumor BAM：
 
-1. 明確選定 30,490-site TP benchmark mode，或另提供有 header/index 的完整 ClairS PASS VCF；目前完整 PASS site set 尚未提供，因此 canonical default 是 30,490。
-2. 用同一份 canonical tagged BAM 做 VCF PS 的 read-level audit，不能把另一份 BAM 的 PS 沿用過來。
-3. 將 ASCAT segments 正規化成共同的 `chr/start/end/major_cn/minor_cn/total_cn/loh_state` schema。
-4. 對無 segment 對位與 `total_cn=0` 的 SNV 分別保留明確 QC 狀態，不刪除、不補值。
-5. 從 canonical tagged BAM 重建 bulk 與 HP count tables，並檢查 counts 守恆與 site key 唯一。
-6. 只有整合表具備 CN-only `multiplicity_prior`、major/minor/total CN、ASCAT purity=`0.99` 與普通 Binomial likelihood所需欄位後，才允許更新模型；bulk counts不得先用來建立 multiplicity權重再進likelihood。
-7. 最後才由`tumor_tree_pipeline` wrapper做smoke、驗證外部simulation manifest、`K=4/6/8`、多鏈convergence與grouped holdout；wrapper本身不產生simulation資料。
+~~~text
+/bip8_disk/boyu114/longphase-s-origin/output/hcc1395_old_tagging_rerun/hcc1395_old_tagging.bam
+/bip8_disk/boyu114/longphase-s-origin/output/hcc1395_old_tagging_rerun/hcc1395_old_tagging.bam.bai
+~~~
 
-第9節保留資料準備優先順序；第10節記錄舊驗證流程與可重用artifact。新的唯一正式入口是 [`tumor_tree_pipeline/`](tumor_tree_pipeline/) wrapper。
+這是未啟用 two-site split 的 LongPhase-S old-tagging 產物；不使用
+`hcc1395_new_split_tagging.bam`。它的 read-level HP 來源以 `1`、`2`、
+`1-1`、`2-1` 為主，舊版流程也可能保留 `HP3`；`1-2`／`2-2` 不屬於本次
+tagged tumor BAM 的選擇目標。
 
-### 1.2 Active model-table contract（2026-08-19）
+注意：既有 `canonical_counts_20260814/site_counts_manifest.json` 仍記錄先前
+new-split BAM 的來源，因此切換來源後，既有 counts bundle 必須重新建立並重新
+驗證，不能只修改 manifest 的路徑或直接把舊 counts 當成新來源結果。
 
-```text
-mutation_id chrom pos ref alt
-bulk_ref bulk_alt bulk_depth
-hp1_1_ref hp1_1_alt hp2_1_ref hp2_1_alt
-major_cn minor_cn total_cn rho_ASCAT
-multiplicity_candidates multiplicity_prior
-model_include model_status
-```
+上游 raw source 只作 provenance；目前 builder manifest 主要記錄 derived counts、HP、site-CNV、purity 檔案及其 hash。若上游 manifest 另外提供 sample 或 reference build，才由上游 provenance 保存；這些 raw source 不會直接變成 sampler input。
 
-`multiplicity_prior`只由ASCAT major/minor CN建立：extant major/minor side先等權，再於各side的`m=1..side_CN`均分。`major/minor=3/1`時為`m=1:2/3, m=2:1/6, m=3:1/6`。它不使用VAF、bulk counts或purity；`rho_ASCAT`只進emission。PS 是 LongPhase-S 的上游 phasing metadata，會影響 HP label/count 的形成，因此間接影響 `H_i`；但建表後不直接進 downstream likelihood schema、不作 clone assignment prior 或 topology edge constraint。它仍可存在於 read audit、provenance 與 grouped holdout artifact。
+### 2.2 Derived builder artifacts(上游資料整理後的中間輸入檔)
 
-### 1.3 目前 finite-K PhyloWGS-inspired compound MCMC
+目前建表介面需要：
 
-目前 active C++ inference 參考 PhyloWGS 的樹狀 local mass 與 assignment
-更新方式；保留固定 finite K，並非完整 infinite TSSB。
-
-```text
-canonical likelihood_input.tsv.gz + ChainConfig
-        │
-        │  每個 SNV：bulk REF/ALT、HP1-1/HP2-1、ASCAT CN、
-        │  CN-only multiplicity_prior、rho_ASCAT=0.99
-        ▼
-latent state = topology T + SNV assignment z + prevalence eta
-        │
-        │  每回合執行：all-SNV assignment Gibbs、
-        │  eta independence MH、conditional subtree Gibbs
-        ▼
-samples.jsonl.gz、diagnostics.json、representative_tree.json
-checkpoint.json.gz、chain_complete.json
-```
-
-輸入是已驗證的單位點整合表與 `ChainConfig`，不是 BAM/VCF 本身。輸出是保留的
-posterior draws、接受率與收斂診斷、代表性演化樹，以及可續跑的 checkpoint。
-assignment 以 `eta_v × emission(phi_v)` 的 categorical distribution 更新；`eta`
-以 TSSB-shaped Dirichlet proposal 加上 emission MH correction 更新；topology
-則在合法 parent support 中做 conditional subtree prune-and-regraft Gibbs update。
-`phi` 是 `eta` 的 descendant sum。multiplicity 由固定的 CN-only prior 在
-observation likelihood 內邊際化，不另外抽樣成 latent state。
-
-## 2. 必要原始資料與路徑
-
-### 2.1 Reference
-
-```text
-/big8_disk/ref/GRCh38_no_alt_analysis_set.fasta
-/big8_disk/ref/GRCh38_no_alt_analysis_set.fasta.fai
-```
-
-狀態：已存在。BAM、VCF 與 CNV segments 都必須使用相同 GRCh38 contig 命名與座標系。
-
-### 2.2 Tumor BAM
-
-Raw tumor BAM：
-
-```text
-/big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/HCC1395.bam
-/big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/HCC1395.bam.bai
-```
-
-用途：正式上游來源，可重建 REF/ALT counts、LongPhase-S tagged BAM，以及未來 CNV caller 所需訊號。原始 BAM 不含可供模型直接使用的 somatic HP tag。
-
-LongPhase-S tagged tumor BAM：
-
-```text
-/bip8_disk/boyu114/longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/hcc1395_new_split_tagging.bam
-/bip8_disk/boyu114/longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/hcc1395_new_split_tagging.bam.bai
-```
-
-用途：目前 haplotype channel 的主檔，含 read-level `HP`/`PS`。目前的單位點 REF/ALT 與 HP counts 都由這個版本建立。
-
-模型使用邊界（2026-08-13 修正）：此 BAM 來自包含 `somatic-two-site-split` 實驗標籤的工作流程；正式 clone-tree likelihood 只讀取 `HP:Z:1-1` 與 `HP:Z:2-1`。`HP:Z:1-2/2-2` 暫時排除，`HP:Z:1/2` 只代表 germline side，不作 somatic ALT evidence。
-
-### 2.3 Normal BAM
-
-```text
-/big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/HCC1395BL.bam
-/big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/HCC1395BL.bam.bai
-```
-
-用途：matched-normal baseline、germline allele、tumor/normal CNV calling。正式流程需要 normal BAM，但 active finite-K compound-MCMC sampler 不會直接讀 BAM，而是讀上游整理後的 canonical 表格。
-
-### 2.4 Somatic VCF
-
-#### 最新 ClairS `tp.vcf`（已找到，尚非 model-ready）
-
-與目前 HCC1395 ONT 分支對應、檔名確實為 `tp.vcf` 的最新本地 ClairS 結果是：
-
-```text
-/big8_disk/data/HCC1395/ONT/ClairS_v0_4_1/benchmark_result/tp.vcf
-```
-
-實體位置：
-
-```text
-/big8_disk/mingen112/test_data/HCC1395/ONT/orig_bam/tumor/clairS/v0_4_1/ont_r10_dorado_sup_5khz_ssrs/benchmark_result/tp.vcf
-```
-
-狀態與 QA（2026-08-12 實查）：
-
-- ClairS 版本：v0.4.1；
-- 29,860 筆 records，全部是 SNV；
-- 檔案大小：5,815,266 bytes，mtime：2025-05-25 11:15:31 +08:00；
-- 是 benchmark 的 TP subset，不是完整 caller output；
-- 檔案沒有 VCF header、沒有 index、沒有 `FORMAT/PS`，目前不能直接交給 `bcftools` 或模型；
-- 同一 ClairS run 的 `output.vcf.gz` header 記錄輸入 BAM 為
-  `/big8_disk/data/HCC1395/ONT/HCC1395.bam` 與
-  `/big8_disk/data/HCC1395/ONT/HCC1395BL.bam`；這兩個檔案與本文件第 2.2、2.3 節的 5kHz methylation BAM 並非同一 inode/大小，因此正式使用前仍需做 read/reference provenance 對齊確認。
-
-因此先把它記錄為「最新 ClairS TP 來源候選」，尚不直接指定為模型 canonical VCF。
-
-#### 歷史 PS 流程使用的 indexed ClairS TP VCF
-
-過去產生 30,490-site PS VCF 時實際使用的基礎輸入是：
-
-```text
-/big8_disk/liaoyoyo2001/InterSubMod/data/vcf/HCC1395/pileup/filtered_snv_tp.vcf.gz
-/big8_disk/liaoyoyo2001/InterSubMod/data/vcf/HCC1395/pileup/filtered_snv_tp.vcf.gz.tbi
-```
-
-狀態與 QA（2026-08-12 實查）：
-
-- VCF header：`source=ClairS`、`clairs_version=0.4.1`；
-- 30,490 筆 records，全部是 biallelic SNV；
-- sample column：`SAMPLE`；
-- 檔案大小：1,150,924 bytes；index 大小：272,915 bytes；
-- 此檔也是與 truth set 比對後保留的 `TP`（true positive）集合，不是 ClairS 的完整、未經 truth 篩選 caller output；
-- 適合本次 HCC1395 benchmark-mode 演化樹分析，但不應當成未知樣本中可直接取得的無偏 somatic call set；
-- VCF 本身沒有 `FORMAT/PS`，因此不能直接提供 PS read audit 或 grouped-holdout metadata。PS 的上游 phasing 會影響 HP label/count 的形成，故會間接影響 `H_i`；但不直接作 downstream likelihood 欄位、clone-assignment prior 或 topology edge constraint。
-
-歷史來源關係：
-
-```text
-ClairS v0.4.1 calls / benchmark split
-        + SEQC2 truth comparison
-        -> filtered_snv_tp.vcf.gz (30,490 SNV; no PS)
-        + LongPhase-S / phased-germline PS annotation
-        -> annotated_with_PS.vcf.gz (historical derived file; currently missing)
-```
-
-此選擇與歷史流程一致：`run_vcf_all_snv.sh` 使用這份
-`filtered_snv_tp.vcf.gz` 產生後續的 `annotated_with_PS.vcf.gz`。
-
-注意：29,860-site `benchmark_result/tp.vcf` 與 30,490-site
-`filtered_snv_tp.vcf.gz` 筆數不同，不可視為單純壓縮前後的同一檔。正式重跑前要先選定 canonical site set；若目標是重現既有 574 個 two-SNV PS 結果，應沿用 30,490-site 歷史集合。
-
-#### 新重建的 BAM-derived PS TP VCF（目前可用）
-
-```text
-/bip8_disk/boyu114/multi_evol_tree/data/hcc1395_clairs_v041_tp_with_bam_ps.vcf
-/bip8_disk/boyu114/multi_evol_tree/data/hcc1395_clairs_v041_tp_with_bam_ps.vcf.gz
-/bip8_disk/boyu114/multi_evol_tree/data/hcc1395_clairs_v041_tp_with_bam_ps.vcf.gz.tbi
-```
-
-每個 PS 的 TP 位點統計：
-
-```text
-/bip8_disk/boyu114/multi_evol_tree/data/hcc1395_clairs_v041_tp_count_per_ps.csv
-```
-
-產生方式與結果（2026-08-12 實際執行）：
-
-- 輸入 TP VCF：30,490-site ClairS v0.4.1 `filtered_snv_tp.vcf.gz`；
-- PS 來源 BAM：`/big8_disk/liaoyoyo2001/InterSubMod/data/bam/HCC1395/tumor.bam`；
-- 對每個 TP 座標抓取重疊 reads，取 read-level `PS` 的眾數寫入 `FORMAT/PS`；
-- 沒有執行 `bcftools annotate`，也沒有用 phased germline VCF 補值；
-- 30,123 個 TP SNV 有 PS，367 個沒有 PS；
-- 共 4,079 個 PS，其中 574 個 PS 剛好含 2 個 TP SNV；
-- 壓縮 VCF 已建立 tabix index，`bcftools index -n` 驗證為 30,490 records。
-
-#### 歷史 PS-annotated 衍生檔（路徑失效，但已有替代檔）
-
-歷史鎖定路徑：
-
-```text
-/bip8_disk/boyu114/intersubmod/output/annotated_with_PS.vcf.gz
-/bip8_disk/boyu114/intersubmod/output/annotated_with_PS.vcf.gz.tbi
-```
-
-這個 target 目前不存在；`/bip8_disk/boyu114/InterSubMod/output/` 下只剩指向它的失效 symlink。
-
-歷史 QA 記錄顯示該衍生 VCF 曾包含：
-
-- 30,490 個 PASS biallelic SNV；
-- 30,123 個有 `FORMAT/PS`；
-- 367 個沒有 PS；
-- sample column 為 `SAMPLE`；
-- VCF 沒有 `FORMAT/HP`，HP 來自 tagged BAM。
-
-歷史路徑本身仍然失效，但已由本 repo 的
-`data/hcc1395_clairs_v041_tp_with_bam_ps.vcf.gz` 與 `.tbi` 取代；若只需要依 BAM-derived PS 統計每個 phase set 的 TP 位點數，現在已可完整重跑。兩者不可因為統計數字相同就視為 byte-identical 檔案，因為新檔刻意沒有加入 phased germline VCF 的額外補值步驟。
-
-### 2.5 Phased germline VCF
-
-```text
-/big8_disk/liaoyoyo2001/data/vcf/HCC1395BL_methyl_phase.vcf.gz
-/big8_disk/liaoyoyo2001/data/vcf/HCC1395BL_methyl_phase.vcf.gz.tbi
-```
-
-用途：normal heterozygous variants、phase backbone、germline anchors，以及 HP orientation 的局部參照。
-
-## 3. 正式 CNV/LOH 輸入：ASCAT canonical 5kHz 結果已取得
-
-正式模型需要的是 segment-level allele-specific CNV/LOH，不需要把多套自製 observation TSV 全部塞進模型。本次已用 `data.md` 鎖定的 canonical 5kHz tumor/normal BAM 完成 ASCAT，因而已有符合核心需求的 segment-level allele-specific CN 資料。
-
-### 3.1 Canonical ASCAT 輸出（目前可用）
-
-執行腳本：
-
-```text
-tools/cnv_callers/hcc1395_5khz/run_ascat_hcc1395_5khz.sh
-tools/cnv_callers/hcc1395_5khz/run_ascat_hcc1395_5khz.R
-```
-
-實際執行設定：
-
-```text
-tumor  = /big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/HCC1395.bam
-normal = /big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/HCC1395BL.bam
-threads = 4
-genome = hg38
-min_base_qual = 10
-additional_allelecounter_flags = -f 0
-```
-
-結果目錄：
-
-```text
-output/cnv_callers/ascat_hcc1395_5khz_t4/
-```
-
-主要檔案：
-
-```text
-output/cnv_callers/ascat_hcc1395_5khz_t4/HCC1395_5khz.segments.txt
-output/cnv_callers/ascat_hcc1395_5khz_t4/HCC1395_5khz.segments_raw.txt
-output/cnv_callers/ascat_hcc1395_5khz_t4/purity_ploidy.txt
-output/cnv_callers/ascat_hcc1395_5khz_t4/ASCAT_objects.Rdata
-output/cnv_callers/ascat_hcc1395_5khz_t4/run.log
-```
-
-結果 QA：
-
-```text
-segment records = 650
-chromosomes     = 1–22, X（輸出原始欄位沒有 `chr` 前綴；投影到 VCF 前需統一命名）
-purity          = 0.99
-ploidy          = 2.89591670005995
-goodnessOfFit   = 92.5999403270063
-```
-
-這次執行已成功完成並產生 segments、purity/ploidy、LogR/BAF 與 QC 圖。`run.log` 有兩個 `NAs introduced by coercion` 警告，但 R process exit code 為 0；因此先標記為「可用候選結果」，在模型正式使用前仍要完成欄位正規化與警告來源釐清。
-
-### 3.1.1 ASCAT coercion warning 釐清（2026-08-14）
-
-這兩個 warning 不是兩個 CNV segment 或兩個位點的數值錯誤，而是 ASCAT 3.2.0 內部同一個索引轉換表達式被呼叫兩次：
-
-```r
-SNPpos[as.numeric(names(bafsegmented)), ]
-```
-
-本次 `bafsegmented` 的 row names 是 `chr_position` locus ID（例如 `1_995371`、`X_343200`），不是 ASCAT 這段程式預期的數字列索引。因此 `as.numeric("1_995371")` 會得到 `NA`，R 才顯示 `NAs introduced by coercion`。輸入本身可由 `SNPpos` 的 row names 完整對回；549,261 個 segmented BAF loci 全部是這種可解析的 `chr_position` 格式，其中只有 76 個是 X chromosome loci。
-
-已用同一份 `ASCAT_objects.Rdata` 做診斷性重跑，將內部 locus names 暫時改成正確的數字列索引：
-
-```text
-原始 names：warning 2 次；purity=0.99、ASCAT psi=2.8、GOF=92.5999403、650 segments
-修正 names：無 coercion warning；purity=0.99、ASCAT psi=2.8、GOF=92.6038069、650 segments
-```
-
-兩次輸出的 650×4 segment index/CN 矩陣完全相同（`identical = TRUE`），因此這次 warning 對目前 HCC1395 5-kHz 的 segment、major/minor CN 與投影結果沒有觀察到實質影響。它仍保留為 `review`，因為這是 caller 相容性問題，不能把 warning 靜默丟掉；正式流程應在 wrapper 中保留 `chr_position → SNPpos row index` 的明確轉換，再產生無 warning 的 canonical ASCAT provenance。
-
-完整診斷記錄曾位於 `input_validation_20260814/stage_03_ascat_warning_diagnosis.md`，該歷史目錄已於 2026-08-16 刪除；ASCAT warning 結論保留於本文件與 `convergence_cleanup_20260816.md`。
-
-### 3.2 ASCAT 欄位與模型共同格式
-
-ASCAT 原始 segment 檔欄位是：
-
-```text
-sample  chr  startpos  endpos  nMajor  nMinor
-```
-
-映射到模型共同格式：
-
-```text
-chrom    = chr
-start    = startpos
-end      = endpos
-major_cn = nMajor
-minor_cn = nMinor
-total_cn = nMajor + nMinor
-loh_state = 由 minor_cn 與 total_cn 的明確規則推導
-```
-
-目前可採用的初始 `loh_state` 規則：
-
-```text
-minor_cn = 0 且 total_cn > 0  -> LOH-like
-total_cn = 0                  -> homozygous deletion
-minor_cn > 0                  -> non-LOH
-```
-
-這表示 ASCAT 已提供 `chrom/start/end/major_cn/minor_cn`，而 `total_cn` 與 `loh_state` 是可重現的衍生欄位；尚未直接產生 `P(retained_HP1)`、`P(retained_HP2)`、retained-allele direction 或每個 segment 的 confidence。`nMajor/nMinor` 是 copy-number 大小排序，不等同 LongPhase-S 的 HP1/HP2。
-
-Caller 的輸入相容性、已找到的 ASCAT 程式／reference／腳本、HCC1395 歷史結果路徑與 provenance 限制，統一記錄於 [cnv_tool_and_data.md](cnv_tool_and_data.md)。
-
-建議統一格式：
-
-```text
-sample  chrom  start  end  total_cn  major_cn  minor_cn  loh_state  caller  confidence
-```
-
-最少必要欄位：
-
-```text
-chrom
-start
-end
-total_cn
-major_cn
-minor_cn
-loh_state
-```
-
-可由 ASCAT、FACETS、PURPLE 或其他正式 allele-specific CNV caller 轉換成這個共同格式。每個 SNV 再依座標投影到對應 segment。
-
-`major_cn/minor_cn`只表示多、少兩側的copy number，不直接表示retained HP1或retained HP2。目前模型只使用tagged reads的HP1-1/HP2-1 counts並逐位點邊際化mutation side。PS 可在 LongPhase-S 上游協助維持 block 內 HP label 的一致性，因此會間接反映在 HP counts；它不負責把 ASCAT side 對齊 HP，也不直接進 downstream likelihood。
-
-## 4. 歷史中間表狀態：保留稽核；新版正式表待 wrapper 重建
-
-2026-08-13 確認先前的中間表來自舊資料流程，因此下列檔案已刪除，不再是模型輸入：
-
-```text
-output/longphase_clone/snv_bulk_counts.tsv.gz
-output/longphase_clone/snv_hp_counts.tsv.gz
-output/longphase_clone/m3_latent_cn_site_posterior.tsv.gz
-output/longphase_clone/m3_bam_sensitivity_site_ccf_proxy.tsv.gz
-output/longphase_clone/m3_bam_sensitivity_candidate_tree.json
-```
-
-2026-08-15 曾由 canonical VCF、tagged tumor BAM count tables 與 site-level ASCAT schema 重建下列歷史表：
-
-```text
-output/longphase_clone/stage_06_likelihood_20260815_binomial/likelihood_input.tsv.gz
-```
-
-它保留 30,490 個 TP SNV；其中 30,006 個為 `eligible`，399 個 `excluded_cn_zero` 與85個 `excluded_unmapped_segment` 保留為明確QC狀態。這些row counts、counts與CN projection可作新版重建的交叉檢查。
-
-這張表**不再是新版正式輸入**：它的 `multiplicity_posteriors` 由相同bulk observations形成，舊sampler又使用這些counts計算likelihood，可能重複使用資料。新版必須由 `tumor_tree_pipeline` 重建CN-only `multiplicity_prior`，並在新schema/QA通過後才可啟動長鏈。
-
-歷史 sampler 讀取 TSV，而不會在每次 sampler iteration 重掃 BAM；下列程式只作歷史稽核，不是目前 finite-K compound-MCMC 的正式入口：
-
-```text
-tools/run_longphase_clone_m3_tssb_mcmc.py
-```
-
-## 5. 非必要，但建議預備與保留
-
-### 5.1 Tagged normal BAM
-
-```text
-/big8_disk/liaoyoyo2001/data/bam/HCC1395BL_ONT_5khz_simplex_5mCG_5hmCG_tagged.bam
-/big8_disk/liaoyoyo2001/data/bam/HCC1395BL_ONT_5khz_simplex_5mCG_5hmCG_tagged.bam.bai
-```
-
-不是目前模型必要輸入。可保留作 normal HP/PS QC、germline haplotype 分層與未來 retained-allele orientation 分析。
-
-### 5.2 SEQC2 somatic truth set
-
-```text
-/big8_disk/data/HCC1395/SEQC2/high-confidence_sSNV_in_HC_regions_v1.2.1.vcf.gz
-/big8_disk/data/HCC1395/SEQC2/High-Confidence_Regions_v1.2.bed
-```
-
-用途：held-out validation、callability 與 sensitivity QC。不能把 truth VCF 當成未知 somatic mutation 的模型輸入，否則會造成資料洩漏。
-
-### 5.3 SEQC2 CNV/LOH benchmark
-
-來源目錄：
-
-```text
-/big8_disk/data/HCC1395/SEQC2/CNV/
-```
-
-主要檔案：
-
-```text
-Additional_file_5_cnv_benchmark_calls.vcf
-ngs_benchmark_cnv_gain_cn.bed
-ngs_benchmark_cnv_loss_cn.bed
-ngs_benchmark_cnvs_gain_loss_loh.bed
-Additional_file_3_cnv_gain_cn_median.txt
-Additional_file_4_cnv_loss_cn_median.txt
-exclusion.bed
-```
-
-這些是外部 benchmark，可用於驗證新 CNV caller 的 gain/loss/LOH overlap 與排除區域；不再當成正式演化樹 likelihood 的主要 CNV 輸入。其 site-level 衍生表：
-
-```text
-output/longphase_clone/m3_cnv_loh_reference.tsv.gz
-```
-
-同樣只保留作 benchmark overlay 與歷史比較。
-
-### 5.4 LongPhase-S tumor DNA fraction report（reference-only，不是模型輸入）
-
-```text
-/bip8_disk/boyu114/longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/hcc1395_new_split_tagging_purity.out
-```
-
-報告值：
-
-```text
-tumor DNA fraction = 0.958936
-```
-
-這是 LongPhase-S 的資料估計值，**不再作為目前模型的 input**，也不再用來取代 ASCAT purity。它只保留作 provenance、歷史比較與 sensitivity reference。正式模型固定使用 ASCAT `purity=0.99`；若未來要把 purity uncertainty 納入模型，必須另開版本並明確記錄 uncertainty model。
-
-## 6. 不再使用或刻意排除
-
-以下已刪除，不是未來正式 CNV 輸入：
-
-```text
-# The old BAM-derived allele-specific CN table was deleted; its summary/audit
-# is historical and not a current model input.
-/bip8_disk/boyu114/longphase-s-boyu/output/hcc1395_cnv_multisomatic_altref_observation/cnv_intervals.tsv
-/bip8_disk/boyu114/longphase-s-boyu/output/cnv_loh_adjacency/interval_adjacency.tsv
-/bip8_disk/boyu114/longphase-s-boyu/output/strict_cnv_adjacent_loh_phased_snp_audit_gain_and_loss/site_summary.tsv
-```
-
-目前也刻意不把下列項目當成模型必要輸入：
-
-```text
-RR/RA/AR/AA joint-read summaries
-只限 exactly-two-SNV PS 的資料
-跨 PS 強制對齊的 HP1/HP2 label
-WGD event、timing 或 mode
-SEQC2 truth calls 作為訓練/建樹答案
-```
-
-## 7. 參數來源與目前設定
-
-| 參數 | 數值 | 性質 |
-|---|---:|---|
-| ASCAT tumor purity (`rho_ASCAT`) | 0.99 | 正式模型 input，來自 `purity_ploidy.txt` |
-| LongPhase-S tumor DNA fraction | 0.958936 | reference-only；不進目前 likelihood |
-| HCC1395 ploidy | 2.85 | SEQC2/HCC1395 外部背景值；未來優先使用正式 CNV caller 結果 |
-| MAPQ threshold | 20 | 人工 QC 設定 |
-| baseQ threshold | 10 | 人工 QC 設定 |
-| fallback sequencing error | 0.005 | 模型假設，尚未完成 site-specific calibration |
-| finite node count K | 4, 6, 8 | 正式 sensitivity設定；先pilot三者，再以K=6主分析，通過後補K=4/8 full |
-
-`MAPQ`、`baseQ`、error rate 與 `K` 都不是從 HCC1395 自動推導出的生物學真值。
-
-## 8. 簡化資料流
-
-```text
-Reference + raw tumor/normal BAM
-        + 30,490-site somatic VCF
-        + phased germline VCF
-                    │
-                    ▼
-       LongPhase-S tagged tumor BAM
-                    │
-                    ▼
-             REF/ALT + HP counts
-                    │
-                    ├── H_i：由 HP label/counts 形成的 likelihood evidence
-                    └── PS：上游 phasing metadata；provenance / read audit /
-                        grouped holdout，非 downstream likelihood 欄位
-
-Formal allele-specific CNV/LOH segments
-                    │
-                    ▼
-       每個 SNV 的 total/major/minor CN
-
-counts + CN/LOH + CN-only multiplicity prior
-        + ASCAT tumor purity (`rho_ASCAT=0.99`)
-                    │
-                    ▼
-       clone assignment + tree posterior
-
-SEQC2 truth/CNV benchmark ──► 只作外部驗證
-```
-
-## 9. 下一個資料準備優先順序
-
-目前原則是：**先確保所有資料來自同一組 canonical inputs，再建立衍生表；不能拿歷史 proxy 補缺值。**
-
-| 優先級 | 要做的事 | 完成條件 |
-|---:|---|---|
-| **P0** | 鎖定 canonical input bundle | 固定 reference、raw tumor/normal BAM、LongPhase-S tagged tumor BAM、phased germline VCF、ASCAT `purity_ploidy.txt`（`rho_ASCAT=0.99`）與 30,490-site somatic site set；記錄實體路徑、版本、檔案大小與 checksum |
-| **P1** | 驗證並固定 somatic VCF 的 PS | 逐位點核對 `data/hcc1395_clairs_v041_tp_with_bam_ps.vcf.gz` 與 canonical tagged tumor BAM 的 read-level PS；若不一致，必須由該 tagged BAM 重新回填 PS，不能沿用另一份 BAM 的 PS |
-| **P2** | 驗證單位點 observation tables | 重用並驗證canonical REF/ALT、depth與`HP:Z:1-1/2-1` counts；PS 先作 LongPhase-S 上游 phasing metadata 以形成 HP labels/counts，再另存 read-audit/provenance artifact；PS 不直接進 downstream model table |
-| **P3** | 固定正式 allele-specific CNV/LOH segments | ASCAT canonical 5kHz run 已完成；將 `HCC1395_5khz.segments.txt` 轉為共同 schema，明確寫入 `total_cn/loh_state/caller/confidence`，並完成兩個非致命 warning 的 QC 說明 |
-| **P4** | 建立每個 SNV 的整合輸入 | 將SNV投影到CNV/LOH segment，建立CN、CN-only `multiplicity_prior`及HP-side evidence；prior不得使用VAF、counts或purity，retained HP方向不可由major/minor硬補 |
-| **P5** | 建立 provenance manifest 並驗收 | 每張中間表附產生腳本、完整命令、input checksum、row/site count、schema、filter、建立日期；確認 site key 唯一、座標/contig 一致、REF 符合 reference、bulk 與 HP counts 守恆 |
-| **P6** | 重新啟動模型 | 只有P0–P5全部通過後，才由`tumor_tree_pipeline` wrapper執行20-site smoke、驗證外部simulation manifest、K=4/6/8、多鏈posterior與grouped holdout |
-
-### 9.1 目前立即要做的三件事
-
-```text
-第一：PS VCF ↔ canonical tagged BAM 一致性稽核
-第二：用通過稽核的資料重建 REF/ALT 與 HP1-1/HP2-1 counts
-第三：產生正式 allele-specific CNV/LOH segment 檔
-```
-
-### 9.2 暫時不要做
-
-- 不使用已刪除的歷史 intermediate/proxy tables。
-- 不為了讓 sampler 能跑而用 SEQC2 benchmark 補成正式 CNV likelihood；SEQC2 只作外部驗證。
-- 不把 `HP:Z:1-2/2-2`、exactly-two-SNV PS 或 RR/RA/AR/AA 當成目前必要輸入。
-- 在 provenance manifest 與 QA 未通過前，不重新產生或解讀新的 posterior tree。
-
-舊的 `input_manifest.json` 與 `input_qa_report.md` 是2026-08-06的歷史快照，已於2026-08-16刪除；目前資料狀態以本文件為準，正式執行後再由`tumor_tree_pipeline` manifest更新。
-
-## 10. 2026-08-14 歷史七階段驗證管線與可重用資料
-
-本節保留舊validator、PS audit與CN projection的可重現資料來源。它不是新版正式posterior入口；新版只能由`tumor_tree_pipeline` wrapper驗收。歷史入口程式是：
-
-```text
-tools/validate_hcc1395_m3_pipeline.py
-```
-
-它只讀取輸入 BAM/VCF/ASCAT/reference，將 audit 表與 JSON manifest 寫到指定 output directory；不會修改原始 BAM、VCF 或 ASCAT 檔案。每次執行都會記錄完整命令、輸入大小／mtime，對小檔案寫入 SHA256；273 GB BAM 與 3.1 GB reference 若要做內容 checksum，需明確加 `--hash-large-files`。
-
-### 10.1 Canonical site-set decision
-
-目前正式 reproducibility mode 是：
-
-```text
-site VCF = data/hcc1395_clairs_v041_tp_with_bam_ps.vcf.gz
-site label = hcc1395_tp_30490
-records = 30,490 PASS biallelic SNVs
-PS-present = 30,123
-PS-missing = 367
-```
-
-這是為了保留既有 574 two-SNV PS 結果的可重現性。`/big8_disk/data/HCC1395/ONT/ClairS_v0_4_1/benchmark_result/tp.vcf` 只有 29,860 筆 TP、沒有 header/index/PS，不能冒充完整 ClairS PASS set；若日後要改用 complete PASS，必須提供有 header、index、reference build 與 provenance 的 VCF，並用 `--site-mode complete_clairs_pass` 另建一個 output directory，不能覆蓋本模式結果。
-
-Gate 1 pass 條件：所有選定 records 都是 PASS、biallelic SNV；30,490 mode 另外必須得到 `30,490 / 30,123 / 367` 三個 snapshot 數字。site key digest 也會寫入 `stage_01_site_universe.json`。
-
-### 10.2 PS VCF ↔ canonical tagged BAM audit
-
-canonical read-level source 是：
-
-```text
-/bip8_disk/boyu114/longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/hcc1395_new_split_tagging.bam
-```
-
-每個 SNV 以 `MAPQ >= 20`、`baseQ >= 10`、排除 unmapped/secondary/QC-failed/duplicate/supplementary reads 的規則，將 callable REF/ALT reads 的 BAM `PS` 與 VCF `FORMAT/PS` 比較。相同 query name 在同一 locus 的重複 pileup observation 只算一條 read，但會列入 `duplicate_query_name` QC 欄位；因此這是 read-level audit，不是 pileup row-level audit。
-
-輸出：
-
-```text
-ps_read_audit.tsv.gz
-stage_02_ps_audit.json
-```
-
-主要狀態：
-
-| 狀態 | 意義 |
-|---|---|
-| `match_alt` | VCF PS 至少出現在一條 callable ALT read 上 |
-| `discordant_alt` | ALT read 有 PS，但沒有 VCF 指定的 PS |
-| `match_ref_only` | 只有 REF read 支持 VCF PS，沒有 callable ALT read |
-| `bam_ps_missing` | 有 allele reads，但 BAM 沒有 PS tag |
-| `no_callable_reads` | 目前 filter 下沒有可用 REF/ALT read |
-| `vcf_ps_missing` | VCF 本身沒有 PS；不能假裝成 audit pass |
-| `bam_contig_missing` | VCF contig 不在 BAM header |
-
-正式 gate 使用 `--max-discordance-fraction 0.01`；`--max-sites` 只可作 smoke test，結果會標成 `smoke_only`，不算正式通過。
-
-### 10.3 ASCAT normalization
-
-ASCAT 原始檔：
-
-```text
-output/cnv_callers/ascat_hcc1395_5khz_t4/HCC1395_5khz.segments.txt
-```
-
-正規化輸出：
-
-```text
-ascat_segments.normalized.tsv.gz
-stage_03_ascat_summary.json
-```
-
-共同 schema：
-
-```text
-segment_id  sample  chr  start  end  major_cn  minor_cn  total_cn  loh_state  caller  confidence
-```
-
-座標為 1-based inclusive；`total_cn = major_cn + minor_cn`。目前 650 段、23 個 chromosome、沒有 segment overlap。`loh_state` 只做可重現的分類：`total_cn=0 → homozygous_deletion`、`minor_cn=0 且 total_cn>0 → loh_like`、其餘 → `non_loh`。`confidence=global_fit_only` 不代表每一個 segment 都有獨立可信度；retained HP1/HP2 direction 仍不能由 ASCAT 的 major/minor 自動推出。
-
-### 10.4 SNV 對 CN/LOH 的 QC projection
-
-輸出：
-
-```text
-site_cnv_qc.tsv.gz
-stage_04_site_cnv_qc.json
-```
-
-每一個 site 都保留一列，狀態不可互相混淆：
-
-```text
-mapped_nonzero_cn  = 有一段覆蓋且 total_cn > 0
-cn_zero            = 有一段覆蓋但 total_cn == 0（保留，不能靜默刪掉）
-unmapped_segment   = 沒有 ASCAT segment 覆蓋（目前預期 85）
-segment_overlap    = 超過一段覆蓋，需回頭檢查 caller/schema
-```
-
-對 30,490-site snapshot，正式 gate 會檢查 `unmapped_segment=85` 與 `cn_zero=399`。這兩個數字是 QC 分層，不是把 484 個位點直接餵給模型的 CN=0 或隨意補成 diploid。
-
-### 10.5 Canonical bulk/HP counts
-
-先用明確路徑重建，不依賴已刪除的舊 default：
-
-```bash
-python3 tools/build_hcc1395_longphase_clone_site_counts.py \
-  --vcf data/hcc1395_clairs_v041_tp_with_bam_ps.vcf.gz \
-  --bam /bip8_disk/boyu114/longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/hcc1395_new_split_tagging.bam \
-  --outdir output/longphase_clone/canonical_counts_20260814 \
-  --workers 4 --min-mapq 20 --min-baseq 10 \
-  --sample-label HCC1395
-```
-
-輸出契約：
-
-```text
+~~~text
 snv_bulk_counts.tsv.gz
 snv_hp_counts.tsv.gz
 snv_hp_qc.tsv.gz
+site_cnv_qc.tsv.gz
 site_counts_manifest.json
-```
+ASCAT purity file
+~~~
 
-bulk table 是單位點 `REF/ALT/depth/VAF`；HP table 保留完整 observed HP domain，但模型目前只把 `1-1` 與 `2-1` 作 somatic ALT haplotype evidence，`1-2/2-2` 不進 likelihood。每個 site 必須有固定 10 個 HP rows；bulk REF/ALT 必須等於 HP rows 加總；site key 必須唯一；manifest 必須標示 `single_site_only=true`、canonical tagged BAM、filters 與 `deduplicate_query_names=true`。這個 count builder 不產生 RR/RA/AR/AA，也不把 exactly-two-SNV PS 當成模型限制。
+這些檔案是已整理成 single-site 或 site-CNV 格式的中間資料。
 
-完成後用既有 validator：
+### 2.3 Canonical input bundle(模型輸入資料包)
 
-```bash
-python3 tools/validate_hcc1395_longphase_clone_counts.py \
-  --outdir output/longphase_clone/canonical_counts_20260814
-```
+builder 產生：
 
-再把 counts directory 傳給本節 pipeline 的 `--counts-dir`，讓 `stage_05_counts_qa.json` 以相同 site universe 檢查 row 數與 manifest。
+~~~text
+likelihood_input.tsv.gz
+input_qa.json
+manifest.json
+~~~
 
-### 10.6 新likelihood的正式輸入契約
+likelihood_input.tsv.gz 是 model 與 inference backend 之間的資料介面；input_qa.json 和 manifest.json 是驗證與 provenance artifacts，不是 likelihood observation。
 
-新版整合表至少明確提供：
+---
 
-```text
+## 3. Canonical required columns
+
+目前 required columns 共 20 個：
+
+~~~text
+mutation_id
+chrom
+pos
+ref
+alt
+bulk_ref
+bulk_alt
+bulk_depth
+hp1_1_ref
+hp1_1_alt
+hp2_1_ref
+hp2_1_alt
 major_cn
 minor_cn
 total_cn
 rho_ASCAT
 multiplicity_candidates
 multiplicity_prior
-```
+model_include
+model_status
+~~~
 
-`multiplicity_prior`只由major/minor CN動態產生：extant sides先等權，再在各side可行的`m`內均分。`major/minor=3/1`時為`2/3,1/6,1/6`。它不讀bulk counts、VAF或purity；bulk counts只在likelihood使用一次。Beta-Binomial concentration不是輸入，也不由模型估計。
+欄位意義：
 
-2026-08-15的舊gate雖曾回報pass，但該表使用bulk-informed `multiplicity_posteriors`，不符合2026-08-19契約。它只保留作歷史schema與row-count對照；新版gate必須由`tumor_tree_pipeline`重新執行。
-
-### 10.7 歷史 convergence、simulation、held-out calibration gate
-
-第 7 gate 必須同時有：
-
-```text
-label-invariant R-hat / ESS diagnostics
-simulation truth-recovery summary
-strict held-out calibration summary
-```
-
-輸入資料、likelihood或site universe變更後，歷史 tree PNG 不算新結果。新版 wrapper 必須同時驗證 input manifest、simulation、PS/chromosome/ASCAT-segment grouped holdout、rank-normalized split/folded R-hat、bulk/tail ESS 與 K sensitivity；任一 gate 失敗即非零 exit 並建立`_FAILED`，只有全部通過才建立`_SUCCESS`。
-
-### 10.8 可重跑的歷史資料驗證命令
-
-先做 smoke（只驗證介面，不宣稱資料完成）：
-
-```bash
-python3 tools/validate_hcc1395_m3_pipeline.py \
-  --site-vcf data/hcc1395_clairs_v041_tp_with_bam_ps.vcf.gz \
-  --tagged-bam /bip8_disk/boyu114/longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/hcc1395_new_split_tagging.bam \
-  --ascat-segments output/cnv_callers/ascat_hcc1395_5khz_t4/HCC1395_5khz.segments.txt \
-  --reference /big8_disk/ref/GRCh38_no_alt_analysis_set.fasta \
-  --site-mode tp30490 --site-label hcc1395_tp_30490 \
-  --outdir output/longphase_clone/input_validation_20260814_smoke \
-  --max-sites 10 --audit-workers 2
-```
-
-舊資料 gate 使用同一命令但移除`--max-sites`，並可加入`--counts-dir`、`--integrated-table`、`--m3-dir`。以下是
-2026-08-14 的歷史 full-gate 命令；其中產生的舊 model table 與 Beta-Binomial
-結果只保留作 provenance/比較，不是目前模型輸入：
-
-```bash
-python3 tools/validate_hcc1395_m3_pipeline.py \
-  --site-vcf data/hcc1395_clairs_v041_tp_with_bam_ps.vcf.gz \
-  --tagged-bam /bip8_disk/boyu114/longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/hcc1395_new_split_tagging.bam \
-  --ascat-segments output/cnv_callers/ascat_hcc1395_5khz_t4/HCC1395_5khz.segments.txt \
-  --reference /big8_disk/ref/GRCh38_no_alt_analysis_set.fasta \
-  --site-mode tp30490 --site-label hcc1395_tp_30490 \
-  --max-discordance-fraction 0.01 --audit-workers 4 --audit-window-size 50000000 \
-  --counts-dir output/longphase_clone/canonical_counts_20260814 \
-  --outdir output/longphase_clone/input_validation_20260814
-```
-
-這條歷史 full-gate 命令的主要輸出是：
-
-```text
-validation_manifest.json
-stage_01_site_universe.json
-stage_02_ps_audit.json
-stage_03_ascat_summary.json
-stage_04_site_cnv_qc.json
-stage_05_counts_qa.json
-stage_06_model_gate.json
-stage_07_m3_gate.json
-site_universe.tsv.gz
-ps_read_audit.tsv.gz
-ascat_segments.normalized.tsv.gz
-site_cnv_qc.tsv.gz
-```
-
-2026-08-15歷史Binomial likelihood的 table-only refresh 使用下列命令；它重用
-前一輪已完成的 raw-data audit，只重新驗證歷史 model-table schema 與
-`multiplicity_posteriors`。若未來重建 Stage 1--5，應另開新的日期版本目錄，不要覆寫
-這份 provenance：
-
-```bash
-python3 tools/validate_hcc1395_m3_pipeline.py \
-  --stage6-only \
-  --integrated-table output/longphase_clone/stage_06_likelihood_20260815_binomial/likelihood_input.tsv.gz \
-  --outdir output/longphase_clone/input_validation_20260815_binomial
-```
-
-該歷史gate要求`major_cn`、`minor_cn`、`total_cn`與舊multiplicity欄位；它沒有Beta-Binomial overdispersion欄位，但仍不符合新版CN-only prior契約。
-
-目前 active finite-K compound MCMC 的命令與 artifact 需記錄三個 kernel：
-all-SNV assignment Gibbs、TSSB-shaped `eta` independence MH、以及 conditional
-subtree topology Gibbs。這些 sampler 設定只控制推理，不是新的觀測輸入，也
-不會把 bulk counts 重複拿去建立 multiplicity。
-
-### 10.9 已執行與尚未執行
-
-| 項目 | 目前狀態 | 證據 |
+| 欄位 | 來源／產生方式 | 目前作用 |
 |---|---|---|
-| Script compile | 已執行 | `python3 -m py_compile ...` |
-| Validation contract tests | 已執行；3 個通過 | `tests/test_hcc1395_m3_pipeline_validation.py`（環境沒有 pytest，使用直接函式執行）；既有歷史 latent tests 3 個通過 |
-| 10-site PS smoke | 已執行；10/10 `match_alt`、0 discordance | `/tmp/hcc1395_validation_batch10/stage_02_ps_audit.json` |
-| ASCAT normalization smoke | 已執行；650 段、0 overlap；原 ASCAT `run.log` 有 2 次 `NAs introduced by coercion`，因此 gate 為 `review` | `/tmp/hcc1395_validation_batch10/stage_03_ascat_summary.json`；正式 warning 亦保留在 `output/.../stage_03_ascat_summary.json` |
-| Full site/CNV preparation | 已執行；30,490 site、650 segments、`unmapped=85`、`CN=0=399` | 歷史 `input_validation_20260814` 已刪除；摘要與新版 QA 保留於 `input_validation_20260815_binomial/` |
-| 30,490-site PS audit | 已完成；29,976 match_alt、20 discordant、14 bam_ps_missing、113 match_ref_only、367 vcf_ps_missing；discordance fraction=0.000667 | 歷史 audit JSON 已刪除；結果摘要保留於本文件 |
-| canonical count rebuild | 已完成；30,490 bulk rows、304,900 HP rows、30,490 QC rows | canonical counts 目錄仍保留；舊 validation QA 已刪除 |
-| 歷史likelihood input（bulk-informed multiplicity、major/minor CN） | **歷史Gate曾pass；新版不得重用** | [likelihood_input.tsv.gz](output/longphase_clone/stage_06_likelihood_20260815_binomial/likelihood_input.tsv.gz)：30,490 rows、30,006 eligible；只作row/schema對照 |
-| 新版CN-only multiplicity input | **待`tumor_tree_pipeline`重建與驗收** | 需要`multiplicity_prior`、`rho_ASCAT=0.99`與新版manifest；尚未宣稱完成 |
-| 歷史 convergence/simulation/held-out | **已執行但未通過gate** | [`convergence.md`](convergence.md)；歷史 baseline 最大 label-invariant R-hat=24.983、最低 ESS/chain=3.1 |
+| mutation_id | chrom:pos:ref>alt | SNV 唯一識別與 output 對應 |
+| chrom | SNV key | genomic identity |
+| pos | SNV key | genomic identity |
+| ref | SNV key | reference allele identity |
+| alt | SNV key | alternate allele identity |
+| bulk_ref | bulk count artifact | bulk REF observation |
+| bulk_alt | bulk count artifact | bulk ALT observation |
+| bulk_depth | bulk_ref + bulk_alt | bulk depth observation |
+| hp1_1_ref | HP count artifact 的 1-1 類別 | HP1-1 REF observation |
+| hp1_1_alt | HP count artifact 的 1-1 類別 | HP1-1 ALT observation |
+| hp2_1_ref | HP count artifact 的 2-1 類別 | HP2-1 REF observation |
+| hp2_1_alt | HP count artifact 的 2-1 類別 | HP2-1 ALT observation |
+| major_cn | ASCAT site-CNV projection | allele-specific CN |
+| minor_cn | ASCAT site-CNV projection | allele-specific CN |
+| total_cn | major_cn + minor_cn | total CN |
+| rho_ASCAT | ASCAT purity output | fixed global purity |
+| multiplicity_candidates | major/minor CN deterministic derivation | 可行 mutated-copy 數 |
+| multiplicity_prior | major/minor CN deterministic derivation | multiplicity marginalization prior |
+| model_include | builder eligibility gate | 是否允許進 sampler |
+| model_status | builder eligibility gate | eligible 或 exclusion reason |
 
-因此目前的資料流程結論是：**30,490-site counts與ASCAT CN/purity來源可重用；CN-only `multiplicity_prior`正式表、20-site fixture與新版wrapper gate完成前，不得啟動或解讀正式 compound-MCMC run。R-hat=24.983／ESS=3.1只屬歷史 plain-MH baseline。**
+對 C++ Site 而言，identity 欄位會保留用於追蹤；真正的 observation 主要是 bulk counts、HP counts、ASCAT CN、purity 與 multiplicity support/prior。
 
-### 10.11 歷史 production-like posterior run（2026-08-14）
+---
 
-可重跑 runner：[`tools/run_stage6_production.py`](tools/run_stage6_production.py)。這是歷史 production-like run，不代表目前 baseline 的正式結果。本輪使用 `likelihood_input.tsv.gz`、K=6、3 條獨立 chain、每條 8 iterations（burn-in 2），並在 sampler 前以 `(chrom, PS)` block 分割 6,009 個 strict holdout sites。
+## 4. Optional audit columns
 
-結果摘要：
+builder output 會固定保留下列欄位；它們對 model 是 optional audit columns：
 
-- R-hat：各 prevalence-rank 因短鏈／鏈內變異不足而出現 `NaN`；不能視為收斂。
-- minimum ESS：2.7，遠低於 100。
-- label-invariant assignment agreement：0.546–0.559；topology 每條 chain 有 2–3 個 retained topologies。
-- strict held-out：3 條 chain 均完成，6,009/6,009 sites 可評估；平均 predictive log score `-54.1815 ± 0.0428`，90% coverage `83.31%`。
-- simulation recovery：assignment fraction of oracle `0.500`、prevalence RMSE `0.2302`、topology F1 `0.4954`，未通過 recovery gate。
+| 欄位 | 用途 | 是否進 C++ likelihood state |
+|---|---|---|
+| phased_gt | genotype／phase provenance | 否 |
+| cnv_status | CN mapping、CN zero、unmapped、overlap 狀態 | 否 |
+| segment_id | ASCAT segment identity 與 holdout grouping | 否 |
+| loh_state | LOH compatibility context | 否 |
+| cnv_confidence | site-CNV projection confidence | 否 |
+| somatic_hp_evidence_status | HP read evidence QC 摘要 | 否 |
 
-因此該歷史 production-like run 不是「沒有執行」，而是 **artifact 已齊全但 convergence/recovery gate 為 review**。2026-08-14 的歷史 production raw outputs 已刪除；目前完整結果以 [`convergence.md`](convergence.md) 與 [`i6_automation_tmp/run_20260816_002_longchain_eta1`](output/longphase_clone/i6_automation_tmp/run_20260816_002_longchain_eta1) 為準。
+這些欄位可以存在於 builder output，但不代表它們是 sampled state、clone prior 或 likelihood parameter。
 
-### 10.12 收斂導向的輸出保留
+PS 不應作為 canonical likelihood column；PS audit、read-level evidence 與 holdout grouping 應保存在獨立的 workflow metadata／audit artifacts。
 
-目前正式保留的不是所有歷史 output，而是能重建 canonical input、I5 PASS、I6 FAIL 與
-下一輪 CN/LOH 修正的最小集合。保留／刪除逐項執行清單見
-[`convergence_cleanup_20260816.md`](convergence_cleanup_20260816.md)；截至 2026-08-16
-已刪除 179 個舊 pilot、重複 seed、舊 candidate tree 與早期描述性圖表，避免誤把歷史結果
-當成目前模型輸入。
+---
 
-### 10.10 Heavy-I/O detached runner
+## 5. Derived artifact 的格式
 
-為避免 273 GB tagged BAM 的長時間讀取綁在 agent session，已新增：
+### 5.1 Bulk counts
 
-```text
-tools/run_hcc1395_m3_input_validation.sh
-```
+檔案：
 
-預設使用 8 個 worker、50 Mb batched pileup window，並把 stdout/stderr、PID、參數、stage status 寫入：
+~~~text
+snv_bulk_counts.tsv.gz
+~~~
 
-```text
-output/longphase_clone/input_validation_20260814/run_hcc1395_m3_input_validation.log
-output/longphase_clone/input_validation_20260814/run_status.tsv
-output/longphase_clone/input_validation_20260814/run_parameters.tsv
-```
+每個 SNV 至少提供：
 
-從 repo root 啟動 detached 全流程：
+~~~text
+chrom
+pos
+ref
+alt
+bulk_ref
+bulk_alt
+bulk_usable_depth
+~~~
 
-```bash
-tools/run_hcc1395_m3_input_validation.sh \
-  --mode all --threads 8 --audit-window-size 50000000 --detach
-```
+builder 會將 bulk_usable_depth 寫成 canonical table 的 bulk_depth，並檢查：
 
-可重複使用的模式：
+~~~text
+bulk_depth = bulk_ref + bulk_alt
+~~~
 
-```bash
-tools/run_hcc1395_m3_input_validation.sh --mode counts --threads 8 --detach
-tools/run_hcc1395_m3_input_validation.sh --mode audit --threads 8 --detach
-tools/run_hcc1395_m3_input_validation.sh --mode all --threads 8 --rebuild-counts --detach
-```
+上游可能另有 bulk_vaf、vcf_af、vcf_dp、vcf_ad_ref、vcf_ad_alt 等摘要欄位，但它們不是 canonical active columns。
 
-`--detach` 優先使用持久 `tmux` session `hcc1395_input_validation`，因此不依賴 agent session；若沒有 tmux 才 fallback 到 `nohup`。同一 output directory 使用 `flock` 防止兩個重 I/O job 同時寫檔。若 count tables 已存在且未指定 `--rebuild-counts`，會先驗證並重用。這個歷史runner只負責舊Gate 1–5的raw-data artifacts；新版模型表與posterior必須交由`tumor_tree_pipeline`重建與驗收。
+目前不是先計算一個獨立 VAF parameter 再交給模型；model likelihood 直接使用 REF/ALT counts，並在 purity、CN、multiplicity 與 latent clone fraction 的共同條件下計算 observation probability。bulk_alt/bulk_depth 只在 holdout predictive coverage 中作為觀察摘要，不是 canonical 欄位，也不是 likelihood 的獨立輸入。模型公式請見 model.md。
 
-## 11. 2026-08-19 正式執行與保存契約
+### 5.2 HP counts
 
-- 正式入口：[`tumor_tree_pipeline/`](tumor_tree_pipeline/) wrapper；第10節舊runner不產生正式成功標記。
-- fixture：deterministic 20 sites，16 eligible、2 CN=0、2 unmapped，涵蓋diploid/CN gain/CN=1/LOH-like與HP missingness。
-- holdout：PS-grouped、chromosome-grouped、ASCAT-segment-grouped 分開報告。PS block 是 LongPhase-S 的上游 phasing metadata，會間接影響 HP label/count 的形成；在 downstream sampler 中不直接作 likelihood 欄位、clone-assignment prior 或 topology edge constraint，僅作 provenance、read audit 與 grouped holdout metadata。
-- K：pilot `4/6/8`；full先K=6，通過後追加K=4/8。
-- purity：主分析0.99；通過後做0.97與0.95 sensitivity。
-- chains：4 條以不同 seed 執行同一 finite-K PhyloWGS-inspired compound-MCMC kernel 的 chains；起始 1500 iterations、1000 burn-in、thin=1、每鏈至少 500 retained draws。
-- formal gate：rank-normalized split/folded R-hat `<1.01`、bulk/tail ESS total各`>=400`、assignment agreement`>=0.90`，並通過simulation與strict holdout。
-- wrapper：immutable run ID、lock、checkpoint、atomic writes、hash manifest；失敗建立`_FAILED`並回傳非零exit，全部通過才建立`_SUCCESS`。
-- Git保存pipeline、tests、configs、fixture、manifest與小型摘要；大型BAM、完整chains與可重建中間表只由path/hash引用。
+檔案：
+
+~~~text
+snv_hp_counts.tsv.gz
+~~~
+
+每個 SNV 依照完整 HP tag domain 保存 REF/ALT counts：
+
+~~~text
+.
+1
+2
+3
+4
+1-1
+2-1
+1-2
+2-2
+other
+~~~
+
+對任一 HP tag 類別：
+
+- *_ref 是該類別 reads 中觀察到 reference allele 的數量。
+- *_alt 是該類別 reads 中觀察到 alternate allele 的數量。
+
+因此 hp1_1_ref 不是「HP1 本身是 reference」，而是「被標記為 1-1 的 reads 中，支持 reference allele 的數量」。
+
+canonical table 只保留 downstream model 使用的兩組：
+
+~~~text
+hp1_1_ref
+hp1_1_alt
+hp2_1_ref
+hp2_1_alt
+~~~
+
+其他 HP 類別仍用於完整 count conservation 和 QC。C++ likelihood 不另存 untagged 欄位；untagged REF/ALT counts 由 bulk counts 減去四個 active HP counts 推導，再和 HP-tagged counts 一起形成 emission。
+
+### 5.3 HP QC
+
+檔案：
+
+~~~text
+snv_hp_qc.tsv.gz
+~~~
+
+用途：
+
+- 確認 site key 與 bulk table 完全一致。
+- 檢查 upstream HP-QC delta 是否為零。
+- 保存 HP read evidence 的品質狀態。
+
+完整 HP domain 是由 snv_hp_counts.tsv.gz 的 loader 驗證；所有 HP categories 的 REF/ALT conservation 則由 builder 在產生 QA 前檢查，失敗時直接停止。active table 的四個 HP 欄位只是 model 使用的 primary HP evidence。
+
+### 5.4 Site-CNV QC
+
+檔案：
+
+~~~text
+site_cnv_qc.tsv.gz
+~~~
+
+必要欄位：
+
+~~~text
+chrom
+pos
+ref
+alt
+cnv_status
+~~~
+
+cnv_status 為 mapped_nonzero_cn 或 cn_zero 時，還必須提供：
+
+~~~text
+major_cn
+minor_cn
+total_cn
+~~~
+
+可選的 audit 欄位：
+
+~~~text
+segment_id
+loh_state
+cnv_confidence
+~~~
+
+用途：
+
+- ASCAT segment → site-CNV projection 必須在 canonical builder 之前完成；build_model_table() 讀取並驗證已投影的 site_cnv_qc.tsv.gz。
+- 提供 major、minor、total CN。
+- 判定 site 是否有可用 CN。
+- 排除 CN zero、unmapped segment 或 segment overlap。
+- 保存 CNV／LOH 的 provenance 與 audit context。
+
+其中只有 major_cn、minor_cn、total_cn 是 active likelihood input；segment_id、loh_state 和 confidence 欄位目前只作 audit／holdout context。
+
+### 5.5 ASCAT purity
+
+builder 從 ASCAT purity output 讀取：
+
+~~~text
+sample
+purity
+~~~
+
+並寫入 canonical field：
+
+~~~text
+rho_ASCAT
+~~~
+
+primary value 是 0.99。ASCAT output 中可能還有 ploidy 或 goodness-of-fit，但目前不會作為 sampler 的 active input。
+
+---
+
+## 6. Source 到 canonical table
+
+完整轉換流程：
+
+~~~text
+SNV site universe
+        │
+        ├── bulk counts
+        │       └── bulk_ref / bulk_alt / bulk_depth
+        │
+        ├── HP counts
+        │       └── hp1_1_* / hp2_1_*
+        │
+        ├── HP QC
+        │       └── complete-domain count conservation
+        │
+        ├── ASCAT site-CNV projection
+        │       └── major_cn / minor_cn / total_cn
+        │
+        └── ASCAT purity output
+                └── rho_ASCAT
+                        │
+                        ▼
+              multiplicity_candidates
+              multiplicity_prior
+                        │
+                        ▼
+             likelihood_input.tsv.gz
+                        │
+                ┌───────┴───────┐
+                ▼               ▼
+           input_qa.json    manifest.json
+~~~
+
+### 6.1 Canonical CSV-like example
+
+canonical table 是 TSV；下面用 CSV-like 格式展示一列：
+
+~~~csv
+mutation_id,chrom,pos,ref,alt,bulk_ref,bulk_alt,bulk_depth,hp1_1_ref,hp1_1_alt,hp2_1_ref,hp2_1_alt,major_cn,minor_cn,total_cn,rho_ASCAT,multiplicity_candidates,multiplicity_prior,model_include,model_status
+chr1:100:A>G,chr1,100,A,G,34,11,45,8,6,10,2,3,1,4,0.99,"1;2;3","1=0.666667;2=0.166667;3=0.166667",yes,eligible
+~~~
+
+這列表示：
+
+~~~text
+bulk counts:
+  REF=34, ALT=11, depth=45
+
+HP 1-1:
+  REF=8, ALT=6
+
+HP 2-1:
+  REF=10, ALT=2
+
+ASCAT:
+  major=3, minor=1, total=4
+
+purity:
+  rho_ASCAT=0.99
+
+multiplicity:
+  candidates=1,2,3
+  prior=1=0.666667, 2=0.166667, 3=0.166667
+
+eligibility:
+  model_include=yes
+  model_status=eligible
+~~~
+
+excluded row 也保留在 table，例如：
+
+~~~csv
+chr2:200:C>T,chr2,200,C,T,0,0,0,0,0,0,0,2,1,3,0.99,,,no,excluded_zero_depth
+~~~
+
+excluded row 的用途是保留完整 site universe 和排除原因；它不會進入 sampler。
+
+---
+
+## 7. PS 與 HP 的資料邊界
+
+### 7.1 PS 的正確角色
+
+PS 是上游 phase provenance。它可以協助：
+
+- 在同一 PS block 內維持 HP label 的局部一致性。
+- 產生 HP1-1／HP2-1 read counts。
+- 進行 read-level phase audit。
+- 建立 PS-grouped holdout，避免同一 block 被拆到不同 partition。
+
+不同 PS block 之間，不假設 HP1／HP2 方向具有全球一致性。
+
+### 7.2 PS 不直接進 model likelihood
+
+PS block 本身不是：
+
+- C++ Site field。
+- downstream likelihood column。
+- clone-assignment prior。
+- eta 或 phi parameter。
+- topology edge constraint。
+- clone label。
+
+資料關係是：
+
+~~~text
+phase-tagged reads
+        ↓
+PS block / HP label consistency
+        ↓
+HP read counts + read-level QC
+        ↓
+hp1_1_* / hp2_1_* in canonical table
+~~~
+
+所以 PS 可能透過產生 HP counts 間接影響 observation，但 PS label 本身不作為模型參數。
+
+### 7.3 Holdout 的位置
+
+PS grouped holdout 是 workflow evaluation design，不是 biological likelihood constraint。它用來評估模型對整個 phase block 的預測，不能解讀成模型把 PS block 當成 clone 或 topology。
+
+---
+
+## 8. ASCAT CN、LOH 與 purity
+
+### 8.1 Active CN fields
+
+active CN 欄位：
+
+~~~text
+major_cn
+minor_cn
+total_cn
+~~~
+
+必要條件：
+
+~~~text
+major_cn >= minor_cn >= 0
+total_cn = major_cn + minor_cn
+~~~
+
+要進入 sampler 的 eligible row 還必須滿足：
+
+~~~text
+total_cn > 0
+~~~
+
+這些欄位支援：
+
+- allele-specific copy-number context。
+- purity-aware alternate fraction emission。
+- multiplicity candidate construction。
+- multiplicity prior marginalization。
+
+### 8.2 LOH 的定位
+
+loh_state 是 optional audit／provenance annotation，不是目前 C++ Site 的 active likelihood field；目前也沒有使用它計算 likelihood 或已實作的 compatibility score。
+
+LOH 的判讀要結合：
+
+~~~text
+major_cn
+minor_cn
+total_cn
+BAF / allele-specific evidence
+segment boundary
+normal heterozygous context
+caller provenance
+~~~
+
+目前不能只用高 VAF、ALT count 或 HP label 宣稱某個 SNV 發生 LOH，也不能僅由 loh_state 自動產生：
+
+~~~text
+CNA event → clone node
+LOH event → evolutionary branch
+~~~
+
+### 8.3 Purity 的定位
+
+rho_ASCAT 是固定的 global purity input：
+
+- 參與 purity-aware observation emission。
+- 寫入 table、manifest 和 validation result。
+- 目前分析固定使用 0.99。
+
+rho_ASCAT 不等於：
+
+~~~text
+eta
+phi
+某一個 clone 的 CCF
+某一條 topology edge 的 support
+~~~
+
+目前沒有舊 purity interface；canonical table 只接受 rho_ASCAT。
+
+---
+
+## 9. CN-only multiplicity
+
+### 9.1 產生方式
+
+資料流：
+
+~~~text
+major_cn + minor_cn
+        ↓
+multiplicity_candidates
+        ↓
+multiplicity_prior
+        ↓
+likelihood 對 multiplicity 做 marginalization
+~~~
+
+目前規則：
+
+1. major/minor homolog side 各分配相等總權重。
+2. CN=0 的 side 不分配權重。
+3. 每一側在 m=1..side_CN 間均分。
+4. 兩側相同的 multiplicity 合併其機率。
+5. 最終 prior 必須正規化為 1。
+
+例如：
+
+~~~text
+major_cn=3, minor_cn=1
+
+major side:
+  m=1,2,3 各 1/6
+
+minor side:
+  m=1 為 1/2
+
+combined:
+  m=1: 2/3
+  m=2: 1/6
+  m=3: 1/6
+~~~
+
+### 9.2 不使用的資料
+
+multiplicity_prior 不使用：
+
+~~~text
+bulk_ref
+bulk_alt
+bulk_depth
+bulk_vaf
+vcf_af
+rho_ASCAT
+HP counts
+PS block
+~~~
+
+因此 bulk counts 不會先被拿來建立 multiplicity prior，再在 likelihood 中重複使用。
+
+multiplicity_prior 是固定的 CN-only prior，不是獨立的 MCMC latent state；模型在 observation likelihood 中對候選 multiplicity 做 marginalization。exact construction 由 Python builder 負責，C++ loader 不重新推導 prior，只驗證 candidates、prior keys、正規化與 CN 邊界。詳細定義見 model.md。
+
+---
+
+## 10. Eligibility 與 holdout
+
+### 10.1 Site eligibility
+
+builder 為每個 site 產生：
+
+~~~text
+model_include
+model_status
+~~~
+
+常見結果：
+
+~~~text
+model_include=yes
+model_status=eligible
+~~~
+
+或：
+
+~~~text
+model_include=no
+model_status=excluded_zero_depth
+~~~
+
+可能的 exclusion reason 還包括：
+
+~~~text
+excluded_unmapped_segment
+excluded_segment_overlap
+excluded_cn_zero
+~~~
+
+eligible row 必須通過：
+
+- site key 一致。
+- bulk counts 存在且 depth 守恆。
+- 完整 HP domain 與 count conservation 通過。
+- site-CNV projection 可用。
+- CN arithmetic 正確。
+- purity 一致。
+- multiplicity candidates 非空、排序且唯一。
+- multiplicity_prior keys 與 candidates 完全一致，所有 probability 大於零且總和為 1。
+- 最大 multiplicity 不超過可用 CN，且 eligible row 的 total_cn 大於零。
+
+### 10.2 Chain-specific holdout
+
+即使 row 是 eligible，只要 mutation_id 在某條 chain 的 holdout list 中，就不會被 C++ loader 放入該 chain 的 Site collection。
+
+因此：
+
+~~~text
+fitted sites
+=
+eligible sites
+-
+該 chain 的 holdout sites
+~~~
+
+holdout site 用於 predictive evaluation，不要求該 chain 為它產生 clone assignment。
+
+目前 workflow 的 grouped holdout 類型：
+
+~~~text
+PS grouped
+chromosome grouped
+ASCAT-segment grouped
+~~~
+
+holdout metadata 至少需要：
+
+~~~text
+mutation_id
+chrom
+ps
+ascat_segment_id
+~~~
+
+若沒有 ascat_segment_id，則必須有 segment_start 與 segment_end。metadata 的 mutation_id 必須與 canonical eligible mutation IDs 完全一致。有有效 PS 的 SNV 以 chromosome + PS 分組；缺少 PS 的 SNV 目前退回該 SNV 自己的 singleton block。這些 grouped holdout 都是 workflow control，不是新的 biological model parameter。
+
+---
+
+## 11. Manifest 與 QA
+
+### 11.1 manifest.json
+
+目前 manifest 會記錄：
+
+- schema version。
+- build time、builder command、software version。
+- derived source file path 和 hash。
+- ASCAT purity value、source 和 hash。
+- multiplicity construction rule。
+- PS 的 upstream／QC／holdout role。
+- canonical output hash。
+- expected、observed、eligible site count。
+- model status counts。
+- active、optional、forbidden columns。
+
+schema version 存在 manifest／validation manifest，不是 TSV 的欄位。raw source 的 sample、reference build 等資訊若要保存，須由上游 provenance manifest 提供；目前 builder 不會自行補造這些欄位。manifest 是 provenance artifact，不是 likelihood input。
+
+### 11.2 input_qa.json
+
+builder 在產生 QA 前會檢查：
+
+- total、eligible、excluded rows。
+- model_status counts。
+- bulk depth conservation。
+- complete HP count conservation。
+- active HP subset 不超過 bulk counts。
+- CN arithmetic。
+- purity consistency。
+- multiplicity candidates/prior consistency。
+- forbidden columns。
+input_qa.json 保存上述檢查的 summary、status、counts、issues preview，以及 active／optional／forbidden columns；部分 conservation、CN arithmetic 與 purity check 若失敗會在 QA 寫出前直接停止。
+
+input QA 沒有通過時，不應把 bundle 交給正式 workflow。
+
+### 11.3 Workflow validation
+
+正式 workflow 進一步確認：
+
+- schema version。
+- canonical table hash。
+- validation manifest hash。
+- table 內 rho_ASCAT 是否符合本次 run。
+- required columns 與 forbidden columns。
+- table 的 input QA status。
+- holdout metadata 與 input bundle 對應。
+
+---
+
+## 12. 目前執行邊界
+
+目前 Python 入口：
+
+~~~text
+python3 -m tumor_tree_pipeline
+~~~
+
+主要操作：
+
+~~~text
+python3 -m tumor_tree_pipeline plan --config <experiment-config>
+python3 -m tumor_tree_pipeline run --config <experiment-config>
+~~~
+
+責任分工：
+
+- input_table.build_model_table(...)：建立 canonical input bundle。
+- workflow：執行 input validation、holdout、chain orchestration 與 diagnostics。
+- inference/：提供目前 C++17 inference backend。
+- C++ loader：只讀 canonical table、chain config 和 holdout exclusion control。
+- raw BAM、VCF、ASCAT segment output：不直接傳給 C++ sampler。
+
+workflow run 會在 experiment output 下保存 input bundle、validation、holdout metadata、chain output、logs 和 status markers；實際 artifact 位置以 run 的 manifest 為準。
+
+推理演算法不在本文件重複描述，請見 inference_algo.md。
+
+---
+
+## 13. 明確不屬於 active data input 的項目
+
+| 項目 | 目前定位 |
+|---|---|
+| tumor_dna_fraction | 已停用的 purity interface，不可出現在 canonical table |
+| multiplicity_posteriors | 已停用的 multiplicity interface，不可出現在 canonical table |
+| bulk_vaf | 上游摘要，不是獨立 model parameter |
+| vcf_af、vcf_dp、VCF AD | caller/provenance 欄位，不是 active model columns |
+| PS block | phase provenance、HP 建立、read audit、grouped holdout |
+| ploidy | purity output 的額外資訊，目前不是 sampler input |
+| goodness-of-fit | ASCAT provenance，目前不是 sampler input |
+| segment_id、loh_state | optional audit／compatibility context |
+| driver annotation | 目前不是 model input |
+| CNA/LOH event-to-node mapping | 目前不是既有 canonical input |
+| HP1/HP2 label | read-level evidence，不是 clone label |
+| normal cells | tree presentation 的 root concept，不是 canonical table row |
+| output 後 external validation | support evaluation，不是 active likelihood input |
+
+歷史資料和舊結果不在 active data contract 中；統一參照 [legacy_data.md](legacy_data.md)，但該文件內容只具低參考權重。
+
+---
+
+## 14. Active data flow
+
+~~~text
+reference / tumor / normal / SNV / phase / ASCAT sources
+                         │
+                         ▼
+          bulk / HP / HP-QC / site-CNV artifacts
+                         │
+                         ▼
+          hcc1395_tumor_tree_input/v2
+             likelihood_input.tsv.gz
+                         │
+          ┌──────────────┴──────────────┐
+          ▼                             ▼
+      input_qa.json                 manifest.json
+          │
+          ▼
+ eligible rows:
+ model_include=yes
+ model_status=eligible
+          │
+          ├── remove chain-specific holdout IDs
+          ▼
+      C++ Site collection
+          │
+          ▼
+      model likelihood
+~~~
+
+PS 的位置：
+
+~~~text
+phase provenance
+        ↓
+HP label / count construction
+        ↓
+HP counts in canonical table
+~~~
+
+PS 不直接進 C++ Site、clone prior、eta、phi 或 topology edge。
+
+---
+
+## 15. 交付前檢查清單
+
+### Schema
+
+- [ ] schema version 為 hcc1395_tumor_tree_input/v2。
+- [ ] 每列是一個 SNV。
+- [ ] mutation_id 唯一。
+- [ ] 20 個 required columns 全部存在。
+- [ ] forbidden columns 不存在。
+- [ ] optional audit columns 已清楚標示。
+
+### Counts 與 CN
+
+- [ ] bulk_depth = bulk_ref + bulk_alt。
+- [ ] HP domain 完整。
+- [ ] 完整 HP REF/ALT 總和等於 bulk counts。
+- [ ] active HP subset 不超過 bulk counts。
+- [ ] major_cn >= minor_cn >= 0。
+- [ ] total_cn = major_cn + minor_cn。
+- [ ] CN zero、unmapped、overlap sites 有明確 exclusion status。
+
+### Purity 與 multiplicity
+
+- [ ] primary table 使用 rho_ASCAT=0.99。
+- [ ] purity source 可追溯，table 與 source 一致。
+- [ ] multiplicity_candidates 只由 major/minor CN 推導。
+- [ ] multiplicity_candidates 非空、排序且唯一。
+- [ ] multiplicity_prior keys 與 candidates 完全一致，且每個 probability 大於零。
+- [ ] multiplicity_prior 機率總和為 1。
+- [ ] 最大 multiplicity 不超過可用 CN；eligible row 的 total_cn 大於零。
+- [ ] 沒有停用的 purity／multiplicity columns。
+
+### Eligibility 與 holdout
+
+- [ ] eligible row 是 model_include=yes、model_status=eligible。
+- [ ] excluded row 保留排除原因。
+- [ ] chain-specific holdout IDs 有 metadata。
+- [ ] PS、chromosome、ASCAT-segment grouped holdout 的定義沒有混淆。
+- [ ] holdout site 不要求該 chain 產生 clone assignment。
+
+### Provenance
+
+- [ ] source path、hash 已記錄。
+- [ ] 若 sample 或 reference build 不在目前 builder manifest，已由上游 provenance manifest 保存。
+- [ ] canonical table hash 已記錄。
+- [ ] input QA status 為 pass。
+- [ ] build command 與 software version 可追溯。
+
+---
+
+## 16. Repo source map
+
+### Active contracts
+
+- [model.md](model.md)
+- [inference_algo.md](inference_algo.md)
+- [experiment_workflow.md](experiment_workflow.md)
+
+### Data builder
+
+- [tumor_tree_pipeline/README.md](tumor_tree_pipeline/README.md)
+- [tumor_tree_pipeline/contracts.py](tumor_tree_pipeline/contracts.py)
+- [tumor_tree_pipeline/input_table.py](tumor_tree_pipeline/input_table.py)
+- [tumor_tree_pipeline/provenance.py](tumor_tree_pipeline/provenance.py)
+- [tumor_tree_pipeline/workflow.py](tumor_tree_pipeline/workflow.py)
+
+### C++ model input
+
+- [inference/include/tumor_tree_inference/model.hpp](inference/include/tumor_tree_inference/model.hpp)
+- [inference/src/model.cpp](inference/src/model.cpp)
+
+### Historical boundary
+
+- [legacy_data.md](legacy_data.md)
+
+---
+
+## 17. 最終定義
+
+目前 repo 的 active data input 可以濃縮成：
+
+~~~text
+bulk REF/ALT counts
++ HP1-1 / HP2-1 counts
++ ASCAT major/minor/total CN
++ ASCAT purity rho_ASCAT
++ CN-only multiplicity candidates/prior
++ site eligibility metadata
+~~~
+
+實際 downstream flow：
+
+~~~text
+derived artifacts
+        ↓
+likelihood_input.tsv.gz
+        ↓
+eligible, non-holdout SNV rows
+        ↓
+C++ Site
+        ↓
+tumor-tree model and inference backend
+~~~
+
+data layer 的責任是提供可追溯、可驗證的 canonical SNV-level observation table。模型公式由 model.md 定義，推理演算法由 inference_algo.md 定義，正式執行、holdout 與錯誤追蹤由 experiment_workflow.md 定義。

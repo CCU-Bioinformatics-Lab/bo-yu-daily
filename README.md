@@ -8,7 +8,7 @@
 - [inference_algo.md](inference_algo.md)：inference algorithm specification；說明如何以目前 finite-K compound MCMC 從 model posterior 推理 `T`、`eta` 與 SNV assignment `z`，以及可替換 backend 的 input/output contract
 - [output.md](output.md)：模型輸出解讀；集中說明 clone topology、由 `phi` 表示的 CCF，以及每個 SNV 被分配到哪個 clone，並提供三-clone ASCII 示意圖
 - [support.md](support.md)：output 後的獨立 support evaluator 規格；依序驗證 topology、CCF/`phi` 與 SNV→clone assignment，並檢查推理可靠性、ASCAT/CN/LOH compatibility、holdout、topology stability 與最終 claim grade。CNV event→node 與 driver annotation 在此列為 optional evidence，不會直接加入模型 likelihood
-- [ascat_purity_experiment_workflow.md](ascat_purity_experiment_workflow.md)：ASCAT purity=0.99 的新輸入重跑流程
+- [experiment_workflow.md](experiment_workflow.md)：整合 `arch.md` 四個模塊的實驗執行、QA、分階段 gate 與錯誤追蹤紀錄流程
 - [tumor_tree_pipeline/](tumor_tree_pipeline/)：正式、可版本控制的建表、Python workflow 與 gate wrapper
 - [inference/](inference/)：active C++17 finite-K compound MCMC backend，提供 AlgorithmRegistry、chain/site 平行化與五個 inference artifacts
 - `daily/`：每天產生的 HTML的相關資料和每日總結。

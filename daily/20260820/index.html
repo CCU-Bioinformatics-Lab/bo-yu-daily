@@ -50,10 +50,10 @@
 
   <h2>主要產出</h2>
   <div class="grid">
-    <article class="card"><span class="badge info">研究與模型</span><h3><a href="../../research/phylowgs_model_review.md">PhyloWGS model review</a> · <a href="../../model.md">model.md</a></h3><p>保存外部模型背景與本 repo 的有限 K、compound sampler 對照。</p></article>
+    <article class="card"><span class="badge info">研究與模型</span><h3><a href="../../golden_tree/research/phylowgs_model_review.md">PhyloWGS model review</a> · <a href="../../model.md">model.md</a></h3><p>保存外部模型背景與本 repo 的有限 K、compound sampler 對照。</p></article>
     <article class="card"><span class="badge info">程式與測試</span><h3><a href="../../inference/README.md">inference/README.md</a> · <a href="../../inference/src/algorithm.cpp">algorithm.cpp</a></h3><p>記錄 C++17 sampler、平行 site scoring、multi-chain artifacts 與 fail-closed 行為。</p></article>
-    <article class="card"><span class="badge info">流程設定</span><h3><a href="../../ascat_purity_experiment_workflow.md">ascat_purity_experiment_workflow.md</a> · <a href="../../tumor_tree_pipeline/configs/formal_20260820.json">formal_20260820.json</a></h3><p>正式實驗仍以 ASCAT purity 為 purity input，主 cell 是 K=6、rho=0.99。</p></article>
-    <article class="card"><span class="badge info">正式輸出</span><h3><a href="../../output/tumor_tree_pipeline/20260820T122332Z_afce5dea2c6e_rho0p99-0p97-0p95_K6-4-8_seed20260820/status.json">status.json</a> · <a href="../../output/tumor_tree_pipeline/20260820T122332Z_afce5dea2c6e_rho0p99-0p97-0p95_K6-4-8_seed20260820/runs/formal_main_20260820T122332Z_afce5dea2c6e_rho0p99_K6_seed882227064/ps/diagnostics.json">diagnostics.json</a></h3><p>保留 failed run 的 status、aggregate diagnostics 與 4 條完成的 chain artifacts。</p></article>
+    <article class="card"><span class="badge info">流程設定</span><h3><a href="../../experiment_workflow.md">experiment_workflow.md</a> · <a href="../../tumor_tree_pipeline/configs/formal_20260820.json">formal_20260820.json</a></h3><p>正式實驗仍以 ASCAT purity 為 purity input，主 cell 是 K=6、rho=0.99。</p></article>
+    <article class="card"><span class="badge warn">歷史輸出已清理</span><h3>Formal diagnostic run</h3><p>原 failed run 已依研究資料清理決議刪除；目前沒有可引用的成功 tumor-tree posterior。</p></article>
   </div>
 
   <h2>驗證與正式結果</h2>
@@ -71,7 +71,7 @@
     <article class="card"><span class="badge info">待重跑</span><h3>完整 formal matrix</h3><p>上述修正完成並通過 smoke / contract 後，才重跑 K=6 主 cell，再讓 K=4/8 與 rho=0.97/0.95 sensitivity 繼續。</p></article>
   </div>
 
-  <footer>本頁是 repository-local daily record；狀態以 commit、測試輸出與 formal run artifacts 為準。正式 run ID：<span class="mono">20260820T122332Z_afce5dea2c6e_rho0p99-0p97-0p95_K6-4-8_seed20260820</span></footer>
+  <footer>本頁是 repository-local daily record；狀態以 commit、測試輸出與保留中的 input／QC artifacts 為準。原 failed formal diagnostic run 已清理。</footer>
 </main>
 </body>
 </html>

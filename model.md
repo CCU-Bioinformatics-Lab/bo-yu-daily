@@ -3,7 +3,7 @@
 更新日期：2026-08-20
 
 > [!WARNING]
-> 本文件定義 active model；輸入與 provenance以 [`data.md`](data.md) 為準，正式執行契約以 [`ascat_purity_experiment_workflow.md`](ascat_purity_experiment_workflow.md) 為準。舊 M3／Stage 6 artifact只可作歷史比較。
+> 本文件定義 active model；輸入與 provenance以 [`data.md`](data.md) 為準，正式執行契約以 [`experiment_workflow.md`](experiment_workflow.md) 為準。舊 M3／Stage 6 artifact只可作歷史比較。
 
 ```yaml
 document_id: model
@@ -17,7 +17,7 @@ links:
   - relation: inferred_by
     target: inference_algo.md
   - relation: executed_by
-    target: ascat_purity_experiment_workflow.md
+    target: experiment_workflow.md
 ```
 
 ## 1. 一頁結論
@@ -197,7 +197,7 @@ algorithm。當前 active algorithm、chain input/output、平行化邊界與 al
 backend abstraction 見 [`inference_algo.md`](inference_algo.md)。
 
 正式執行入口、K／purity sensitivity、chain 數、holdout、convergence metrics
-與 fail-closed gates 見 [`ascat_purity_experiment_workflow.md`](ascat_purity_experiment_workflow.md)；這些是 workflow contract，不在 model spec 內重複定義。
+與 fail-closed gates 見 [`experiment_workflow.md`](experiment_workflow.md)；這些是 workflow contract，不在 model spec 內重複定義。
 
 ## 7. 已知限制
 

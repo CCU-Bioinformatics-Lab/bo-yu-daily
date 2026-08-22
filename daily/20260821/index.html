@@ -32,7 +32,7 @@ h1,h2,h3{line-height:1.25;margin:0 0 12px}h1{font-size:clamp(25px,4vw,40px)}h2{f
     <article class="card">
       <h3>實驗流程拆分 <span class="badge done">完成</span></h3>
       <p>將 workflow 從 sampler 細節抽離，改由 <code>inference_algo.md</code> 定義推理演算法；保留 canonical input、holdout、purity 與 workflow gate。</p>
-      <p class="small"><a href="../../ascat_purity_experiment_workflow.md">ascat_purity_experiment_workflow.md</a> · <a href="../../tumor_tree_pipeline/README.md">pipeline README</a></p>
+      <p class="small"><a href="../../experiment_workflow.md">experiment_workflow.md</a> · <a href="../../tumor_tree_pipeline/README.md">pipeline README</a></p>
     </article>
     <article class="card">
       <h3>Output support 流程 <span class="badge done">完成</span></h3>
@@ -62,7 +62,7 @@ h1,h2,h3{line-height:1.25;margin:0 0 12px}h1{font-size:clamp(25px,4vw,40px)}h2{f
   <table>
     <thead><tr><th>類別</th><th>檔案</th><th>用途／狀態</th></tr></thead>
     <tbody>
-      <tr><td>模組化文件</td><td><a href="../../model.md">model.md</a>、<a href="../../ascat_purity_experiment_workflow.md">ascat_purity_experiment_workflow.md</a>、<a href="../../tumor_tree_pipeline/README.md">tumor_tree_pipeline/README.md</a></td><td>已拆分 model、workflow、inference contract。</td></tr>
+      <tr><td>模組化文件</td><td><a href="../../model.md">model.md</a>、<a href="../../experiment_workflow.md">experiment_workflow.md</a>、<a href="../../tumor_tree_pipeline/README.md">tumor_tree_pipeline/README.md</a></td><td>已拆分 model、workflow、inference contract。</td></tr>
       <tr><td>架構導覽</td><td><a href="../../arch.md">arch.md</a>、<a href="../../arch.png">arch.png</a>、<a href="../../README.md">README.md</a></td><td>已更新文件引用與閱讀順序。</td></tr>
       <tr><td>驗證規格</td><td><a href="../../support.md">support.md</a></td><td>已完成 writer 草稿整合與多 reviewer 修正；尚未實作成 evaluator 程式。</td></tr>
       <tr><td>研究參考</td><td><a href="../../golden_tree/research/">golden_tree/research/</a>、<a href="../../golden_tree/hcc1395_golden_tree.pdf">PDF</a></td><td>HCC1395/PhyloWGS/callset/CNA/LOH/限制與 legacy inventory。</td></tr>
