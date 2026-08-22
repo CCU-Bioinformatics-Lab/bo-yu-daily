@@ -234,6 +234,13 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertIn("K6", output.name)
             self.assertEqual(stat.S_IMODE(output.stat().st_mode), 0o2775)
             self.assertEqual(stat.S_IMODE((output / "manifest.json").stat().st_mode), 0o664)
+            trace = [
+                json.loads(line)
+                for line in (output / "execution_trace.jsonl").read_text(encoding="utf-8").splitlines()
+            ]
+            self.assertEqual(trace[0]["event"], "workflow_started")
+            self.assertEqual(trace[-1]["event"], "workflow_completed")
+            self.assertIn("chain_completed", {event["event"] for event in trace})
             inventory = json.loads((output / "artifact_inventory.json").read_text())
             inventory_paths = {item["path"] for item in inventory["artifacts"]}
             self.assertIn("manifest.json", inventory_paths)
@@ -323,6 +330,17 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertTrue((output / "_FAILED").is_file())
             self.assertFalse((output / "_SUCCESS").exists())
             self.assertEqual(len(calls), 4, "the first failed holdout must stop later cells")
+            status = json.loads((output / "status.json").read_text(encoding="utf-8"))
+            self.assertEqual(status["failed_stage"], "formal_main")
+            self.assertEqual(status["failed_scope"], "K=6,rho_ASCAT=0.990000")
+            trace = [
+                json.loads(line)
+                for line in (output / "execution_trace.jsonl").read_text(encoding="utf-8").splitlines()
+            ]
+            self.assertEqual(trace[-1]["event"], "workflow_failed")
+            self.assertEqual(trace[-1]["stage"], "formal_main")
+            self.assertEqual(trace[-1]["status"], "failed")
+            self.assertTrue(any(event["event"] == "holdout_failed" for event in trace))
 
     def test_formal_success_runs_all_holdouts_and_purity_tables(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
