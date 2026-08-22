@@ -1,6 +1,6 @@
 # HCC1395 LongPhase-Clone 模型設計
 
-更新日期：2026-08-20
+更新日期：2026-08-22
 
 > [!WARNING]
 > 本文件定義 active model；輸入與 provenance以 [`data.md`](data.md) 為準，正式執行契約以 [`experiment_workflow.md`](experiment_workflow.md) 為準。舊 M3／Stage 6 artifact只可作歷史比較。
@@ -22,29 +22,29 @@ links:
 
 ## 1. 一頁結論
 
-目前模型以每個 SNV 的 bulk REF/ALT、HP1-1/HP2-1、ASCAT major/minor/total CN、CN-only multiplicity prior與 ASCAT purity，推導 finite-K candidate clone-tree posterior。
+目前模型以每個 SNV 的 bulk REF/ALT、HP1-1/HP2-1、ASCAT major/minor/total CN 與 ASCAT purity，推導 finite-K candidate clone-tree posterior。multiplicity 不由外部工具提供；C++ loader 先依每列的 major/minor CN 建立可行 support 與初始權重，再由 bulk counts、HP counts、purity、CN 與 clone fraction 共同計算每個候選 multiplicity 的 posterior responsibility。
 
 五條核心邊界：
 
 1. bulk counts只在 allele-count likelihood 使用一次。
-2. `multiplicity_prior` 只由 ASCAT major/minor CN 建立，不讀 VAF、bulk counts或 purity。
+2. multiplicity candidate support 與 CN prior 由 C++ loader 依 ASCAT major/minor CN 建立，不是 canonical table 欄位；bulk counts、HP counts、purity 與 clone fraction 會在 emission 中更新其 posterior responsibility。
 3. `rho_ASCAT=0.99` 是固定的 purity input，只在 emission 中使用，並在 manifest 中留存 provenance。
 4. PS block 是建立 HP1-1/HP2-1 labels/counts 的上游 phase 資訊；因此會透過 `H_i` 間接影響 likelihood，但 PS 本身不作為 downstream likelihood 欄位、inference state 或 topology edge constraint。它也可供 grouped holdout 與 provenance 使用。
 5. `eta` 只保存 finite-K clone 的 local mass；`phi` 由樹上的 descendant sum 推導，結構性 `tumor_root` 的頻率固定為 1。normal contamination 只由 purity 處理。
 
-輸出是 candidate tumor-tree posterior，不是 single-cell lineage truth，也不是 HCC1395 唯一真實演化樹。
+輸出是 candidate tumor-tree posterior，以及每個 SNV 的 `multiplicity_posterior.tsv.gz`；它不是 single-cell lineage truth，也不是 HCC1395 唯一真實演化樹。
 
 ## 2. Active posterior
 
 ```text
-P(T, z, eta | D, H, C, P_M, rho_ASCAT)
+P(T, z, eta | D, H, C, rho_ASCAT)
   proportional to
 P_TSSB^K(T) * P(eta | T) * product_i eta_{z_i}
-     * product_i sum_m P_M,i(m)
+     * product_i sum_m P_M,i(m | C_i)
          P_obs(D_i, H_i | phi_z(i), C_i, m, rho_ASCAT)
 ```
 
-PS 不出現在 downstream likelihood 的條件集合；它在上游 phase/tagging 階段影響 `H_i` 的產生。`P_M,i(m)` 是 CN-only `multiplicity_prior`，不是用同一組 `D_i` 先算出的 posterior。`product_i eta_{z_i}` 是 TSSB-inspired local-node mass assignment，不另建立一個獨立的 `pi` state。
+PS 不出現在 downstream likelihood 的條件集合；它在上游 phase/tagging 階段影響 `H_i` 的產生。`P_M,i(m | C_i)` 是 C++ loader 依 CN 建立的 candidate prior，之後同一個 emission 會用 `D_i/H_i`、purity 與 clone prevalence 形成 multiplicity posterior；不會先產生外部 multiplicity table 再重複使用 counts。`product_i eta_{z_i}` 是 TSSB-inspired local-node mass assignment，不另建立一個獨立的 `pi` state。
 
 | 符號 | 定義 |
 |---|---|
@@ -55,8 +55,8 @@ PS 不出現在 downstream likelihood 的條件集合；它在上游 phase/taggi
 | `D_i` | bulk REF/ALT counts |
 | `H_i` | HP1-1/HP2-1 conditional allocation counts |
 | `C_i` | `major_cn`, `minor_cn`, `total_cn` context |
-| `M_i` | mutated-copy multiplicity；由固定 `multiplicity_prior` 邊際化 |
-| `P_M,i(m)` | CN-only multiplicity prior |
+| `M_i` | mutated-copy multiplicity；由模型在每個 SNV 的 emission 中自動評估的 latent state |
+| `P_M,i(m | C_i)` | 由 C++ loader 依 major/minor CN 建立的初始 candidate weight；counts/HP/CN/purity/clone fraction 會形成 posterior responsibility |
 | `rho_ASCAT` | 外部固定 ASCAT tumor purity；主分析為 `0.99` |
 
 ### 2.1 Tree fraction 與 root
@@ -80,10 +80,10 @@ q_i = rho_ASCAT * phi_z(i) * m
 
 ```text
 r_i = e_i + (1-2*e_i)*q_i
-ALT_i ~ Binomial(bulk_depth_i, r_i)
+ALT_i ~ Binomial(total_reads_i, r_i)
 ```
 
-`rho_ASCAT` 不用來建立 multiplicity prior，也不由 inference algorithm 重新估計。LongPhase-S DNA fraction `0.958936` 只留在歷史 provenance。
+`rho_ASCAT` 不用來建立 candidate support，但會參與 multiplicity posterior 所依賴的 observation emission，也不由 inference algorithm 重新估計。LongPhase-S DNA fraction `0.958936` 只留在歷史 provenance。
 
 ### 2.3 HP observation
 
@@ -99,7 +99,7 @@ untagged_REF, untagged_ALT
 
 PS block 先讓同一 phase block 內的 `HP1-1`／`HP2-1` labels 維持一致；跨不同 PS block 的 HP label 不假設具有全球一致方向。PS 不直接決定 mutation side、不建立 downstream 的 PS-wide orientation variable，也不形成 clone 或 edge。
 
-## 3. CN-only multiplicity prior
+## 3. CN-constrained latent multiplicity inference
 
 `M_i` 是一個 tumor cell中攜帶 ALT的 copy數，不是 clone數或 CCF。可行 support由 extant ASCAT sides決定：
 
@@ -110,7 +110,7 @@ minor side: m in {1, ..., minor_cn}
 
 ASCAT major/minor只表示 copy數較多／較少的一側，不能直接命名為 HP1/HP2。
 
-### 3.1 階層式 neutral prior
+### 3.1 Candidate support 與初始 CN prior
 
 1. 所有 `CN>0` 的 extant side先等權。
 2. 在每一 side內，對 `m=1..side_CN` 均分。
@@ -130,16 +130,37 @@ P(M=2) = 1/6
 P(M=3) = 1/6
 ```
 
-Canonical table保存：
+canonical table 不保存 multiplicity 欄位。C++ loader 讀到 `major_cn=3`、`minor_cn=1` 後，在記憶體內得到：
 
 ```text
-multiplicity_candidates = 1;2;3
-multiplicity_prior      = 1=0.666667;2=0.166667;3=0.166667
+m support = {1, 2, 3}
+P_M(1), P_M(2), P_M(3) = 0.666667, 0.166667, 0.166667
 ```
 
-若 `minor_cn=0`，major side取得全部 prior mass。若沒有可靠 CN segment、`total_cn=0`、support非法或 prior不和為1，該列不得進 likelihood；不能補成 diploid或單點 `m=1`。
+若 `minor_cn=0`，major side取得全部 weight。若沒有可靠 CN segment、`total_cn=0` 或 loader 無法建立有限且正規化的 support，該列不得進 likelihood；不能補成 diploid或單點 `m=1`。
 
-這個 prior不使用 `D_i`，所以 bulk counts只在第2.2節 likelihood出現一次。未來若要jointly sample multiplicity，必須另開模型版本與校準，不可悄悄改變本契約。
+這個 CN prior 只負責提供候選狀態的初始權重，不是最終答案。每次 tree／clone state 提供 `phi_z(i)` 後，模型計算：
+
+```text
+log w_i(m)
+  = log P_M,i(m | C_i)
+    + log P_obs(D_i, H_i | phi_z(i), C_i, m, rho_ASCAT)
+
+P(M_i=m | D_i, H_i, C_i, phi_z(i), rho_ASCAT)
+  = softmax_m(log w_i(m))
+```
+
+MCMC 不需要把每個 `m` 另放成一個高維 state；它在每個 retained tree／clone state 中被解析邊際化，並將 conditional responsibility 累積成 `multiplicity_posterior.tsv.gz`。因此 bulk counts 與 HP counts 只在 observation emission 中使用一次，observed VAF 也不被覆寫。
+
+### 3.2 Multiplicity posterior output
+
+正式 chain 會輸出：
+
+```text
+mutation_id  multiplicity  prior  posterior_mean
+```
+
+`posterior_mean` 是所有 retained posterior draws 中，依當次 SNV clone assignment 與 `phi` 計算的 conditional responsibility 平均值。它表示模型對 latent multiplicity 的支持程度，不表示 ASCAT 直接量測到該 SNV 的 mutated-copy 數。每個 SNV 的 posterior probabilities 應加總為 1。
 
 ## 4. 模型實際讀取表
 
@@ -148,11 +169,10 @@ Canonical schema：
 ```text
 mutation_id
 chrom pos ref alt
-bulk_ref bulk_alt bulk_depth
+ref_reads alt_reads total_reads
 hp1_1_ref hp1_1_alt hp2_1_ref hp2_1_alt
 major_cn minor_cn total_cn
 rho_ASCAT
-multiplicity_candidates multiplicity_prior
 model_include model_status
 ```
 
@@ -163,7 +183,7 @@ PS欄位不屬於 active likelihood schema。PS block 可在上游 artifact 中�
 Loader必須 fail closed：
 
 - integrated table不存在就停止，不讀 legacy default。
-- 必要欄位缺失、purity不一致、CN非法或 prior錯誤就停止。
+- 必要欄位缺失、purity不一致、CN非法或 loader 無法建立內部 multiplicity distribution 就停止。
 - 不使用 `CN=2`、point multiplicity或舊欄位 fallback。
 
 ## 5. 固定輸入與模型狀態
@@ -174,8 +194,9 @@ Loader必須 fail closed：
 |---|---|
 | bulk REF/ALT | allele-count likelihood |
 | HP1-1/HP2-1 counts | conditional HP allocation likelihood |
-| major/minor/total CN | VAF denominator與 multiplicity support |
-| `multiplicity_prior` | 固定 marginalization weights |
+| major/minor/total CN | VAF denominator，也是 C++ loader 建立 multiplicity support 的來源 |
+| CN-constrained multiplicity candidates | C++ loader 內部建立的 marginalization support／初始 weights，不是 table input |
+| multiplicity posterior | 由每個 retained clone/tree state 的 emission responsibility 累積後輸出的 `multiplicity_posterior.tsv.gz` |
 | `rho_ASCAT` | 固定 purity-aware emission參數 |
 
 ### 模型未知量與結構性推導量
@@ -209,11 +230,11 @@ backend abstraction 見 [`inference_algo.md`](inference_algo.md)。
 
 ## 8. 歷史結果與不相容介面
 
-2026-08-15 的歷史 integrated table使用 `multiplicity_posteriors`：它由同一組bulk counts形成權重，之後舊sampler又使用bulk likelihood。該artifact可能重複使用觀測，不能作為本模型輸入。
+2026-08-15 的歷史 integrated table使用 `multiplicity_posteriors`：它由同一組bulk counts形成權重，之後舊sampler又使用bulk likelihood。該 artifact 不能作為本模型輸入；目前 posterior 由正式 C++ chain 在單一 likelihood 評估流程內計算並輸出，避免把 posterior 欄位回填到 canonical input。
 
 歷史I6 baseline為最大label-invariant R-hat `24.983`、最低ESS/chain `3.1`。這些數字只證明舊run未收斂，**不是ASCAT 0.99新版流程的結果**。
 
-歷史PS-wide orientation、Beta-Binomial table、Stage 6 production-like output與experiment-loop pass都不代表目前模型。新版正式輸入只接受 `multiplicity_prior` 與 `rho_ASCAT`，並由 `tumor_tree_pipeline` wrapper驗收。
+歷史PS-wide orientation、Beta-Binomial table、Stage 6 production-like output與experiment-loop pass都不代表目前模型。新版正式輸入只接受 canonical CN／counts／HP／purity 欄位；C++ loader 由 CN 內部建立 multiplicity candidates，likelihood 解析邊際化並輸出 per-SNV posterior。舊的 multiplicity table 欄位不再是輸入，並由 loader／contract 拒絕。
 
 ## 9. 維護規則
 

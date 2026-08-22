@@ -43,7 +43,7 @@ C++ sampler 不直接讀取 raw BAM、raw VCF 或 ASCAT 原始 segment 檔；這
 目前 canonical schema version（由 manifest／validation manifest 宣告，並非 TSV 內的欄位）：
 
 ~~~text
-hcc1395_tumor_tree_input/v2
+hcc1395_tumor_tree_input/v4
 ~~~
 
 基本規則：
@@ -131,7 +131,7 @@ likelihood_input.tsv.gz 是 model 與 inference backend 之間的資料介面；
 
 ## 3. Canonical required columns
 
-目前 required columns 共 20 個：
+目前 required columns 共 18 個：
 
 ~~~text
 mutation_id
@@ -139,9 +139,9 @@ chrom
 pos
 ref
 alt
-bulk_ref
-bulk_alt
-bulk_depth
+ref_reads
+alt_reads
+total_reads
 hp1_1_ref
 hp1_1_alt
 hp2_1_ref
@@ -150,8 +150,6 @@ major_cn
 minor_cn
 total_cn
 rho_ASCAT
-multiplicity_candidates
-multiplicity_prior
 model_include
 model_status
 ~~~
@@ -165,9 +163,9 @@ model_status
 | pos | SNV key | genomic identity |
 | ref | SNV key | reference allele identity |
 | alt | SNV key | alternate allele identity |
-| bulk_ref | bulk count artifact | bulk REF observation |
-| bulk_alt | bulk count artifact | bulk ALT observation |
-| bulk_depth | bulk_ref + bulk_alt | bulk depth observation |
+| ref_reads | bulk count artifact | bulk REF-supporting read count |
+| alt_reads | bulk count artifact | bulk ALT-supporting read count |
+| total_reads | ref_reads + alt_reads | total usable REF+ALT read count |
 | hp1_1_ref | HP count artifact 的 1-1 類別 | HP1-1 REF observation |
 | hp1_1_alt | HP count artifact 的 1-1 類別 | HP1-1 ALT observation |
 | hp2_1_ref | HP count artifact 的 2-1 類別 | HP2-1 REF observation |
@@ -176,23 +174,26 @@ model_status
 | minor_cn | ASCAT site-CNV projection | allele-specific CN |
 | total_cn | major_cn + minor_cn | total CN |
 | rho_ASCAT | ASCAT purity output | fixed global purity |
-| multiplicity_candidates | major/minor CN deterministic derivation | 可行 mutated-copy 數 |
-| multiplicity_prior | major/minor CN deterministic derivation | multiplicity marginalization prior |
 | model_include | builder eligibility gate | 是否允許進 sampler |
 | model_status | builder eligibility gate | eligible 或 exclusion reason |
 
-對 C++ Site 而言，identity 欄位會保留用於追蹤；真正的 observation 主要是 bulk counts、HP counts、ASCAT CN、purity 與 multiplicity support/prior。
+對 C++ Site 而言，identity 欄位會保留用於追蹤；真正的 observation 主要是 bulk counts、HP counts、ASCAT CN 與 purity。C++ loader 讀到 `major_cn`／`minor_cn` 後，會在記憶體內建立 multiplicity candidate support 與 CN prior，再由 likelihood 依 clone prevalence 與 observation emission 計算 posterior responsibility；這些不是 canonical table 欄位，也沒有外部 multiplicity 工具或檔案輸入。posterior 只寫入 inference output，不回寫 canonical input。
 
 ---
 
-## 4. Optional audit columns
+## 4. Supplementary information columns (not used in likelihood)
 
-builder output 會固定保留下列欄位；它們對 model 是 optional audit columns：
+中文：補充資訊欄位（不進入 likelihood）。
+
+builder output 會固定保留下列六個欄位；它們是
+`Supplementary information columns (not used in likelihood)`，只用於 QC、來源追蹤、
+holdout grouping 與結果解釋。例外是 `cnv_status`：它不進入 likelihood，
+但會在 builder 階段作為 eligibility gate，間接決定該 SNV 是否能進入模型：
 
 | 欄位 | 用途 | 是否進 C++ likelihood state |
 |---|---|---|
 | phased_gt | genotype／phase provenance | 否 |
-| cnv_status | CN mapping、CN zero、unmapped、overlap 狀態 | 否 |
+| cnv_status | 該 SNV 與 ASCAT segment 的對應結果：`mapped_nonzero_cn` = 唯一對到且 total CN > 0，通常可作為 eligible 判定條件，但欄位本身不進 likelihood；`cn_zero` = 對到 segment 但 total CN = 0，代表沒有可用拷貝；`unmapped_segment` = 找不到對應的 ASCAT segment；`segment_overlap` = 落在多個 segment 或 segment 邊界重疊，無法唯一決定 CN。後三種通常會被排除或標記為不可納入模型。 | 否 |
 | segment_id | ASCAT segment identity 與 holdout grouping | 否 |
 | loh_state | LOH compatibility context | 否 |
 | cnv_confidence | site-CNV projection confidence | 否 |
@@ -200,7 +201,7 @@ builder output 會固定保留下列欄位；它們對 model 是 optional audit 
 
 這些欄位可以存在於 builder output，但不代表它們是 sampled state、clone prior 或 likelihood parameter。
 
-PS 不應作為 canonical likelihood column；PS audit、read-level evidence 與 holdout grouping 應保存在獨立的 workflow metadata／audit artifacts。
+PS 不應作為 canonical likelihood column；PS 的 phase provenance、read-level evidence 與 holdout grouping 應保存在獨立的 workflow metadata／補充資訊 artifacts。
 
 ---
 
@@ -214,27 +215,27 @@ PS 不應作為 canonical likelihood column；PS audit、read-level evidence 與
 snv_bulk_counts.tsv.gz
 ~~~
 
-每個 SNV 至少提供：
+每個 SNV 至少提供固定的中間欄位：
 
 ~~~text
 chrom
 pos
 ref
 alt
-bulk_ref
-bulk_alt
-bulk_usable_depth
+ref_reads
+alt_reads
+total_reads
 ~~~
 
-builder 會將 bulk_usable_depth 寫成 canonical table 的 bulk_depth，並檢查：
+builder 會把這三個欄位原樣交給 canonical table，並檢查：
 
 ~~~text
-bulk_depth = bulk_ref + bulk_alt
+total_reads = ref_reads + alt_reads
 ~~~
 
 上游可能另有 bulk_vaf、vcf_af、vcf_dp、vcf_ad_ref、vcf_ad_alt 等摘要欄位，但它們不是 canonical active columns。
 
-目前不是先計算一個獨立 VAF parameter 再交給模型；model likelihood 直接使用 REF/ALT counts，並在 purity、CN、multiplicity 與 latent clone fraction 的共同條件下計算 observation probability。bulk_alt/bulk_depth 只在 holdout predictive coverage 中作為觀察摘要，不是 canonical 欄位，也不是 likelihood 的獨立輸入。模型公式請見 model.md。
+目前不是先計算一個獨立 VAF parameter 再交給模型；model likelihood 直接使用 REF/ALT counts，並在 purity、CN、multiplicity 與 latent clone fraction 的共同條件下計算 observation probability。alt_reads/total_reads 只在 holdout predictive coverage 中作為觀察摘要，不是獨立的 VAF 參數。模型公式請見 model.md。
 
 ### 5.2 HP counts
 
@@ -319,7 +320,7 @@ minor_cn
 total_cn
 ~~~
 
-可選的 audit 欄位：
+Supplementary information columns (not used in likelihood)：
 
 ~~~text
 segment_id
@@ -333,9 +334,9 @@ cnv_confidence
 - 提供 major、minor、total CN。
 - 判定 site 是否有可用 CN。
 - 排除 CN zero、unmapped segment 或 segment overlap。
-- 保存 CNV／LOH 的 provenance 與 audit context。
+- 保存 CNV／LOH 的 provenance 與補充資訊。
 
-其中只有 major_cn、minor_cn、total_cn 是 active likelihood input；segment_id、loh_state 和 confidence 欄位目前只作 audit／holdout context。
+其中只有 major_cn、minor_cn、total_cn 是 active likelihood input；segment_id、loh_state 和 confidence 欄位目前只作補充資訊／holdout context，不進入 likelihood。
 
 ### 5.5 ASCAT purity
 
@@ -364,7 +365,7 @@ primary value 是 0.99。ASCAT output 中可能還有 ploidy 或 goodness-of-fit
 SNV site universe
         │
         ├── bulk counts
-        │       └── bulk_ref / bulk_alt / bulk_depth
+        │       └── ref_reads / alt_reads / total_reads
         │
         ├── HP counts
         │       └── hp1_1_* / hp2_1_*
@@ -379,15 +380,18 @@ SNV site universe
                 └── rho_ASCAT
                         │
                         ▼
-              multiplicity_candidates
-              multiplicity_prior
-                        │
-                        ▼
              likelihood_input.tsv.gz
                         │
                 ┌───────┴───────┐
                 ▼               ▼
            input_qa.json    manifest.json
+                        │
+                        ▼
+             C++ loader 內部由 CN
+             deterministic 建立 multiplicity
+                        │
+                        ▼
+                 model likelihood
 ~~~
 
 ### 6.1 Canonical CSV-like example
@@ -395,15 +399,15 @@ SNV site universe
 canonical table 是 TSV；下面用 CSV-like 格式展示一列：
 
 ~~~csv
-mutation_id,chrom,pos,ref,alt,bulk_ref,bulk_alt,bulk_depth,hp1_1_ref,hp1_1_alt,hp2_1_ref,hp2_1_alt,major_cn,minor_cn,total_cn,rho_ASCAT,multiplicity_candidates,multiplicity_prior,model_include,model_status
-chr1:100:A>G,chr1,100,A,G,34,11,45,8,6,10,2,3,1,4,0.99,"1;2;3","1=0.666667;2=0.166667;3=0.166667",yes,eligible
+mutation_id,chrom,pos,ref,alt,ref_reads,alt_reads,total_reads,hp1_1_ref,hp1_1_alt,hp2_1_ref,hp2_1_alt,major_cn,minor_cn,total_cn,rho_ASCAT,model_include,model_status
+chr1:100:A>G,chr1,100,A,G,34,11,45,8,6,10,2,3,1,4,0.99,yes,eligible
 ~~~
 
 這列表示：
 
 ~~~text
 bulk counts:
-  REF=34, ALT=11, depth=45
+  REF=34, ALT=11, total_reads=45
 
 HP 1-1:
   REF=8, ALT=6
@@ -417,9 +421,9 @@ ASCAT:
 purity:
   rho_ASCAT=0.99
 
-multiplicity:
-  candidates=1,2,3
-  prior=1=0.666667, 2=0.166667, 3=0.166667
+loader 內部：
+  由 major=3、minor=1 建立 m=1,2,3 的 CN candidate support
+  並以 CN prior 開始，在 likelihood 中計算 posterior responsibility
 
 eligibility:
   model_include=yes
@@ -444,7 +448,7 @@ PS 是上游 phase provenance。它可以協助：
 
 - 在同一 PS block 內維持 HP label 的局部一致性。
 - 產生 HP1-1／HP2-1 read counts。
-- 進行 read-level phase audit。
+- 進行 read-level phase QC。
 - 建立 PS-grouped holdout，避免同一 block 被拆到不同 partition。
 
 不同 PS block 之間，不假設 HP1／HP2 方向具有全球一致性。
@@ -514,7 +518,7 @@ total_cn > 0
 
 ### 8.2 LOH 的定位
 
-loh_state 是 optional audit／provenance annotation，不是目前 C++ Site 的 active likelihood field；目前也沒有使用它計算 likelihood 或已實作的 compatibility score。
+loh_state 是補充資訊欄位（Supplementary information column），不進入 likelihood；目前也沒有使用它計算 likelihood 或已實作的 compatibility score。
 
 LOH 的判讀要結合：
 
@@ -556,7 +560,7 @@ phi
 
 ---
 
-## 9. CN-only multiplicity
+## 9. CN-constrained latent multiplicity
 
 ### 9.1 產生方式
 
@@ -565,11 +569,13 @@ phi
 ~~~text
 major_cn + minor_cn
         ↓
-multiplicity_candidates
+C++ loader 內部建立 m candidate support 與 CN prior
         ↓
-multiplicity_prior
+bulk/HP counts + purity + clone prevalence
         ↓
 likelihood 對 multiplicity 做 marginalization
+        ↓
+每個 SNV 的 multiplicity posterior output
 ~~~
 
 目前規則：
@@ -597,24 +603,40 @@ combined:
   m=3: 1/6
 ~~~
 
-### 9.2 不使用的資料
+### 9.2 Posterior 的產生
 
-multiplicity_prior 不使用：
+對每個 retained tree／clone state，模型計算：
 
 ~~~text
-bulk_ref
-bulk_alt
-bulk_depth
+P(m | D_i, H_i, C_i, rho_ASCAT, phi_z(i))
+  ∝ P(m | C_i) × P(D_i, H_i | m, C_i, rho_ASCAT, phi_z(i))
+~~~
+
+這個 posterior 會累積到 inference output：
+
+~~~text
+multiplicity_posterior.tsv.gz
+mutation_id  multiplicity  prior  posterior_mean
+~~~
+
+`posterior_mean` 是 retained draws 的平均 responsibility；它不是外部工具輸入，也不會回寫 canonical table。觀測 `alt_reads / total_reads` 仍保持原始值。
+
+### 9.3 不用來建立 CN prior 的資料
+
+以下資料不參與「建立初始 CN candidate prior」：
+
+~~~text
+ref_reads
+alt_reads
+total_reads
 bulk_vaf
 vcf_af
-rho_ASCAT
-HP counts
 PS block
 ~~~
 
-因此 bulk counts 不會先被拿來建立 multiplicity prior，再在 likelihood 中重複使用。
+但這些 observation 會在後續 likelihood 中用來更新 multiplicity posterior；它們不會先形成一個外部 multiplicity table，再被 likelihood 重複使用。
 
-multiplicity_prior 是固定的 CN-only prior，不是獨立的 MCMC latent state；模型在 observation likelihood 中對候選 multiplicity 做 marginalization。exact construction 由 Python builder 負責，C++ loader 不重新推導 prior，只驗證 candidates、prior keys、正規化與 CN 邊界。詳細定義見 model.md。
+CN prior 是候選狀態的初始權重，不是最終 posterior；multiplicity 不需要作為獨立的 MCMC state，因為它在每個 likelihood evaluation 中解析邊際化。exact candidate construction 由 C++ loader 根據 `major_cn`／`minor_cn` 在記憶體內完成；Python builder 不產生這些欄位，canonical table 也不接受它們。posterior 只在正式 inference output 產生。詳細定義見 model.md。
 
 ---
 
@@ -659,9 +681,9 @@ eligible row 必須通過：
 - site-CNV projection 可用。
 - CN arithmetic 正確。
 - purity 一致。
-- multiplicity candidates 非空、排序且唯一。
-- multiplicity_prior keys 與 candidates 完全一致，所有 probability 大於零且總和為 1。
-- 最大 multiplicity 不超過可用 CN，且 eligible row 的 total_cn 大於零。
+- C++ loader 能由 major/minor CN 建立非空、排序且唯一的 multiplicity support。
+- C++ loader 產生的內部權重有限、非負、總和為 1，且最大 multiplicity 不超過可用 CN。
+- eligible row 的 total_cn 大於零。
 
 ### 10.2 Chain-specific holdout
 
@@ -715,7 +737,7 @@ ascat_segment_id
 - canonical output hash。
 - expected、observed、eligible site count。
 - model status counts。
-- active、optional、forbidden columns。
+- active、Supplementary information columns (not used in likelihood)、forbidden columns。
 
 schema version 存在 manifest／validation manifest，不是 TSV 的欄位。raw source 的 sample、reference build 等資訊若要保存，須由上游 provenance manifest 提供；目前 builder 不會自行補造這些欄位。manifest 是 provenance artifact，不是 likelihood input。
 
@@ -730,9 +752,9 @@ builder 在產生 QA 前會檢查：
 - active HP subset 不超過 bulk counts。
 - CN arithmetic。
 - purity consistency。
-- multiplicity candidates/prior consistency。
+- CN-constrained multiplicity candidate 與 posterior-output consistency。
 - forbidden columns。
-input_qa.json 保存上述檢查的 summary、status、counts、issues preview，以及 active／optional／forbidden columns；部分 conservation、CN arithmetic 與 purity check 若失敗會在 QA 寫出前直接停止。
+input_qa.json 保存上述檢查的 summary、status、counts、issues preview，以及 active／Supplementary information columns (not used in likelihood)／forbidden columns；部分 conservation、CN arithmetic 與 purity check 若失敗會在 QA 寫出前直接停止。
 
 input QA 沒有通過時，不應把 bundle 交給正式 workflow。
 
@@ -787,10 +809,10 @@ workflow run 會在 experiment output 下保存 input bundle、validation、hold
 | multiplicity_posteriors | 已停用的 multiplicity interface，不可出現在 canonical table |
 | bulk_vaf | 上游摘要，不是獨立 model parameter |
 | vcf_af、vcf_dp、VCF AD | caller/provenance 欄位，不是 active model columns |
-| PS block | phase provenance、HP 建立、read audit、grouped holdout |
+| PS block | phase provenance、HP 建立、read-level QC、grouped holdout |
 | ploidy | purity output 的額外資訊，目前不是 sampler input |
 | goodness-of-fit | ASCAT provenance，目前不是 sampler input |
-| segment_id、loh_state | optional audit／compatibility context |
+| segment_id、loh_state | Supplementary information columns (not used in likelihood)／compatibility context |
 | driver annotation | 目前不是 model input |
 | CNA/LOH event-to-node mapping | 目前不是既有 canonical input |
 | HP1/HP2 label | read-level evidence，不是 clone label |
@@ -810,7 +832,7 @@ reference / tumor / normal / SNV / phase / ASCAT sources
           bulk / HP / HP-QC / site-CNV artifacts
                          │
                          ▼
-          hcc1395_tumor_tree_input/v2
+          hcc1395_tumor_tree_input/v4
              likelihood_input.tsv.gz
                          │
           ┌──────────────┴──────────────┐
@@ -848,16 +870,16 @@ PS 不直接進 C++ Site、clone prior、eta、phi 或 topology edge。
 
 ### Schema
 
-- [ ] schema version 為 hcc1395_tumor_tree_input/v2。
+- [ ] schema version 為 hcc1395_tumor_tree_input/v4。
 - [ ] 每列是一個 SNV。
 - [ ] mutation_id 唯一。
-- [ ] 20 個 required columns 全部存在。
+- [ ] 18 個 required columns 全部存在。
 - [ ] forbidden columns 不存在。
-- [ ] optional audit columns 已清楚標示。
+- [ ] Supplementary information columns (not used in likelihood) 已清楚標示。
 
 ### Counts 與 CN
 
-- [ ] bulk_depth = bulk_ref + bulk_alt。
+- [ ] total_reads = ref_reads + alt_reads。
 - [ ] HP domain 完整。
 - [ ] 完整 HP REF/ALT 總和等於 bulk counts。
 - [ ] active HP subset 不超過 bulk counts。
@@ -869,10 +891,8 @@ PS 不直接進 C++ Site、clone prior、eta、phi 或 topology edge。
 
 - [ ] primary table 使用 rho_ASCAT=0.99。
 - [ ] purity source 可追溯，table 與 source 一致。
-- [ ] multiplicity_candidates 只由 major/minor CN 推導。
-- [ ] multiplicity_candidates 非空、排序且唯一。
-- [ ] multiplicity_prior keys 與 candidates 完全一致，且每個 probability 大於零。
-- [ ] multiplicity_prior 機率總和為 1。
+- [ ] C++ loader 只由 major/minor CN deterministic 建立 multiplicity support 與權重。
+- [ ] 內部 support 非空、排序且唯一；權重非負且總和為 1。
 - [ ] 最大 multiplicity 不超過可用 CN；eligible row 的 total_cn 大於零。
 - [ ] 沒有停用的 purity／multiplicity columns。
 
@@ -930,7 +950,8 @@ bulk REF/ALT counts
 + HP1-1 / HP2-1 counts
 + ASCAT major/minor/total CN
 + ASCAT purity rho_ASCAT
-+ CN-only multiplicity candidates/prior
++ CN-constrained latent multiplicity candidates/posterior
+  （由 C++ loader 內部建立與推理，不是 table 欄位）
 + site eligibility metadata
 ~~~
 

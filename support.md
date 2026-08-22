@@ -203,27 +203,24 @@ input/config manifest
 
 ~~~
 mutation_id, chrom, pos, ref, alt
-bulk_ref, bulk_alt, bulk_depth
+ref_reads, alt_reads, total_reads
 hp1_1_ref, hp1_1_alt, hp2_1_ref, hp2_1_alt
 major_cn, minor_cn, total_cn
 rho_ASCAT
-multiplicity_candidates, multiplicity_prior
 model_include, model_status
 ~~~
 
-segment_id、loh_state、BAF、segment boundary 與 caller metadata 不是目前 C++ sampler 的 active likelihood 必要欄位；builder 可以把 segment_id、loh_state 等作為 optional audit columns 保留在 canonical table，也可以由獨立 CN/LOH compatibility artifact 保存。它們不因此成為 active likelihood input。
+segment_id、loh_state、BAF、segment boundary 與 caller metadata 不是目前 C++ sampler 的 active likelihood 必要欄位；builder 可以把 segment_id、loh_state 等作為 **Supplementary information columns (not used in likelihood)** 保留在 canonical table，也可以由獨立 CN/LOH compatibility artifact 保存。這些欄位只提供補充資訊、QC、provenance 與結果解釋，不因此成為 active likelihood input。`cnv_status` 雖然不進 likelihood，但會在 builder 階段作為 eligibility gate，透過 `model_include`／`model_status` 間接決定 SNV 是否能進入模型。Multiplicity 仍參與 likelihood；C++ loader 依 `major_cn`／`minor_cn` 建立 candidate support 與 CN prior，並輸出 retained tree／clone states 下的 per-SNV posterior，不是外部工具或 canonical table 欄位。
 
 ### 必須驗證
 
 ~~~
-bulk_depth = bulk_ref + bulk_alt
+total_reads = ref_reads + alt_reads
 total_cn = major_cn + minor_cn
 major_cn >= minor_cn >= 0
 total_cn >= 0
-multiplicity_prior >= 0
-sum(multiplicity_prior) = 1
 mutation_id 唯一
-hp1_1_ref + hp1_1_alt + hp2_1_ref + hp2_1_alt <= bulk_depth
+hp1_1_ref + hp1_1_alt + hp2_1_ref + hp2_1_alt <= total_reads
 ~~~
 
 另外確認：
@@ -231,6 +228,7 @@ hp1_1_ref + hp1_1_alt + hp2_1_ref + hp2_1_alt <= bulk_depth
 - reference build、sample、ASCAT purity source 與 hash 一致。
 - model_include=yes 且 model_status=eligible 才能進 likelihood。
 - excluded site 有明確原因，不能被 fallback 成 CN=2 或 m=1。
+- C++ loader 必須能由 major/minor CN 建立非空、有限、正規化的 multiplicity support／weights；這個步驟不是外部輸入。
 - CN-zero、unmapped segment、zero-depth 等排除狀態與 `model_include/model_status` 一致。
 - PS 不出現在 downstream likelihood schema；其上游產生的 HP counts 必須可追溯。
 

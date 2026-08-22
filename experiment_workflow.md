@@ -39,18 +39,16 @@ K／purity／holdout／chain 出錯」。
 
 | 欄位 | 角色 |
 |---|---|
-| `bulk_ref`, `bulk_alt`, `bulk_depth` | 該 SNV 的 bulk allele counts；`depth=ref+alt` |
+| `ref_reads`, `alt_reads`, `total_reads` | 該 SNV 的 bulk allele counts；`total_reads=ref_reads+alt_reads` |
 | `hp1_1_ref`, `hp1_1_alt` | `HP:Z:1-1` 的條件式 read allocation evidence |
 | `hp2_1_ref`, `hp2_1_alt` | `HP:Z:2-1` 的條件式 read allocation evidence |
-| `major_cn`, `minor_cn`, `total_cn` | ASCAT 投影到 SNV 的 allele-specific CN；`total=major+minor` |
-| `multiplicity_candidates` | 由 extant major/minor side 決定的可行 mutated-copy 數 |
-| `multiplicity_prior` | **只由 CN 建立**的固定先驗；sampler 對 `m` 邊際化 |
+| `major_cn`, `minor_cn`, `total_cn` | ASCAT 投影到 SNV 的 allele-specific CN；`total=major+minor`；也是 loader 建立 multiplicity 的來源 |
 | `rho_ASCAT` | 全域固定 ASCAT purity；主分析為 `0.99` |
 | `model_include`, `model_status` | fail-closed eligibility gate |
 
-### 2.1 CN-only multiplicity prior
+### 2.1 C++ loader 內部的 CN-constrained latent multiplicity
 
-這個 prior 不讀 VAF、bulk ALT/depth 或 purity，避免同一組 bulk counts 先決定 multiplicity、又進一次 bulk likelihood。
+Multiplicity 仍會進入 likelihood，但不是 canonical table 的輸入欄位，也沒有外部 multiplicity tool 或檔案。C++ loader 讀取 `major_cn`／`minor_cn` 後，在記憶體內建立 candidate support 與 CN prior；每個 tree／clone state 再用 bulk counts、HP counts、purity 與 clone prevalence 計算 candidate posterior responsibility。observed VAF 不會被覆寫，也不會把同一組 counts 寫回 canonical table。
 
 1. extant major/minor side 各先取得 `0.5`；CN=0 的 side 不分配權重，另一側取得全部權重。
 2. 每一側再於 `m=1..side_CN` 均分。
@@ -62,7 +60,7 @@ K／purity／holdout／chain 出錯」。
 major side: m=1,2,3，各 1/6
 minor side: m=1，1/2
 
-multiplicity_prior = 1=0.666667;2=0.166667;3=0.166667
+loader internal weights: m=1:0.666667; m=2:0.166667; m=3:0.166667
 ```
 
 這是 major/minor orientation 未知時的中性階層 prior，不把 ASCAT major/minor 誤認為 HP1/HP2，也不宣稱 mutation timing 已知。
@@ -76,7 +74,7 @@ q_i = rho_ASCAT * phi_z(i) * m
       / ((1-rho_ASCAT)*2 + rho_ASCAT*C_i)
 ```
 
-`rho_ASCAT` 不參與 `multiplicity_prior`，也不由 sampler 重新估計。
+`rho_ASCAT` 不參與 candidate support 建立，但會參與 candidate posterior 的 emission；亦不由 sampler 重新估計。
 
 ### 2.3 PS 的邊界
 
@@ -105,25 +103,25 @@ ASCAT purity file ───┘                                                  
 - 正式 manifest 補齊 VCF、counts、ASCAT、程式與輸出的 SHA-256；大型 BAM 記錄 path、size、mtime、header、quickcheck，並背景補算內容 hash。
 - 重新由 ASCAT segments 建立 `site_cnv_qc.tsv.gz`，保留 `mapped_nonzero_cn`、`cn_zero`、`unmapped_segment`、`segment_overlap` 四種狀態。
 - 在wrapper外重新執行PS read audit並保存artifact；先前摘要可作對照，不能取代新manifest。
-- builder 只建立 `multiplicity_candidates` 與 CN-only `multiplicity_prior`。
+- builder 只把 major/minor/total CN 寫入 canonical table；multiplicity support／weights 由 C++ loader 內部建立。
 
 ### 3.2 Canonical table 格式
 
 ```csv
-mutation_id,chrom,pos,ref,alt,bulk_ref,bulk_alt,bulk_depth,hp1_1_ref,hp1_1_alt,hp2_1_ref,hp2_1_alt,major_cn,minor_cn,total_cn,rho_ASCAT,multiplicity_candidates,multiplicity_prior,model_include,model_status
-chr1:100:A:G,chr1,100,A,G,34,11,45,8,6,10,2,3,1,4,0.99,"1;2;3","1=0.666667;2=0.166667;3=0.166667",yes,eligible
+mutation_id,chrom,pos,ref,alt,ref_reads,alt_reads,total_reads,hp1_1_ref,hp1_1_alt,hp2_1_ref,hp2_1_alt,major_cn,minor_cn,total_cn,rho_ASCAT,model_include,model_status
+chr1:100:A:G,chr1,100,A,G,34,11,45,8,6,10,2,3,1,4,0.99,yes,eligible
 ```
 
-正式 loader 必須 fail closed：缺欄、非法 CN、purity 不一致、prior support／sum 錯誤或 input path 不存在都直接停止；不得 fallback 到 legacy table、假 `CN=2` 或單點 multiplicity。
+正式 loader 必須 fail closed：缺欄、非法 CN、purity 不一致、無法由 CN 建立有限且正規化的內部 multiplicity，或 input path 不存在，都直接停止；不得 fallback 到 legacy table、假 `CN=2` 或單點 multiplicity。舊的 `multiplicity_candidates`／`multiplicity_prior` 欄位不是 v4 canonical schema。
 
 ## 4. QA 與實驗 gate
 
 ### 4.1 Input gate
 
 - site key 唯一，reference build、contig、1-based VCF position 與 REF/ALT 一致。
-- builder/QA驗證 `bulk_depth=bulk_ref+bulk_alt` 與原始完整 HP categories的count conservation；sampler loader只讀HP1-1/HP2-1並檢查其子集合不超過bulk，剩餘counts視為untagged。
+- builder/QA驗證 `total_reads=ref_reads+alt_reads` 與原始完整 HP categories的count conservation；sampler loader只讀HP1-1/HP2-1並檢查其子集合不超過 bulk，剩餘 counts 視為 untagged。
 - `major_cn>=minor_cn>=0`、`total_cn=major_cn+minor_cn`；eligible rows 必須 `total_cn>0`。
-- `multiplicity_prior` 的 support 合法、非負且總和為 1。
+- C++ loader 由 major/minor CN 建立的 multiplicity support 合法、非負且內部權重總和為 1。
 - table 與 manifest 的 `rho_ASCAT=0.99`、sample、ASCAT source/hash 一致。
 - PS read audit通過 `discordance_fraction<=0.01`；PS 不得出現在 downstream likelihood schema，但其上游產生的 HP counts 必須在 canonical table 中。
 - 任一 gate fail：停止、回傳非零 exit、建立 `_FAILED`，不得建立 `_SUCCESS`。
@@ -138,7 +136,7 @@ smoke fixture固定為：
 - selection seed：`hcc1395_tp20_v1`；以 `SHA256(seed|mutation_id)` 決定 strata 內順序。
 - `fixture_manifest.json` 保存來源 hash、20 個 mutation IDs、strata 與預期 gate 結果。
 
-Smoke 只驗證 schema、排除規則、prior 與短鏈 I/O，不判斷收斂或生物學 recovery。
+Smoke 只驗證 schema、排除規則、CN-constrained multiplicity posterior output 與短鏈 I/O，不判斷收斂或生物學 recovery。
 
 ## 5. 推理演算法與 root 定義
 
@@ -152,7 +150,7 @@ table、holdout control 與 workflow config 交給 backend，不在此重複定�
 kernel。
 
 模型 posterior target、`T/z/eta/phi` 的意義、ASCAT purity、HP observation 與
-CN-only multiplicity prior 見 [`model.md`](model.md)。PS 仍只透過上游產生的 HP
+CN-constrained latent multiplicity 見 [`model.md`](model.md)。PS 仍只透過上游產生的 HP
 counts 間接影響 downstream observation；PS block 不直接進 sampler state 或
 topology edge constraint。
 
@@ -161,6 +159,7 @@ topology edge constraint。
 每條 chain 完成後產生四個主要資料 artifact，另有一個完成狀態檔：
 
 - `samples.jsonl.gz`：burn-in 後 retained draws 的 `iteration`、`log_posterior`、`parents`、`eta`、`phi`、`occupancy`。
+- `multiplicity_posterior.tsv.gz`：每個 SNV 的 multiplicity candidate、CN prior 與 retained draws 平均 posterior responsibility。
 - `checkpoint.json.gz`：目前 `(T, eta, z)`、RNG state、iteration、retained draws、canonical table hash、ChainConfig 與 holdout IDs，作為 audit/state snapshot 與未來 versioned restore 的基礎；目前不接受 C++ resume。
 - `diagnostics.json`：schema/input hash、ChainConfig、proposal counters、acceptance rates、posterior sample摘要與輸入角色。
 - `representative_tree.json`：由 retained draws 選出的代表 tree、best sample，以及每個 SNV 的 assignment aggregate/MAP node。
@@ -214,6 +213,7 @@ output/tumor_tree_pipeline/<run_id>/
 ├── runs/<stage_run_id>/<holdout>/
 │   ├── chain_01/
 │   │   ├── samples.jsonl.gz
+│   │   ├── multiplicity_posterior.tsv.gz
 │   │   ├── checkpoint.json.gz
 │   │   ├── diagnostics.json
 │   │   └── representative_tree.json
@@ -344,4 +344,4 @@ Git 不保存大型 BAM、完整 MCMC samples或可重建的大型中間表。�
 
 2026-08-15 的舊 integrated table曾保存 `multiplicity_posteriors`，而且該欄位使用相同 bulk counts形成權重；舊 sampler之後又用這批 counts計算 likelihood。這個設計可能重複使用觀測，**不得作為新版正式輸入**。
 
-歷史 Stage 6、production-like與experiment-loop輸出可留作 provenance，但不代表本流程的 posterior。新版正式表只能含 CN-only `multiplicity_prior`，且只能由 `tumor_tree_pipeline` wrapper產生與驗收。
+歷史 Stage 6、production-like與experiment-loop輸出可留作 provenance，但不代表本流程的 posterior。新版 v3 正式表只保存 counts、HP、CN、purity 與 eligibility；C++ loader 依 CN 內部建立 multiplicity，再由 likelihood 使用。舊的 multiplicity table 欄位不得重新加入。
