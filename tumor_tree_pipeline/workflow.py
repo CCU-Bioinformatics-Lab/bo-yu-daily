@@ -286,6 +286,17 @@ def _atomic_json(path: Path, value: Any) -> None:
     _atomic_write(path, json.dumps(_jsonable(value), indent=2, sort_keys=True, allow_nan=False) + "\n")
 
 
+def _append_jsonl(path: Path, value: Mapping[str, Any]) -> None:
+    """Append one durable execution event without rewriting prior events."""
+
+    _mkdir(path.parent)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(_jsonable(value), sort_keys=True, allow_nan=False) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    path.chmod(0o664)
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -765,7 +776,10 @@ def _gate_failures(gate: Mapping[str, Any]) -> frozenset[str]:
 
 
 def _artifact_inventory(root: Path) -> dict[str, Any]:
-    excluded = {"artifact_inventory.json", "run.lock", "_SUCCESS"}
+    # The trace is append-only and receives the terminal success/failure event
+    # after the inventory is assembled; inventorying it would create a false
+    # hash mismatch for an otherwise valid run.
+    excluded = {"artifact_inventory.json", "run.lock", "_SUCCESS", "execution_trace.jsonl"}
     artifacts = []
     for path in sorted(item for item in root.rglob("*") if item.is_file()):
         relative = path.relative_to(root).as_posix()
@@ -776,7 +790,7 @@ def _artifact_inventory(root: Path) -> dict[str, Any]:
         )
     return {
         "inventory_version": 1,
-        "scope": "all regular run files except artifact_inventory.json, run.lock, and _SUCCESS",
+        "scope": "all regular run files except artifact_inventory.json, run.lock, _SUCCESS, and execution_trace.jsonl",
         "artifacts": artifacts,
     }
 
@@ -839,16 +853,34 @@ def _run_cell(
     chain_runner: Callable[..., Any],
     ledger: list[dict[str, Any]],
     resume: bool,
+    trace: Callable[..., None] | None = None,
 ) -> dict[str, Any]:
     cell_seed = _derive_seed(config.seed, cell, "cell", 0)
     cell_id = _make_run_id(timestamp, git_sha, (cell.purity,), (cell.num_nodes,), cell_seed)
     cell_dir = experiment_dir / "runs" / f"{cell.stage}_{cell_id}"
     summary_path = cell_dir / "summary.json"
+    emit = trace or (lambda *_args, **_kwargs: None)
     if resume and summary_path.is_file():
         summary = dict(_read_json(summary_path))
         if summary.get("passed") is not True:
             raise WorkflowError(f"completed cell summary is not passing: {summary_path}")
+        emit(
+            "cell_resumed",
+            stage=cell.stage,
+            status="completed",
+            cell=cell_id,
+            K=cell.num_nodes,
+            rho_ASCAT=cell.purity,
+        )
         return summary
+    emit(
+        "cell_started",
+        stage=cell.stage,
+        status="running",
+        cell=cell_id,
+        K=cell.num_nodes,
+        rho_ASCAT=cell.purity,
+    )
     _mkdir(cell_dir, exist_ok=resume)
     try:
         table_path = table_paths[cell.purity]
@@ -867,6 +899,15 @@ def _run_cell(
     holdout_summaries: dict[str, Any] = {}
 
     for holdout_kind, holdout in holdout_items:
+        emit(
+            "holdout_started",
+            stage=cell.stage,
+            status="running",
+            cell=cell_id,
+            holdout=holdout_kind,
+            K=cell.num_nodes,
+            rho_ASCAT=cell.purity,
+        )
         fit_dir = cell_dir / holdout_kind
         _mkdir(fit_dir, exist_ok=resume)
         current_iterations = iterations
@@ -922,13 +963,56 @@ def _run_cell(
                 )
                 _atomic_json(experiment_dir / "command_ledger.json", {"entries": ledger})
                 try:
-                    result = chain_runner(**call)
-                except TypeError as exc:
-                    signature = inspect.signature(chain_runner)
+                    emit(
+                        "chain_started",
+                        stage=cell.stage,
+                        status="running",
+                        cell=cell_id,
+                        holdout=holdout_kind,
+                        chain=chain_index,
+                        K=cell.num_nodes,
+                        rho_ASCAT=cell.purity,
+                        seed=seed,
+                        iterations=current_iterations,
+                    )
+                    try:
+                        result = chain_runner(**call)
+                    except TypeError as exc:
+                        signature = inspect.signature(chain_runner)
+                        raise WorkflowError(
+                            f"run_chain adapter does not implement the workflow keyword contract {signature}"
+                        ) from exc
+                except Exception as exc:
+                    emit(
+                        "chain_failed",
+                        stage=cell.stage,
+                        status="failed",
+                        cell=cell_id,
+                        holdout=holdout_kind,
+                        chain=chain_index,
+                        K=cell.num_nodes,
+                        rho_ASCAT=cell.purity,
+                        seed=seed,
+                        error_type=type(exc).__name__,
+                        error=str(exc),
+                    )
                     raise WorkflowError(
-                        f"run_chain adapter does not implement the workflow keyword contract {signature}"
+                        f"chain failed: stage={cell.stage} cell={cell_id} "
+                        f"holdout={holdout_kind} chain={chain_index}: {exc}"
                     ) from exc
                 results.append(_chain_payload(result))
+                emit(
+                    "chain_completed",
+                    stage=cell.stage,
+                    status="completed",
+                    cell=cell_id,
+                    holdout=holdout_kind,
+                    chain=chain_index,
+                    K=cell.num_nodes,
+                    rho_ASCAT=cell.purity,
+                    seed=seed,
+                    iterations=current_iterations,
+                )
 
             try:
                 diagnostics = summarize_chains(results)
@@ -972,9 +1056,28 @@ def _run_cell(
         _atomic_json(fit_dir / "diagnostics.json", summary)
         holdout_summaries[holdout_kind] = summary
         if cell.formal and gate.get("passed") is not True:
+            emit(
+                "holdout_failed",
+                stage=cell.stage,
+                status="failed",
+                cell=cell_id,
+                holdout=holdout_kind,
+                K=cell.num_nodes,
+                rho_ASCAT=cell.purity,
+                gate=gate,
+            )
             raise GateFailure(
                 f"formal gates failed for K={cell.num_nodes}, rho={cell.purity}, holdout={holdout_kind}"
             )
+        emit(
+            "holdout_completed",
+            stage=cell.stage,
+            status="completed",
+            cell=cell_id,
+            holdout=holdout_kind,
+            K=cell.num_nodes,
+            rho_ASCAT=cell.purity,
+        )
 
     cell_summary = {
         "run_id": cell_id,
@@ -992,6 +1095,15 @@ def _run_cell(
         "passed": True,
     }
     _atomic_json(cell_dir / "summary.json", cell_summary)
+    emit(
+        "cell_completed",
+        stage=cell.stage,
+        status="completed",
+        cell=cell_id,
+        K=cell.num_nodes,
+        rho_ASCAT=cell.purity,
+        passed=True,
+    )
     return cell_summary
 
 
@@ -1049,6 +1161,8 @@ def run_experiment(
     old_umask = os.umask(0o002)
     lock_handle = None
     created = False
+    trace_path: Path | None = None
+    current_context: dict[str, Any] = {"stage": "initialization", "scope": "before_run_directory"}
     try:
         if config.resume:
             if not experiment_dir.is_dir():
@@ -1071,6 +1185,22 @@ def run_experiment(
             raise WorkflowError(f"experiment is already locked: {experiment_dir}") from exc
 
         _mkdir(experiment_dir / "logs", exist_ok=config.resume)
+        trace_path = experiment_dir / "execution_trace.jsonl"
+
+        def record_trace(event: str, *, stage: str, status: str, **details: Any) -> None:
+            assert trace_path is not None
+            _append_jsonl(
+                trace_path,
+                {
+                    "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+                    "run_id": run_id,
+                    "event": event,
+                    "stage": stage,
+                    "status": status,
+                    **details,
+                },
+            )
+
         resume_index = len(list(experiment_dir.glob("resume_command.*.json"))) + 1
         if config.resume and (experiment_dir / "_FAILED").exists():
             failed = experiment_dir / "_FAILED"
@@ -1090,11 +1220,21 @@ def run_experiment(
             },
         )
         _atomic_json(experiment_dir / "status.json", {"status": "running", "run_id": run_id})
+        record_trace(
+            "workflow_started",
+            stage="initialization",
+            status="running",
+            git_sha=resolved_git_sha,
+            config=config,
+            git_state=git_state,
+        )
         ledger_path = experiment_dir / "command_ledger.json"
         ledger = list(_read_json(ledger_path).get("entries", [])) if config.resume and ledger_path.is_file() else []
         runner = chain_runner or _default_chain_runner
 
         if config.build_inputs is not None:
+            current_context = {"stage": "input_build", "scope": "builder"}
+            record_trace("stage_started", stage="input_build", status="running")
             config.build_inputs.validate()
             input_dir = experiment_dir / "input"
             if config.resume and input_dir.exists():
@@ -1103,10 +1243,28 @@ def run_experiment(
                 _mkdir(input_dir, exist_ok=False)
                 builder = table_builder or _default_table_builder
                 table_path, manifest_path = _artifact_paths(builder(config.build_inputs, input_dir))
+            record_trace(
+                "stage_completed",
+                stage="input_build",
+                status="completed",
+                table_path=table_path,
+                manifest_path=manifest_path,
+            )
         else:
+            current_context = {"stage": "input_resolution", "scope": "prebuilt_table"}
+            record_trace("stage_started", stage="input_resolution", status="running")
             table_path = config.table_path
             manifest_path = config.validation_manifest
+            record_trace(
+                "stage_completed",
+                stage="input_resolution",
+                status="completed",
+                table_path=table_path,
+                manifest_path=manifest_path,
+            )
         assert table_path is not None and manifest_path is not None
+        current_context = {"stage": "input_validation", "scope": "canonical_model_table"}
+        record_trace("stage_started", stage="input_validation", status="running")
         validation = validate_model_table_manifest(table_path, manifest_path, config.main_purity)
         table_paths: dict[float, Path] = {config.main_purity: table_path}
         input_validations: dict[str, Any] = {_rho_label(config.main_purity): validation}
@@ -1131,11 +1289,19 @@ def run_experiment(
                 purity,
             )
         _atomic_json(experiment_dir / "input_validation.json", input_validations)
+        record_trace(
+            "stage_completed",
+            stage="input_validation",
+            status="completed",
+            validated_purities=sorted(input_validations),
+        )
 
         formal_requested = any(cell.formal for cell in matrix)
         holdouts: dict[str, Mapping[str, Any]] = {}
         prerequisite_summary: dict[str, Any] = {"input": input_validations}
         if formal_requested:
+            current_context = {"stage": "prerequisites", "scope": "ps_simulation_holdout"}
+            record_trace("stage_started", stage="prerequisites", status="running")
             assert config.ps_audit_manifest and config.simulation_manifest and config.holdout_metadata
             prerequisite_summary["ps_audit"] = _validate_ps_audit(config.ps_audit_manifest)
             prerequisite_summary["simulation"] = _validate_simulation_gate(config.simulation_manifest)
@@ -1163,10 +1329,20 @@ def run_experiment(
                         seed=config.seed,
                         output_dir=holdout_dir,
                     )
+            record_trace(
+                "stage_completed",
+                stage="prerequisites",
+                status="completed",
+                holdouts=sorted(holdouts),
+            )
         _atomic_json(experiment_dir / "prerequisites.json", prerequisite_summary)
 
         cell_summaries = []
         for cell in matrix:
+            current_context = {
+                "stage": cell.stage,
+                "scope": f"K={cell.num_nodes},rho_ASCAT={cell.purity:.6f}",
+            }
             cell_summaries.append(
                 _run_cell(
                     experiment_dir=experiment_dir,
@@ -1179,8 +1355,11 @@ def run_experiment(
                     chain_runner=runner,
                     ledger=ledger,
                     resume=config.resume,
+                    trace=record_trace,
                 )
             )
+        current_context = {"stage": "publication", "scope": "manifest_inventory_success"}
+        record_trace("stage_started", stage="publication", status="running")
         manifest = {
             "run_id": run_id,
             "status": "success",
@@ -1194,6 +1373,7 @@ def run_experiment(
         _atomic_json(experiment_dir / "status.json", {"status": "success", "run_id": run_id})
         _atomic_json(experiment_dir / "artifact_inventory.json", _artifact_inventory(experiment_dir))
         _atomic_write(experiment_dir / "_SUCCESS", "success\n")
+        record_trace("workflow_completed", stage="publication", status="completed")
         return experiment_dir
     except Exception as exc:
         if created and experiment_dir.exists():
@@ -1202,8 +1382,19 @@ def run_experiment(
                 "run_id": run_id,
                 "error_type": type(exc).__name__,
                 "error": str(exc),
+                "failed_stage": current_context["stage"],
+                "failed_scope": current_context["scope"],
             }
             try:
+                if trace_path is not None:
+                    record_trace(
+                        "workflow_failed",
+                        stage=str(current_context["stage"]),
+                        status="failed",
+                        scope=str(current_context["scope"]),
+                        error_type=type(exc).__name__,
+                        error=str(exc),
+                    )
                 _atomic_json(experiment_dir / "status.json", failure)
                 _atomic_write(experiment_dir / "logs" / "workflow_error.log", traceback.format_exc())
                 _atomic_write(experiment_dir / "_FAILED", f"{type(exc).__name__}: {exc}\n")

@@ -20,8 +20,10 @@ diagnostics rather than redefining the model or sampler specification.
   model-contract tests and numerical comparison; the default workflow does
   not use it for inference.
 - `workflow.run_experiment(...)`: smoke, pilot, K sensitivity, purity
-  sensitivity, independent chains for diagnostics, holdouts, and atomic status
-  markers.
+  sensitivity, independent chains for diagnostics, holdouts, atomic status
+  markers, and durable `execution_trace.jsonl` stage/cell/chain records. The
+  complete cross-module experiment contract is in
+  [`../experiment_workflow.md`](../experiment_workflow.md).
 
 ## Baseline input → latent state → output
 
@@ -72,6 +74,10 @@ is currently fail-closed until its versioned restore reader is implemented.
   parameter.
 - Production output directories are immutable and receive `_SUCCESS` only
   after every required gate passes.
+- Failed runs receive `_FAILED`, `status.json.failed_stage`/
+  `failed_scope`, `logs/workflow_error.log`, and an append-only
+  `execution_trace.jsonl`; the trace identifies the failing K, purity,
+  holdout, chain, seed, and stage before any result is interpreted.
 
 Large BAM/VCF/ASCAT inputs remain outside Git and are referenced by manifests
 with paths, metadata, and hashes.
