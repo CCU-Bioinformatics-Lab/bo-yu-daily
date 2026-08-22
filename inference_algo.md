@@ -3,7 +3,7 @@
 更新日期：2026-08-21
 
 > [!NOTE]
-> 本文件只定義「如何從 active model 的 posterior 目標產生推理結果」。模型變數、觀測 likelihood、ASCAT purity、HP counts 與 multiplicity prior 見 [`model.md`](model.md)；canonical input 與 provenance 見 [`data.md`](data.md)；正式實驗矩陣、holdout 與 gate 見 [`ascat_purity_experiment_workflow.md`](ascat_purity_experiment_workflow.md)。
+> 本文件只定義「如何從 active model 的 posterior 目標產生推理結果」。模型變數、觀測 likelihood、ASCAT purity、HP counts 與 multiplicity prior 見 [`model.md`](model.md)；canonical input 與 provenance 見 [`data.md`](data.md)；正式實驗矩陣、holdout 與 gate 見 [`experiment_workflow.md`](experiment_workflow.md)。
 
 ```yaml
 document_id: inference_algo
@@ -13,7 +13,7 @@ algorithm_id: phylowgs_inspired_tssb_mcmc
 active_algorithm: phylowgs_inspired_finite_k_compound_mcmc
 model_contract: model.md
 data_contract: data.md
-workflow_contract: ascat_purity_experiment_workflow.md
+workflow_contract: experiment_workflow.md
 implementation: inference/
 ```
 
@@ -161,7 +161,7 @@ CanonicalTable loader  ->  AlgorithmRegistry  ->  Algorithm::run
 - `model.md`：定義 posterior target、觀測 likelihood、latent quantities 與 structural derivation。
 - `data.md`：定義 raw source、canonical table、欄位與 provenance。
 - 本文件：定義 inference algorithm、state transition、chain input/output 與 backend abstraction。
-- `ascat_purity_experiment_workflow.md`：定義 smoke、pilot、formal、K／purity sensitivity、holdout、convergence gates 與 fail-closed 行為。
+- `experiment_workflow.md`：定義 smoke、pilot、formal、K／purity sensitivity、holdout、convergence gates、run records 與 fail-closed 行為。
 
 目前正式長鏈與 gate 數值以 workflow 為準，不在本文件複製另一份可漂移的設定。
 

@@ -667,7 +667,7 @@ claim grade
 - [output.md](output.md)：定義 topology、CCF/phi 與 SNV-to-clone assignment 的展示輸出。
 - [model.md](model.md)：定義 bulk counts、ASCAT CN、purity、multiplicity、CCF 與 likelihood 邊界。
 - [inference_algo.md](inference_algo.md)：定義 latent state、MCMC kernels、chain artifacts 與 eta MH blocker。
-- [ascat_purity_experiment_workflow.md](ascat_purity_experiment_workflow.md)：定義 purity、canonical table、holdout、chain 設定與 workflow gates。
+- [experiment_workflow.md](experiment_workflow.md)：定義 purity、canonical table、holdout、chain 設定、run records 與 workflow gates。
 - [golden_tree/research/hcc1395_tumor_evolution_tree_review/README.md](golden_tree/research/hcc1395_tumor_evolution_tree_review/README.md)：HCC1395 review 總覽。
 - [golden_tree/research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md](golden_tree/research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md)：樣本、bulk callset、CNA、LOH、ploidy 與資料來源。
 - [golden_tree/research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md](golden_tree/research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)：HCC1395 tree reconstruction、PhyloWGS 與 driver label 邊界。

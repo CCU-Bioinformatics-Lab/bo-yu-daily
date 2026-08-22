@@ -1,11 +1,29 @@
-# HCC1395 30,490-site 腫瘤演化樹：ASCAT purity 重跑流程
+# HCC1395 30,490-site 腫瘤演化樹：experiment workflow
 
-更新日期：2026-08-20
-狀態：**正式契約已固定；新版 pipeline、fixture 與 wrapper 完成驗證前，不啟動完整 MCMC**
+更新日期：2026-08-22
+狀態：**整體實驗流程與可追溯紀錄契約；新版 pipeline、fixture 與 wrapper 完成驗證前，不啟動完整 MCMC**
+
+本文件是 `arch.md` 四個可替換模塊之上的實驗編排層。它不重新定義
+`data.md`、`model.md`、`inference_algo.md` 或 `output.md` 的內容，而是固定
+四個模塊如何依序交接、如何執行 smoke／pilot／formal、每一步要留下哪些
+provenance／QA／diagnostic artifact，以及失敗時如何定位。任何正式結果都必須
+能由本文件所列的 run record 重建「使用哪份輸入、哪個版本、哪個階段、哪個
+K／purity／holdout／chain 出錯」。
 
 本流程以 ASCAT tumor purity `rho_ASCAT=0.99` 重建 HCC1395 finite-K 候選腫瘤演化樹。LongPhase-S 報告的 DNA fraction `0.958936` 只保留為歷史 provenance，不是模型輸入。
 
 正式、可版本控制的執行來源是 [`tumor_tree_pipeline/`](tumor_tree_pipeline/)。`/bip8_disk/boyu114/multi_evol_tree/tools/` 內的舊 builder、experiment loop 與 production runner只供歷史比對，不再是正式入口。
+
+本流程指定的 phase-tagged tumor BAM 為：
+
+```text
+/bip8_disk/boyu114/longphase-s-origin/output/hcc1395_old_tagging_rerun/hcc1395_old_tagging.bam
+/bip8_disk/boyu114/longphase-s-origin/output/hcc1395_old_tagging_rerun/hcc1395_old_tagging.bam.bai
+```
+
+這是未啟用 two-site split 的 LongPhase-S old-tagging 來源；不使用
+`hcc1395_new_split_tagging.bam`。切換 BAM 後，bulk／HP derived counts 必須由
+此來源重新建立並通過 input QA，既有 counts artifact 不可直接沿用。
 
 ## 1. 研究邊界
 
@@ -83,7 +101,7 @@ ASCAT purity file ───┘                                                  
 
 ### 3.1 可重用與必須重建
 
-- 重用已通過 row count、site key、count conservation 與 BAM quickcheck 的 30,490-site counts；不為 purity 改變重掃 273 GB BAM。
+- 不直接重用先前由 new-split BAM 建立的 30,490-site counts；必須以指定的 old-tagging BAM 重新建立 bulk／HP counts，再檢查 row count、site key、count conservation 與 BAM quickcheck。
 - 正式 manifest 補齊 VCF、counts、ASCAT、程式與輸出的 SHA-256；大型 BAM 記錄 path、size、mtime、header、quickcheck，並背景補算內容 hash。
 - 重新由 ASCAT segments 建立 `site_cnv_qc.tsv.gz`，保留 `mapped_nonzero_cn`、`cn_zero`、`unmapped_segment`、`segment_overlap` 四種狀態。
 - 在wrapper外重新執行PS read audit並保存artifact；先前摘要可作對照，不能取代新manifest。
@@ -183,6 +201,7 @@ wrapper contract：
 output/tumor_tree_pipeline/<run_id>/
 ├── command.json
 ├── command_ledger.json
+├── execution_trace.jsonl
 ├── status.json
 ├── manifest.json
 ├── input_validation.json
@@ -237,7 +256,81 @@ ESS 不足時延長至每鏈至少 1,000 retained draws；不能因固定 iterat
 
 歷史 baseline（不是 ASCAT 0.99 新流程結果）：最大 label-invariant R-hat `24.983`、最低 ESS/chain `3.1`。這兩個數字只能用來說明舊 run 未收斂。
 
-## 9. Git 與 artifact 保存
+## 9. 每一步的過程紀錄與錯誤定位
+
+每個 run 都必須留下以下三層紀錄；不能只保存最後的樹或一行錯誤訊息：
+
+| 紀錄 | 用途 |
+|---|---|
+| `command.json`／`resume_command.NNN.json` | 原始 command、cwd、run ID、Git SHA、worktree state 與完整 config |
+| `execution_trace.jsonl` | 依時間追加的 stage／cell／holdout／chain 事件；每列都有 `timestamp_utc`、`event`、`stage`、`status`、scope 與必要參數 |
+| `status.json`、`logs/workflow_error.log`、`_FAILED` | 最終成功／失敗狀態、`error_type`、`error`、`failed_stage`、`failed_scope` 與 Python traceback |
+
+### 9.1 固定的執行階段
+
+`execution_trace.jsonl` 至少要能辨識以下階段，並依序記錄
+`stage_started`／`stage_completed`；中途錯誤則記錄 `workflow_failed`：
+
+```text
+initialization
+  → input_build 或 input_resolution
+  → input_validation
+  → prerequisites
+  → smoke / pilot / formal_main / formal_k_sensitivity / formal_purity_sensitivity
+  → publication
+```
+
+正式 cell 內再細分：
+
+```text
+cell_started
+  → holdout_started
+  → chain_started
+  → chain_completed
+  → holdout_completed
+  → cell_completed
+```
+
+每個 `chain_started`／`chain_completed`／`chain_failed` 必須保留
+`cell`、`K`、`rho_ASCAT`、`holdout`、`chain`、`seed` 與 `iterations`。因此：
+
+- input table 錯誤定位到 `input_validation`，並查看 `input_validation.json`。
+- PS、simulation 或 grouped holdout 錯誤定位到 `prerequisites`，並查看
+  `prerequisites.json` 與對應 manifest。
+- 某個 inference chain 出錯時，`status.json.failed_scope` 與
+  `execution_trace.jsonl` 會指出 K、purity、holdout、chain 和 seed；完整例外
+  仍在 `logs/workflow_error.log`。
+- formal gate 失敗時，先看最後一個 `holdout_failed` 或 `workflow_failed`，再看
+  該 cell 的 `diagnostics.json`；不得把 `_FAILED` 當成可發表結果。
+
+### 9.2 錯誤分類與重跑規則
+
+| 錯誤層級 | 典型原因 | 允許的處理 |
+|---|---|---|
+| `input_build`／`input_resolution` | 路徑不存在、BAM／counts 來源不一致 | 修正來源或重建新的 input bundle；不可只改 manifest 路徑 |
+| `input_validation` | schema、hash、CN、purity 或 count conservation 不符 | 修正 builder／資料後建立新 run；禁止 fallback 到舊表 |
+| `prerequisites` | PS audit、simulation manifest 或 holdout metadata 不通過 | 保留失敗 receipt，修正 prerequisite 後建立新 run |
+| `chain_failed` | C++ backend、checkpoint、記憶體或 adapter 錯誤 | 依 chain scope 排查；只能以相同 run ID 使用明確 `--resume`，不可覆寫成功 run |
+| `holdout_failed`／formal gate | R-hat、ESS、assignment、edge 或 predictive gate 不通過 | 標記 candidate—not converged；不得發布 `_SUCCESS` |
+| `publication` | manifest、inventory 或 atomic publish 錯誤 | 保留 `_FAILED` 與 traceback，修復後建立新 immutable output |
+
+### 9.3 最小診斷順序
+
+```bash
+RUN=output/tumor_tree_pipeline/<run_id>
+cat "$RUN/status.json"
+tail -n 20 "$RUN/execution_trace.jsonl"
+cat "$RUN/logs/workflow_error.log"
+cat "$RUN/input_validation.json"
+cat "$RUN/prerequisites.json"
+```
+
+先用 `status.json.failed_stage`／`failed_scope` 定位，再用 trace 的最後一個
+失敗事件與對應 stage artifact 對照。這套順序能把「資料錯誤、前置條件錯誤、
+sampler chain 錯誤、統計 gate 失敗、發布錯誤」分開，不讓不同層級的問題混在
+同一份 final tree 判讀裡。
+
+## 10. Git 與 artifact 保存
 
 Git 保存：
 
@@ -247,7 +340,7 @@ Git 保存：
 
 Git 不保存大型 BAM、完整 MCMC samples或可重建的大型中間表。正式 manifest／summary不可被 `output/.gitignore` 一併隱藏；大型 artifact則由 manifest指向外部 immutable storage。
 
-## 10. 歷史相容性聲明
+## 11. 歷史相容性聲明
 
 2026-08-15 的舊 integrated table曾保存 `multiplicity_posteriors`，而且該欄位使用相同 bulk counts形成權重；舊 sampler之後又用這批 counts計算 likelihood。這個設計可能重複使用觀測，**不得作為新版正式輸入**。
 
