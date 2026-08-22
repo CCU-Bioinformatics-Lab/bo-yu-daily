@@ -24,30 +24,33 @@ inference_binary run \
 The `run` subcommand, `--output`, and `--rho-ascat` are compatibility aliases
 for the canonical `--outdir` and `--purity` interface.
 
-The canonical table must contain the current `hcc1395_tumor_tree_input/v2`
+The canonical table must contain the current `hcc1395_tumor_tree_input/v4`
 required columns, including all four HP fields:
 `hp1_1_ref`, `hp1_1_alt`, `hp2_1_ref`, and `hp2_1_alt`. Every included row
-must carry `rho_ASCAT=0.99`; multiplicity is represented by the CN-only
-`multiplicity_candidates` and `multiplicity_prior` fields.
+must carry `rho_ASCAT=0.99`; the loader builds the CN-constrained multiplicity
+candidate support from each row's major/minor CN, and the likelihood updates
+the candidate posterior responsibility using the observed counts and clone
+prevalence. No multiplicity field is read from the table.
 
 ## Output contract
 
-For one chain, the output directory contains the five required artifacts:
+For one chain, the output directory contains the six required artifacts:
 
 ```text
 samples.jsonl.gz
+multiplicity_posterior.tsv.gz
 diagnostics.json
 representative_tree.json
 checkpoint.json.gz
 chain_complete.json
 ```
 
-For `--chains 2`, the same five artifacts are required under `chain_01/` and
+For `--chains 2`, the same six artifacts are required under `chain_01/` and
 `chain_02/`. Each chain's `diagnostics.json` records a distinct derived seed.
-The diagnostics also identify the finite-K PhyloWGS-inspired compound MCMC,
-schema `v2`, the observed site count,
-state variables `[parents, eta, z]`, ASCAT purity, and the CN-only
-multiplicity-marginalized site term.
+The diagnostics also identify the finite-K compound MCMC, schema `v4`, the
+observed site count, state variables `[parents, eta, z]`, ASCAT purity, the
+CN-constrained multiplicity-marginalized site term, and its posterior output
+artifact.
 
 `--threads 1` and `--threads 2` must produce identical decompressed artifacts.
 If an implementation intentionally permits thread-order differences, the

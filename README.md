@@ -10,7 +10,7 @@
 - [support.md](support.md)：output 後的獨立 support evaluator 規格；依序驗證 topology、CCF/`phi` 與 SNV→clone assignment，並檢查推理可靠性、ASCAT/CN/LOH compatibility、holdout、topology stability 與最終 claim grade。CNV event→node 與 driver annotation 在此列為 optional evidence，不會直接加入模型 likelihood
 - [experiment_workflow.md](experiment_workflow.md)：整合 `arch.md` 四個模塊的實驗執行、QA、分階段 gate 與錯誤追蹤紀錄流程
 - [tumor_tree_pipeline/](tumor_tree_pipeline/)：正式、可版本控制的建表、Python workflow 與 gate wrapper
-- [inference/](inference/)：active C++17 finite-K compound MCMC backend，提供 AlgorithmRegistry、chain/site 平行化與五個 inference artifacts
+- [inference/](inference/)：active C++17 finite-K compound MCMC backend，提供 AlgorithmRegistry、chain/site 平行化與六個 inference artifacts（包含每個 SNV 的 multiplicity posterior）
 - `daily/`：每天產生的 HTML的相關資料和每日總結。
 
 建議文件閱讀順序是 `arch.md` → `data.md` → `model.md` → `inference_algo.md` → `output.md` → `support.md`：

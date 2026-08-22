@@ -20,7 +20,7 @@ mutable state. The likelihood scorer parallelizes independent site rows; its
 final state score is reduced in site order, so `--threads 1` and `--threads 2`
 are deterministic for the same chain configuration.
 
-The current state is exactly `(parents, eta, z)`, where `eta` is the simplex
+The current sampled state is exactly `(parents, eta, z)`, where `eta` is the simplex
 of local clone masses and `phi` is the descendant-sum frequency for each node.
 This is a finite-truncated, TSSB-inspired approximation of PhyloWGS, not a
 claim to reproduce its full infinite tree implementation. Every iteration is
@@ -35,9 +35,12 @@ a compound MCMC sweep:
 
 The original PhyloWGS uses TSSB assignments, stick/order resampling and
 hyperparameter updates. This backend keeps a fixed finite K for the current
-workflow and preserves its existing ASCAT purity, HP-count and CN-only
-multiplicity emission. PS is upstream provenance for HP counts, not a direct
-tree-likelihood column.
+workflow and uses a PhyloWGS-style CN-constrained latent multiplicity
+emission: the loader creates candidate copy counts from major/minor CN, the
+emission updates their posterior responsibility with bulk/HP counts, purity
+and clone prevalence, and the result is written to
+`multiplicity_posterior.tsv.gz`. PS is upstream provenance for HP counts, not a
+direct tree-likelihood column.
 
 ## Build
 
@@ -84,21 +87,23 @@ seeds and avoids nested chain/site oversubscription.
 
 ## Input contract
 
-The loader requires the existing model columns:
+The loader requires the schema `hcc1395_tumor_tree_input/v4` model columns:
 
 ```text
-mutation_id chrom pos ref alt bulk_ref bulk_alt bulk_depth
+mutation_id chrom pos ref alt ref_reads alt_reads total_reads
 hp1_1_ref hp1_1_alt hp2_1_ref hp2_1_alt
-major_cn minor_cn total_cn rho_ASCAT
-multiplicity_candidates multiplicity_prior model_include model_status
+major_cn minor_cn total_cn rho_ASCAT model_include model_status
 ```
 
 Only `model_include=yes` and `model_status=eligible` rows enter the model.
-Counts, depth, ASCAT purity, CN consistency, candidate ordering, and prior
-normalization are validated. `tumor_dna_fraction` and
-`multiplicity_posteriors` are rejected. PS is not a direct C++ likelihood
-column; its upstream phasing role is represented by the already materialized
-HP1-1/HP2-1 counts.
+Counts, depth, ASCAT purity and CN consistency are validated. After parsing
+`major_cn` and `minor_cn`, the loader creates the internal multiplicity support
+and CN prior used by the likelihood. The emission then computes a posterior
+responsibility for every candidate at each sampled clone prevalence. The old
+`multiplicity_candidates` and `multiplicity_prior` table fields, as well as
+`tumor_dna_fraction` and `multiplicity_posteriors`, are rejected. PS is not a
+direct C++ likelihood column; its upstream phasing role is represented by the
+already materialized HP1-1/HP2-1 counts.
 
 ## Artifacts
 
@@ -107,6 +112,9 @@ adapter:
 
 - `samples.jsonl.gz`: one retained record per line with `iteration`,
   `log_posterior`, `parents`, `eta`, `phi`, and `occupancy`;
+- `multiplicity_posterior.tsv.gz`: one row per SNV/candidate multiplicity with
+  `prior` and retained-draw `posterior_mean`; this is a model output, never an
+  input column;
 - `diagnostics.json`: algorithm, input hash, config, roles, proposal counters,
   acceptance rates, posterior summary, and `phi_mean`;
 - `representative_tree.json`: `selected_edges`,

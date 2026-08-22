@@ -16,9 +16,6 @@ diagnostics rather than redefining the model or sampler specification.
   PhyloWGS-inspired TSSB compound MCMC backend from the canonical table;
   algorithm details and output contract are specified in
   [`../inference_algo.md`](../inference_algo.md).
-- `sampler.run_chain(...)`: retained Python reference implementation used for
-  model-contract tests and numerical comparison; the default workflow does
-  not use it for inference.
 - `workflow.run_experiment(...)`: smoke, pilot, K sensitivity, purity
   sensitivity, independent chains for diagnostics, holdouts, atomic status
   markers, and durable `execution_trace.jsonl` stage/cell/chain records. The
@@ -31,14 +28,15 @@ diagnostics rather than redefining the model or sampler specification.
 canonical likelihood_input.tsv.gz + ChainConfig
         │
         │  per SNV: bulk REF/ALT, HP1-1/HP2-1 counts,
-        │  ASCAT major/minor/total CN, CN-only multiplicity_prior,
+        │  ASCAT major/minor/total CN; loader derives multiplicity,
         │  rho_ASCAT = 0.99
         ▼
 latent state: finite-K topology T, SNV assignment z, prevalence eta
         │
         │  C++ Gibbs assignment + eta MH + conditional subtree Gibbs sweep
         ▼
-samples.jsonl.gz + diagnostics.json + representative_tree.json
+samples.jsonl.gz + multiplicity_posterior.tsv.gz
+        + diagnostics.json + representative_tree.json
         + checkpoint.json.gz + chain_complete.json
 ```
 
@@ -46,17 +44,31 @@ The baseline uses the canonical table as its observed-data input. The latent
 state contains only the tree topology, the clone assignment of each included
 SNV, and the local clone-mass vector `eta`; `phi` is derived by summation over
 descendants and the structural tumor root has frequency one.
-Multiplicity is integrated using the fixed CN-only prior; it is not a separate
-sampled state. The chain output contains retained posterior draws, acceptance
-diagnostics, a representative tree, and checkpoint audit metadata. C++ resume
-is currently fail-closed until its versioned restore reader is implemented.
+The canonical table contains 18 required model columns plus
+`Supplementary information columns (not used in likelihood)`. The latter are
+kept for QC, provenance, holdout grouping, and result interpretation; they are
+not read into the likelihood state. `cnv_status` is the exception in workflow
+control: it is used upstream as an eligibility gate that sets
+`model_include`/`model_status`, but the `cnv_status` value itself is not a
+likelihood feature.
+Multiplicity is integrated using candidate copy counts that the C++ loader
+builds from major/minor CN. Bulk/HP counts, purity and clone prevalence then
+update the candidate posterior responsibility at every retained state; the
+summary is written to `multiplicity_posterior.tsv.gz`. Multiplicity is not a
+canonical table field and the observed VAF is not overwritten. The chain
+output contains retained posterior draws, acceptance diagnostics, a
+representative tree, and checkpoint audit metadata. C++ resume is currently
+fail-closed until its versioned restore reader is implemented.
 
 ## Non-negotiable invariants
 
 - Purity is the ASCAT output `rho_ASCAT = 0.99`; there is no
   `tumor_dna_fraction` compatibility interface.
-- Multiplicity enters as a CN-only `multiplicity_prior`. Bulk REF/ALT counts are
-  used once in the observation likelihood.
+- Multiplicity candidates enter from a CN-constrained distribution built inside
+  the C++ loader from `major_cn`/`minor_cn`; `multiplicity_candidates` and
+  `multiplicity_prior` are not canonical table fields or external inputs.
+  Bulk REF/ALT counts are used once in the observation likelihood, which also
+  produces the per-SNV multiplicity posterior output.
 - The active inference method is a finite-K TSSB-inspired compound MCMC
   kernel: each iteration performs an all-SNV categorical Gibbs assignment
   sweep, a TSSB-shaped local-mass independence MH update, and a conditional

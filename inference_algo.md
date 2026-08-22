@@ -3,7 +3,7 @@
 更新日期：2026-08-21
 
 > [!NOTE]
-> 本文件只定義「如何從 active model 的 posterior 目標產生推理結果」。模型變數、觀測 likelihood、ASCAT purity、HP counts 與 multiplicity prior 見 [`model.md`](model.md)；canonical input 與 provenance 見 [`data.md`](data.md)；正式實驗矩陣、holdout 與 gate 見 [`experiment_workflow.md`](experiment_workflow.md)。
+> 本文件只定義「如何從 active model 的 posterior 目標產生推理結果」。模型變數、觀測 likelihood、ASCAT purity、HP counts 與 CN-constrained latent multiplicity 見 [`model.md`](model.md)；canonical input 與 provenance 見 [`data.md`](data.md)；正式實驗矩陣、holdout 與 gate 見 [`experiment_workflow.md`](experiment_workflow.md)。
 
 ```yaml
 document_id: inference_algo
@@ -29,7 +29,7 @@ implementation: inference/
 它不負責：
 
 - 從 BAM、VCF 或 ASCAT 原始檔重建 canonical table。
-- 自行重新估計 `rho_ASCAT`、major/minor CN 或 multiplicity prior。
+- 自行重新估計 `rho_ASCAT` 或 major/minor CN；C++ loader 依 CN 建立 multiplicity candidate support，並由 observation emission 自動計算其 posterior responsibility。
 - 把 PS block 加入 downstream likelihood、clone-assignment prior 或 topology constraint。
 - 修改 model 的 observation likelihood 或偷偷使用 legacy `tumor_dna_fraction`、`multiplicity_posteriors`。
 
@@ -59,6 +59,7 @@ T   = finite-K tree parents
 eta = K 個 clone local masses，sum(eta)=1
 phi = eta + descendants 的 local masses（由 T、eta 結構性推導）
 z   = 每個 SNV 的 clone assignment
+M_i = 每個 SNV 的 latent multiplicity；在 likelihood 中解析邊際化，並輸出 posterior responsibility
 ```
 
 任何替代 inference algorithm 都必須清楚宣告：
@@ -73,9 +74,9 @@ z   = 每個 SNV 的 clone assignment
 
 ## 3. 目前 active algorithm
 
-目前 C++ active sampler 使用有限 K 的 TSSB-inspired compound MCMC。完整名稱是：
+目前 C++ active sampler 使用有限 K 的 TSSB-shaped compound MCMC，並在每個 site emission 內採用 PhyloWGS-style 的 latent multiplicity marginalization。完整名稱是：
 
-> **PhyloWGS-inspired finite-K compound Metropolis-within-Gibbs MCMC sampler**
+> **finite-K compound Metropolis-within-Gibbs MCMC with CN-constrained latent multiplicity inference**
 
 它保留 PhyloWGS 的核心分工：用樹狀 local mass 產生 descendant-sum prevalence，讓 assignment／樹結構探索與 continuous mass 更新分開。這不是完整的無限 TSSB 實作；目前 K 仍由 workflow 的 `K=4/6/8` sensitivity 固定。
 
@@ -116,7 +117,7 @@ log α = log π(eta_new) - log π(eta_old)
 
 | 輸入 | 內容 |
 |---|---|
-| canonical table | 每列一個 eligible SNV：site key、bulk counts、四個 HP counts、ASCAT major/minor/total CN、`rho_ASCAT`、`multiplicity_candidates`、`multiplicity_prior`、eligibility flags |
+| canonical table | 每列一個 eligible SNV：site key、bulk counts、四個 HP counts、ASCAT major/minor/total CN、`rho_ASCAT`、eligibility flags；loader 再由 major/minor CN 內部建立 multiplicity support／weights |
 | `ChainConfig` | `seed`、finite `num_nodes`、`iterations`、`burnin`、`thin`、程式設定欄位 `purity`（對應模型的 `rho_ASCAT`）與 `checkpoint_every` |
 | workflow control | 可選 `exclude_ids`（holdout）；這不是新的 biological model parameter。C++ backend 對未完成 chain 的 `resume` 目前 fail-closed |
 
@@ -126,7 +127,8 @@ PS 不需再作為 downstream table 欄位傳入 sampler。它已在上游 LongP
 
 - `samples.jsonl.gz`：burn-in 後每個 retained draw 的 `log_posterior`、`parents`、`eta`、`phi`、`occupancy`；assignment 以 posterior summary 與 representative tree 彙整。
 - `checkpoint.json.gz`：iteration、目前 `(T, eta, z)`、random-generator state、retained draws、canonical table hash 與 ChainConfig 的 audit/state snapshot；目前不宣稱可由 C++ restore。
-- `diagnostics.json`：input/schema/hash、chain config、proposal counters、acceptance rates、posterior sample 摘要與 PS 的 upstream/holdout role。
+- `multiplicity_posterior.tsv.gz`：每個 SNV 的 candidate multiplicity、CN prior 與 retained draws 平均 posterior responsibility；這是模型輸出，不是 canonical input。
+- `diagnostics.json`：input/schema/hash、chain config、proposal counters、acceptance rates、posterior sample 摘要、multiplicity posterior artifact 與 PS 的 upstream/holdout role。
 - `representative_tree.json`：由 retained draws 選出的代表 tree、best sample 及每個 SNV 的 assignment aggregate/MAP node。
 - `chain_complete.json`：完成狀態與已發布 artifact 清單；只有 chain 完整寫出後才存在。
 
@@ -167,7 +169,7 @@ CanonicalTable loader  ->  AlgorithmRegistry  ->  Algorithm::run
 
 ## 6. 與原始 PhyloWGS 的關係與限制
 
-原始 PhyloWGS 還會使用 slice assignment、empty-node culling、stick/order 與 hyperparameter 更新；本版以固定 K 的 subtree conditional kernel 作為可驗證的第一版近似，不能宣稱已完整重現原始 PhyloWGS。
+本版採用 PhyloWGS 的核心思想：CN 約束的 latent mutation-copy state 不由外部表格指定，而是在 clone prevalence、CN 與 read-count emission 下被自動評估，再對候選 state 邊際化。原始 PhyloWGS 另外使用 CNV cellular prevalence、CNV event/tree placement、SNV-CNV timing 與更完整的 TSSB slice／stick 更新；目前 canonical schema 沒有那些欄位，因此本版不會假裝已取得這些未提供的資訊。
 
 目前限制：
 
@@ -175,3 +177,4 @@ CanonicalTable loader  ->  AlgorithmRegistry  ->  Algorithm::run
 2. 單條 chain 的 acceptance／change rate 只描述 kernel 更新行為，不是 convergence proof。
 3. 多條 chain 的 R-hat、ESS、assignment agreement、edge support 與 predictive metrics 是外層 workflow evidence，不是單條 sampler 自動保證的性質。
 4. C++ backend 目前對失敗／中斷 chain 不支援原地 restore；正式流程須建立新的 output directory。
+5. `multiplicity_posterior.tsv.gz` 是在每個 retained tree／assignment state 下計算的 emission responsibility 平均值；它不是 ASCAT 直接量測的 SNV-level truth，也不會回寫 canonical input。
