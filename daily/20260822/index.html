@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>20260822｜data.md 欄位重新審視</title>
+  <style>
+    :root { --ink:#17212b; --muted:#64748b; --line:#dbe4ee; --bg:#f6f8fb; --card:#fff; --blue:#2563eb; --green:#15803d; --amber:#b45309; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif; line-height:1.55; }
+    main { max-width:1050px; margin:0 auto; padding:34px 20px 56px; }
+    header { background:linear-gradient(135deg,#eaf2ff,#fff); border:1px solid var(--line); border-radius:20px; padding:26px; margin-bottom:18px; }
+    .eyebrow { color:var(--blue); font-weight:700; letter-spacing:.08em; font-size:.78rem; }
+    h1 { margin:6px 0 8px; font-size:clamp(1.7rem,4vw,2.5rem); line-height:1.15; }
+    h2 { margin:0 0 12px; font-size:1.2rem; }
+    .summary { margin:0; color:#334155; font-size:1.05rem; }
+    .flow { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:20px; }
+    .node { background:#fff; border:1px solid #cbd8e8; border-radius:12px; padding:10px 14px; font-weight:700; }
+    .arrow { color:var(--blue); font-size:1.4rem; font-weight:800; }
+    section { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-top:16px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    .item { border:1px solid var(--line); border-radius:12px; padding:14px; background:#fbfdff; }
+    .item h3 { margin:0 0 6px; font-size:1rem; }
+    .item p { margin:0; color:#475569; font-size:.93rem; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:.76rem; font-weight:700; margin-bottom:8px; }
+    .done { color:var(--green); background:#dcfce7; }
+    .next { color:var(--amber); background:#fef3c7; }
+    .verify { display:grid; gap:8px; margin:0; padding:0; list-style:none; }
+    .verify li { padding:9px 12px; border-left:4px solid var(--green); background:#f0fdf4; border-radius:6px; }
+    code { font-family:ui-monospace,SFMono-Regular,monospace; font-size:.9em; background:#eef2f7; padding:1px 4px; border-radius:4px; }
+    a { color:#1d4ed8; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .files { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:8px 20px; margin:0; padding-left:20px; }
+    footer { color:var(--muted); font-size:.86rem; margin-top:18px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">DAILY RESEARCH LOG · 2026-08-22</div>
+    <h1>重新審視 data.md 的模型輸入欄位</h1>
+    <p class="summary">把容易誤解的 bulk 欄位改成直接表達 reads 意義的命名，並讓文件、Python builder、C++ loader 與測試使用同一套 schema。</p>
+    <div class="flow" aria-label="今日欄位流程">
+      <div class="node">raw / intermediate counts</div><div class="arrow">→</div>
+      <div class="node">ref_reads · alt_reads · total_reads</div><div class="arrow">→</div>
+      <div class="node">C++ likelihood input</div>
+    </div>
+  </header>
+
+  <section>
+    <h2>今日完成</h2>
+    <div class="grid">
+      <article class="item"><span class="badge done">完成</span><h3>欄位語意重新命名</h3><p><code>bulk_ref</code> → <code>ref_reads</code>、<code>bulk_alt</code> → <code>alt_reads</code>、<code>bulk_depth</code> → <code>total_reads</code>。</p></article>
+      <article class="item"><span class="badge done">完成</span><h3>Canonical schema 對齊</h3><p>required columns 固定為 18 欄，schema 升級為 <code>hcc1395_tumor_tree_input/v4</code>。</p></article>
+      <article class="item"><span class="badge done">完成</span><h3>模型介面同步</h3><p>Python <code>SiteObservation</code>、builder、diagnostics 與 C++ <code>Site</code> 都改用新欄位。</p></article>
+      <article class="item"><span class="badge done">完成</span><h3>資料邊界釐清</h3><p>multiplicity 不再是 table input；由 C++ loader 依 CN 內部建立並在 likelihood 中邊際化。</p></article>
+    </div>
+  </section>
+
+  <section>
+    <h2>目前欄位分工</h2>
+    <div class="grid">
+      <div class="item"><h3>reads observation</h3><p><code>ref_reads</code>、<code>alt_reads</code>、<code>total_reads</code>，且 <code>total_reads = ref_reads + alt_reads</code>。</p></div>
+      <div class="item"><h3>haplotype evidence</h3><p><code>hp1_1_*</code>、<code>hp2_1_*</code>，提供 HP1-1／HP2-1 的 REF/ALT counts。</p></div>
+      <div class="item"><h3>CN 與 purity</h3><p><code>major_cn</code>、<code>minor_cn</code>、<code>total_cn</code> 與 <code>rho_ASCAT</code>。</p></div>
+      <div class="item"><h3>eligibility</h3><p><code>model_include</code> 與 <code>model_status</code> 決定 SNV 是否進入 likelihood。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>主要產出</h2>
+    <ul class="files">
+      <li><a href="../../data.md">data.md</a>：canonical input 與 raw/intermediate → model bundle 說明。</li>
+      <li><a href="../../model.md">model.md</a>：counts、purity、CN 與 latent multiplicity 的模型角色。</li>
+      <li><a href="../../experiment_workflow.md">experiment_workflow.md</a>：v4 input 重建與實驗流程紀錄。</li>
+      <li><a href="../../tumor_tree_pipeline/contracts.py">contracts.py</a>：Python schema contract。</li>
+      <li><a href="../../tumor_tree_pipeline/input_table.py">input_table.py</a>：中間資料建成 canonical table。</li>
+      <li><a href="../../inference/src/model.cpp">model.cpp</a>：C++ loader 與 likelihood 欄位介面。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>驗證結果</h2>
+    <ul class="verify">
+      <li>CMake Release build、CTest smoke：<strong>通過</strong></li>
+      <li>Python pipeline tests：<strong>30/30 通過</strong></li>
+      <li>C++ black-box contract test：<strong>通過</strong></li>
+      <li>Python syntax compile 與 <code>git diff --check</code>：<strong>通過</strong></li>
+      <li>active code/docs 檢查：舊欄位只保留在「拒絕 v3 舊 schema」的負向測試。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>狀態與下一步</h2>
+    <div class="grid">
+      <div class="item"><span class="badge done">完成</span><h3>欄位契約更新</h3><p>文件、builder、C++ backend 與 fixture 已一致。</p></div>
+      <div class="item"><span class="badge next">待補資料</span><h3>重建正式 input bundle</h3><p>既有 v3／舊欄位的 canonical artifact 不沿用，正式實驗前需重新建表並產生新 manifest。</p></div>
+      <div class="item"><span class="badge next">尚未執行</span><h3>正式長鏈 inference</h3><p>本日只完成欄位契約與測試；正式 MCMC 結果不在本頁宣稱。</p></div>
+    </div>
+  </section>
+
+  <footer>本頁只記錄今日可由檔案與測試結果支持的工作；歷史 output、daily 舊頁面與外部來源不視為今日 active input。</footer>
+</main>
+</body>
+</html>
