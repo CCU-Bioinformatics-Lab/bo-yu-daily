@@ -251,7 +251,7 @@
       <article class="algorithm-card candidate">
         <span class="tag candidate">CANDIDATE · 規格而已</span>
         <h3>Rao–Blackwellized annealed SMC</h3>
-        <p>讓一群可平行運作的候選答案（particles）從簡單起點逐步靠近完整 posterior，專門面對多種可能樹形。</p>
+        <p>讓一群可平行運作的候選答案從簡單起點逐步靠近完整 posterior，專門面對多種可能樹形。</p>
       </article>
     </div>
     <div class="notice"><strong>不可混用：</strong>目前不能把 SMC 描述成已完成的新推理結果；在程式、測試與 promotion gates 全部通過前，它只是一份候選演算法藍圖。</div>
@@ -278,7 +278,7 @@
           <path d="M72 48h36" stroke="#ef4444" stroke-width="4" stroke-dasharray="6 6"/>
         </svg>
         <h3>答案可能分成多群</h3>
-        <p>好幾種樹都可能合理，而且彼此距離很遠。一群 particles 比單一路徑更有機會保留多種候選。</p>
+        <p>好幾種樹都可能合理，而且彼此距離很遠。一群候選答案比單一路徑更有機會保留多種可能。</p>
       </article>
       <article class="reason">
         <svg viewBox="0 0 180 92" aria-hidden="true">
@@ -293,7 +293,7 @@
 
   <section aria-labelledby="flow-title">
     <h2 id="flow-title">候選 SMC：六步走到完整 posterior</h2>
-    <p class="section-note">像從容易的練習題慢慢加難度。β 表示目前用了多少真實資料的評分力量：從 0 開始，走到 1 才是完整 posterior。</p>
+    <p class="section-note">先用簡單規則找候選答案，再一步一步加入真正的定序資料。β=0 代表還沒用資料；β=1 代表已經用完整資料來選答案。</p>
     <figure class="flow" aria-label="候選 SMC 從 prior 到 posterior 的六步流程">
       <article class="step">
         <span class="step-no">01 · 出發</span>
@@ -301,7 +301,7 @@
           <circle cx="35" cy="50" r="10" fill="#2563eb"/><circle cx="70" cy="28" r="10" fill="#0f766e"/><circle cx="105" cy="56" r="10" fill="#f59e0b"/><circle cx="142" cy="32" r="10" fill="#64748b"/>
         </svg>
         <h3>從 prior 產生候選群</h3>
-        <p>每個 particle 就是一組候選樹與 clone 比例。此時還沒有完整資料壓力。</p>
+        <p>每個候選答案就是一組候選樹與 clone 比例。此時還沒有完整資料壓力。</p>
       </article>
       <article class="step">
         <span class="step-no">02 · 加一點難度</span>
@@ -310,7 +310,7 @@
           <path d="M94 20v25" stroke="#0f766e" stroke-width="4" stroke-linecap="round"/>
         </svg>
         <h3>自動提高 β</h3>
-        <p>系統依 particles 的有效多樣性決定下一步，不用人工寫死每一個溫度。</p>
+        <p>系統看這批候選答案還剩多少差異，再決定下一步，不用人工寫死每一個溫度。</p>
       </article>
       <article class="step">
         <span class="step-no">03 · 重新打分</span>
@@ -319,7 +319,7 @@
           <path d="M24 74h130" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
         </svg>
         <h3>依資料更新權重</h3>
-        <p>越能解釋 REF／ALT reads、CN 與 purity 的粒子，就得到越高權重。</p>
+        <p>越能解釋 REF／ALT reads、CN 與 purity 的候選答案，就得到越高權重。</p>
       </article>
       <article class="step">
         <span class="step-no">04 · 重新配置候選</span>
@@ -328,7 +328,7 @@
           <path d="M47 28h34M47 62h34M99 28h34M99 62h34" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
         </svg>
         <h3>必要時重新取樣</h3>
-        <p>當有效粒子太少，就複製高權重、淘汰低權重候選；下一步再把重複候選往不同方向移動。</p>
+        <p>當大多數候選答案都變得重複，就保留較能解釋資料的答案；下一步再把重複答案往不同方向移動。</p>
       </article>
       <article class="step">
         <span class="step-no">05 · 再次探索</span>
@@ -338,7 +338,7 @@
           <path d="M138 26c20 9 20 35 0 44" stroke="#2563eb" stroke-width="4" fill="none" stroke-linecap="round"/>
         </svg>
         <h3>調整比例與樹形</h3>
-        <p>用合法更新移動 clone 比例，也做局部與全域分支跳躍，打散重複 particles。</p>
+        <p>用合法更新移動 clone 比例，也做局部與全域分支跳躍，打散重複的候選答案。</p>
       </article>
       <article class="step">
         <span class="step-no">06 · 抵達</span>
@@ -381,11 +381,11 @@
         </article>
         <article class="plain-item">
           <strong>全部評分，不只抽中一個</strong>
-          <p>模型比較每個「clone × multiplicity」組合能多好地解釋 reads，再把所有候選加總成該 particle 的分數。</p>
+          <p>模型比較每個「clone × multiplicity」組合能多好地解釋 reads，再把所有候選加總成該候選答案的分數。</p>
         </article>
         <article class="plain-item">
           <strong>最後仍然能輸出歸屬機率</strong>
-          <p>把保留下來的 particles 再加權平均，就得到 SNV→clone posterior 與 multiplicity posterior。</p>
+          <p>把保留下來的候選答案再加權平均，就得到 SNV→clone posterior 與 multiplicity posterior。</p>
         </article>
       </div>
     </div>
@@ -432,7 +432,7 @@
   </section>
 
   <footer>
-    本頁是 <a href="inference_algo.md">inference_algo.md</a> 的白話視覺摘要；模型定義見 <a href="model.md">model.md</a>，資料介面見 <a href="data.md">data.md</a>，實驗 gate 見 <a href="experiment_workflow.md">experiment_workflow.md</a>。
+    本頁是 <a href="../../inference_algo.md">inference_algo.md</a> 的白話視覺摘要；模型定義見 <a href="../../model.md">model.md</a>，資料介面見 <a href="../../data.md">data.md</a>，實驗 gate 見 <a href="../../experiment_workflow.md">experiment_workflow.md</a>。
   </footer>
 </main>
 </body>
