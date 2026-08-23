@@ -1,4 +1,4 @@
-# HCC1395 LongPhase-Clone 模型設計
+# HCC1395 腫瘤演化樹建立
 
 更新日期：2026-08-22
 
@@ -8,7 +8,7 @@
 ```yaml
 document_id: model
 document_type: model_specification
-model_name: LongPhase-Clone finite-K candidate tree
+model_name: tumor_evolutionary_tree_construction
 sample: HCC1395
 implementation: tumor_tree_pipeline
 links:
