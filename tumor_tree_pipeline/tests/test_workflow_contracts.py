@@ -276,7 +276,7 @@ class WorkflowContractTests(unittest.TestCase):
             ]
             self.assertEqual(len(diagnostics), 2)
             for payload in diagnostics:
-                self.assertEqual(payload["model"], "finite_K_tssb_inspired")
+                self.assertEqual(payload["model"], "finite_K_tssb_shaped_working_prior")
                 self.assertEqual(
                     set(payload["counters"]),
                     {

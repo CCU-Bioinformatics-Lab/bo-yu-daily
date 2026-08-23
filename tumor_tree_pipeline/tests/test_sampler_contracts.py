@@ -12,6 +12,7 @@ import numpy as np
 from tumor_tree_pipeline.contracts import MODEL_REQUIRED_COLUMNS
 from tumor_tree_pipeline.model import (
     CanonicalInputError,
+    DEFAULT_ERROR_RATE,
     bulk_log_likelihood,
     compile_model,
     likelihood_matrix,
@@ -152,6 +153,58 @@ class CanonicalModelContracts(unittest.TestCase):
             )
             self.assertAlmostEqual(site_log_likelihood(site, phi), expected, places=10)
             self.assertFalse(hasattr(site, "ps"))
+
+    def test_model_a_ignores_hp_counts_after_schema_validation(self):
+        """HP counts remain parsed/conserved but are not Model A evidence.
+
+        The two rows have identical bulk/CN/purity observations.  Their HP
+        counts differ only in the REF/ALT allocation among tagged reads; both
+        layouts remain valid subsets of the same bulk counts.  Model A must
+        therefore produce the same site likelihood and latent multiplicity
+        posterior at every tested clone prevalence.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            baseline_path = root / "baseline.tsv.gz"
+            hp_changed_path = root / "hp_changed.tsv.gz"
+            baseline = canonical_row()
+            hp_changed = dict(baseline)
+            hp_changed.update(
+                {
+                    "hp1_1_ref": "1",
+                    "hp1_1_alt": "4",
+                    "hp2_1_ref": "4",
+                    "hp2_1_alt": "0",
+                }
+            )
+            write_table(baseline_path, [baseline])
+            write_table(hp_changed_path, [hp_changed])
+
+            baseline_data = load_model_table(baseline_path, 0.99)
+            changed_data = load_model_table(hp_changed_path, 0.99)
+            baseline_site = baseline_data.sites[0]
+            changed_site = changed_data.sites[0]
+            self.assertEqual(
+                (baseline_site.ref_reads, baseline_site.alt_reads,
+                 baseline_site.total_cn, baseline_site.purity),
+                (changed_site.ref_reads, changed_site.alt_reads,
+                 changed_site.total_cn, changed_site.purity),
+            )
+            for phi in (0.05, 0.43, 1.0):
+                self.assertAlmostEqual(
+                    site_log_likelihood(baseline_site, phi),
+                    site_log_likelihood(changed_site, phi),
+                    places=12,
+                )
+                np.testing.assert_allclose(
+                    site_multiplicity_posterior(baseline_site, phi),
+                    site_multiplicity_posterior(changed_site, phi),
+                    rtol=0.0,
+                    atol=1e-12,
+                )
+
+    def test_model_a_uses_fixed_error_rate_baseline(self):
+        self.assertEqual(DEFAULT_ERROR_RATE, 0.005)
 
     def test_vectorized_production_likelihood_matches_scalar_contract(self):
         with tempfile.TemporaryDirectory() as directory:
