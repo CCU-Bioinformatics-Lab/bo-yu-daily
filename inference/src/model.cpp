@@ -190,51 +190,10 @@ double log_binomial(int ref, int alt, double probability) {
            static_cast<double>(ref) * std::log1p(-probability);
 }
 
-double log_multinomial3(const int alt0, const int alt1, const int alt2,
-                        const double weight0, const double weight1, const double weight2) {
-    const double total_weight = weight0 + weight1 + weight2;
-    if (!(total_weight > 0.0)) return -std::numeric_limits<double>::infinity();
-    double probability0 = std::max(1e-12, weight0 / total_weight);
-    double probability1 = std::max(1e-12, weight1 / total_weight);
-    double probability2 = std::max(1e-12, weight2 / total_weight);
-    const double normalizer = probability0 + probability1 + probability2;
-    probability0 /= normalizer;
-    probability1 /= normalizer;
-    probability2 /= normalizer;
-    const std::int64_t total = static_cast<std::int64_t>(alt0) + static_cast<std::int64_t>(alt1) + static_cast<std::int64_t>(alt2);
-    double result = std::lgamma(static_cast<double>(total) + 1.0);
-    result -= std::lgamma(static_cast<double>(alt0) + 1.0);
-    result -= std::lgamma(static_cast<double>(alt1) + 1.0);
-    result -= std::lgamma(static_cast<double>(alt2) + 1.0);
-    result += static_cast<double>(alt0) * std::log(probability0);
-    result += static_cast<double>(alt1) * std::log(probability1);
-    result += static_cast<double>(alt2) * std::log(probability2);
-    return result;
-}
-
 double expected_alt_probability(const Site& site, double phi, int multiplicity) {
     const double denominator = (1.0 - site.purity) * 2.0 + site.purity * site.total_cn;
     const double cellular_fraction = site.purity * phi * static_cast<double>(multiplicity) / denominator;
     return std::clamp(kErrorRate + (1.0 - 2.0 * kErrorRate) * cellular_fraction, 1e-12, 1.0 - 1e-12);
-}
-
-double conditional_hp(const Site& site, double q_bulk, int side) {
-    const std::int64_t tagged = static_cast<std::int64_t>(site.hp1_1_ref) + site.hp1_1_alt + site.hp2_1_ref + site.hp2_1_alt;
-    if (tagged == 0) return 0.0;
-    const double tag_fraction = std::clamp(static_cast<double>(tagged) / site.total_reads, 1e-9, 1.0 - 1e-9);
-    const double half_tag = tag_fraction * 0.5;
-    const double untagged = 1.0 - tag_fraction;
-    const int untag_alt = site.alt_reads - site.hp1_1_alt - site.hp2_1_alt;
-    const int untag_ref = site.ref_reads - site.hp1_1_ref - site.hp2_1_ref;
-    const double hp1_q = side == 0 ? q_bulk : kErrorRate;
-    const double hp2_q = side == 0 ? kErrorRate : q_bulk;
-    return log_multinomial3(
-               site.hp1_1_alt, site.hp2_1_alt, untag_alt,
-               half_tag * hp1_q, half_tag * hp2_q, untagged * q_bulk) +
-           log_multinomial3(
-               site.hp1_1_ref, site.hp2_1_ref, untag_ref,
-               half_tag * (1.0 - hp1_q), half_tag * (1.0 - hp2_q),
-               untagged * (1.0 - q_bulk));
 }
 
 std::vector<double> multiplicity_log_components(const Site& site, double phi) {
@@ -247,12 +206,11 @@ std::vector<double> multiplicity_log_components(const Site& site, double phi) {
         const int multiplicity = site.multiplicity_candidates[i];
         const double q_bulk = expected_alt_probability(site, phi, multiplicity);
         const double bulk = log_binomial(site.ref_reads, site.alt_reads, q_bulk);
-        const double hp0 = conditional_hp(site, q_bulk, 0);
-        const double hp1 = conditional_hp(site, q_bulk, 1);
-        const double hp_top = std::max(hp0, hp1);
-        const double hp = std::log(0.5) + hp_top +
-            std::log(std::exp(hp0 - hp_top) + std::exp(hp1 - hp_top));
-        components.push_back(std::log(site.multiplicity_prior[i]) + bulk + hp);
+        // Model A deliberately uses the bulk count once.  HP counts are
+        // loaded and conservation-checked above, but their tagged reads are
+        // derived from the same ALT evidence and require a separate Model B
+        // generative/error model before they can affect the primary target.
+        components.push_back(std::log(site.multiplicity_prior[i]) + bulk);
     }
     return components;
 }
