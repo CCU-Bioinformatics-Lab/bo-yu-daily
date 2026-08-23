@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HCC1395 Experiment Workflow</title>
+  <style>
+    :root {
+      --ink:#172033; --muted:#5f6b7a; --line:#d9e1ea; --paper:#f7f9fc;
+      --blue:#2563eb; --blue-soft:#eaf1ff; --teal:#087f73; --teal-soft:#e5f7f2;
+      --amber:#b45309; --amber-soft:#fff4df; --red:#b42318; --red-soft:#fff0ee;
+      --violet:#6d45b8; --violet-soft:#f1ecff; --shadow:0 16px 42px rgba(23,32,51,.08);
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif; line-height:1.62; }
+    main { width:min(1120px,calc(100% - 32px)); margin:0 auto; padding:28px 0 56px; }
+    header, section, footer { background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); }
+    header { padding:36px clamp(22px,5vw,60px); border-radius:24px; overflow:hidden; position:relative; }
+    header::after { content:""; position:absolute; width:260px; height:260px; border-radius:50%; background:var(--blue-soft); right:-90px; top:-100px; z-index:0; }
+    header > * { position:relative; z-index:1; }
+    .eyebrow { margin:0 0 8px; color:var(--blue); font-size:.76rem; font-weight:800; letter-spacing:.14em; }
+    h1 { margin:0; max-width:760px; font-size:clamp(2rem,5vw,4rem); line-height:1.08; letter-spacing:-.04em; }
+    .lead { max-width:760px; margin:18px 0 22px; color:var(--muted); font-size:clamp(1rem,2vw,1.2rem); }
+    .status-row { display:flex; flex-wrap:wrap; gap:10px; }
+    .status { display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:7px 12px; font-size:.84rem; font-weight:750; }
+    .status::before { content:""; width:9px; height:9px; border-radius:50%; background:currentColor; }
+    .active { color:var(--teal); background:var(--teal-soft); }
+    .candidate { color:var(--violet); background:var(--violet-soft); }
+    .diagnostic { color:var(--amber); background:var(--amber-soft); }
+    section { margin-top:22px; padding:28px clamp(18px,4vw,42px); border-radius:20px; }
+    h2 { margin:0; font-size:clamp(1.35rem,2.6vw,2rem); letter-spacing:-.025em; }
+    h3 { margin:0; font-size:1.04rem; line-height:1.3; }
+    p { margin:8px 0 0; }
+    .section-note { max-width:800px; margin:8px 0 22px; color:var(--muted); }
+    .small { color:var(--muted); font-size:.88rem; }
+    code { padding:2px 5px; border-radius:5px; background:#eef2f7; font-size:.88em; overflow-wrap:anywhere; }
+    .flow-wrap { border:1px solid var(--line); border-radius:16px; padding:16px; background:#fbfdff; }
+    .flow-svg { display:block; width:100%; height:auto; }
+    .flow-labels { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-top:12px; }
+    .flow-label { text-align:center; font-size:.9rem; font-weight:750; }
+    .flow-label span { display:block; color:var(--muted); font-size:.78rem; font-weight:500; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+    .card { border:1px solid var(--line); border-radius:15px; padding:18px; background:#fff; }
+    .card.blue { background:var(--blue-soft); border-color:#cbdcff; }
+    .card.teal { background:var(--teal-soft); border-color:#bce8dd; }
+    .card.amber { background:var(--amber-soft); border-color:#f4d6a0; }
+    .card.red { background:var(--red-soft); border-color:#f5c9c4; }
+    .card.violet { background:var(--violet-soft); border-color:#d8ccfb; }
+    .icon { width:58px; height:58px; margin-bottom:10px; }
+    .icon svg { display:block; width:100%; height:100%; }
+    .tag { display:inline-block; margin-bottom:8px; color:var(--muted); font-size:.73rem; font-weight:800; letter-spacing:.09em; }
+    .callout { margin-top:16px; padding:14px 16px; border-left:4px solid var(--blue); border-radius:10px; background:#f4f7ff; }
+    .callout.warn { border-left-color:var(--amber); background:var(--amber-soft); }
+    .callout.danger { border-left-color:var(--red); background:var(--red-soft); }
+    .callout strong { display:block; }
+    .stages { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; position:relative; }
+    .stage { position:relative; padding:18px 16px 16px; border:1px solid var(--line); border-radius:15px; background:#fff; }
+    .stage:not(:last-child)::after { content:"→"; position:absolute; right:-19px; top:42%; color:#9aa7b7; font-size:1.5rem; font-weight:800; z-index:2; }
+    .stage-no { display:inline-grid; place-items:center; width:30px; height:30px; border-radius:50%; margin-bottom:12px; color:#fff; background:var(--blue); font-size:.8rem; font-weight:850; }
+    .stage:nth-child(2) .stage-no { background:var(--teal); }
+    .stage:nth-child(3) .stage-no { background:var(--violet); }
+    .stage:nth-child(4) .stage-no { background:var(--amber); }
+    .stage ul, .compact-list { margin:10px 0 0; padding-left:18px; color:var(--muted); font-size:.9rem; }
+    .stage .metric { margin-top:12px; color:var(--ink); font-size:.88rem; font-weight:750; }
+    .holdout-layout { display:grid; grid-template-columns:1.05fr .95fr; gap:18px; align-items:stretch; }
+    .holdout-svg { width:100%; height:auto; display:block; border:1px solid var(--line); border-radius:15px; background:#fbfdff; }
+    .holdout-cards { display:grid; gap:10px; }
+    .holdout-card { display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:start; padding:14px; border:1px solid var(--line); border-radius:13px; }
+    .holdout-card .dot { width:13px; height:13px; margin-top:5px; border-radius:50%; background:var(--blue); }
+    .holdout-card:nth-child(2) .dot { background:var(--teal); }
+    .holdout-card:nth-child(3) .dot { background:var(--amber); }
+    .gate-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .gate { padding:16px; border:1px solid var(--line); border-radius:14px; background:#fbfdff; }
+    .gate .check { color:var(--teal); font-size:1.35rem; font-weight:900; line-height:1; }
+    .gate p { color:var(--muted); font-size:.88rem; }
+    .output-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .output-card { border:1px solid var(--line); border-radius:15px; padding:18px; }
+    .output-card h3 { display:flex; align-items:center; gap:8px; }
+    .output-card h3::before { content:""; width:11px; height:11px; border-radius:50%; background:var(--teal); }
+    .output-card.audit h3::before { background:var(--blue); }
+    .output-card ul { margin:10px 0 0; padding-left:18px; color:var(--muted); font-size:.9rem; }
+    .limitation { margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .failure { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
+    .trace { display:grid; gap:8px; }
+    .trace-step { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:.9rem; }
+    .trace-step b { display:grid; place-items:center; min-width:28px; height:28px; border-radius:8px; color:#fff; background:var(--blue); font-size:.76rem; }
+    .trace-step:nth-child(2) b { background:var(--teal); }
+    .trace-step:nth-child(3) b { background:var(--amber); }
+    .trace-step:nth-child(4) b { background:var(--red); }
+    .footer-links { display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:18px; }
+    footer { margin-top:22px; padding:18px 22px; border-radius:16px; color:var(--muted); font-size:.88rem; }
+    a { color:var(--blue); font-weight:700; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    @media (max-width:900px) {
+      main { width:min(100% - 22px,760px); padding-top:12px; }
+      .grid-3, .gate-grid { grid-template-columns:repeat(2,1fr); }
+      .holdout-layout, .failure { grid-template-columns:1fr; }
+      .flow-labels { grid-template-columns:repeat(3,1fr); }
+      .stages { grid-template-columns:1fr 1fr; }
+      .stage:not(:last-child)::after { display:none; }
+      .stage:nth-child(1)::after, .stage:nth-child(3)::after { display:block; right:50%; top:auto; bottom:-27px; transform:translateX(50%); content:"↓"; }
+    }
+    @media (max-width:620px) {
+      main { width:min(100% - 14px,520px); }
+      header, section { border-radius:16px; padding:22px 16px; }
+      .grid-2, .grid-3, .gate-grid, .output-grid, .limitation, .stages { grid-template-columns:1fr; }
+      .flow-wrap { padding:10px; }
+      .flow-labels { grid-template-columns:1fr 1fr; gap:8px; }
+      .flow-label { font-size:.82rem; }
+      .stage:nth-child(1)::after, .stage:nth-child(3)::after { display:none; }
+      .stage:not(:last-child)::after { display:block; right:50%; top:auto; bottom:-28px; transform:translateX(50%); content:"↓"; }
+      .stage { margin-bottom:16px; }
+      .stage:last-child { margin-bottom:0; }
+      .holdout-svg { min-height:230px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">HCC1395 · EXPERIMENT WORKFLOW</p>
+    <h1>把實驗想成一條有檢查站的生產線</h1>
+    <p class="lead">資料先整理成固定格式，再交給模型與推理演算法。每一站都留下紀錄；任何一站出錯，就停止並指出錯在哪裡。</p>
+    <div class="status-row" aria-label="workflow status">
+      <span class="status active">Active：finite-K compound MCMC</span>
+      <span class="status candidate">Candidate：SMC 尚未執行</span>
+      <span class="status diagnostic">結果：gates 通過前都是 diagnostic-only</span>
+    </div>
+  </header>
+
+  <section aria-labelledby="map-title">
+    <h2 id="map-title">一眼看懂整條路</h2>
+    <p class="section-note">Workflow 負責安排順序與檢查；它不改寫 data、model、inference 或 output 的定義。</p>
+    <div class="flow-wrap">
+      <svg class="flow-svg" viewBox="0 0 1000 190" role="img" aria-labelledby="flow-title flow-desc">
+        <title id="flow-title">從原始資料到候選腫瘤演化樹的流程</title>
+        <desc id="flow-desc">五個階段依序連接：原始來源、固定格式資料、模型、MCMC 推理、輸出與檢查。</desc>
+        <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#94a3b8"/></marker></defs>
+        <path d="M180 86H255M380 86H455M580 86H655M780 86H855" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/>
+        <rect x="35" y="45" width="145" height="82" rx="18" fill="#eaf1ff" stroke="#9bb7ff" stroke-width="2"/>
+        <rect x="255" y="45" width="125" height="82" rx="18" fill="#e5f7f2" stroke="#8dd6c7" stroke-width="2"/>
+        <rect x="455" y="45" width="125" height="82" rx="18" fill="#fff4df" stroke="#f1c979" stroke-width="2"/>
+        <rect x="655" y="45" width="125" height="82" rx="18" fill="#f1ecff" stroke="#c6b5f4" stroke-width="2"/>
+        <rect x="855" y="45" width="110" height="82" rx="18" fill="#e5f7f2" stroke="#8dd6c7" stroke-width="2"/>
+        <circle cx="108" cy="86" r="18" fill="#2563eb"/><path d="M98 86h20M108 76v20" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+        <path d="M295 70v32M280 86h30" stroke="#087f73" stroke-width="5" stroke-linecap="round"/><circle cx="295" cy="86" r="22" fill="none" stroke="#087f73" stroke-width="3"/>
+        <path d="M495 105V67M495 86h35M530 86l18-16M530 86l18 16" stroke="#b45309" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="698" cy="86" r="25" fill="none" stroke="#6d45b8" stroke-width="5"/><path d="M698 65v21l14 10" stroke="#6d45b8" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M890 103l18-20 14 12 22-30" stroke="#087f73" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="flow-labels">
+        <div class="flow-label">原始來源<span>BAM / VCF / ASCAT</span></div>
+        <div class="flow-label">固定格式<span>每個 SNV 一列</span></div>
+        <div class="flow-label">模型<span>計算哪個答案合理</span></div>
+        <div class="flow-label">推理<span>搜尋候選樹</span></div>
+        <div class="flow-label">結果與檢查<span>gates / trace</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="input-title">
+    <h2 id="input-title">第一站：資料先整理好</h2>
+    <p class="section-note">C++ 不直接讀 BAM 或 VCF。上游先把資料整理成固定的 canonical input bundle。</p>
+    <div class="grid-3">
+      <article class="card blue">
+        <div class="icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 64 64"><rect x="9" y="15" width="46" height="34" rx="7" fill="#2563eb"/><path d="M18 25h28M18 33h21M18 41h14" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></div>
+        <span class="tag">UPSTREAM SOURCES</span>
+        <h3>BAM、VCF、ASCAT</h3>
+        <p>提供 reads、SNV 清單、copy number 與 `rho_ASCAT=0.99`。</p>
+        <p class="small">指定 tagged BAM：<code>hcc1395_old_tagging.bam</code></p>
+      </article>
+      <article class="card teal">
+        <div class="icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 64 64"><path d="M13 18h38M13 32h38M13 46h38" stroke="#087f73" stroke-width="6" stroke-linecap="round"/><circle cx="22" cy="18" r="5" fill="#fff" stroke="#087f73" stroke-width="3"/><circle cx="40" cy="32" r="5" fill="#fff" stroke="#087f73" stroke-width="3"/><circle cx="30" cy="46" r="5" fill="#fff" stroke="#087f73" stroke-width="3"/></svg></div>
+        <span class="tag">DERIVED ARTIFACTS</span>
+        <h3>先變成中間表</h3>
+        <p>整理 bulk counts、HP counts、HP QC 與 site-CNV QC。</p>
+        <p class="small">每列開始對應一個 SNV。</p>
+      </article>
+      <article class="card amber">
+        <div class="icon" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 64 64"><path d="M13 15h38v34H13z" fill="none" stroke="#b45309" stroke-width="4"/><path d="M20 24h24M20 32h24M20 40h16" stroke="#b45309" stroke-width="4" stroke-linecap="round"/><path d="M44 45l7 7" stroke="#b45309" stroke-width="4" stroke-linecap="round"/></svg></div>
+        <span class="tag">CANONICAL BUNDLE</span>
+        <h3>固定的模型介面</h3>
+        <p><code>likelihood_input.tsv.gz</code> 加上 QA 與 manifest，才能交給模型。</p>
+        <p class="small">Multiplicity 不在表格裡，由 loader 內部建立。</p>
+      </article>
+    </div>
+    <div class="callout"><strong>HP/PS 的位置</strong>HP 欄位必須存在於 schema，也會做 QC；但目前 HP/PS 不進 Model A 的 primary likelihood。PS 只協助 phase provenance 與 grouped holdout。</div>
+  </section>
+
+  <section aria-labelledby="stage-title">
+    <h2 id="stage-title">第二站：先小跑，再正式跑</h2>
+    <p class="section-note">每一階段都像不同難度的試跑。前面失敗，就不浪費時間跑後面的設定。</p>
+    <div class="stages">
+      <article class="stage"><span class="stage-no">1</span><h3>Smoke</h3><p>先看機器能不能正確讀資料。</p><ul><li>20 sites</li><li>16 eligible</li><li>2 chains</li></ul><p class="metric">不判定收斂或生物學答案</p></article>
+      <article class="stage"><span class="stage-no">2</span><h3>Pilot</h3><p>比較不同 K 與 chains 的行為。</p><ul><li>K = 4 / 6 / 8</li><li>每個 K：4 chains</li><li>300 iterations</li></ul><p class="metric">R-hat ≤ 1.10 只是試跑訊號</p></article>
+      <article class="stage"><span class="stage-no">3</span><h3>Formal main</h3><p>主分析固定條件。</p><ul><li>K = 6</li><li>rho = 0.99</li><li>4 chains</li><li>1500 / 1000 burn-in</li></ul><p class="metric">三種 grouped holdout</p></article>
+      <article class="stage"><span class="stage-no">4</span><h3>Sensitivity</h3><p>主設定通過後才檢查穩定性。</p><ul><li>K = 4 / 8</li><li>rho = 0.97 / 0.95</li></ul><p class="metric">不是新的 ASCAT purity</p></article>
+    </div>
+  </section>
+
+  <section aria-labelledby="holdout-title">
+    <h2 id="holdout-title">第三站：把一部分資料暫時藏起來</h2>
+    <p class="section-note">Holdout 就像考試：先不讓模型看某一群 SNV，最後檢查它能不能預測回來。</p>
+    <div class="holdout-layout">
+      <svg class="holdout-svg" viewBox="0 0 600 300" role="img" aria-labelledby="hold-title hold-desc">
+        <title id="hold-title">Grouped holdout 分組方式</title>
+        <desc id="hold-desc">訓練資料分成三種評估分組：PS block、chromosome、ASCAT segment，並在最後回到 predictive check。</desc>
+        <defs><marker id="hold-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#94a3b8"/></marker></defs>
+        <rect x="35" y="105" width="125" height="78" rx="16" fill="#eaf1ff" stroke="#9bb7ff" stroke-width="2"/>
+        <path d="M160 144H230M160 144L230 76M160 144L230 212" stroke="#94a3b8" stroke-width="4" fill="none" marker-end="url(#hold-arrow)"/>
+        <rect x="230" y="38" width="135" height="66" rx="14" fill="#eaf1ff" stroke="#9bb7ff" stroke-width="2"/>
+        <rect x="230" y="111" width="135" height="66" rx="14" fill="#e5f7f2" stroke="#8dd6c7" stroke-width="2"/>
+        <rect x="230" y="184" width="135" height="66" rx="14" fill="#fff4df" stroke="#f1c979" stroke-width="2"/>
+        <path d="M365 71H435M365 144H435M365 217H435" stroke="#94a3b8" stroke-width="4" marker-end="url(#hold-arrow)"/>
+        <rect x="435" y="105" width="125" height="78" rx="16" fill="#f1ecff" stroke="#c6b5f4" stroke-width="2"/>
+        <circle cx="98" cy="144" r="23" fill="#2563eb"/><path d="M86 144h24M98 132v24" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="495" cy="144" r="23" fill="#6d45b8"/><path d="M484 144h22M495 133v22" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <div class="holdout-cards">
+        <article class="holdout-card"><span class="dot"></span><div><h3>PS grouped</h3><p>同一 phase block 不拆開。沒有 PS 的 SNV 退回 singleton。</p></div></article>
+        <article class="holdout-card"><span class="dot"></span><div><h3>Chromosome grouped</h3><p>整條 chromosome 當作一組，檢查跨染色體的預測表現。</p></div></article>
+        <article class="holdout-card"><span class="dot"></span><div><h3>ASCAT segment grouped</h3><p>以 CN segment 分組，檢查 copy-number context 改變時是否仍穩定。</p></div></article>
+      </div>
+    </div>
+    <div class="callout warn"><strong>重要邊界</strong>Holdout 是 workflow 的評估控制，不是新的 biological parameter；PS 也不會因此進入 topology likelihood。</div>
+  </section>
+
+  <section aria-labelledby="gate-title">
+    <h2 id="gate-title">第四站：結果要通過哪些檢查？</h2>
+    <p class="section-note">「程式跑完」和「結果值得繼續看」是兩件事。</p>
+    <div class="gate-grid">
+      <article class="gate"><div class="check">✓</div><h3>資料正確</h3><p>schema、counts、CN、purity 與 eligibility 都通過。</p></article>
+      <article class="gate"><div class="check">✓</div><h3>鏈彼此一致</h3><p>用 CCF/phi ranks 看 R-hat 與 ESS。</p></article>
+      <article class="gate"><div class="check">✓</div><h3>樹與分配穩定</h3><p>看 edge support 與 SNV assignment agreement。</p></article>
+      <article class="gate"><div class="check">✓</div><h3>能預測藏起來的資料</h3><p>看 holdout coverage 與 predictive log score。</p></article>
+    </div>
+    <div class="callout danger"><strong>還沒有自動完成的事</strong>完整 prior/posterior predictive、C++ sampler restore、candidate SMC diagnostics、CNA event 到 tree node 的證明，以及 single-cell lineage validation，現在都不能假設已由 wrapper 完成。</div>
+  </section>
+
+  <section aria-labelledby="output-title">
+    <h2 id="output-title">第五站：會留下什麼？</h2>
+    <p class="section-note">結果檔案和檢查檔案分開看，才不會把診斷數字誤認成生物學真相。</p>
+    <div class="output-grid">
+      <article class="output-card">
+        <h3>模型結果</h3>
+        <ul><li>candidate tumor-tree topology</li><li>clone CCF / <code>phi</code> 區間</li><li>SNV-to-clone assignment</li><li>每個 SNV 的 multiplicity posterior</li></ul>
+      </article>
+      <article class="output-card audit">
+        <h3>計算與稽核</h3>
+        <ul><li><code>samples.jsonl.gz</code></li><li><code>diagnostics.json</code></li><li><code>checkpoint.json.gz</code></li><li><code>execution_trace.jsonl</code></li><li><code>_SUCCESS</code> 或 <code>_FAILED</code></li></ul>
+      </article>
+    </div>
+    <div class="limitation">
+      <div class="card violet"><span class="tag">CANDIDATE SMC</span><h3>下一個方法還沒上線</h3><p>Rao–Blackwellized annealed SMC 目前只有規格，沒有加入 smoke、pilot 或 formal workflow。</p></div>
+      <div class="card amber"><span class="tag">CURRENT LIMIT</span><h3>目前沒有唯一 final tree</h3><p>wrapper 尚未做 full-data final fit 與跨 chain/holdout aggregate；現在的 tree 檔案是各 cell/chain 的結果。</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="failure-title">
+    <h2 id="failure-title">出錯時，怎麼知道是哪一站？</h2>
+    <p class="section-note">每一站都寫入 trace。先看失敗階段，再看該階段的檔案。</p>
+    <div class="failure">
+      <div class="trace">
+        <div class="trace-step"><b>1</b><span><strong>status.json</strong>：先找 failed_stage / failed_scope</span></div>
+        <div class="trace-step"><b>2</b><span><strong>execution_trace.jsonl</strong>：看最後一個失敗事件</span></div>
+        <div class="trace-step"><b>3</b><span><strong>workflow_error.log</strong>：看完整錯誤與 traceback</span></div>
+        <div class="trace-step"><b>4</b><span><strong>_FAILED</strong>：這次 run 不得當成研究結果</span></div>
+      </div>
+      <div class="card blue"><h3>Resume 的白話版</h3><p>已完成的 cell 可以重新讀取完整 artifacts。中途壞掉的 C++ chain 目前不能從 checkpoint 接著跑；要修正問題後建立新的 run。</p></div>
+    </div>
+    <div class="footer-links"><a href="../../experiment_workflow.md">查看完整 workflow</a><a href="../../data.md">data contract</a><a href="../../model.md">model contract</a><a href="../../inference_algo.md">inference algorithm</a><a href="../../output.md">output format</a></div>
+  </section>
+
+  <footer>
+    這是一份 `experiment_workflow.md` 的 ELI5 視覺摘要。`_SUCCESS` 只代表已接入的 workflow gates 通過，不等於 single-cell lineage truth 或唯一真實的腫瘤演化樹。
+  </footer>
+</main>
+</body>
+</html>
