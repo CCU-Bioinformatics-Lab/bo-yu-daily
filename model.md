@@ -148,7 +148,7 @@ CCF_i ≈ 2 * VAF_i / rho_ASCAT
 
 LongPhase-S 的 `HP:Z:1-1` 與 `HP:Z:2-1` 是 somatic ALT-supporting read tags，可提供 long-read haplotype evidence，但它們不是獨立於 ALT call 的新一批 reads。Model B 必須明確描述 tagged-read 的產生與錯誤機率，才能讓 HP counts 正確改變 posterior。
 
-目前 C++ 實作仍有一個 conditional HP heuristic：tagged fraction 由觀測 counts 決定，HP1/HP2 各配置一半 tagged mass；候選 mutated side 使用 bulk ALT probability，另一側使用 error probability，再對兩個 side 等權邊際化。這段程式可作 diagnostic comparison，但在完成 Model B 的 generative definition 與 predictive validation 前，不得視為正式 primary likelihood。
+目前 active C++ primary scorer 不包含 HP heuristic，也不會把 tagged fraction 或 HP1/HP2 side 假設乘進 Model A。HP counts 只做 schema／conservation validation；若要讓 HP 改變 posterior，必須另行完成 Model B 的 generative definition、tag/error model 與 predictive validation。
 
 不能把 bulk counts 與其子集合 HP counts 當成兩批獨立 reads 重複相乘。等價記帳可寫成六類互斥 categories：
 
@@ -224,6 +224,11 @@ mutation_id  multiplicity  prior  posterior_mean
 ```
 
 `posterior_mean` 是所有 retained posterior draws 中，依當次 SNV clone assignment 與 `phi` 計算的 conditional responsibility 平均值。它表示模型對 latent multiplicity 的支持程度，不表示 ASCAT 直接量測到該 SNV 的 mutated-copy 數。每個 SNV 的 posterior probabilities 應加總為 1。
+
+另外輸出：
+
+- `posterior_summary.tsv.gz`：每個 candidate clone 的 `phi`／CCF posterior median、2.5% 與 97.5% quantile。
+- `topology_summary.tsv`：對 retained trees 做 clone-label canonicalization 後的 parent-child edge support；跨 chain/K 的比較由 workflow 負責。
 
 ## 4. 模型實際讀取表
 

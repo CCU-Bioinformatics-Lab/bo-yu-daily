@@ -31,11 +31,13 @@ descendants; it is not the local mass `eta_v`.
 The percentages are illustrative. The actual run supplies the values in the
 `phi` vector.
 
-| clone | CCF |
+| clone | CCF summary |
 |---|---|
-| C1 | `phi_C1` → `1.00` (100%) |
-| C2 | `phi_C2` → `0.60` (60%) |
-| C3 | `phi_C3` → `0.25` (25%) |
+| C1 | posterior median + 95% credible interval |
+| C2 | posterior median + 95% credible interval |
+| C3 | posterior median + 95% credible interval |
+
+實際數值由 `posterior_summary.tsv.gz` 提供；上圖數字只是示意。
 
 
 ## 3. SNV-to-clone assignment

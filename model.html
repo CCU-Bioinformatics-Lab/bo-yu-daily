@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HCC1395 Tumor Evolutionary Tree Model</title>
+  <style>
+    :root {
+      --ink:#17212b; --muted:#64748b; --line:#dbe4ee; --paper:#f7f9fc;
+      --blue:#2563eb; --blue-soft:#eff6ff; --teal:#0f766e; --teal-soft:#f0fdfa;
+      --amber:#b45309; --amber-soft:#fffbeb; --gray:#64748b; --gray-soft:#f1f5f9;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif; line-height:1.5; }
+    main { width:min(1180px,calc(100% - 32px)); margin:auto; padding:34px 0 58px; }
+    header { padding:26px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(135deg,#eff6ff,#fff); }
+    .eyebrow { margin:0 0 5px; color:var(--blue); font-size:.76rem; font-weight:800; letter-spacing:.12em; }
+    h1 { margin:0 0 8px; font-size:clamp(1.8rem,4vw,3rem); line-height:1.1; }
+    h2 { margin:0 0 12px; font-size:1.2rem; }
+    h3 { margin:8px 0 5px; font-size:1rem; }
+    p { margin:0; }
+    .lead { max-width:760px; color:#334155; font-size:1.02rem; }
+    .tagline { display:inline-block; margin-top:16px; padding:7px 11px; border-radius:999px; background:#dbeafe; color:#1d4ed8; font-size:.85rem; font-weight:800; }
+    section { margin-top:16px; padding:20px; border:1px solid var(--line); border-radius:16px; background:#fff; }
+    .section-note { margin:-4px 0 14px; color:var(--muted); font-size:.92rem; }
+    .flow { display:grid; grid-template-columns:1fr 28px 1fr 28px 1fr 28px 1fr; gap:8px; align-items:stretch; }
+    .card { min-width:0; padding:14px; border:1px solid var(--line); border-radius:13px; background:#fff; }
+    .card.input { background:var(--teal-soft); border-color:#a7ddd8; }
+    .card.score { background:var(--amber-soft); border-color:#f1d49a; }
+    .card.tree { background:var(--blue-soft); border-color:#b6d0f2; }
+    .card.output { background:#f0fdf4; border-color:#b9e4c5; }
+    .card svg { display:block; width:100%; height:92px; margin-bottom:2px; }
+    .card p { color:#475569; font-size:.87rem; }
+    .arrow { display:grid; place-items:center; color:var(--blue); font-size:1.5rem; font-weight:800; }
+    .mini-list { margin:9px 0 0; padding-left:18px; color:#334155; font-size:.84rem; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:11px; }
+    .chip { display:inline-block; margin:3px 3px 0 0; padding:4px 7px; border-radius:7px; background:#eef2f7; color:#334155; font:700 .78rem ui-monospace,SFMono-Regular,monospace; }
+    .formula { margin:10px 0 0; padding:10px 12px; border-radius:10px; background:#17212b; color:#e2e8f0; font:700 .86rem/1.55 ui-monospace,SFMono-Regular,monospace; overflow:auto; }
+    .split { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .data-route { display:grid; grid-template-columns:1.25fr 24px 1fr 24px 1fr 24px 1.15fr 24px 1.15fr; gap:7px; align-items:stretch; }
+    .data-step { min-width:0; padding:12px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+    .data-step.source { background:var(--teal-soft); border-color:#a7ddd8; }
+    .data-step.internal { background:var(--blue-soft); border-color:#b6d0f2; }
+    .data-step.likelihood { background:var(--amber-soft); border-color:#f1d49a; }
+    .data-step.output-step { background:#f0fdf4; border-color:#b9e4c5; }
+    .data-step svg { display:block; width:100%; height:70px; margin-bottom:3px; }
+    .data-step p { color:#475569; font-size:.82rem; }
+    .data-step .mini-list { margin-top:7px; font-size:.78rem; }
+    .row-sample { margin-top:8px; padding:8px; border-radius:8px; background:#fff; color:#334155; font:700 .71rem/1.55 ui-monospace,SFMono-Regular,monospace; overflow:auto; }
+    .data-route .arrow { font-size:1.25rem; }
+    .role { padding:16px; border-radius:12px; }
+    .role.model { background:var(--blue-soft); border:1px solid #b6d0f2; }
+    .role.inference { background:var(--teal-soft); border:1px solid #a7ddd8; }
+    .role strong { display:block; margin-bottom:4px; font-size:1.05rem; }
+    .role p { color:#475569; font-size:.9rem; }
+    .role code { display:block; margin-top:10px; color:#334155; font:700 .82rem ui-monospace,SFMono-Regular,monospace; }
+    .callout { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .callout > div { padding:14px; border-radius:12px; }
+    .provenance { border:1px dashed #94a3b8; background:var(--gray-soft); color:#475569; }
+    .limits { border:1px solid #f1d49a; background:var(--amber-soft); color:#713f12; }
+    .small { color:var(--muted); font-size:.84rem; }
+    code { font:700 .86em ui-monospace,SFMono-Regular,monospace; }
+    a { color:#1d4ed8; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    footer { margin-top:16px; color:var(--muted); font-size:.82rem; }
+    @media (max-width:900px) {
+      .flow { grid-template-columns:1fr; }
+      .arrow { min-height:22px; transform:rotate(90deg); }
+      .data-route { grid-template-columns:1fr; }
+      .data-route .arrow { min-height:20px; }
+    }
+    @media (max-width:680px) { .split,.callout { grid-template-columns:1fr; } main { width:min(100% - 20px,1180px); padding-top:20px; } section,header { padding:16px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">HCC1395 · MODEL ARCHITECTURE</p>
+    <h1>Tumor Evolutionary Tree Model</h1>
+    <p class="lead">用每個 SNV 的 bulk reads、ASCAT copy number、purity 與模型內部 multiplicity，評估哪些 clone tree 能合理解釋目前的 bulk 定序資料；HP evidence 保留作補充資訊。</p>
+    <span class="tagline">Model = 合理性評分規則；Inference = 搜尋合理狀態的方法</span>
+  </header>
+
+  <section>
+    <h2>一眼看懂主流程</h2>
+    <p class="section-note">模型把可觀察的資料，轉成對候選腫瘤演化樹的 posterior 支持。</p>
+    <div class="flow" aria-label="SNV observations 到 posterior outputs 的模型流程">
+      <article class="card input">
+        <svg viewBox="0 0 220 100" role="img"><title>SNV observations</title><desc>Bulk reads、HP counts、copy number 與 purity</desc><path d="M18 22h102M18 42h102M18 62h70" stroke="#0f766e" stroke-width="5" stroke-linecap="round"/><circle cx="148" cy="25" r="9" fill="#2563eb"/><circle cx="178" cy="25" r="9" fill="#ef4444"/><text x="140" y="50" fill="#475569" font-size="12">REF / ALT</text><rect x="142" y="63" width="25" height="18" rx="4" fill="#f59e0b"/><rect x="174" y="63" width="25" height="18" rx="4" fill="#94a3b8"/></svg>
+        <h3>SNV observations</h3>
+        <p>模型看到的證據，不是模型自己猜出的結果。</p>
+        <ul class="mini-list"><li>bulk reads</li><li>ASCAT CN + <code>rho_ASCAT</code></li><li>HP counts：補充／QC</li></ul>
+      </article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card score">
+        <svg viewBox="0 0 220 100" role="img"><title>Likelihood scoring</title><desc>將候選狀態與觀測 reads 比較</desc><circle cx="110" cy="43" r="28" fill="#f59e0b" opacity=".22"/><path d="M84 43h52M110 20v46" stroke="#b45309" stroke-width="4" stroke-linecap="round"/><path d="M45 24l28 12M45 62l28-12M175 24l-28 12M175 62l-28-12" stroke="#b45309" stroke-width="3" stroke-linecap="round"/><text x="91" y="48" fill="#713f12" font-size="13" font-weight="700">P(obs)</text></svg>
+        <h3>Model scoring</h3>
+        <p>計算某個 clone state 是否能解釋目前的 reads。</p>
+        <div class="formula">ALT ~ Binomial(total_reads, r)</div>
+      </article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card tree">
+        <svg viewBox="0 0 220 100" role="img"><title>Latent tumor tree</title><desc>隱藏的候選 clone tree</desc><path d="M110 21v22M110 43L62 75M110 43l48 32" stroke="#2563eb" stroke-width="4" fill="none"/><circle cx="110" cy="18" r="10" fill="#64748b"/><circle cx="62" cy="78" r="10" fill="#0f766e"/><circle cx="158" cy="78" r="10" fill="#2563eb"/><text x="98" y="22" fill="#fff" font-size="9">root</text><text x="55" y="82" fill="#fff" font-size="9">C1</text><text x="151" y="82" fill="#fff" font-size="9">C2</text></svg>
+        <h3>Latent clone tree</h3>
+        <p>看不見的拓樸、SNV assignment 與 clone mass。</p>
+        <ul class="mini-list"><li><code>T</code>：tree</li><li><code>zᵢ</code>：SNV → clone</li></ul>
+      </article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card output">
+        <svg viewBox="0 0 220 100" role="img"><title>Posterior outputs</title><desc>候選樹、CCF 與 multiplicity posterior</desc><path d="M25 70h45M25 70V25M25 52l15-13 15 8 15-18" stroke="#15803d" stroke-width="4" fill="none"/><rect x="98" y="31" width="72" height="10" rx="5" fill="#bbf7d0"/><rect x="98" y="31" width="48" height="10" rx="5" fill="#16a34a"/><rect x="98" y="52" width="72" height="10" rx="5" fill="#bbf7d0"/><rect x="98" y="52" width="28" height="10" rx="5" fill="#16a34a"/><circle cx="194" cy="36" r="6" fill="#15803d"/><circle cx="194" cy="57" r="6" fill="#86efac"/></svg>
+        <h3>Posterior outputs</h3>
+        <p>輸出候選結果與每個 SNV 的不確定性。</p>
+        <ul class="mini-list"><li>tree + CCF／<code>phi</code></li><li>multiplicity posterior</li></ul>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>模型實際讀取的資料</h2>
+    <div class="grid">
+      <div class="card"><h3>Reads</h3><span class="chip">ref_reads</span><span class="chip">alt_reads</span><span class="chip">total_reads</span><p class="small">同一 SNV 的 REF／ALT 觀測，且 <code>total_reads = ref_reads + alt_reads</code>。</p></div>
+      <div class="card"><h3>HP evidence</h3><span class="chip">hp1_1_*</span><span class="chip">hp2_1_*</span><p class="small">HP1-1／HP2-1 是 bulk reads 的子集合，現在只作補充資訊、QC 與未來 Model B。</p></div>
+      <div class="card"><h3>CN + purity</h3><span class="chip">major_cn</span><span class="chip">minor_cn</span><span class="chip">rho_ASCAT=0.99</span><p class="small">CN 決定 copy context；purity 固定反映 normal contamination 比例。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>data.md 最終輸入怎麼進到 model.md</h2>
+    <p class="section-note">把 <a href="data.md">data.md</a> 的固定輸入表想成一張點名表：每一列是一個 SNV，模型依序讀取，再放進整體腫瘤演化樹分析。</p>
+    <div class="data-route" aria-label="從單一 SNV 資料列到模型輸出的白話流程">
+      <article class="data-step source">
+        <svg viewBox="0 0 180 70" role="img"><title>Single SNV row</title><desc>固定格式的單一 SNV 資料列</desc><rect x="18" y="10" width="144" height="50" rx="6" fill="#fff" stroke="#0f766e" stroke-width="3"/><path d="M18 25h144M18 40h144M66 10v50M116 10v50" stroke="#a7ddd8" stroke-width="2"/><circle cx="40" cy="18" r="3" fill="#2563eb"/><circle cx="91" cy="33" r="3" fill="#ef4444"/><circle cx="141" cy="48" r="3" fill="#f59e0b"/></svg>
+        <h3>1. 一列 SNV 資料</h3>
+        <div class="row-sample">REF 34 / ALT 11 / 總深度 45<br>HP reads / major CN 3 / minor CN 1<br>purity 0.99 / 可納入</div>
+        <p>這一列就是模型要看的單一突變位置。</p>
+      </article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="data-step internal">
+        <svg viewBox="0 0 180 70" role="img"><title>Input data card</title><desc>程式把表格欄位整理成一張 SNV 資料卡</desc><rect x="16" y="17" width="48" height="36" rx="7" fill="#2563eb"/><text x="23" y="40" fill="#fff" font-size="12" font-weight="700">資料卡</text><path d="M70 35h30" stroke="#2563eb" stroke-width="3"/><rect x="105" y="11" width="58" height="17" rx="5" fill="#dbeafe"/><rect x="105" y="32" width="58" height="17" rx="5" fill="#dbeafe"/><text x="114" y="23" fill="#1e3a8a" font-size="10">reads / HP</text><text x="114" y="44" fill="#1e3a8a" font-size="10">CN / purity</text></svg>
+        <h3>2. 變成模型資料卡</h3>
+        <p>程式把這列分成幾種證據：</p>
+        <ul class="mini-list"><li>REF／ALT reads</li><li>CN 與 purity</li><li>HP counts：補充資訊</li></ul>
+        <p class="small">只有標記為「可納入」的 SNV 會繼續往下走。</p>
+      </article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="data-step internal">
+        <svg viewBox="0 0 180 70" role="img"><title>Model guesses hidden states</title><desc>模型猜測突變 copy 數並建立 clone 細胞比例</desc><path d="M20 18h47M20 35h47M20 52h47" stroke="#0f766e" stroke-width="5" stroke-linecap="round"/><path d="M82 35h21M113 35l19-17M113 35l19 17" stroke="#2563eb" stroke-width="3" fill="none"/><circle cx="113" cy="35" r="7" fill="#2563eb"/><circle cx="134" cy="18" r="7" fill="#0f766e"/><circle cx="134" cy="52" r="7" fill="#0f766e"/><text x="142" y="21" fill="#334155" font-size="9">copy</text><text x="142" y="55" fill="#334155" font-size="9">CCF</text></svg>
+        <h3>3. 模型補上看不見的資訊</h3>
+        <p>模型根據 CN 猜測突變可能帶幾份 copy，也嘗試把 SNV 放到不同 clone。</p>
+        <p class="small">接著估計每個 clone 包含多少腫瘤細胞，這個比例叫 CCF。</p>
+      </article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="data-step likelihood">
+        <svg viewBox="0 0 180 70" role="img"><title>Compare expected and observed reads</title><desc>模型預測 ALT reads，再和實際 reads 比較</desc><circle cx="90" cy="35" r="22" fill="#f59e0b" opacity=".24"/><path d="M55 35h70M90 15v40" stroke="#b45309" stroke-width="3"/><text x="68" y="39" fill="#713f12" font-size="11" font-weight="700">預測 ALT</text><path d="M18 20l28 10M18 50l28-10M162 20l-28 10M162 50l-28-10" stroke="#b45309" stroke-width="2"/></svg>
+        <h3>4. 和真實 reads 比較</h3>
+        <p>模型根據 purity、CN、CCF 和 latent multiplicity，預測應該看到多少 ALT。</p>
+        <p class="small">預測越像實際看到的 reads，這個候選狀態就越合理。</p>
+      </article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="data-step output-step">
+        <svg viewBox="0 0 180 70" role="img"><title>Inference and outputs</title><desc>推理演算法嘗試不同樹並產生輸出</desc><path d="M28 54V18M28 34h42M70 34l25-18M70 34l25 18" stroke="#15803d" stroke-width="3" fill="none"/><circle cx="28" cy="18" r="7" fill="#64748b"/><circle cx="95" cy="16" r="7" fill="#15803d"/><circle cx="95" cy="52" r="7" fill="#15803d"/><rect x="118" y="17" width="42" height="10" rx="5" fill="#bbf7d0"/><rect x="118" y="38" width="28" height="10" rx="5" fill="#16a34a"/></svg>
+        <h3>5. 找答案並輸出</h3>
+        <p>推理演算法反覆嘗試不同的樹和 SNV 所屬 clone。</p>
+        <ul class="mini-list"><li>候選演化樹</li><li>CCF 與 SNV 分配</li><li>multiplicity posterior</li></ul>
+      </article>
+    </div>
+    <div class="callout" style="margin-top:12px;">
+      <div class="provenance"><strong>只做 QC／追蹤</strong><p class="small"><code>cnv_status</code>、<code>segment_id</code>、<code>loh_state</code>、<code>cnv_confidence</code> 等補充欄位不參與模型計算；它們只協助排除問題資料或追蹤來源。</p></div>
+      <div class="provenance"><strong>重要邊界</strong><p class="small">PS 不直接進模型；它在上游協助產生 HP reads。HP reads 是 bulk reads 的一部分，不是第二批獨立資料。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>模型裡面自己推導的量</h2>
+    <div class="split">
+      <div class="role model">
+        <strong>Clone state</strong>
+        <p><code>T</code> 決定誰是 parent／child；<code>zᵢ</code> 把每個 SNV 放到某個 clone；<code>eta</code> 是 local mass。</p>
+        <code>eta + tree → phi / CCF</code>
+      </div>
+      <div class="role model">
+        <strong>Multiplicity state</strong>
+        <p>ASCAT major/minor CN 先建立可行候選；bulk reads、purity 與 CCF 再共同計算候選的 posterior responsibility。</p>
+        <code>CN → candidates → likelihood marginalization</code>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Multiplicity 怎麼走？</h2>
+    <div class="flow" style="grid-template-columns:1fr 28px 1fr 28px 1fr;">
+      <div class="card"><h3>ASCAT CN</h3><p><code>major_cn</code>／<code>minor_cn</code> 提供可能的 copy 數範圍。</p></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="card score"><h3>C++ loader</h3><p>在記憶體內建立 <code>Mᵢ</code> 候選，不讀外部 multiplicity table。</p></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="card output"><h3>Posterior</h3><p><code>Mᵢ</code> 在 likelihood 中被邊際化，輸出 <code>multiplicity_posterior.tsv.gz</code>。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Model 與 inference algorithm 的分工</h2>
+    <div class="split">
+      <div class="role model"><strong>MODEL</strong><p>定義什麼樣的樹、clone 比例與 reads 組合算合理。</p><code>likelihood · prior · latent variables</code></div>
+      <div class="role inference"><strong>INFERENCE_ALGO</strong><p>在很多候選狀態中搜尋或抽樣，探索 <code>T</code>、<code>zᵢ</code>、<code>eta</code>。</p><code>目前方法：MCMC；細節見 inference_algo.md</code></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>PS 與 normal contamination 的位置</h2>
+    <div class="callout">
+      <div class="provenance"><strong>PS block → HP counts</strong><p class="small">PS 是上游 phase evidence，協助產生 HP1-1／HP2-1 counts；原始 PS 不直接進 C++ likelihood，也不是 clone label 或 tree edge。</p></div>
+      <div class="provenance"><strong>rho_ASCAT → emission</strong><p class="small"><code>rho_ASCAT=0.99</code> 固定處理 normal contamination；normal cells 不是模型重新推導出來的 clone node。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>輸出與限制</h2>
+    <div class="grid">
+      <div class="card output"><h3>Candidate tree</h3><p>候選腫瘤演化樹與 topology。</p></div>
+      <div class="card output"><h3>Clone assignment + CCF</h3><p>SNV 所屬 clone 與 <code>phi</code>／CCF 的 median、95% interval。</p></div>
+      <div class="card output"><h3>Topology support</h3><p>label-invariant edge support summary。</p></div>
+      <div class="card output"><h3>Multiplicity posterior</h3><p>每個 SNV 的 latent multiplicity 支持度。</p></div>
+    </div>
+    <div class="limits" style="margin-top:12px;padding:14px;border-radius:12px;">
+      <strong>解讀邊界：</strong>
+      <span class="small">這是 bulk-data-supported candidate tree，不是 single-cell lineage truth；finite <code>K</code> 不等於真實 clone 數，HP1-1／HP2-1 也不是 clone label。</span>
+    </div>
+  </section>
+
+  <footer>本頁是 <a href="model.md">model.md</a> 的視覺化摘要；模型規格與 inference algorithm 分別保留在 <a href="model.md">model.md</a> 與 <a href="inference_algo.md">inference_algo.md</a>。</footer>
+</main>
+</body>
+</html>

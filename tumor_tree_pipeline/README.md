@@ -3,6 +3,9 @@
 This package is the version-controlled execution source for the HCC1395
 30,490-site finite-K candidate tumor-tree analysis.
 
+Until the C++ implementation, rebuilt canonical input, tests, and workflow
+gates are synchronized and passing, every output is `diagnostic-only`.
+
 The model contract is [`../model.md`](../model.md); the replaceable inference
 algorithm contract is [`../inference_algo.md`](../inference_algo.md). This
 package owns table construction, workflow control, holdout handling and
@@ -27,8 +30,8 @@ diagnostics rather than redefining the model or sampler specification.
 ```text
 canonical likelihood_input.tsv.gz + ChainConfig
         │
-        │  per SNV: bulk REF/ALT, HP1-1/HP2-1 counts,
-        │  ASCAT major/minor/total CN; loader derives multiplicity,
+        │  per SNV: bulk REF/ALT, ASCAT major/minor/total CN,
+        │  fixed rho_ASCAT; loader derives multiplicity,
         │  rho_ASCAT = 0.99
         ▼
 latent state: finite-K topology T, SNV assignment z, prevalence eta
@@ -36,11 +39,15 @@ latent state: finite-K topology T, SNV assignment z, prevalence eta
         │  C++ Gibbs assignment + eta MH + conditional subtree Gibbs sweep
         ▼
 samples.jsonl.gz + multiplicity_posterior.tsv.gz
+        + posterior_summary.tsv.gz + topology_summary.tsv
         + diagnostics.json + representative_tree.json
         + checkpoint.json.gz + chain_complete.json
 ```
 
-The baseline uses the canonical table as its observed-data input. The latent
+The baseline uses the canonical table as its observed-data input. Model A uses
+bulk counts, ASCAT CN, fixed `rho_ASCAT=0.99`, and internal multiplicity. HP
+counts remain in the table as supplementary information but do not enter the
+primary likelihood. The latent
 state contains only the tree topology, the clone assignment of each included
 SNV, and the local clone-mass vector `eta`; `phi` is derived by summation over
 descendants and the structural tumor root has frequency one.
@@ -52,8 +59,8 @@ control: it is used upstream as an eligibility gate that sets
 `model_include`/`model_status`, but the `cnv_status` value itself is not a
 likelihood feature.
 Multiplicity is integrated using candidate copy counts that the C++ loader
-builds from major/minor CN. Bulk/HP counts, purity and clone prevalence then
-update the candidate posterior responsibility at every retained state; the
+builds from major/minor CN. Bulk counts, purity, static CN and clone prevalence
+then update the candidate posterior responsibility at every retained state; the
 summary is written to `multiplicity_posterior.tsv.gz`. Multiplicity is not a
 canonical table field and the observed VAF is not overwritten. The chain
 output contains retained posterior draws, acceptance diagnostics, a
@@ -75,15 +82,25 @@ fail-closed until its versioned restore reader is implemented.
   subtree prune-and-regraft Gibbs update. It is a finite approximation, not a
   claim to be the complete nonparametric PhyloWGS implementation.
 - PS is LongPhase-S upstream phasing metadata. It helps establish consistent
-  HP labels/counts and therefore can affect the derived `H_i` indirectly. Once
-  the table is built, PS is not a direct downstream likelihood column, a
+  HP labels/counts for supplementary use. Once the table is built, PS and HP
+  counts are not part of the Model A primary likelihood, a
   clone-assignment prior, or a topology-edge constraint; it may remain in
   provenance/read-level audit and grouped holdout metadata.
 - Canonical loading is fail closed: no legacy files, diploid CN, or point
   multiplicity fallbacks.
+- The active structural assumptions are exactly one tumor founder below the
+  structural root, no-loss/infinite-sites SNV inheritance, and fixed K
+  candidate clone nodes (`K=6` primary; `K=4/8` sensitivity). ASCAT CN is a
+  static context shared across tumor clones in Model A.
+- The baseline emission uses fixed sequencing error `e=0.005` and a Binomial
+  observation model. Prior predictive and posterior predictive checks are
+  required before promotion.
 - Normal contamination is handled only by `rho_ASCAT` in the emission model;
   `eta` contains clone masses and is not a purity or normal-contamination
   parameter.
+- CCF is summarized by posterior median and 95% credible interval. Topology
+  and edge support use label-invariant canonicalization; numeric clone labels
+  are not evidence of topology stability.
 - Production output directories are immutable and receive `_SUCCESS` only
   after every required gate passes.
 - Failed runs receive `_FAILED`, `status.json.failed_stage`/

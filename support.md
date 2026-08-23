@@ -92,7 +92,7 @@ used_in_likelihood = true | false
 
 ### PS 的位置
 
-PS phase block 可用於 phase provenance、局部 QC 與 grouped holdout。PS 不直接決定 clone assignment、eta、phi、topology 或 ancestry edge。PS 產生的 HP counts 會間接影響 observation likelihood，但 PS block 本身不進 downstream sampler state。
+PS phase block 可用於 phase provenance、局部 QC 與 grouped holdout。PS 不直接決定 clone assignment、eta、phi、topology 或 ancestry edge。PS 產生的 HP counts 目前只作 supplementary evidence；Model A primary observation likelihood 不讀取它們，只有未來完成 Model B 的 joint HP/read model 後才可能影響 posterior。
 
 ## Decisions
 
