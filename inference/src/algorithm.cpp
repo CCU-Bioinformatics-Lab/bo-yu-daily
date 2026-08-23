@@ -8,6 +8,7 @@
 #include <cstring>
 #include <fstream>
 #include <fcntl.h>
+#include <functional>
 #include <iomanip>
 #include <map>
 #include <numeric>
@@ -38,9 +39,11 @@ struct ScoreResult {
 using Counters = std::map<std::string, std::uint64_t>;
 
 bool valid_tree(const std::vector<int>& parents) {
+    std::size_t structural_roots = 0;
     for (std::size_t child = 0; child < parents.size(); ++child) {
         const int parent = parents[child];
         if (parent < -1 || parent >= static_cast<int>(parents.size()) || parent == static_cast<int>(child)) return false;
+        if (parent == -1) ++structural_roots;
         std::vector<bool> seen(parents.size(), false);
         seen[child] = true;
         int cursor = parent;
@@ -50,7 +53,10 @@ bool valid_tree(const std::vector<int>& parents) {
             cursor = parents[static_cast<std::size_t>(cursor)];
         }
     }
-    return true;
+    // -1 denotes the single direct child of the structural tumor root.  A
+    // valid state is therefore one connected tumor tree, not a forest of
+    // independent founders.  The caller guarantees a non-empty state.
+    return !parents.empty() && structural_roots == 1;
 }
 
 std::vector<std::vector<int>> children(const std::vector<int>& parents) {
@@ -278,6 +284,152 @@ std::string samples_jsonl(const std::vector<SampleRecord>& samples) {
     return result;
 }
 
+double posterior_quantile(std::vector<double> values, double probability) {
+    if (values.empty() || !(probability >= 0.0 && probability <= 1.0)) {
+        throw std::runtime_error("cannot calculate posterior quantile");
+    }
+    std::sort(values.begin(), values.end());
+    const double position = probability * static_cast<double>(values.size() - 1U);
+    const auto lower = static_cast<std::size_t>(std::floor(position));
+    const auto upper = static_cast<std::size_t>(std::ceil(position));
+    const double fraction = position - static_cast<double>(lower);
+    return values[lower] + fraction * (values[upper] - values[lower]);
+}
+
+std::vector<int> canonical_clone_labels(const SampleRecord& sample);
+
+std::string posterior_summary_tsv(const std::vector<SampleRecord>& retained, std::size_t num_nodes) {
+    if (retained.empty()) throw std::runtime_error("cannot write posterior summary without retained samples");
+    std::vector<std::vector<double>> phi_by_node(num_nodes);
+    for (const auto& sample : retained) {
+        if (sample.phi.size() != num_nodes) throw std::runtime_error("posterior summary phi dimensions do not match fixed K");
+        const auto labels = canonical_clone_labels(sample);
+        for (std::size_t node = 0; node < num_nodes; ++node) {
+            if (!std::isfinite(sample.phi[node]) || sample.phi[node] < 0.0 || sample.phi[node] > 1.0) {
+                throw std::runtime_error("posterior summary contains an invalid phi value");
+            }
+            phi_by_node[static_cast<std::size_t>(labels[node] - 1)].push_back(sample.phi[node]);
+        }
+    }
+
+    std::ostringstream output;
+    output << "clone\tccf_median\tccf_q025\tccf_q975\tphi_median\tphi_q025\tphi_q975\n";
+    output << std::setprecision(17);
+    for (std::size_t node = 0; node < num_nodes; ++node) {
+        const double q025 = posterior_quantile(phi_by_node[node], 0.025);
+        const double median = posterior_quantile(phi_by_node[node], 0.5);
+        const double q975 = posterior_quantile(phi_by_node[node], 0.975);
+        // In this model CCF is the descendant-sum phi.  Both names are
+        // written so downstream readers can use the familiar CCF terminology
+        // without losing the model's explicit phi definition.  Rows use the
+        // same per-draw canonical clone labels as topology_summary.tsv, so
+        // label switching does not mix unrelated candidate nodes.
+        output << "clone_" << (node + 1U) << '\t'
+               << median << '\t' << q025 << '\t' << q975 << '\t'
+               << median << '\t' << q025 << '\t' << q975 << '\n';
+    }
+    return output.str();
+}
+
+std::vector<int> canonical_clone_labels(const SampleRecord& sample) {
+    if (sample.parents.empty() || sample.parents.size() != sample.phi.size()) {
+        throw std::runtime_error("cannot canonicalize a posterior sample with inconsistent dimensions");
+    }
+    const auto child_list = children(sample.parents);
+    std::vector<std::size_t> depth(sample.parents.size(), 0);
+    for (std::size_t node = 0; node < sample.parents.size(); ++node) {
+        int cursor = sample.parents[node];
+        while (cursor != -1) {
+            ++depth[node];
+            cursor = sample.parents[static_cast<std::size_t>(cursor)];
+        }
+    }
+
+    std::vector<std::string> subtree_signature(sample.parents.size());
+    std::function<std::string(std::size_t)> make_signature = [&](std::size_t node) {
+        if (!subtree_signature[node].empty()) return subtree_signature[node];
+        std::vector<std::string> child_signatures;
+        child_signatures.reserve(child_list[node].size());
+        for (const int child : child_list[node]) {
+            child_signatures.push_back(make_signature(static_cast<std::size_t>(child)));
+        }
+        std::sort(child_signatures.begin(), child_signatures.end());
+        std::ostringstream signature;
+        signature << std::setprecision(17) << sample.phi[node] << '/' << depth[node]
+                  << '/' << child_list[node].size() << '[';
+        for (const auto& child_signature : child_signatures) signature << child_signature << ';';
+        signature << ']';
+        subtree_signature[node] = signature.str();
+        return subtree_signature[node];
+    };
+    for (std::size_t node = 0; node < sample.parents.size(); ++node) make_signature(node);
+
+    const auto node_less = [&](std::size_t left, std::size_t right) {
+        if (sample.phi[left] != sample.phi[right]) return sample.phi[left] > sample.phi[right];
+        if (depth[left] != depth[right]) return depth[left] < depth[right];
+        if (child_list[left].size() != child_list[right].size()) {
+            return child_list[left].size() > child_list[right].size();
+        }
+        return subtree_signature[left] < subtree_signature[right];
+    };
+
+    std::size_t root = sample.parents.size();
+    for (std::size_t node = 0; node < sample.parents.size(); ++node) {
+        if (sample.parents[node] == -1) {
+            if (root != sample.parents.size()) throw std::runtime_error("topology summary found multiple roots");
+            root = node;
+        }
+    }
+    if (root == sample.parents.size()) throw std::runtime_error("topology summary found no root");
+
+    // Label the rooted tree by a canonical traversal.  Child ordering uses
+    // the promised posterior observables (phi, depth, child count), with the
+    // full sorted subtree signature resolving non-symmetric ties.  Exact
+    // equal subtree ties are automorphisms, so either traversal has the same
+    // canonical edge multiset and does not depend on the input node labels.
+    std::vector<int> labels(sample.parents.size(), 0);
+    int next_label = 1;
+    std::function<void(std::size_t)> assign_labels = [&](std::size_t node) {
+        labels[node] = next_label++;
+        std::vector<int> ordered_children = child_list[node];
+        std::sort(ordered_children.begin(), ordered_children.end(), [&](int left, int right) {
+            return node_less(static_cast<std::size_t>(left), static_cast<std::size_t>(right));
+        });
+        for (const int child : ordered_children) assign_labels(static_cast<std::size_t>(child));
+    };
+    assign_labels(root);
+    if (next_label != static_cast<int>(sample.parents.size()) + 1) {
+        throw std::runtime_error("topology summary could not label every clone");
+    }
+    return labels;
+}
+
+std::string topology_summary_tsv(const std::vector<SampleRecord>& retained) {
+    if (retained.empty()) throw std::runtime_error("cannot write topology summary without retained samples");
+    std::map<std::pair<int, int>, std::uint64_t> edge_counts;
+    for (const auto& sample : retained) {
+        if (!valid_tree(sample.parents)) throw std::runtime_error("topology summary received an invalid posterior tree");
+        const auto labels = canonical_clone_labels(sample);
+        for (std::size_t child = 0; child < sample.parents.size(); ++child) {
+            const int parent = sample.parents[child] == -1
+                ? 0
+                : labels[static_cast<std::size_t>(sample.parents[child])];
+            ++edge_counts[{parent, labels[child]}];
+        }
+    }
+
+    std::ostringstream output;
+    output << "parent\tchild\tsupport_count\tretained_samples\tsupport_fraction\n";
+    output << std::setprecision(17);
+    for (const auto& [edge, count] : edge_counts) {
+        output << (edge.first == 0 ? "tumor_root" : "clone_" + std::to_string(edge.first)) << '\t'
+               << "clone_" << edge.second << '\t'
+               << count << '\t' << retained.size() << '\t'
+               << static_cast<double>(count) / static_cast<double>(retained.size()) << '\n';
+    }
+    return output.str();
+}
+
 std::string multiplicity_posterior_tsv(
     const CanonicalTable& table,
     const std::vector<std::vector<double>>& posterior_sums,
@@ -345,7 +497,10 @@ public:
         // Start from a shallow TSSB truncation.  This avoids giving every
         // chain the same artificial linear topology before the Gibbs kernel
         // has had a chance to explore the tree.
-        std::fill(state.parents.begin(), state.parents.end(), -1);
+        // Clone 0 is the unique tumor founder under the structural root;
+        // every remaining candidate starts as its direct descendant.
+        state.parents[0] = -1;
+        std::fill(state.parents.begin() + 1, state.parents.end(), 0);
         state.eta.assign(config.num_nodes, 1.0 / static_cast<double>(config.num_nodes));
         const auto initial_phi = cumulative_phi(state.parents, state.eta);
         const auto initial_matrix = likelihood_matrix(table, initial_phi, config.threads);
@@ -390,11 +545,12 @@ public:
                 current_score -= assignment_matrix[site][static_cast<std::size_t>(old_node)] + std::log(state.eta[static_cast<std::size_t>(old_node)]);
             }
 
-            // 2) Resample local masses from a TSSB-shaped Dirichlet proposal.
-            // The proposal depends on the fixed assignment/tree but not on
-            // the current eta, so its forward/reverse density cancels.  The
-            // emission term still makes this an MH correction, not a naive
-            // conjugate Gibbs update.
+            // 2) Resample local masses from an independent, finite-K
+            // TSSB-shaped Dirichlet proposal.  The proposal depends on the
+            // fixed assignment/tree but not on the current eta, so its
+            // forward/reverse densities are equal.  We still evaluate both
+            // terms explicitly below: this is an independence-MH update,
+            // not a naive Gibbs replacement of eta.
             std::vector<std::uint64_t> occupancy(config.num_nodes, 0);
             for (int node : state.z) ++occupancy[static_cast<std::size_t>(node)];
             auto eta_alpha = tssb_mass_prior_alpha(state.parents);
@@ -404,7 +560,10 @@ public:
             eta_proposal.eta = proposal_eta;
             const auto eta_result = score_state(table, config, eta_proposal);
             ++counters["eta_proposals"];
-            if (std::log(std::max(1e-300, std::generate_canonical<double, 53>(rng))) < eta_result.score - current_score) {
+            const double log_q_forward = dirichlet_logpdf(proposal_eta, eta_alpha);
+            const double log_q_reverse = dirichlet_logpdf(state.eta, eta_alpha);
+            const double log_acceptance = eta_result.score - current_score + log_q_reverse - log_q_forward;
+            if (std::log(std::max(1e-300, std::generate_canonical<double, 53>(rng))) < log_acceptance) {
                 state = std::move(eta_proposal);
                 current_score = eta_result.score;
                 current_phi = eta_result.phi;
@@ -471,6 +630,12 @@ public:
         atomic_write_gzip(
             options.outdir / "multiplicity_posterior.tsv.gz",
             multiplicity_posterior_tsv(table, multiplicity_posterior_sums, retained.size()));
+        atomic_write_gzip(
+            options.outdir / "posterior_summary.tsv.gz",
+            posterior_summary_tsv(retained, config.num_nodes));
+        atomic_write_text(
+            options.outdir / "topology_summary.tsv",
+            topology_summary_tsv(retained));
         double minimum = retained.front().log_posterior, maximum = minimum, mean = 0.0;
         for (const auto& sample : retained) { minimum = std::min(minimum, sample.log_posterior); maximum = std::max(maximum, sample.log_posterior); mean += sample.log_posterior; }
         mean /= static_cast<double>(retained.size());
@@ -486,15 +651,16 @@ public:
             map_assignment[site] = static_cast<std::size_t>(std::distance(assignment_counts[site].begin(), found));
             map_probability[site] = static_cast<double>(*found) / static_cast<double>(retained.size());
         }
-        const std::string model_name = "finite_K_tssb_inspired";
+        const std::string model_name = "finite_K_tssb_shaped_working_prior";
         const auto assignment_rate = static_cast<double>(counters["assignment_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["assignment_proposals"]));
         const auto eta_rate = static_cast<double>(counters["eta_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["eta_proposals"]));
         const auto topology_rate = static_cast<double>(counters["topology_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["topology_proposals"]));
-        std::string diagnostics = "{\"model\":" + json_string(model_name) + ",\"algorithm\":\"single_chain_phylowgs_inspired_tssb_mcmc\",\"input_schema\":\"hcc1395_tumor_tree_input/v4\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"observed_sites\":" + json_u64(table.sites.size()) + ",\"excluded_sites\":" + json_u64(options.exclude_ids.size()) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"config\":" + config_json(reported_config) + ",\"requested_seed\":" + json_u64(config.seed) + ",\"chain_index\":" + std::to_string(chain_index) + ",\"derived_seed\":" + json_u64(derived_seed) + ",\"resumed\":false,\"state_variables\":[\"parents\",\"eta\",\"z\"],\"target\":{\"tree_prior\":\"finite_truncated_TSSB_depth_and_branching_prior\",\"eta_prior\":\"TSSB_shaped_depth_width_Dirichlet\",\"assignment_prior\":\"categorical_local_node_mass\",\"site_terms\":\"CN_constrained_multiplicity_candidates_marginalized_with_emission_posterior\"},\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"multiplicity_role\":\"CN_constrained_latent_state_with_per_site_posterior; not_a_table_column\",\"multiplicity_posterior_artifact\":\"multiplicity_posterior.tsv.gz\",\"ps_role\":\"upstream_phase_block_used_to_derive_HP_counts; not_an_explicit_downstream_state_or_tree_constraint\",\"proposal_kernel\":{\"compound_sweep_per_iteration\":true,\"assignment\":\"all_SNV_categorical_Gibbs_sweep\",\"eta\":\"TSSB_shaped_Dirichlet_independence_MH_with_emission_correction\",\"topology\":\"conditional_subtree_prune_and_regraft_Gibbs_over_valid_parents\"},\"hastings_correction\":{\"assignment_gibbs\":true,\"eta_independence_MH\":true,\"topology_gibbs\":true},\"assignment_acceptance\":" + json_number(assignment_rate) + ",\"eta_acceptance\":" + json_number(eta_rate) + ",\"topology_acceptance\":" + json_number(topology_rate) + ",\"acceptance_semantics\":{\"assignment\":\"fraction_of_SNV_Gibbs_updates_that_changed_label\",\"eta\":\"MH_acceptance\",\"topology\":\"fraction_of_conditional_parent_updates_that_changed_parent\"},\"counters\":" + counters_json(counters) + ",\"log_posterior\":{\"minimum\":" + json_number(minimum) + ",\"maximum\":" + json_number(maximum) + ",\"mean\":" + json_number(mean) + "},\"checkpoint\":\"checkpoint.json.gz\"}\n";
+        std::string diagnostics = "{\"model\":" + json_string(model_name) + ",\"algorithm\":\"single_chain_phylowgs_inspired_tssb_mcmc\",\"input_schema\":\"hcc1395_tumor_tree_input/v4\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"observed_sites\":" + json_u64(table.sites.size()) + ",\"excluded_sites\":" + json_u64(options.exclude_ids.size()) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"config\":" + config_json(reported_config) + ",\"requested_seed\":" + json_u64(config.seed) + ",\"chain_index\":" + std::to_string(chain_index) + ",\"derived_seed\":" + json_u64(derived_seed) + ",\"resumed\":false,\"state_variables\":[\"parents\",\"eta\",\"z\"],\"target\":{\"tree_prior\":\"finite_K_TSSB_shaped_working_tree_prior\",\"eta_prior\":\"finite_K_TSSB_shaped_depth_width_Dirichlet_working_prior\",\"assignment_prior\":\"categorical_local_node_mass\",\"site_terms\":\"bulk_only_CN_constrained_multiplicity_candidates_marginalized_with_emission_posterior\"},\"tree_constraint\":\"exactly_one_tumor_founder_under_structural_root\",\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"error_rate\":0.005,\"sequencing_error\":0.005,\"hp_role\":\"loaded_and_conservation_checked_only; reserved_for_Model_B\",\"multiplicity_role\":\"CN_constrained_latent_state_with_per_site_posterior; not_a_table_column\",\"multiplicity_posterior_artifact\":\"multiplicity_posterior.tsv.gz\",\"ps_role\":\"upstream_phase_block_used_to_derive_HP_counts; not_an_explicit_downstream_state_or_tree_constraint\",\"proposal_kernel\":{\"compound_sweep_per_iteration\":true,\"assignment\":\"all_SNV_categorical_Gibbs_sweep\",\"eta\":\"finite_K_TSSB_shaped_Dirichlet_independence_MH_with_explicit_forward_reverse_correction\",\"topology\":\"conditional_subtree_prune_and_regraft_Gibbs_over_valid_single_founder_trees\"},\"hastings_correction\":{\"assignment_gibbs\":true,\"eta_independence_MH\":true,\"topology_gibbs\":true},\"assignment_acceptance\":" + json_number(assignment_rate) + ",\"eta_acceptance\":" + json_number(eta_rate) + ",\"topology_acceptance\":" + json_number(topology_rate) + ",\"acceptance_semantics\":{\"assignment\":\"fraction_of_SNV_Gibbs_updates_that_changed_label\",\"eta\":\"MH_acceptance\",\"topology\":\"fraction_of_conditional_parent_updates_that_changed_parent\"},\"counters\":" + counters_json(counters) + ",\"log_posterior\":{\"minimum\":" + json_number(minimum) + ",\"maximum\":" + json_number(maximum) + ",\"mean\":" + json_number(mean) + "},\"checkpoint\":\"checkpoint.json.gz\"}\n";
         const std::string checkpoint_marker = ",\"checkpoint\":\"checkpoint.json.gz\"";
         const auto marker_position = diagnostics.rfind(checkpoint_marker);
         if (marker_position == std::string::npos) throw std::runtime_error("internal diagnostics checkpoint marker is missing");
-        diagnostics.insert(marker_position, ",\"phi_mean\":" + json_double_array(phi_mean));
+        diagnostics.insert(marker_position, ",\"phi_mean\":" + json_double_array(phi_mean) +
+            ",\"posterior_summary_artifact\":\"posterior_summary.tsv.gz\",\"topology_summary_artifact\":\"topology_summary.tsv\"");
         atomic_write_text(options.outdir / "diagnostics.json", diagnostics);
 
         std::string representative = "{\"model\":" + json_string(model_name) + ",\"posterior_status\":\"candidate_tree\",\"root\":\"tumor_root\",\"root_semantics\":\"structural_root_with_frequency_one; eta_contains_clone_masses_only\",\"selected_edges\":[";
@@ -515,7 +681,7 @@ public:
         }
         representative += "}}\n";
         atomic_write_text(options.outdir / "representative_tree.json", representative);
-        atomic_write_text(options.outdir / "chain_complete.json", "{\"status\":\"complete\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"artifacts\":[\"samples.jsonl.gz\",\"multiplicity_posterior.tsv.gz\",\"diagnostics.json\",\"representative_tree.json\",\"checkpoint.json.gz\"]}\n");
+        atomic_write_text(options.outdir / "chain_complete.json", "{\"status\":\"complete\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"artifacts\":[\"samples.jsonl.gz\",\"multiplicity_posterior.tsv.gz\",\"posterior_summary.tsv.gz\",\"topology_summary.tsv\",\"diagnostics.json\",\"representative_tree.json\",\"checkpoint.json.gz\"]}\n");
         return {options.outdir, retained.size()};
     }
 };
