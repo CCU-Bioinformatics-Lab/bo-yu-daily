@@ -44,6 +44,8 @@ REQUIRED_COLUMNS = (
 ARTIFACTS = (
     "samples.jsonl.gz",
     "multiplicity_posterior.tsv.gz",
+    "posterior_summary.tsv.gz",
+    "topology_summary.tsv",
     "diagnostics.json",
     "representative_tree.json",
     "checkpoint.json.gz",
@@ -76,8 +78,10 @@ def write_tsv(path: Path, rows: list[dict[str, str]], fields: Iterable[str]) -> 
 def fixture_rows(*, hp_shift: int = 0, purity: str = "0.99") -> list[dict[str, str]]:
     """Return a small valid table with all active observation columns.
 
-    The alternate HP layout is used to detect an implementation that accepts
-    HP columns syntactically but silently omits them from the likelihood.
+    The alternate HP layout keeps bulk/CN/purity fixed while changing the
+    tagged-read allocation.  Model A must accept both layouts and produce the
+    same likelihood/posterior because HP is schema-validated supplementary
+    evidence, not a primary likelihood feature.
     """
 
     rows: list[dict[str, str]] = []
@@ -217,6 +221,15 @@ def decompressed_bytes(path: Path) -> bytes:
         return handle.read()
 
 
+def _ancestor_path(parents: list[int], node: int) -> set[int]:
+    ancestors: set[int] = set()
+    cursor = parents[node]
+    while cursor != -1:
+        ancestors.add(cursor)
+        cursor = parents[cursor]
+    return ancestors
+
+
 def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[str, Any]:
     for artifact in ARTIFACTS:
         check((chain_dir / artifact).is_file(), f"missing {artifact} in {chain_dir}")
@@ -243,6 +256,23 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
         all(abs(value - 1.0) < 1e-9 for value in posterior_by_site.values()),
         "multiplicity posterior probabilities do not normalize per SNV",
     )
+    with gzip.open(chain_dir / "posterior_summary.tsv.gz", "rt", encoding="utf-8") as handle:
+        ccf_lines = [line.rstrip("\n") for line in handle if line.strip()]
+    check(
+        ccf_lines
+        and ccf_lines[0] == "clone\tccf_median\tccf_q025\tccf_q975\tphi_median\tphi_q025\tphi_q975",
+        "posterior summary artifact has the wrong header",
+    )
+    check(len(ccf_lines) == 1 + int(json.loads((chain_dir / "diagnostics.json").read_text()).get("config", {}).get("num_nodes", 0)),
+          "posterior summary must contain one row per fixed-K clone")
+    with (chain_dir / "topology_summary.tsv").open(encoding="utf-8") as handle:
+        topology_lines = [line.rstrip("\n") for line in handle if line.strip()]
+    check(
+        topology_lines
+        and topology_lines[0] == "parent\tchild\tsupport_count\tretained_samples\tsupport_fraction",
+        "topology summary artifact has the wrong header",
+    )
+    check(len(topology_lines) > 1, "topology summary artifact is empty")
 
     algorithm = str(diagnostics.get("algorithm", ""))
     model = str(diagnostics.get("model", ""))
@@ -266,6 +296,81 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
         and all(isinstance(value, (int, float)) for value in phi_mean),
         "diagnostics.phi_mean is missing or has the wrong shape",
     )
+    num_nodes = config.get("num_nodes")
+    check(isinstance(num_nodes, int) and num_nodes >= 2, "fixed-K num_nodes is missing")
+    selected_edges = tree.get("selected_edges")
+    check(isinstance(selected_edges, list), "representative tree is missing selected_edges")
+    check(
+        len(selected_edges) == num_nodes,
+        "fixed-K tree must expose exactly one edge per candidate clone node",
+    )
+    root_edges = [
+        edge for edge in selected_edges
+        if isinstance(edge, dict) and edge.get("parent") == "tumor_root"
+    ]
+    check(
+        len(root_edges) == 1,
+        "tree violates exactly-one-founder contract: expected one tumor_root child",
+    )
+    expected_children = {f"clone_{index}" for index in range(1, num_nodes + 1)}
+    actual_children = {
+        edge.get("child") for edge in selected_edges if isinstance(edge, dict)
+    }
+    check(actual_children == expected_children, "fixed-K tree child labels are incomplete")
+    for sample in samples:
+        parents = sample.get("parents")
+        eta = sample.get("eta")
+        phi = sample.get("phi")
+        check(
+            isinstance(parents, list)
+            and len(parents) == num_nodes
+            and parents.count(-1) == 1,
+            "posterior sample violates exactly-one-founder/fixed-K contract",
+        )
+        check(
+            isinstance(eta, list)
+            and len(eta) == num_nodes
+            and all(isinstance(value, (int, float)) and value > 0.0 for value in eta)
+            and abs(sum(eta) - 1.0) < 1e-9,
+            "posterior sample eta is not a positive simplex",
+        )
+        check(
+            isinstance(phi, list)
+            and len(phi) == num_nodes
+            and all(isinstance(value, (int, float)) and 0.0 <= value <= 1.0 for value in phi),
+            "posterior sample phi is missing or out of range",
+        )
+        for child, parent in enumerate(parents):
+            check(
+                isinstance(parent, int)
+                and -1 <= parent < num_nodes
+                and parent != child,
+                "posterior sample contains an invalid parent index",
+            )
+            seen = {child}
+            cursor = parent
+            while cursor != -1:
+                check(cursor not in seen, "posterior sample contains a topology cycle")
+                seen.add(cursor)
+                cursor = parents[cursor]
+        for node in range(num_nodes):
+            expected_phi = sum(
+                eta[descendant]
+                for descendant in range(num_nodes)
+                if descendant == node
+                or node in _ancestor_path(parents, descendant)
+            )
+            check(
+                abs(phi[node] - expected_phi) < 1e-9,
+                "posterior sample phi is not the descendant-sum of eta",
+            )
+            if parents[node] != -1:
+                check(
+                    phi[parents[node]] + 1e-12 >= phi[node],
+                    "posterior sample parent CCF is smaller than child CCF",
+                )
+        founder = parents.index(-1)
+        check(abs(phi[founder] - 1.0) < 1e-9, "tumor founder phi must equal one")
     target = diagnostics.get("target")
     check(isinstance(target, dict), "diagnostics.target is missing")
     check(
@@ -277,6 +382,21 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
         diagnostics.get("multiplicity_role")
         == "CN_constrained_latent_state_with_per_site_posterior; not_a_table_column",
         "diagnostics do not record model-owned multiplicity posterior derivation",
+    )
+    check(
+        diagnostics.get("error_rate") == 0.005,
+        "diagnostics do not record the fixed e=0.005 Model A baseline",
+    )
+    proposal_kernel = diagnostics.get("proposal_kernel")
+    check(isinstance(proposal_kernel, dict), "proposal kernel metadata is missing")
+    check(
+        "independence_MH" in str(proposal_kernel.get("eta", "")),
+        "eta proposal is not identified as independence-MH",
+    )
+    corrections = diagnostics.get("hastings_correction")
+    check(
+        isinstance(corrections, dict) and corrections.get("eta_independence_MH") is True,
+        "eta independence-MH Hastings correction is not observable in diagnostics",
     )
     check(
         set(diagnostics.get("counters", {}))
@@ -295,6 +415,12 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
         "multiplicity_posterior.tsv.gz" in completion.get("artifacts", []),
         "completion manifest does not list multiplicity posterior output",
     )
+    check(
+        {"posterior_summary.tsv.gz", "topology_summary.tsv"}.issubset(
+            set(completion.get("artifacts", []))
+        ),
+        "completion manifest does not list posterior/topology summary outputs",
+    )
     check(tree.get("model") == diagnostics.get("model"), "tree/model contract mismatch")
     check(len(samples) > 0, "no retained posterior samples")
     return diagnostics
@@ -309,7 +435,7 @@ def assert_failed_output_is_not_complete(path: Path) -> None:
     )
 
 
-def test_valid_input_and_hp_likelihood(binary: Path, root: Path) -> None:
+def test_model_a_ignores_hp_counts(binary: Path, root: Path) -> None:
     canonical = root / "canonical.tsv"
     shifted = root / "canonical_hp_shift.tsv"
     write_tsv(canonical, fixture_rows(), REQUIRED_COLUMNS)
@@ -337,9 +463,14 @@ def test_valid_input_and_hp_likelihood(binary: Path, root: Path) -> None:
         for record in read_jsonl_gz(changed_hp / "samples.jsonl.gz")
     ]
     check(
-        baseline_scores != changed_scores,
-        "changing HP1-1/HP2-1 counts did not change the posterior trace; "
-        "HP columns may be ignored by the likelihood",
+        baseline_scores == changed_scores,
+        "Model A posterior changed after only HP counts changed; "
+        "HP counts must remain supplementary until Model B is defined",
+    )
+    check(
+        decompressed_bytes(baseline / "multiplicity_posterior.tsv.gz")
+        == decompressed_bytes(changed_hp / "multiplicity_posterior.tsv.gz"),
+        "Model A multiplicity posterior changed after only HP counts changed",
     )
 
 
@@ -457,7 +588,7 @@ def run(binary: Path) -> None:
     check(binary.stat().st_mode & 0o111, f"inference binary is not executable: {binary}")
     with tempfile.TemporaryDirectory(prefix="inference-contract-") as temporary:
         root = Path(temporary)
-        test_valid_input_and_hp_likelihood(binary, root)
+        test_model_a_ignores_hp_counts(binary, root)
         test_thread_policy(binary, root)
         test_multiple_chains_have_distinct_seeded_outputs(binary, root)
         test_fail_closed(binary, root)
