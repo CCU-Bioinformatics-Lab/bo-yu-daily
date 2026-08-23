@@ -4,6 +4,10 @@ This directory is the active, replaceable C++17 backend for the canonical model
 table. The Python workflow still owns table construction, grouped holdout,
 provenance, and diagnostics; its default chain runner calls this executable.
 
+Until the C++ implementation, rebuilt canonical input, tests, and workflow
+gates are synchronized and passing, backend outputs are `diagnostic-only`.
+Legacy-schema artifacts are rejected and cannot be promoted to formal output.
+
 ## Architecture
 
 ```text
@@ -27,20 +31,27 @@ claim to reproduce its full infinite tree implementation. Every iteration is
 a compound MCMC sweep:
 
 - assignment: categorical Gibbs update for every SNV using local mass and the
-  ASCAT/HP/CN emission;
+  Model A bulk/CN/purity emission; HP counts are supplementary and are not read
+  by the active primary likelihood;
 - eta: Dirichlet proposal centred on assignment counts and TSSB-shaped depth/
   width prior, accepted with an MH emission correction;
 - topology: conditional subtree prune-and-regraft Gibbs draw over every legal
   parent for one selected node.
 
 The original PhyloWGS uses TSSB assignments, stick/order resampling and
-hyperparameter updates. This backend keeps a fixed finite K for the current
-workflow and uses a PhyloWGS-style CN-constrained latent multiplicity
+hyperparameter updates. This backend keeps a fixed K candidate-node set for the
+current workflow and uses a PhyloWGS-style CN-constrained latent multiplicity
 emission: the loader creates candidate copy counts from major/minor CN, the
-emission updates their posterior responsibility with bulk/HP counts, purity
-and clone prevalence, and the result is written to
+Model A emission updates their posterior responsibility with bulk counts,
+static-CN context, fixed `rho_ASCAT=0.99`, and clone prevalence, and the result is written to
 `multiplicity_posterior.tsv.gz`. PS is upstream provenance for HP counts, not a
 direct tree-likelihood column.
+
+The active structural assumptions are exactly one tumor founder below the
+structural root, no-loss/infinite-sites inheritance for SNVs, and static ASCAT
+CN context across tumor clones. The baseline sequencing-error rate is fixed at
+`e=0.005`. `phi` is derived from descendant sums; it is summarized as a CCF
+posterior median with a 95% credible interval.
 
 ## Build
 
@@ -102,8 +113,16 @@ and CN prior used by the likelihood. The emission then computes a posterior
 responsibility for every candidate at each sampled clone prevalence. The old
 `multiplicity_candidates` and `multiplicity_prior` table fields, as well as
 `tumor_dna_fraction` and `multiplicity_posteriors`, are rejected. PS is not a
-direct C++ likelihood column; its upstream phasing role is represented by the
-already materialized HP1-1/HP2-1 counts.
+direct C++ likelihood column; its upstream phasing role is retained only as
+supplementary HP1-1/HP2-1 counts for QC, provenance, holdout, and future Model B.
+The active Model A scorer must not treat those HP counts as an additional
+likelihood term.
+
+Promotion additionally requires prior predictive checks for topology depth,
+branch count, and clone mass, plus posterior predictive checks for bulk
+ALT-count behavior and holdout performance. Topology and edge support are
+reported after clone-label canonicalization; CCF is reported as a posterior
+median with a 95% credible interval.
 
 ## Artifacts
 
@@ -119,6 +138,8 @@ adapter:
   acceptance rates, posterior summary, and `phi_mean`;
 - `representative_tree.json`: `selected_edges`,
   `best_sample_assignments`, and `posterior_map_assignments`;
+- `posterior_summary.tsv.gz`: CCF posterior medians and 95% credible intervals;
+- `topology_summary.tsv`: label-invariant topology and edge-support summary;
 - `checkpoint.json.gz`: version, input hash, config, exclusions, state, score,
   counters, retained samples, assignment counts, best sample, and serialized
   RNG state for audit/forward implementation work; it is not currently

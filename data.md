@@ -177,7 +177,7 @@ model_status
 | model_include | builder eligibility gate | 是否允許進 sampler |
 | model_status | builder eligibility gate | eligible 或 exclusion reason |
 
-對 C++ Site 而言，identity 欄位會保留用於追蹤；真正的 observation 主要是 bulk counts、HP counts、ASCAT CN 與 purity。C++ loader 讀到 `major_cn`／`minor_cn` 後，會在記憶體內建立 multiplicity candidate support 與 CN prior，再由 likelihood 依 clone prevalence 與 observation emission 計算 posterior responsibility；這些不是 canonical table 欄位，也沒有外部 multiplicity 工具或檔案輸入。posterior 只寫入 inference output，不回寫 canonical input。
+對 C++ Site 而言，identity 欄位會保留用於追蹤；Model A primary observation 是 bulk counts、ASCAT CN 與 purity。HP counts 仍由 loader 讀取並做 conservation／schema 檢查，但目前不進入 Model A likelihood。C++ loader 讀到 `major_cn`／`minor_cn` 後，會在記憶體內建立 multiplicity candidate support 與 CN prior，再由 bulk observation emission 依 clone prevalence 計算 posterior responsibility；這些不是 canonical table 欄位，也沒有外部 multiplicity 工具或檔案輸入。posterior 只寫入 inference output，不回寫 canonical input。
 
 ---
 
@@ -276,7 +276,7 @@ hp2_1_ref
 hp2_1_alt
 ~~~
 
-其他 HP 類別仍用於完整 count conservation 和 QC。C++ likelihood 不另存 untagged 欄位；untagged REF/ALT counts 由 bulk counts 減去四個 active HP counts 推導，再和 HP-tagged counts 一起形成 emission。
+其他 HP 類別仍用於完整 count conservation 和 QC。C++ Model A likelihood 不另存 untagged 欄位，也不把 untagged 或 HP-tagged counts 形成額外 emission；它們目前只保留作 supplementary evidence。若未來啟用 Model B，才需另行定義不重複計數的 joint HP/read likelihood。
 
 ### 5.3 HP QC
 
@@ -292,7 +292,7 @@ snv_hp_qc.tsv.gz
 - 檢查 upstream HP-QC delta 是否為零。
 - 保存 HP read evidence 的品質狀態。
 
-完整 HP domain 是由 snv_hp_counts.tsv.gz 的 loader 驗證；所有 HP categories 的 REF/ALT conservation 則由 builder 在產生 QA 前檢查，失敗時直接停止。active table 的四個 HP 欄位只是 model 使用的 primary HP evidence。
+完整 HP domain 是由 snv_hp_counts.tsv.gz 的 loader 驗證；所有 HP categories 的 REF/ALT conservation 則由 builder 在產生 QA 前檢查，失敗時直接停止。canonical table 的四個 HP 欄位是 supplementary evidence，不是 Model A 的 primary likelihood input。
 
 ### 5.4 Site-CNV QC
 
@@ -476,7 +476,7 @@ HP read counts + read-level QC
 hp1_1_* / hp2_1_* in canonical table
 ~~~
 
-所以 PS 可能透過產生 HP counts 間接影響 observation，但 PS label 本身不作為模型參數。
+所以 PS 只會影響 supplementary HP counts 的上游 provenance 與 QC；目前 Model A primary likelihood 不讀取 HP counts，因此 PS label 不會影響現行 observation score，也不作為模型參數。
 
 ### 7.3 Holdout 的位置
 
@@ -571,7 +571,7 @@ major_cn + minor_cn
         ↓
 C++ loader 內部建立 m candidate support 與 CN prior
         ↓
-bulk/HP counts + purity + clone prevalence
+bulk counts + purity + clone prevalence
         ↓
 likelihood 對 multiplicity 做 marginalization
         ↓
@@ -608,8 +608,8 @@ combined:
 對每個 retained tree／clone state，模型計算：
 
 ~~~text
-P(m | D_i, H_i, C_i, rho_ASCAT, phi_z(i))
-  ∝ P(m | C_i) × P(D_i, H_i | m, C_i, rho_ASCAT, phi_z(i))
+P(m | D_i, C_i, rho_ASCAT, phi_z(i))
+  ∝ P(m | C_i) × P_bulk(D_i | m, C_i, rho_ASCAT, phi_z(i))
 ~~~
 
 這個 posterior 會累積到 inference output：

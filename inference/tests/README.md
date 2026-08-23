@@ -32,25 +32,39 @@ candidate support from each row's major/minor CN, and the likelihood updates
 the candidate posterior responsibility using the observed counts and clone
 prevalence. No multiplicity field is read from the table.
 
+Model A parses and validates HP counts, including their conservation against
+bulk counts, but does not use them in the primary topology likelihood. A
+deterministic regression changes only HP allocation while holding bulk/CN/
+purity fixed; likelihood and multiplicity posterior must remain unchanged.
+HP-aware likelihood is reserved for a separately specified Model B.
+
+The model uses exactly one tumor founder: every posterior sample and
+`representative_tree.json` must contain exactly one `tumor_root` child. `K`
+is fixed candidate-clone count, so every sample exposes exactly `K` clone
+nodes. The baseline sequencing error is fixed at `e=0.005`.
+
 ## Output contract
 
-For one chain, the output directory contains the six required artifacts:
+For one chain, the output directory contains the eight required artifacts:
 
 ```text
 samples.jsonl.gz
 multiplicity_posterior.tsv.gz
+posterior_summary.tsv.gz
+topology_summary.tsv
 diagnostics.json
 representative_tree.json
 checkpoint.json.gz
 chain_complete.json
 ```
 
-For `--chains 2`, the same six artifacts are required under `chain_01/` and
+For `--chains 2`, the same eight artifacts are required under `chain_01/` and
 `chain_02/`. Each chain's `diagnostics.json` records a distinct derived seed.
 The diagnostics also identify the finite-K compound MCMC, schema `v4`, the
 observed site count, state variables `[parents, eta, z]`, ASCAT purity, the
 CN-constrained multiplicity-marginalized site term, and its posterior output
-artifact.
+artifact. They must also expose the fixed `e=0.005` baseline and the
+eta-independence-MH Hastings correction contract.
 
 `--threads 1` and `--threads 2` must produce identical decompressed artifacts.
 If an implementation intentionally permits thread-order differences, the
