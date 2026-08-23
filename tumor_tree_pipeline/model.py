@@ -83,7 +83,13 @@ class CompiledModel:
     ref_allocation_coefficient: np.ndarray
 
     def likelihood_matrix(self, phi_values: Sequence[float]) -> np.ndarray:
-        """Evaluate all sites, clones, multiplicities, and HP-side states."""
+        """Evaluate the Model A bulk/CN/purity/multiplicity likelihood.
+
+        The HP arrays remain part of the compiled observation for schema and
+        supplementary-data compatibility, but Model A deliberately does not
+        score them.  The conditional HP helper below is reserved for a future
+        Model B and must not be folded into this primary emission.
+        """
 
         phi_values = np.asarray(phi_values, dtype=float)
         if phi_values.ndim != 1 or np.any(phi_values < 0.0) or np.any(phi_values > 1.0):
@@ -97,53 +103,6 @@ class CompiledModel:
         purity = self.data.purity
         error = DEFAULT_ERROR_RATE
         denominator = (1.0 - purity) * 2.0 + purity * total_cn
-        hp1_ref = self.hp1_ref[:, None]
-        hp1_alt = self.hp1_alt[:, None]
-        hp2_ref = self.hp2_ref[:, None]
-        hp2_alt = self.hp2_alt[:, None]
-        tagged = hp1_ref + hp1_alt + hp2_ref + hp2_alt
-        has_hp = tagged[:, 0] > 0
-        depth = ref + alt
-        tag_fraction = np.clip(tagged / depth, 1e-9, 1.0 - 1e-9)
-        half_tag = tag_fraction * 0.5
-        untagged_fraction = 1.0 - tag_fraction
-        untag_alt = alt - hp1_alt - hp2_alt
-        untag_ref = ref - hp1_ref - hp2_ref
-        q_ref = np.full((n_sites, len(self.multiplicities)), error, dtype=float)
-
-        def allocation(
-            hp1_q: np.ndarray, hp2_q: np.ndarray, q_bulk: np.ndarray
-        ) -> np.ndarray:
-            alt_weights = np.stack(
-                [half_tag * hp1_q, half_tag * hp2_q, untagged_fraction * q_bulk], axis=2
-            )
-            ref_weights = np.stack(
-                [half_tag * (1.0 - hp1_q), half_tag * (1.0 - hp2_q),
-                 untagged_fraction * (1.0 - q_bulk)],
-                axis=2,
-            )
-            alt_weights /= np.maximum(1e-300, alt_weights.sum(axis=2, keepdims=True))
-            ref_weights /= np.maximum(1e-300, ref_weights.sum(axis=2, keepdims=True))
-            alt_counts = np.stack(
-                [np.broadcast_to(hp1_alt, q_bulk.shape),
-                 np.broadcast_to(hp2_alt, q_bulk.shape),
-                 np.broadcast_to(untag_alt, q_bulk.shape)],
-                axis=2,
-            )
-            ref_counts = np.stack(
-                [np.broadcast_to(hp1_ref, q_bulk.shape),
-                 np.broadcast_to(hp2_ref, q_bulk.shape),
-                 np.broadcast_to(untag_ref, q_bulk.shape)],
-                axis=2,
-            )
-            value = (
-                self.alt_allocation_coefficient[:, None]
-                + np.sum(alt_counts * np.log(np.clip(alt_weights, 1e-300, 1.0)), axis=2)
-                + self.ref_allocation_coefficient[:, None]
-                + np.sum(ref_counts * np.log(np.clip(ref_weights, 1e-300, 1.0)), axis=2)
-            )
-            value[~has_hp, :] = 0.0
-            return value
 
         for node_index, phi in enumerate(phi_values):
             cellular_fraction = purity * phi * multiplicities / denominator
@@ -153,10 +112,7 @@ class CompiledModel:
                 + alt * np.log(q_bulk)
                 + ref * np.log1p(-q_bulk)
             )
-            hp_side0 = allocation(q_bulk, q_ref, q_bulk)
-            hp_side1 = allocation(q_ref, q_bulk, q_bulk)
-            hp = np.logaddexp(math.log(0.5) + hp_side0, math.log(0.5) + hp_side1)
-            components = self.log_prior + bulk + hp
+            components = self.log_prior + bulk
             top = np.max(components, axis=1)
             result[:, node_index] = top + np.log(
                 np.sum(np.exp(components - top[:, None]), axis=1)
@@ -470,30 +426,31 @@ def conditional_hp_log_likelihood(
 def _multiplicity_log_components(
     site: SiteObservation, phi: float, *, error_rate: float = DEFAULT_ERROR_RATE
 ) -> list[float]:
+    """Return Model A multiplicity components for one site and clone fraction.
+
+    HP counts are intentionally absent.  They are validated and retained as
+    supplementary observations by the loader, while ``conditional_hp_log_likelihood``
+    remains available for a separately specified Model B.
+    """
+
     if not 0.0 <= phi <= 1.0:
         return [float("-inf")] * len(site.multiplicities)
     components: list[float] = []
     for multiplicity, prior in zip(site.multiplicities, site.multiplicity_prior):
         bulk = bulk_log_likelihood(site, phi, multiplicity, error_rate=error_rate)
-        hp0 = conditional_hp_log_likelihood(
-            site, phi, multiplicity, 0, error_rate=error_rate
-        )
-        hp1 = conditional_hp_log_likelihood(
-            site, phi, multiplicity, 1, error_rate=error_rate
-        )
-        hp_marginal = logsumexp((math.log(0.5) + hp0, math.log(0.5) + hp1))
-        components.append(math.log(prior) + bulk + hp_marginal)
+        components.append(math.log(prior) + bulk)
     return components
 
 
 def site_multiplicity_posterior(
     site: SiteObservation, phi: float, *, error_rate: float = DEFAULT_ERROR_RATE
 ) -> tuple[float, ...]:
-    """Return ``P(m | D, H, CN, purity, phi)`` for loader-derived candidates.
+    """Return ``P(m | D, CN, purity, phi)`` for loader-derived candidates.
 
     This is a model-implied latent-state posterior responsibility.  It does
     not overwrite the observed ``alt_reads / total_reads`` fraction and does
-    not add a multiplicity column to the canonical input table.
+    not add a multiplicity column to the canonical input table.  HP counts are
+    supplementary data and are intentionally excluded from Model A.
     """
 
     components = _multiplicity_log_components(site, phi, error_rate=error_rate)
@@ -506,7 +463,7 @@ def site_multiplicity_posterior(
 def site_log_likelihood(
     site: SiteObservation, phi: float, *, error_rate: float = DEFAULT_ERROR_RATE
 ) -> float:
-    """Marginalize the CN-constrained multiplicity candidates and HP side."""
+    """Marginalize CN-constrained multiplicity candidates for Model A."""
 
     components = _multiplicity_log_components(site, phi, error_rate=error_rate)
     return logsumexp(components)

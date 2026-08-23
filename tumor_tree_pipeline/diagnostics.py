@@ -222,6 +222,11 @@ def summarize_chains(chain_results: Sequence[Mapping[str, Any]]) -> dict[str, An
         series = [np.sort(draws, axis=1)[:, ::-1][:, rank] for draws in prevalence]
         metrics = rank_normalized_split_folded_rhat(series)
         metrics.update(bulk_tail_ess(series))
+        if not all(math.isfinite(float(value)) for value in metrics.values()):
+            raise DiagnosticError(
+                "chain diagnostics contain non-finite R-hat/ESS; "
+                "the chain is not eligible for convergence reporting"
+            )
         rank_metrics[f"prevalence_rank_{rank + 1}"] = metrics
 
     assignment = minimum_assignment_agreement(
@@ -261,12 +266,14 @@ def strict_holdout_predictive_metrics(
 ) -> dict[str, float]:
     """Score sites excluded from fitting under the posterior clone mixture.
 
-    The log score uses the complete bulk+conditional-HP emission. Coverage is
-    the central 90% interval of the posterior VAF mixture, using the sampler's
-    local clone masses when present. Holdout prediction starts from the
-    CN-constrained candidate prior because holdout sites are excluded from
-    fitting; fitted-site multiplicity responsibilities are emitted separately
-    by the C++ sampler.
+    The strict score uses the Model A bulk/CN/purity/multiplicity emission.
+    HP counts are retained in the canonical table and validated by the loader,
+    but are not used by this predictive score. Coverage is the central 90%
+    interval of the posterior VAF mixture, using the sampler's local clone
+    masses when present. Holdout prediction starts from the CN-constrained
+    candidate prior because holdout sites are excluded from fitting;
+    fitted-site multiplicity responsibilities are emitted separately by the
+    C++ sampler.
     """
 
     from .model import ModelData, compile_model, expected_alt_probability, load_model_table
@@ -295,6 +302,9 @@ def strict_holdout_predictive_metrics(
         else:
             raise DiagnosticError("sample is missing eta; legacy occupancy-only artifacts are unsupported")
         weights /= weights.sum()
+        # ``CompiledModel.likelihood_matrix`` is the single Model A scoring
+        # path, so strict holdout cannot accidentally introduce an unvalidated
+        # HP likelihood term.
         matrix = compiled.likelihood_matrix(phi)
         sample_scores.append(scipy_logsumexp(matrix + np.log(weights)[None, :], axis=1))
         phi_draws.append(phi)

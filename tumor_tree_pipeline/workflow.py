@@ -665,6 +665,13 @@ def _default_chain_runner(
     holdout_ids = _read_identifier_file(holdout_path)
     complete = output_dir / "chain_complete.json"
     if resume and complete.is_file():
+        from .cpp_backend import _ARTIFACTS
+
+        missing = [name for name in _ARTIFACTS if not (output_dir / name).is_file()]
+        if missing:
+            raise WorkflowError(
+                "completed chain is missing current output artifacts: " + ", ".join(missing)
+            )
         checkpoint = output_dir / "checkpoint.json.gz"
         payload = _checkpoint_payload(checkpoint)
         if int(payload.get("next_iteration", -1)) != config.iterations:

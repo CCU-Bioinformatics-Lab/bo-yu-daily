@@ -25,6 +25,8 @@ class ChainResult:
     outdir: Path
     samples: Path
     multiplicity_posterior: Path
+    posterior_summary: Path
+    topology_summary: Path
     diagnostics: Path
     representative_tree: Path
     checkpoint: Path
@@ -35,6 +37,8 @@ class ChainResult:
 _ARTIFACTS = (
     "samples.jsonl.gz",
     "multiplicity_posterior.tsv.gz",
+    "posterior_summary.tsv.gz",
+    "topology_summary.tsv",
     "diagnostics.json",
     "representative_tree.json",
     "checkpoint.json.gz",
@@ -168,6 +172,8 @@ def run_chain_cpp(
         outdir=output_path,
         samples=output_path / "samples.jsonl.gz",
         multiplicity_posterior=output_path / "multiplicity_posterior.tsv.gz",
+        posterior_summary=output_path / "posterior_summary.tsv.gz",
+        topology_summary=output_path / "topology_summary.tsv",
         diagnostics=output_path / "diagnostics.json",
         representative_tree=output_path / "representative_tree.json",
         checkpoint=output_path / "checkpoint.json.gz",
