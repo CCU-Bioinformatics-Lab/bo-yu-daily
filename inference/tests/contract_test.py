@@ -290,6 +290,10 @@ def assert_smc_artifacts(output_dir: Path, *, expected_sites: int = 2) -> dict[s
     )
     check(diagnostics.get("input_schema") == SCHEMA_VERSION, "input schema is not recorded")
     check(diagnostics.get("observed_sites") == expected_sites, "observed site count is wrong")
+    check(diagnostics.get("annealing", {}).get("final_beta") == 1.0,
+          "diagnostics do not record completion at beta=1")
+    check("topology_change_rate" in diagnostics,
+          "diagnostics do not record topology change rate")
     check(
         diagnostics.get("state_variables") == ["topology", "eta"],
         "the SMC particle state must be topology/eta",

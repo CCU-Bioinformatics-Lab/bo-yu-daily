@@ -167,11 +167,18 @@ def strict_holdout_predictive_metrics(
 
 def _smc_edge_draw(sample: Mapping[str, Any]) -> list[tuple[str, str]]:
     parents = [int(parent) for parent in sample.get("parents", ())]
-    if len(parents) < 2 or parents[0] != -1:
+    if len(parents) < 2 or parents.count(-1) != 1:
         raise DiagnosticError("SMC particle has an invalid single-founder topology")
-    for child, parent in enumerate(parents[1:], start=1):
-        if not 0 <= parent < child:
+    for child, parent in enumerate(parents):
+        if parent != -1 and (not 0 <= parent < len(parents) or parent == child):
             raise DiagnosticError("SMC particle has an invalid parent index")
+        seen = {child}
+        cursor = parent
+        while cursor != -1:
+            if cursor in seen:
+                raise DiagnosticError("SMC particle topology contains a cycle")
+            seen.add(cursor)
+            cursor = parents[cursor]
     return [
         (
             "tumor_root" if parent == -1 else f"clone_{parent + 1}",
@@ -201,7 +208,7 @@ def smc_artifact_payload(
     diagnostic_payload = json.loads(diagnostics_path.read_text(encoding="utf-8"))
     if diagnostic_payload.get("algorithm") != "rao_blackwellized_annealed_smc":
         raise DiagnosticError("repeat diagnostics do not identify rao_blackwellized_annealed_smc")
-    if diagnostic_payload.get("sample_kind") != "smc_particle":
+    if diagnostic_payload.get("sample_semantics") != "smc_particle":
         raise DiagnosticError("repeat diagnostics do not identify smc_particle artifacts")
     representative = json.loads(representative_tree_path.read_text(encoding="utf-8"))
     assignment_mapping = representative.get("posterior_map_assignments", {})

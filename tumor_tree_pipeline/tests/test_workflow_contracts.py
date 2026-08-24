@@ -27,6 +27,7 @@ from tumor_tree_pipeline.workflow import (
     ExperimentConfig,
     GateFailure,
     WorkflowError,
+    _validate_simulation_gate,
     experiment_matrix,
     run_experiment,
 )
@@ -105,7 +106,18 @@ def _write_formal_prerequisites(root: Path) -> tuple[Path, Path]:
         encoding="utf-8",
     )
     simulation = root / "simulation.json"
-    simulation.write_text(json.dumps({"passed": True}) + "\n", encoding="utf-8")
+    simulation.write_text(
+        json.dumps(
+            {
+                "schema": "synthetic_recovery_gate/v1",
+                "passed": True,
+                "inference_algorithm": "rao_blackwellized_annealed_smc",
+                "validation": {"input_schema": MODEL_INPUT_SCHEMA_VERSION},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     return ps, simulation
 
 
@@ -182,6 +194,24 @@ class WorkflowContractTests(unittest.TestCase):
         )
         self.git_state = self.git_state_patch.start()
         self.addCleanup(self.git_state_patch.stop)
+
+    def test_formal_synthetic_gate_rejects_retired_input_schema(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            manifest = Path(temporary) / "synthetic_gate.json"
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "schema": "synthetic_recovery_gate/v1",
+                        "passed": True,
+                        "inference_algorithm": "rao_blackwellized_annealed_smc",
+                        "validation": {"input_schema": "hcc1395_tumor_tree_input/v2"},
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(WorkflowError, "input schema"):
+                _validate_simulation_gate(manifest)
 
     def test_cli_returns_nonzero_when_a_formal_gate_fails(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
