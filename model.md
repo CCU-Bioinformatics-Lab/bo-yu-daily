@@ -213,7 +213,7 @@ P(M_i=m | D_i, C_i, phi_z(i), rho_ASCAT)
   = softmax_m(log w_i(m))
 ```
 
-MCMC 不需要把每個 `m` 另放成一個高維 state；它在每個 retained tree／clone state 中被解析邊際化，並將 conditional responsibility 累積成 `multiplicity_posterior.tsv.gz`。因此 bulk counts 在 Model A 的 bulk emission 中使用一次，observed VAF 也不被覆寫。HP counts 若在 Model B 啟用，必須使用條件式或 read-level joint likelihood，不能未經證明地再獨立乘上一個 HP likelihood。
+SMC 不需要把每個 `m` 另放成一個高維 particle state；它在每個 particle 的 tree／clone state 中被解析邊際化，並將 conditional responsibility 累積成 `multiplicity_posterior.tsv.gz`。因此 bulk counts 在 Model A 的 bulk emission 中使用一次，observed VAF 也不被覆寫。HP counts 若在 Model B 啟用，必須使用條件式或 read-level joint likelihood，不能未經證明地再獨立乘上一個 HP likelihood。
 
 ### 3.2 Multiplicity posterior output
 
@@ -276,12 +276,12 @@ Loader必須 fail closed：
 | `eta_v` | exclusive/local clone mass；由 inference algorithm 估計或抽樣 |
 | `phi_v`／CCF | 由 `T` 與 `eta` 結構性推導的 cumulative prevalence |
 
-具體使用哪一種抽樣、最佳化或近似推理方法，見 [`inference_algo.md`](inference_algo.md)。模型本身不規定 MCMC，也不會從這批資料自動推導 ASCAT purity、major/minor CN、跨PS的全球 HP identity、CNV event timing 或唯一真實clone數。
+具體使用哪一種抽樣、最佳化或近似推理方法，見 [`inference_algo.md`](inference_algo.md)。模型本身不規定推理後端，也不會從這批資料自動推導 ASCAT purity、major/minor CN、跨PS的全球 HP identity、CNV event timing 或唯一真實clone數。
 
 ## 6. 推理演算法文件
 
 本模型文件只定義 posterior target、觀測 likelihood、prior、latent quantities
-與資料邊界，不規定要用 MCMC、MAP、Variational Inference 或其他 inference
+與資料邊界，不規定要用 SMC、MAP、Variational Inference 或其他 inference
 algorithm。當前 active algorithm、chain input/output、平行化邊界與 algorithm
 backend abstraction 見 [`inference_algo.md`](inference_algo.md)。
 
