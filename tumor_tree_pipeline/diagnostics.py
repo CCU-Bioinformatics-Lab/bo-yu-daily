@@ -245,10 +245,23 @@ def _pairwise_ccf_stability(prevalence: Sequence[np.ndarray]) -> float:
     return max(0.0, min(1.0, 1.0 - max(distances)))
 
 
-def summarize_smc_repeats(repeat_results: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
-    """Summarize independent SMC repeats without MCMC chain diagnostics."""
+def summarize_smc_repeats(
+    repeat_results: Sequence[Mapping[str, Any]],
+    *,
+    allow_single_repeat: bool = False,
+) -> dict[str, Any]:
+    """Summarize SMC repeats without MCMC chain diagnostics.
 
-    if len(repeat_results) < 2:
+    A quick pilot may intentionally contain one repeat to measure the full
+    data path.  In that mode per-repeat SMC diagnostics are still reported,
+    while repeat-to-repeat stability metrics are explicitly marked as not
+    evaluated.  Normal pilot and formal callers keep the strict two-repeat
+    contract by leaving ``allow_single_repeat`` false.
+    """
+
+    if not repeat_results:
+        raise DiagnosticError("SMC diagnostics require at least one independent repeat")
+    if len(repeat_results) < 2 and not allow_single_repeat:
         raise DiagnosticError("SMC diagnostics require at least two independent repeats")
     prevalence = [np.asarray(result["prevalence_draws"], dtype=float) for result in repeat_results]
     if any(values.ndim != 2 or values.shape[1] == 0 for values in prevalence):
@@ -290,9 +303,22 @@ def summarize_smc_repeats(repeat_results: Sequence[Mapping[str, Any]]) -> dict[s
     log_scores = [float(result["predictive_log_score"]) for result in repeat_results]
     if not np.isfinite(coverages).all() or not np.isfinite(log_scores).all():
         raise DiagnosticError("SMC holdout coverage and log scores must be finite")
-    ccf_stability = _pairwise_ccf_stability(prevalence)
+    repeat_stability_evaluated = len(repeat_results) >= 2
+    if repeat_stability_evaluated:
+        ccf_stability: float | None = _pairwise_ccf_stability(prevalence)
+        min_assignment_agreement: float | None = minimum_assignment_agreement(
+            [list(result["assignment_map"]) for result in repeat_results]
+        )
+        max_edge_support_difference: float | None = maximum_edge_support_difference(
+            [list(result["edge_draws"]) for result in repeat_results]
+        )
+    else:
+        ccf_stability = None
+        min_assignment_agreement = None
+        max_edge_support_difference = None
     return {
         "repeat_count": len(repeat_results),
+        "repeat_stability_evaluated": repeat_stability_evaluated,
         "finite_k": node_count,
         "repeat_metrics": repeat_metrics,
         "min_conditional_ess_fraction": min(item["conditional_ess_fraction"] for item in repeat_metrics),
@@ -302,12 +328,8 @@ def summarize_smc_repeats(repeat_results: Sequence[Mapping[str, Any]]) -> dict[s
         "min_eta_acceptance": min(item["eta_acceptance"] for item in repeat_metrics),
         "min_topology_acceptance": min(item["topology_acceptance"] for item in repeat_metrics),
         "ccf_stability": ccf_stability,
-        "min_assignment_agreement": minimum_assignment_agreement(
-            [list(result["assignment_map"]) for result in repeat_results]
-        ),
-        "max_edge_support_difference": maximum_edge_support_difference(
-            [list(result["edge_draws"]) for result in repeat_results]
-        ),
+        "min_assignment_agreement": min_assignment_agreement,
+        "max_edge_support_difference": max_edge_support_difference,
         "predictive_coverage_by_repeat": coverages,
         "predictive_log_score_by_repeat": log_scores,
         "min_predictive_log_score": min(log_scores),
@@ -365,10 +387,14 @@ def evaluate_smc_gates(
 def pilot_smc_report(diagnostics: Mapping[str, Any]) -> dict[str, Any]:
     """Report pilot particle diagnostics without treating them as convergence gates."""
 
-    return {
+    report = {
         "pilot_particle_diversity": float(diagnostics["min_particle_diversity"]),
         "pilot_ancestor_diversity": float(diagnostics["min_ancestor_diversity"]),
-        "pilot_ccf_stability": float(diagnostics["ccf_stability"]),
         "formal_gate_not_evaluated": True,
         "smc_particle_gate": True,
     }
+    if diagnostics.get("repeat_stability_evaluated") is True:
+        report["pilot_ccf_stability"] = float(diagnostics["ccf_stability"])
+    else:
+        report["pilot_repeat_stability"] = "not_evaluated_single_repeat"
+    return report

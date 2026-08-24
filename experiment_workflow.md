@@ -144,7 +144,9 @@ python3 -m tumor_tree_pipeline run \
 
 Quick pilot 固定 `K=6`、1 repeat、64 particles、16 annealing stages。它只用來量測
 full-data pipeline 的基本執行成本與中止 receipt，不執行 formal gates，也不產生可
-引用的 HCC1395 tree claim。
+引用的 HCC1395 tree claim。單次 repeat 仍會驗證 SMC particle、beta=1、particle
+diversity 與 holdout score；CCF／assignment／edge 的 repeat stability 會明確標記為
+未評估。一般 pilot 與 formal 仍需要至少兩個 independent repeats。
 
 2026-08-24 的 quick pilot 嘗試在第一個 repeat 尚未產生 C++ artifact 時被中止；
 30,490-site sequential likelihood 顯示這組參數仍不足以稱為快速流程。該 run 應保留

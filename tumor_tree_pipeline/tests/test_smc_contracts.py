@@ -7,7 +7,12 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from tumor_tree_pipeline.diagnostics import _smc_edge_draw, smc_artifact_payload
+from tumor_tree_pipeline.diagnostics import (
+    DiagnosticError,
+    _smc_edge_draw,
+    smc_artifact_payload,
+    summarize_smc_repeats,
+)
 from tumor_tree_pipeline.tests.smc_contract_fixture import (
     SMC_ARTIFACTS,
     assert_smc_artifacts,
@@ -16,6 +21,33 @@ from tumor_tree_pipeline.tests.smc_contract_fixture import (
 
 
 class SyntheticSMCContractTests(unittest.TestCase):
+    def test_single_repeat_is_only_allowed_for_explicit_quick_pilot_mode(self) -> None:
+        result = {
+            "prevalence_draws": [[0.8, 0.2], [0.7, 0.3]],
+            "assignment_map": ["clone_1", "clone_2"],
+            "edge_draws": [[("tumor_root", "clone_1")]],
+            "predictive_coverage": 0.9,
+            "predictive_log_score": -1.0,
+            "smc_diagnostics": {
+                "algorithm": "rao_blackwellized_annealed_smc",
+                "annealing": {"final_beta": 1.0},
+                "conditional_ess_fraction": 0.8,
+                "weighted_particle_ess_fraction": 0.8,
+                "particle_diversity": 0.5,
+                "ancestor_diversity": 0.5,
+                "eta_acceptance": 0.2,
+                "topology_acceptance": 0.2,
+                "topology_change_rate": 0.2,
+            },
+        }
+        with self.assertRaisesRegex(DiagnosticError, "at least two"):
+            summarize_smc_repeats([result])
+        diagnostics = summarize_smc_repeats([result], allow_single_repeat=True)
+        self.assertFalse(diagnostics["repeat_stability_evaluated"])
+        self.assertIsNone(diagnostics["ccf_stability"])
+        self.assertIsNone(diagnostics["min_assignment_agreement"])
+        self.assertIsNone(diagnostics["max_edge_support_difference"])
+
     def test_minimal_fixture_is_complete_and_deterministic(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
