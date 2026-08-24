@@ -26,7 +26,11 @@ read.
 The tests verify that changing only supplementary HP allocation does not
 change the Model A likelihood or multiplicity posterior, that every particle
 has one tumor founder, that `phi` is the descendant sum of `eta`, and that
-beta reaches one with valid ESS/resampling/rejuvenation diagnostics.
+beta reaches one with valid ESS/resampling/rejuvenation diagnostics. They also
+protect the active optimized backend's existing artifact semantics, exact
+`threads=1`/`threads=2` output equivalence, deterministic seed/repeat
+reproduction, and a bounded-work performance smoke without a wall-clock
+threshold.
 
 ## Output contract
 

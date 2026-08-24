@@ -56,6 +56,14 @@ different derived seeds. `--threads` controls repeat parallelism and the
 site scorer without nested oversubscription. `--resume` only accepts a
 completed immutable repeat; an unfinished checkpoint is fail-closed.
 
+The active scorer precomputes phi-independent emission constants while loading
+the table, reuses site/node scratch buffers, and caches site/node emissions for
+topology proposals. For a single repeat and a sufficiently large site table,
+the likelihood and topology workspace use persistent deterministic workers;
+the final site-index reduction remains ordered so thread count does not change
+the public posterior artifacts. Build the backend as `Release` before timing
+or running a pilot; a `Debug` build can dominate the measured runtime.
+
 ## Input contract
 
 The loader requires schema `hcc1395_tumor_tree_input/v4`:

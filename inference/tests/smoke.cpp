@@ -1,11 +1,14 @@
 #include "tumor_tree_inference/registry.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 #include <zlib.h>
 
@@ -59,6 +62,28 @@ void gzip_copy(const std::filesystem::path& input_path, const std::filesystem::p
 
 }  // namespace
 
+double reference_site_log_likelihood(const tumor_tree_inference::Site& site, double phi) {
+    const double denominator = (1.0 - site.purity) * 2.0 + site.purity * site.total_cn;
+    const double log_coefficient =
+        std::lgamma(static_cast<double>(site.ref_reads + site.alt_reads) + 1.0) -
+        std::lgamma(static_cast<double>(site.ref_reads) + 1.0) -
+        std::lgamma(static_cast<double>(site.alt_reads) + 1.0);
+    std::vector<double> components;
+    for (std::size_t index = 0; index < site.multiplicity_candidates.size(); ++index) {
+        const double multiplicity = static_cast<double>(site.multiplicity_candidates[index]);
+        const double cellular_fraction = site.purity * phi * multiplicity / denominator;
+        const double probability = std::clamp(0.005 + 0.99 * cellular_fraction, 1e-12, 1.0 - 1e-12);
+        components.push_back(
+            std::log(site.multiplicity_prior[index]) + log_coefficient +
+            static_cast<double>(site.alt_reads) * std::log(probability) +
+            static_cast<double>(site.ref_reads) * std::log1p(-probability));
+    }
+    const double top = *std::max_element(components.begin(), components.end());
+    double scaled_sum = 0.0;
+    for (const double component : components) scaled_sum += std::exp(component - top);
+    return top + std::log(scaled_sum);
+}
+
 int main() {
     namespace fs = std::filesystem;
     namespace tti = tumor_tree_inference;
@@ -92,6 +117,22 @@ int main() {
     }
     assert(std::abs(posterior_sum - 1.0) < 1e-12);
     assert(std::abs(multiplicity_posterior[0] - loaded.sites[2].multiplicity_prior[0]) > 1e-6);
+
+    // Independent max-scaled reference formula protects the Model A site
+    // emission meaning while its implementation is optimized.
+    for (const auto& site : loaded.sites) {
+        for (const double phi : {0.0, 0.25, 0.5, 0.75, 1.0}) {
+            assert(std::abs(tti::site_log_likelihood(site, phi) -
+                            reference_site_log_likelihood(site, phi)) < 1e-11);
+        }
+    }
+    const auto matrix_one = tti::likelihood_matrix(loaded, {0.5, 0.25}, 1);
+    const auto matrix_two = tti::likelihood_matrix(loaded, {0.5, 0.25}, 2);
+    assert(matrix_one == matrix_two);
+    for (std::size_t site = 0; site < loaded.sites.size(); ++site) {
+        assert(std::abs(matrix_one[site][0] - tti::site_log_likelihood(loaded.sites[site], 0.5)) < 1e-12);
+        assert(std::abs(matrix_one[site][1] - tti::site_log_likelihood(loaded.sites[site], 0.25)) < 1e-12);
+    }
 
     // Model A contract: HP counts remain schema-validated supplementary data
     // and must not change the bulk/CN/purity likelihood or multiplicity

@@ -133,6 +133,9 @@ def invoke(
     seed: int = 20260820,
     independent_repeats: int = 1,
     threads: int = 1,
+    annealing_stages: int = 24,
+    particles: int = 32,
+    num_nodes: int = 2,
     rho_ascat: str = "0.99",
     algorithm: str = SMC_ALGORITHM,
 ) -> subprocess.CompletedProcess[str]:
@@ -152,9 +155,11 @@ def invoke(
         "--threads",
         str(threads),
         "--annealing-stages",
-        "24",
+        str(annealing_stages),
         "--num-nodes",
-        "2",
+        str(num_nodes),
+        "--particles",
+        str(particles),
         "--rho-ascat",
         rho_ascat,
     ]
@@ -222,6 +227,31 @@ def read_jsonl_gz(path: Path) -> list[dict[str, Any]]:
 def decompressed_bytes(path: Path) -> bytes:
     with gzip.open(path, "rb") as handle:
         return handle.read()
+
+
+def public_output_semantics(output_dir: Path) -> dict[str, Any]:
+    """Return parsed public artifacts, ignoring gzip/runtime-only encoding.
+
+    The checkpoint RNG stream is an audit detail, not a posterior output
+    semantic.  Excluding it lets thread tests protect observable results
+    without coupling them to runtime-specific checkpoint metadata.
+    """
+
+    checkpoint = read_gzip_json(output_dir / "checkpoint.json.gz")
+    checkpoint.pop("rng_state", None)
+    return {
+        "samples": read_jsonl_gz(output_dir / "samples.jsonl.gz"),
+        "multiplicity_posterior": decompressed_bytes(
+            output_dir / "multiplicity_posterior.tsv.gz"
+        ),
+        "posterior_summary": decompressed_bytes(output_dir / "posterior_summary.tsv.gz"),
+        "topology_summary": (output_dir / "topology_summary.tsv").read_bytes(),
+        "diagnostics": read_json(output_dir / "diagnostics.json"),
+        "representative_tree": read_json(output_dir / "representative_tree.json"),
+        "checkpoint": checkpoint,
+        "particle_history": read_jsonl_gz(output_dir / "particle_history.jsonl.gz"),
+        "completion": read_json(output_dir / "smc_complete.json"),
+    }
 
 
 def _ancestor_path(parents: list[int], node: int) -> set[int]:
@@ -439,6 +469,45 @@ def assert_failed_output_is_not_complete(path: Path) -> None:
     )
 
 
+def test_optimized_backend_preserves_existing_output_semantics(binary: Path, root: Path) -> None:
+    """The active optimized CLI keeps the Python-facing SMC artifact contract."""
+
+    canonical = root / "canonical_output_semantics.tsv"
+    output = root / "optimized_output_semantics"
+    write_tsv(canonical, fixture_rows(sites=3), REQUIRED_COLUMNS)
+    assert_success(
+        invoke(
+            binary,
+            input_path=canonical,
+            output_path=output,
+            annealing_stages=8,
+            particles=12,
+        ),
+        "optimized backend output semantics",
+    )
+
+    diagnostics = assert_smc_artifacts(output, expected_sites=3)
+    samples = read_jsonl_gz(output / "samples.jsonl.gz")
+    history = read_jsonl_gz(output / "particle_history.jsonl.gz")
+    stages = diagnostics["annealing"]["stages"]
+    completion = read_json(output / "smc_complete.json")
+    check(diagnostics.get("posterior_samples") == 12, "optimized backend changed posterior sample count")
+    check(diagnostics.get("particle_count") == 12, "optimized backend changed particle count semantics")
+    check(len(samples) == 12, "optimized backend did not publish one sample per particle")
+    check(
+        all("z" not in sample and sample.get("sample_kind") == "smc_particle" for sample in samples),
+        "optimized backend exposed legacy assignment/MCMC sample semantics",
+    )
+    check(
+        len(history) == len(stages) * len(samples),
+        "optimized backend particle history is not stage-by-particle bounded",
+    )
+    check(
+        set(ARTIFACTS).issubset(set(completion.get("artifacts", []))),
+        "optimized backend completion manifest changed existing artifact semantics",
+    )
+
+
 def test_model_a_ignores_hp_counts(binary: Path, root: Path) -> None:
     canonical = root / "canonical.tsv"
     shifted = root / "canonical_hp_shift.tsv"
@@ -493,17 +562,42 @@ def test_particle_thread_policy(binary: Path, root: Path) -> None:
     )
     diag_one = assert_smc_artifacts(one)
     diag_two = assert_smc_artifacts(two)
-    # Final equally weighted particles are the deterministic cross-thread contract.
-    # Checkpoint is an audit/state snapshot and must not be compared byte-for-
-    # byte because runtime metadata may legitimately differ.
+    # Compare parsed public artifacts rather than compressed bytes.  This
+    # protects output semantics while allowing gzip/runtime encoding details
+    # to change.
     check(
-        decompressed_bytes(one / "samples.jsonl.gz")
-        == decompressed_bytes(two / "samples.jsonl.gz"),
-        "threads=1 and threads=2 changed retained posterior samples",
+        public_output_semantics(one) == public_output_semantics(two),
+        "threads=1 and threads=2 changed public output semantics",
     )
     check(
         diag_one.get("config", {}).get("seed") == diag_two.get("config", {}).get("seed"),
         "thread comparison changed the requested seed",
+    )
+
+    # Exercise the active site-parallel scorer threshold as well as the
+    # repeat-parallel path above.  The public posterior must remain identical
+    # when deterministic site work is moved between workers.
+    parallel_canonical = root / "canonical_site_parallel.tsv"
+    parallel_one = root / "site_parallel_threads_1"
+    parallel_two = root / "site_parallel_threads_2"
+    write_tsv(parallel_canonical, fixture_rows(sites=1024), REQUIRED_COLUMNS)
+    for output, thread_count in ((parallel_one, 1), (parallel_two, 2)):
+        assert_success(
+            invoke(
+                binary,
+                input_path=parallel_canonical,
+                output_path=output,
+                threads=thread_count,
+                annealing_stages=4,
+                particles=4,
+                num_nodes=2,
+            ),
+            f"site scorer threads={thread_count}",
+        )
+        assert_smc_artifacts(output, expected_sites=1024)
+    check(
+        public_output_semantics(parallel_one) == public_output_semantics(parallel_two),
+        "site-parallel threads changed public output semantics",
     )
 
 
@@ -525,6 +619,76 @@ def test_independent_repeats_have_distinct_seeded_particles(binary: Path, root: 
     check(seed_one != seed_two, "independent SMC repeats reused the same seed")
     check(diag_one.get("sample_semantics") == "smc_particle", "repeat_01 lacks particle semantics")
     check(diag_two.get("sample_semantics") == "smc_particle", "repeat_02 lacks particle semantics")
+
+
+def test_seed_and_repeat_are_deterministic(binary: Path, root: Path) -> None:
+    canonical = root / "canonical_seed_repeat.tsv"
+    first = root / "seed_repeat_first"
+    second = root / "seed_repeat_second"
+    write_tsv(canonical, fixture_rows(sites=3), REQUIRED_COLUMNS)
+
+    for output in (first, second):
+        assert_success(
+            invoke(
+                binary,
+                input_path=canonical,
+                output_path=output,
+                seed=20260824,
+                independent_repeats=2,
+                threads=2,
+                annealing_stages=8,
+                particles=12,
+            ),
+            f"deterministic two-repeat run: {output.name}",
+        )
+
+    repeat_seeds: list[int] = []
+    for repeat_index in (1, 2):
+        first_repeat = first / f"repeat_{repeat_index:02d}"
+        second_repeat = second / f"repeat_{repeat_index:02d}"
+        first_diagnostics = assert_smc_artifacts(first_repeat, expected_sites=3)
+        second_diagnostics = assert_smc_artifacts(second_repeat, expected_sites=3)
+        first_seed = first_diagnostics.get("derived_seed")
+        second_seed = second_diagnostics.get("derived_seed")
+        check(isinstance(first_seed, int) and isinstance(second_seed, int), "repeat seed is not recorded")
+        check(first_seed == second_seed, "same seed/repeat index produced different derived seeds")
+        repeat_seeds.append(first_seed)
+        check(
+            public_output_semantics(first_repeat) == public_output_semantics(second_repeat),
+            f"same seed/repeat index changed output semantics for repeat_{repeat_index:02d}",
+        )
+    check(repeat_seeds[0] != repeat_seeds[1], "independent repeat indices reused the same derived seed")
+
+
+def test_performance_smoke_uses_bounded_work_contract(binary: Path, root: Path) -> None:
+    """Exercise a larger-than-minimal workload without a wall-clock threshold."""
+
+    canonical = root / "canonical_performance_smoke.tsv"
+    output = root / "performance_smoke"
+    particle_count = 16
+    max_stages = 8
+    write_tsv(canonical, fixture_rows(sites=12), REQUIRED_COLUMNS)
+    assert_success(
+        invoke(
+            binary,
+            input_path=canonical,
+            output_path=output,
+            annealing_stages=max_stages,
+            particles=particle_count,
+        ),
+        "performance smoke workload",
+    )
+
+    diagnostics = assert_smc_artifacts(output, expected_sites=12)
+    stages = diagnostics["annealing"]["stages"]
+    history = read_jsonl_gz(output / "particle_history.jsonl.gz")
+    check(diagnostics.get("particle_count") == particle_count, "performance smoke changed requested particle work")
+    check(diagnostics.get("posterior_samples") == particle_count, "performance smoke did not complete the particle population")
+    check(1 <= len(stages) <= max_stages, "performance smoke exceeded its configured annealing work bound")
+    check(
+        len(history) == len(stages) * particle_count,
+        "performance smoke particle history is not bounded by stage x particle work",
+    )
 
 
 def test_fail_closed(binary: Path, root: Path) -> None:
@@ -594,9 +758,12 @@ def run(binary: Path) -> None:
     check(binary.stat().st_mode & 0o111, f"inference binary is not executable: {binary}")
     with tempfile.TemporaryDirectory(prefix="inference-contract-") as temporary:
         root = Path(temporary)
+        test_optimized_backend_preserves_existing_output_semantics(binary, root)
         test_model_a_ignores_hp_counts(binary, root)
         test_particle_thread_policy(binary, root)
         test_independent_repeats_have_distinct_seeded_particles(binary, root)
+        test_seed_and_repeat_are_deterministic(binary, root)
+        test_performance_smoke_uses_bounded_work_contract(binary, root)
         test_fail_closed(binary, root)
 
 
@@ -609,7 +776,10 @@ def main(argv: list[str] | None = None) -> int:
     except ContractFailure as exc:
         print(f"inference contract FAILED: {exc}", file=sys.stderr)
         return 1
-    print("inference contract PASSED: schema, particles, annealing, weighted-ESS, rejuvenation, artifacts, fail-closed")
+    print(
+        "inference contract PASSED: output semantics, schema, particles, annealing, "
+        "threads, deterministic seed/repeats, bounded performance smoke, fail-closed"
+    )
     return 0
 
 

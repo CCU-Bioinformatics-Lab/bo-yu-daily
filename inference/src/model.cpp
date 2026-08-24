@@ -182,16 +182,32 @@ std::size_t column_index(const std::vector<std::string>& header, const std::stri
     return static_cast<std::size_t>(found - header.begin());
 }
 
-double log_binomial(int ref, int alt, double probability) {
-    probability = std::clamp(probability, 1e-12, 1.0 - 1e-12);
+double log_binomial_coefficient(int ref, int alt) {
     const std::int64_t total = static_cast<std::int64_t>(ref) + static_cast<std::int64_t>(alt);
     return std::lgamma(static_cast<double>(total) + 1.0) - std::lgamma(static_cast<double>(ref) + 1.0) -
-           std::lgamma(static_cast<double>(alt) + 1.0) + static_cast<double>(alt) * std::log(probability) +
-           static_cast<double>(ref) * std::log1p(-probability);
+           std::lgamma(static_cast<double>(alt) + 1.0);
+}
+
+double log_binomial(const Site& site, double probability) {
+    probability = std::clamp(probability, 1e-12, 1.0 - 1e-12);
+    const double coefficient = site.log_binomial_coefficient != 0.0
+        ? site.log_binomial_coefficient
+        : log_binomial_coefficient(site.ref_reads, site.alt_reads);
+    return coefficient + static_cast<double>(site.alt_reads) * std::log(probability) +
+           static_cast<double>(site.ref_reads) * std::log1p(-probability);
+}
+
+double log_multiplicity_prior(const Site& site, std::size_t index) {
+    if (site.log_multiplicity_prior.size() == site.multiplicity_prior.size()) {
+        return site.log_multiplicity_prior[index];
+    }
+    return std::log(site.multiplicity_prior[index]);
 }
 
 double expected_alt_probability(const Site& site, double phi, int multiplicity) {
-    const double denominator = (1.0 - site.purity) * 2.0 + site.purity * site.total_cn;
+    const double denominator = site.purity_cn_denominator > 0.0
+        ? site.purity_cn_denominator
+        : (1.0 - site.purity) * 2.0 + site.purity * site.total_cn;
     const double cellular_fraction = site.purity * phi * static_cast<double>(multiplicity) / denominator;
     return std::clamp(kErrorRate + (1.0 - 2.0 * kErrorRate) * cellular_fraction, 1e-12, 1.0 - 1e-12);
 }
@@ -205,12 +221,12 @@ std::vector<double> multiplicity_log_components(const Site& site, double phi) {
     for (std::size_t i = 0; i < site.multiplicity_candidates.size(); ++i) {
         const int multiplicity = site.multiplicity_candidates[i];
         const double q_bulk = expected_alt_probability(site, phi, multiplicity);
-        const double bulk = log_binomial(site.ref_reads, site.alt_reads, q_bulk);
+        const double bulk = log_binomial(site, q_bulk);
         // Model A deliberately uses the bulk count once.  HP counts are
         // loaded and conservation-checked above, but their tagged reads are
         // derived from the same ALT evidence and require a separate Model B
         // generative/error model before they can affect the primary target.
-        components.push_back(std::log(site.multiplicity_prior[i]) + bulk);
+        components.push_back(log_multiplicity_prior(site, i) + bulk);
     }
     return components;
 }
@@ -238,12 +254,23 @@ std::vector<double> site_multiplicity_posterior(const Site& site, double phi) {
 }
 
 double site_log_likelihood(const Site& site, double phi) {
-    const auto components = multiplicity_log_components(site, phi);
-    if (components.empty()) return -std::numeric_limits<double>::infinity();
-    const double top = *std::max_element(components.begin(), components.end());
+    if (!(phi >= 0.0 && phi <= 1.0) || !std::isfinite(phi) || site.multiplicity_candidates.empty()) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    double top = -std::numeric_limits<double>::infinity();
+    for (std::size_t i = 0; i < site.multiplicity_candidates.size(); ++i) {
+        const double q_bulk = expected_alt_probability(site, phi, site.multiplicity_candidates[i]);
+        const double component = log_multiplicity_prior(site, i) + log_binomial(site, q_bulk);
+        top = std::max(top, component);
+    }
     if (!std::isfinite(top)) return top;
     double scaled_sum = 0.0;
-    for (const double component : components) scaled_sum += std::exp(component - top);
+    for (std::size_t i = 0; i < site.multiplicity_candidates.size(); ++i) {
+        const double q_bulk = expected_alt_probability(site, phi, site.multiplicity_candidates[i]);
+        const double component = log_multiplicity_prior(site, i) + log_binomial(site, q_bulk);
+        scaled_sum += std::exp(component - top);
+    }
+    if (!(scaled_sum > 0.0) || !std::isfinite(scaled_sum)) return -std::numeric_limits<double>::infinity();
     return top + std::log(scaled_sum);
 }
 
@@ -306,9 +333,14 @@ CanonicalTable load_canonical_table(const std::filesystem::path& path,
         if (site.minor_cn < 0.0 || site.major_cn < site.minor_cn || site.total_cn <= 0.0 || std::abs(site.major_cn + site.minor_cn - site.total_cn) > 1e-6) throw std::runtime_error("row " + id + " has invalid ASCAT CN state");
         site.purity = parse_number(field("rho_ASCAT"), "rho_ASCAT", id);
         if (!(site.purity > 0.0 && site.purity <= 1.0) || std::abs(site.purity - requested_purity) > 1e-9) throw std::runtime_error("row " + id + " rho_ASCAT disagrees with requested purity");
+        site.log_binomial_coefficient = log_binomial_coefficient(site.ref_reads, site.alt_reads);
+        site.purity_cn_denominator = (1.0 - site.purity) * 2.0 + site.purity * site.total_cn;
+        if (!(site.purity_cn_denominator > 0.0) || !std::isfinite(site.purity_cn_denominator)) throw std::runtime_error("row " + id + " has invalid purity/CN denominator");
         auto multiplicity = derive_multiplicity_distribution(site.major_cn, site.minor_cn, id);
         site.multiplicity_candidates = std::move(multiplicity.candidates);
         site.multiplicity_prior = std::move(multiplicity.prior);
+        site.log_multiplicity_prior.reserve(site.multiplicity_prior.size());
+        for (const double prior : site.multiplicity_prior) site.log_multiplicity_prior.push_back(std::log(prior));
         if (static_cast<double>(site.multiplicity_candidates.back()) > site.major_cn + 1e-9) throw std::runtime_error("row " + id + " derived multiplicity exceeds major_cn");
         if (!excluded.count(id)) table.sites.push_back(std::move(site));
     }
