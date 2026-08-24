@@ -12,8 +12,8 @@
 
 第一版的目標不是一次建立完整的「腫瘤演化樹高可信度認證系統」，而是先建立一個穩定、可擴充、**不侵入目前 model 與 SMC inference 實作**的 validation scaffold，作為之後修改：
 
-- raw BAM / VCF input
-- purity / CNV / LOH genome-state model
+- canonical observation and model-input artifacts
+- purity / CNV / LOH compatibility artifacts
 - SMC inference
 - likelihood
 - tree topology representation
@@ -100,46 +100,12 @@ validation：
 
 # 3. 為什麼先實作 validation scaffold
 
-後續預計會把現有：
+未來若要改動上游資料準備或 genome-state model，必須另開設計階段；這些上游輸入框架目前不屬於 `validation.md`。
 
-```text
-external purity / CNV / LOH
-          │
-          ▼
-       model
-          │
-          ▼
-         SMC
-```
+目前 validation 只建立 output-level baseline，檢查問題來源是否可能來自：
 
-逐步改成：
-
-```text
-normal BAM + tumor BAM + VCF
-              │
-              ▼
-        raw genomic evidence
-              │
-              ▼
-     genome-state inference
-              │
-      purity / CN / LOH
-         posterior
-              │
-              ▼
-       tumor evolution model
-              │
-              ▼
-             SMC
-```
-
-這會同時影響 `data input`、`model`、`inference_algo`。
-
-因此在大改前必須先保存一套 baseline validation，否則改完之後即使 tree 發生變化，也很難判斷問題來自：
-
-- BAM evidence extraction
-- CN inference
-- purity/ploidy ambiguity
+- canonical observation artifact
+- purity/CN/LOH compatibility artifact
 - mutation multiplicity
 - likelihood
 - SMC proposal
@@ -147,7 +113,7 @@ normal BAM + tumor BAM + VCF
 - tree model
 - output conversion
 
-第一版 validation 的角色就是建立這個 baseline。
+第一版 validation 的角色就是建立這個 output-level baseline。
 
 ---
 
@@ -195,21 +161,17 @@ VAF_{is}^{obs}
 \frac{ALT_{is}}{ALT_{is}+REF_{is}}
 $$
 
-第一版 validation 不要求自己重新讀 BAM。
-
-也就是：
+第一版 validation 不重新產生 observation counts；它只讀取已經存在的 canonical observation artifact，再與 posterior 和 diagnostics 對照。
 
 ```text
-BAM
- ↓
-existing data input
- ↓
-ALT / REF artifact
- ↓
-validation
+canonical observation artifact
+              ↓
+       model / inference output
+              ↓
+          validation
 ```
 
-validation 不重複實作 pileup。
+上游資料準備與 observation extraction 不在本模組內重複實作。
 
 ---
 
@@ -363,7 +325,7 @@ Nature Biotechnology, 2024.
 
 - 31 個 subclonal reconstruction algorithms。
 - 51 個 simulated tumors。
-- 從 tumor/normal BAM level 建立 realistic simulation。
+- 從原始定序層級建立 realistic simulation。
 - 將 purity、subclone number、cellular prevalence、mutation clustering、phylogeny 分開評估。
 - clustering / phylogeny 同時區分 hard 與 probabilistic output。
 
@@ -386,16 +348,14 @@ Nature Biotechnology, 2020.
 
 重點：
 
-- realistic BAM-level tumor simulation。
+- realistic raw-sequencing-level tumor simulation。
 - mutation / copy-number error 對 downstream reconstruction accuracy 的影響。
-- 提供 BAMSurgeon / scoring harness 等基礎資源。
+- 提供 scoring harness 等基礎資源。
 
 來源：
 
 - https://www.nature.com/articles/s41587-019-0364-z
-- https://github.com/adamewing/bamsurgeon
-
-本資料主要保留給未來 raw BAM / CNV / purity benchmark，MVP 不依賴它。
+本資料主要保留給未來 raw-sequencing / CNV / purity benchmark，MVP 不依賴它。
 
 ---
 
@@ -1613,7 +1573,7 @@ predictive = NOT_APPLICABLE
 
 ## Phase 6 — Genome-state validation
 
-當未來加入 BAM → purity / CN / LOH posterior 後，再新增：
+當未來的 genome-state posterior artifact 與 uncertainty interface 穩定後，再新增：
 
 ```text
 purity accuracy / calibration
@@ -1661,10 +1621,9 @@ posterior particles
 validation
 
 
-new pipeline
-BAM evidence
+new upstream genome-state module
       ↓
-genome-state posterior
+genome-state posterior artifact
       ↓
 posterior particles
       ↓
@@ -1694,7 +1653,7 @@ native synthetic
 TSSB-like
 Pairtree simulation
 CONIPHER-like CN/mutation-loss simulation
-DREAM BAM-level simulation
+DREAM raw-sequencing-level simulation
 ```
 
 但第一版只需要：
@@ -1789,17 +1748,7 @@ predictive_residuals.tsv (optional)
 
 **先停止擴充 validation metrics。**
 
-下一個 major architecture task 再進入：
-
-```text
-Data Contract v2
-        ↓
-raw BAM / VCF evidence
-        ↓
-Genome-State Model
-        ↓
-purity / CN / LOH posterior
-```
+下一個 major architecture task 才會另行定義 upstream genome-state data contract；目前不在 `validation.md` 描述其原始輸入框架。
 
 並用本 validation scaffold 作為 baseline safety net。
 
