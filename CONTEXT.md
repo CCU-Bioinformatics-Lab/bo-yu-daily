@@ -22,3 +22,9 @@
 2. validation 位於 output 之後，是 read-only 評估模組，不回寫 model、inference 或 output。
 3. bulk CN/LOH/purity 可支持 compatibility，但不能自動升級成 branch-level proof。
 4. 缺少 CNV event-to-node、driver mapping 或 joint single-cell SNV+CN evidence 時，對應 claim 保持 `UNKNOWN`。
+
+## Experiment lifecycle terms
+
+- **interrupted run**：實驗被外部中止，尚未完成所有 requested stages；它不是成功結果，也不是 sampler biological failure。
+- **stale run**：紀錄顯示仍在執行，但 heartbeat 已過期且原 process 不存在的未完成實驗。
+- **quick pilot**：用較小的 K、particle 數、annealing stages 與 repeat 數，先確認完整資料流程能跑通；不取代完整 pilot 或 formal result。

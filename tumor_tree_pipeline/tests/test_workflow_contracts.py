@@ -4,10 +4,12 @@ import csv
 import dataclasses
 import hashlib
 import json
+import os
+import signal
 import stat
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest import mock
 
@@ -16,6 +18,7 @@ from tumor_tree_pipeline.contracts import (
     MODEL_REQUIRED_COLUMNS,
     GateThresholds,
 )
+import tumor_tree_pipeline.workflow as workflow_module
 from tumor_tree_pipeline.cli import main as cli_main
 from tumor_tree_pipeline.provenance import atomic_write_text
 from tumor_tree_pipeline.tests.smc_contract_fixture import (
@@ -27,8 +30,10 @@ from tumor_tree_pipeline.workflow import (
     ExperimentConfig,
     GateFailure,
     WorkflowError,
+    _make_run_id,
     _validate_simulation_gate,
     experiment_matrix,
+    load_config,
     run_experiment,
 )
 
@@ -492,6 +497,273 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertTrue(any(call["resume"] for call in resumed_calls))
             with self.assertRaisesRegex(WorkflowError, "completed experiment is immutable"):
                 run_experiment(resumed, sampler_runner=resumed_runner, git_sha=GIT_SHA)
+
+    def test_sigint_writes_interrupted_failure_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            table, manifest, _ = _write_table_bundle(root)
+            config = ExperimentConfig(
+                output_root=root / "out",
+                table_path=table,
+                validation_manifest=manifest,
+                mode="smoke",
+            )
+
+            def interrupted_runner(**_: object) -> object:
+                os.kill(os.getpid(), signal.SIGINT)
+                raise AssertionError("SIGINT handler should interrupt the runner")
+
+            with self.assertRaisesRegex(WorkflowError, "SIGINT"):
+                run_experiment(
+                    config,
+                    sampler_runner=interrupted_runner,
+                    now=FIXED_NOW,
+                    git_sha=GIT_SHA,
+                )
+            output = next((root / "out").iterdir())
+            status = json.loads((output / "status.json").read_text(encoding="utf-8"))
+            self.assertEqual(status["status"], "interrupted")
+            self.assertEqual(status["signal"], "SIGINT")
+            self.assertEqual(status["context"]["holdout"], "none")
+            self.assertEqual(status["context"]["repeat"], 1)
+            self.assertIn("seed", status["context"])
+            self.assertTrue((output / "_FAILED").is_file())
+            self.assertFalse((output / "_SUCCESS").exists())
+            trace = [
+                json.loads(line)
+                for line in (output / "execution_trace.jsonl").read_text(encoding="utf-8").splitlines()
+            ]
+            self.assertEqual(trace[-1]["event"], "workflow_interrupted")
+
+    def test_sigterm_writes_interrupted_failure_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            table, manifest, _ = _write_table_bundle(root)
+            config = ExperimentConfig(
+                output_root=root / "out",
+                table_path=table,
+                validation_manifest=manifest,
+                mode="smoke",
+            )
+
+            def interrupted_runner(**_: object) -> object:
+                os.kill(os.getpid(), signal.SIGTERM)
+                raise AssertionError("SIGTERM handler should interrupt the runner")
+
+            with self.assertRaisesRegex(WorkflowError, "SIGTERM"):
+                run_experiment(
+                    config,
+                    sampler_runner=interrupted_runner,
+                    now=FIXED_NOW,
+                    git_sha=GIT_SHA,
+                )
+            output = next((root / "out").iterdir())
+            status = json.loads((output / "status.json").read_text(encoding="utf-8"))
+            self.assertEqual(status["status"], "interrupted")
+            self.assertEqual(status["signal"], "SIGTERM")
+            self.assertEqual(status["holdout"], "none")
+            self.assertEqual(status["repeat"], 1)
+            self.assertIn("seed", status)
+            self.assertIn("interrupted_at", status)
+            self.assertTrue((output / "_FAILED").is_file())
+            self.assertFalse((output / "_SUCCESS").exists())
+
+    def test_resume_rejects_fresh_heartbeat_even_if_process_is_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            table, manifest, _ = _write_table_bundle(root)
+            config = ExperimentConfig(
+                output_root=root / "out",
+                table_path=table,
+                validation_manifest=manifest,
+                mode="smoke",
+            )
+            run_id = _make_run_id(FIXED_NOW, GIT_SHA, (0.99,), (6,), config.seed)
+            output = root / "out" / run_id
+            output.mkdir(parents=True)
+            (output / "run.lock").touch()
+            (output / "status.json").write_text(
+                json.dumps({"status": "running", "run_id": run_id}) + "\n",
+                encoding="utf-8",
+            )
+            (output / "heartbeat.json").write_text(
+                json.dumps(
+                    {
+                        "pid": -1,
+                        "process_commandline": None,
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            resumed = dataclasses.replace(config, run_id=run_id, resume=True)
+            with self.assertRaisesRegex(WorkflowError, "heartbeat is not expired"):
+                run_experiment(
+                    resumed,
+                    sampler_runner=lambda **_: _fake_smc_payload(),
+                    now=FIXED_NOW,
+                    git_sha=GIT_SHA,
+                )
+
+    def test_resume_rejects_live_process_with_expired_heartbeat(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            table, manifest, _ = _write_table_bundle(root)
+            config = ExperimentConfig(
+                output_root=root / "out",
+                table_path=table,
+                validation_manifest=manifest,
+                mode="smoke",
+            )
+            run_id = _make_run_id(FIXED_NOW, GIT_SHA, (0.99,), (6,), config.seed)
+            output = root / "out" / run_id
+            output.mkdir(parents=True)
+            (output / "run.lock").touch()
+            (output / "status.json").write_text(
+                json.dumps({"status": "running", "run_id": run_id}) + "\n",
+                encoding="utf-8",
+            )
+            (output / "heartbeat.json").write_text(
+                json.dumps(
+                    {
+                        "pid": os.getpid(),
+                        "process_commandline": workflow_module._process_commandline(os.getpid()),
+                        "updated_at": (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat(),
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            resumed = dataclasses.replace(config, run_id=run_id, resume=True)
+            with self.assertRaisesRegex(WorkflowError, "process is still alive"):
+                run_experiment(
+                    resumed,
+                    sampler_runner=lambda **_: _fake_smc_payload(),
+                    now=FIXED_NOW,
+                    git_sha=GIT_SHA,
+                )
+
+    def test_resume_marks_expired_dead_run_stale_before_recovery(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            table, manifest, _ = _write_table_bundle(root)
+            config = ExperimentConfig(
+                output_root=root / "out",
+                table_path=table,
+                validation_manifest=manifest,
+                mode="smoke",
+            )
+            run_id = _make_run_id(FIXED_NOW, GIT_SHA, (0.99,), (6,), config.seed)
+            output = root / "out" / run_id
+            output.mkdir(parents=True)
+            (output / "run.lock").touch()
+            (output / "status.json").write_text(
+                json.dumps({"status": "running", "run_id": run_id}) + "\n",
+                encoding="utf-8",
+            )
+            (output / "heartbeat.json").write_text(
+                json.dumps(
+                    {
+                        "pid": os.getpid(),
+                        "process_commandline": "not-this-process",
+                        "updated_at": (FIXED_NOW - timedelta(minutes=10)).isoformat(),
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            resumed = dataclasses.replace(config, run_id=run_id, resume=True)
+            recovered = run_experiment(
+                resumed,
+                sampler_runner=lambda **_: _fake_smc_payload(),
+                now=FIXED_NOW,
+                git_sha=GIT_SHA,
+            )
+            self.assertEqual(recovered, output)
+            self.assertTrue((output / "_SUCCESS").is_file())
+            stale_receipts = list((output / "logs").glob("_FAILED.before_resume.*"))
+            self.assertEqual(len(stale_receipts), 1)
+            self.assertIn("stale", stale_receipts[0].read_text(encoding="utf-8"))
+
+    def test_quick_pilot_config_is_one_k_and_one_repeat(self) -> None:
+        config = load_config(Path("tumor_tree_pipeline/configs/pilot.quick.active.json"))
+        cells = experiment_matrix(config)
+        self.assertEqual([(cell.stage, cell.num_nodes) for cell in cells], [("pilot", 6)])
+        self.assertEqual(config.pilot_repeats, 1)
+        self.assertEqual(config.pilot_particles, 64)
+        self.assertEqual(config.max_annealing_stages, 16)
+
+    def test_success_publication_ignores_signal_until_marker_is_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            table, manifest, _ = _write_table_bundle(root)
+            config = ExperimentConfig(
+                output_root=root / "out",
+                table_path=table,
+                validation_manifest=manifest,
+                mode="smoke",
+            )
+            real_atomic_write = workflow_module._atomic_write
+
+            def interrupt_during_marker(path: Path, text: str) -> None:
+                if path.name == "_SUCCESS":
+                    os.kill(os.getpid(), signal.SIGINT)
+                real_atomic_write(path, text)
+
+            with mock.patch.object(workflow_module, "_atomic_write", side_effect=interrupt_during_marker):
+                output = run_experiment(
+                    config,
+                    sampler_runner=lambda **_: _fake_smc_payload(),
+                    now=FIXED_NOW,
+                    git_sha=GIT_SHA,
+                )
+            self.assertTrue((output / "_SUCCESS").is_file())
+            self.assertFalse((output / "_FAILED").exists())
+
+    def test_signal_after_success_marker_does_not_create_failed_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            table, manifest, _ = _write_table_bundle(root)
+            config = ExperimentConfig(
+                output_root=root / "out",
+                table_path=table,
+                validation_manifest=manifest,
+                mode="smoke",
+            )
+            real_signal = workflow_module.signal.signal
+            real_atomic_write = workflow_module._atomic_write
+            state = {"marker_written": False, "signal_sent": False}
+
+            def atomic_write(path: Path, text: str) -> None:
+                real_atomic_write(path, text)
+                if path.name == "_SUCCESS":
+                    state["marker_written"] = True
+
+            def signal_spy(signum: int, handler: object) -> object:
+                result = real_signal(signum, handler)
+                if (
+                    state["marker_written"]
+                    and not state["signal_sent"]
+                    and handler is not workflow_module.signal.SIG_IGN
+                ):
+                    state["signal_sent"] = True
+                    os.kill(os.getpid(), signal.SIGINT)
+                return result
+
+            with (
+                mock.patch.object(workflow_module, "_atomic_write", side_effect=atomic_write),
+                mock.patch.object(workflow_module.signal, "signal", side_effect=signal_spy),
+            ):
+                output = run_experiment(
+                    config,
+                    sampler_runner=lambda **_: _fake_smc_payload(),
+                    now=FIXED_NOW,
+                    git_sha=GIT_SHA,
+                )
+            self.assertTrue(state["signal_sent"])
+            self.assertTrue((output / "_SUCCESS").is_file())
+            self.assertFalse((output / "_FAILED").exists())
 
     def test_prerequisites_record_ps_and_holdout_hashes_and_dirs_are_group_shared(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

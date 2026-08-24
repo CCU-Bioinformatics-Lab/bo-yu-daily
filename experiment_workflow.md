@@ -59,7 +59,8 @@ raw-data reproducibility claim。
 | 設定檔 | 用途 | 資料 | 可否執行 |
 |---|---|---|---|
 | `configs/smoke.active.json` | 快速檢查整條介面 | checked-in 20-site fixture | **可以** |
-| `configs/pilot.active.json` | HCC1395 K=4/6/8 小型診斷 | active prepared counts，run-time 重建 v4 bundle | **可以，但尚未執行** |
+| `configs/pilot.quick.active.json` | full-data 單一 K／單一 repeat 執行時間與中止行為診斷 | active prepared counts，run-time 重建 v4 bundle | **可以，但目前已證明仍偏慢** |
+| `configs/pilot.active.json` | HCC1395 K=4/6/8 小型診斷 | active prepared counts，run-time 重建 v4 bundle | **可以，但尚未完成** |
 | `configs/formal_20260820.json` | 既有 formal matrix | HCC1395 v4 bundle + grouped holdout | **阻擋** |
 
 Formal 被阻擋的原因不是 C++ 無法執行，而是目前
@@ -86,6 +87,8 @@ passed = true
 git status --short
 python3 -m tumor_tree_pipeline plan \
   --config tumor_tree_pipeline/configs/smoke.active.json
+python3 -m tumor_tree_pipeline plan \
+  --config tumor_tree_pipeline/configs/pilot.quick.active.json
 python3 -m tumor_tree_pipeline plan \
   --config tumor_tree_pipeline/configs/pilot.active.json
 ```
@@ -120,18 +123,37 @@ Agent 只在以下條件全部成立時標記 smoke 成功：
 - 每個 repeat 有 `smc_complete.json`；
 - diagnostics 的 algorithm、particle semantics、`final_beta=1` 與 tree contract 正確。
 
-2026-08-24 已通過的 smoke receipt：
+2026-08-24 已通過的 commit-locked smoke receipt：
 
 ```text
 output/tumor_tree_pipeline/
-20260824T075036Z_b35aa42d6d5a_rho0p99_K6_seed20260824/
+20260824T080107Z_fe3bf6a48e05_rho0p99_K6_seed20260824/
 ```
 
-這次 run 使用包含未提交修正的 working tree；它證明當下 20-site fixture 的端到端
-介面可運作，但不是由單一 Git commit 完整鎖定的 release receipt，也不是 HCC1395
-tumor tree 結果。程式 commit 後應再跑一次，才有 immutable SHA receipt。
+這只證明 commit `fe3bf6a48e05` 下 20-site fixture 的端到端介面可運作，不是 HCC1395
+tumor tree 結果。後續加入 lifecycle 修正後另有 working-tree smoke receipt
+`20260824T082252Z_fe3bf6a48e05_rho0p99_K6_seed20260824`；它需在本次修改 commit
+後再重跑，才能成為新的 immutable SHA receipt。
 
-### D. HCC1395 pilot
+### D. Quick pilot
+
+```bash
+TUMOR_TREE_INFERENCE_THREADS=4 PYTHONDONTWRITEBYTECODE=1 \
+python3 -m tumor_tree_pipeline run \
+  --config tumor_tree_pipeline/configs/pilot.quick.active.json
+```
+
+Quick pilot 固定 `K=6`、1 repeat、64 particles、16 annealing stages。它只用來量測
+full-data pipeline 的基本執行成本與中止 receipt，不執行 formal gates，也不產生可
+引用的 HCC1395 tree claim。
+
+2026-08-24 的 quick pilot 嘗試在第一個 repeat 尚未產生 C++ artifact 時被中止；
+30,490-site sequential likelihood 顯示這組參數仍不足以稱為快速流程。該 run 應保留
+為未完成 receipt（目前是外部 process group 中止後的 `status=running` stale 候選），
+不得當成正式結果；後續若要再縮短時間，應
+優先處理 active C++ likelihood 的平行化或改用較小的 contract fixture。
+
+### E. HCC1395 pilot
 
 ```bash
 TUMOR_TREE_INFERENCE_THREADS=4 PYTHONDONTWRITEBYTECODE=1 \
@@ -153,7 +175,7 @@ Pilot 會先從 active prepared counts 重建 input，再依序跑 `K=4,6,8`。A
 Pilot 失敗時保留 `_FAILED`、`workflow_error.log`、`execution_trace.jsonl` 和已完成的
 repeat；先診斷，不把 partial output 當正式候選樹。
 
-### E. Formal 解鎖後才執行
+### F. Formal 解鎖後才執行
 
 先建立並驗收當前 v4 + C++ SMC synthetic recovery gate，再確認 Git clean，之後才
 允許 formal matrix：
@@ -256,6 +278,13 @@ trace。指定既有 `run_id` 並使用 `--resume` 時可重用已完成 repeat�
 3. formal matrix 停在第一個失敗 cell；
 4. 保留 partial artifacts 供診斷。
 
+收到 `SIGINT`／`SIGTERM` 時，workflow 會嘗試寫入 `status=interrupted`、signal、
+目前 stage／scope、cell、holdout、repeat、seed、heartbeat 與 `_FAILED`。C++ backend
+會讓子程序使用獨立 process group；Python handler 執行時會先終止並等待該 group，避免
+父程序已寫失敗收據但 C++ child 還在背景產生 artifact。如果外部 process group 直接
+終止 Python 而未讓 handler 執行，下一次 resume 會依 heartbeat timeout 與 process
+identity 判定是否為 stale run；不能只因 `status=running` 就假設實驗仍在執行。
+
 成功時先完成 inventory、summary 與 provenance，再原子建立 `_SUCCESS` publication
 marker；其後 execution trace 仍可追加完成事件。
 workflow 建立的目錄權限為 `2775`、一般檔案為 `664`；C++ executable 為 `775`。
@@ -263,6 +292,7 @@ workflow 建立的目錄權限為 `2775`、一般檔案為 `664`；C++ executabl
 目前 agent 的停止條件：
 
 - smoke：已完成；
-- pilot：設定與資料已準備，尚未執行；
+- quick pilot：已執行但中止，尚未完成；
+- full pilot：設定與資料已準備，尚未完成；
 - formal：缺少當前 v4 + SMC synthetic recovery gate，必須停止；
 - validated HCC1395 result：尚不存在，不得引用舊 run 或 fixture smoke 代替。

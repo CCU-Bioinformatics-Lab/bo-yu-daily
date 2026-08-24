@@ -1,0 +1,25 @@
+{
+  "output_root": "../../output/tumor_tree_pipeline",
+  "build_inputs": {
+    "counts_dir": "../../output/tumor_tree_pipeline/derived_counts_20260823_old_tagging_v4",
+    "site_cnv_qc": "../../output/tumor_tree_pipeline/prerequisites_20260823_old_tagging/site_cnv_qc.tsv.gz",
+    "purity": {
+      "value": 0.99,
+      "source": "/bip8_disk/boyu114/multi_evol_tree/output/cnv_callers/ascat_hcc1395_5khz_t4/purity_ploidy.txt",
+      "sample": "HCC1395"
+    },
+    "expected_sites": 30490
+  },
+  "mode": "pilot_quick",
+  "inference_algorithm": "rao_blackwellized_annealed_smc",
+  "seed": 20260824,
+  "main_purity": 0.99,
+  "pilot_nodes": [6],
+  "pilot_repeats": 1,
+  "pilot_particles": 64,
+  "max_annealing_stages": 16,
+  "conditional_ess_target": 0.8,
+  "resample_ess_threshold": 0.5,
+  "min_rejuvenation_sweeps": 3,
+  "allow_dirty_worktree": true
+}

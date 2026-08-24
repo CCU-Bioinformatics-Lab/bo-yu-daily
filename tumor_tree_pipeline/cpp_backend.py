@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import subprocess
 import tempfile
 from dataclasses import dataclass
@@ -119,6 +120,24 @@ def _result(output_path: Path, *, resumed: bool) -> SMCResult:
     )
 
 
+def _terminate_process_group(process: subprocess.Popen[str]) -> None:
+    """Stop an interrupted C++ run and wait so it cannot outlive its receipt."""
+
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        process.wait(timeout=10)
+        return
+    try:
+        process.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait()
+
+
 def run_smc_cpp(
     *,
     integrated_input: Path,
@@ -189,13 +208,20 @@ def run_smc_cpp(
     if exclude_path is not None:
         command.extend(("--exclude-file", str(exclude_path)))
     try:
-        completed = subprocess.run(
+        process = subprocess.Popen(
             command,
             cwd=_repository_root(),
             text=True,
-            capture_output=True,
-            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True,
         )
+        try:
+            stdout, stderr = process.communicate()
+        except BaseException:
+            _terminate_process_group(process)
+            raise
+        completed = subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
     finally:
         if exclude_path is not None:
             exclude_path.unlink(missing_ok=True)
