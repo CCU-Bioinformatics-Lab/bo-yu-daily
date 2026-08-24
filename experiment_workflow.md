@@ -99,6 +99,7 @@ Agent 必須記錄 Git SHA、dirty worktree、設定檔、input path、schema、
 ### B. 建置與 contract tests
 
 ```bash
+cmake -S inference -B inference/build -DCMAKE_BUILD_TYPE=Release
 cmake --build inference/build --parallel 4
 ctest --test-dir inference/build --output-on-failure
 inference/tests/run_contract_tests.sh inference/build/tumor_tree_inference
@@ -220,10 +221,13 @@ copy number 與 purity 評分候選 tree state。C++ SMC particle 明確保存�
 | `min_rejuvenation_sweeps` | 每個 stage 固定執行的 rejuvenation sweeps |
 | `seed` / repeats | 可重現的獨立 population |
 | `main_purity` | ASCAT purity；primary 為 0.99 |
-| `TUMOR_TREE_INFERENCE_THREADS` | 傳給 C++ 的 thread 設定；目前 active path 尚未實際平行化 |
+| `TUMOR_TREE_INFERENCE_THREADS` | 傳給 C++ 的 thread 設定；single repeat 會啟用 deterministic site scorer 與 topology workspace 平行化，multi-repeat 時避免 nested oversubscription |
 
-目前 Python workflow 依序執行 repeats，C++ active likelihood 也仍是逐 site 評分；
-所以目前 threads 不會帶來已驗證的 repeat-level 或 site-level 加速。舊 config 裡的
+目前 Python workflow 依序執行 repeats；C++ single repeat 會在較大的 site table
+上使用 persistent worker pool 評分 site 與 topology proposal，並在 site index
+順序做 reduction，維持 threads=1/2 的 deterministic output contract。worker
+barrier 仍會限制加速幅度，正式資料需依實際 K、particles、stages 與 sweeps 量測。
+舊 config 裡的
 `eta_rw_scale`、`topology_global_probability`、
 `max_rejuvenation_sweeps` 與週期性 `checkpoint_every` 並未控制目前 C++ kernel，
 agent 不得拿它們解釋實驗結果。

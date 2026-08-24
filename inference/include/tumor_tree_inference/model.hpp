@@ -24,6 +24,12 @@ struct Site {
     double minor_cn = 0.0;
     double total_cn = 0.0;
     double purity = 0.0;
+    // Per-site constants used by the repeated emission calculation.  They
+    // are derived from the canonical counts/CN at load time and are not
+    // additional model inputs.
+    double log_binomial_coefficient = 0.0;
+    double purity_cn_denominator = 0.0;
+    std::vector<double> log_multiplicity_prior;
     // Internal CN-constrained candidate support and initial weights.  These
     // are derived by the loader and never read from the canonical table.
     std::vector<int> multiplicity_candidates;

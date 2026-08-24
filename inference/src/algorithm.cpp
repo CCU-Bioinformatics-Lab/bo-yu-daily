@@ -3,8 +3,10 @@
 #include "json.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <cerrno>
 #include <cmath>
+#include <condition_variable>
 #include <cstring>
 #include <fstream>
 #include <fcntl.h>
@@ -17,6 +19,8 @@
 #include <set>
 #include <sstream>
 #include <stdexcept>
+#include <thread>
+#include <mutex>
 #include <unistd.h>
 
 namespace tumor_tree_inference {
@@ -173,20 +177,318 @@ double log_sum_exp(const std::vector<double>& values) {
     return maximum + std::log(total);
 }
 
-double rb_log_likelihood(const CanonicalTable& table, const std::vector<double>& phi,
-                         const std::vector<double>& eta) {
-    if (phi.size() != eta.size() || phi.empty()) throw std::runtime_error("Rao-Blackwellized state dimensions do not match");
-    std::vector<double> node_terms(phi.size());
-    double result = 0.0;
-    for (const Site& site : table.sites) {
-        for (std::size_t node = 0; node < phi.size(); ++node) {
-            node_terms[node] = site_log_likelihood(site, phi[node]) + std::log(eta[node]);
-        }
-        const double site_score = log_sum_exp(node_terms);
-        if (!std::isfinite(site_score)) return site_score;
-        result += site_score;
+double site_mixture_log_likelihood(const Site& site, const std::vector<double>& phi,
+                                   const std::vector<double>& eta, std::vector<double>& node_terms) {
+    if (phi.size() != eta.size() || phi.empty()) throw std::runtime_error("site mixture state dimensions do not match");
+    if (node_terms.size() != phi.size()) node_terms.resize(phi.size());
+    for (std::size_t node = 0; node < phi.size(); ++node) {
+        node_terms[node] = site_log_likelihood(site, phi[node]) + std::log(eta[node]);
     }
-    return result;
+    const double top = *std::max_element(node_terms.begin(), node_terms.end());
+    if (!std::isfinite(top)) return top;
+    double scaled_sum = 0.0;
+    for (const double term : node_terms) scaled_sum += std::exp(term - top);
+    if (!(scaled_sum > 0.0) || !std::isfinite(scaled_sum)) return -std::numeric_limits<double>::infinity();
+    return top + std::log(scaled_sum);
+}
+
+// A run-local deep module for deterministic site scoring.  Workers only write
+// disjoint site slots; the caller reduces those slots in site order, keeping
+// the SMC acceptance path identical across thread counts.
+class LikelihoodScorer final {
+public:
+    LikelihoodScorer(const CanonicalTable& table, unsigned requested_threads)
+        : table_(table), worker_count_(std::min<unsigned>(requested_threads, static_cast<unsigned>(table.sites.size()))),
+          parallel_(worker_count_ > 1U && table.sites.size() >= kParallelSiteThreshold), site_scores_(table.sites.size()) {
+        if (parallel_) {
+            try {
+                for (unsigned worker = 0; worker < worker_count_; ++worker) workers_.emplace_back(&LikelihoodScorer::worker_loop, this);
+            } catch (...) {
+                stop_workers();
+                throw;
+            }
+        }
+    }
+
+    LikelihoodScorer(const LikelihoodScorer&) = delete;
+    LikelihoodScorer& operator=(const LikelihoodScorer&) = delete;
+
+    ~LikelihoodScorer() {
+        stop_workers();
+    }
+
+    void stop_workers() noexcept {
+        if (!parallel_) return;
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            stop_ = true;
+            ++generation_;
+        }
+        start_cv_.notify_all();
+        for (auto& worker : workers_) if (worker.joinable()) worker.join();
+    }
+
+    double score(const std::vector<double>& phi, const std::vector<double>& eta) {
+        if (phi.size() != eta.size() || phi.empty()) throw std::runtime_error("Rao-Blackwellized state dimensions do not match");
+        if (!parallel_) {
+            if (sequential_node_terms_.size() != phi.size()) sequential_node_terms_.resize(phi.size());
+            double result = 0.0;
+            for (const Site& site : table_.sites) result += site_mixture_log_likelihood(site, phi, eta, sequential_node_terms_);
+            return result;
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            phi_ = &phi;
+            eta_ = &eta;
+            next_site_.store(0, std::memory_order_relaxed);
+            pending_workers_ = worker_count_;
+            ++generation_;
+        }
+        start_cv_.notify_all();
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+            done_cv_.wait(lock, [this] { return pending_workers_ == 0; });
+        }
+
+        // Do not use an unordered parallel reduction here: this fixed order
+        // is part of the deterministic SMC/thread contract.
+        return std::accumulate(site_scores_.begin(), site_scores_.end(), 0.0);
+    }
+
+private:
+    static constexpr std::size_t kParallelSiteThreshold = 1024;
+
+    void worker_loop() {
+        std::uint64_t seen_generation = 0;
+        while (true) {
+            const std::vector<double>* phi = nullptr;
+            const std::vector<double>* eta = nullptr;
+            {
+                std::unique_lock<std::mutex> lock(mutex_);
+                start_cv_.wait(lock, [this, seen_generation] { return stop_ || generation_ != seen_generation; });
+                if (stop_) return;
+                seen_generation = generation_;
+                phi = phi_;
+                eta = eta_;
+            }
+            std::vector<double> node_terms(phi->size());
+            while (true) {
+                const std::size_t site_index = next_site_.fetch_add(1, std::memory_order_relaxed);
+                if (site_index >= table_.sites.size()) break;
+                site_scores_[site_index] = site_mixture_log_likelihood(table_.sites[site_index], *phi, *eta, node_terms);
+            }
+            {
+                std::lock_guard<std::mutex> lock(mutex_);
+                if (--pending_workers_ == 0) done_cv_.notify_one();
+            }
+        }
+    }
+
+    const CanonicalTable& table_;
+    unsigned worker_count_ = 1;
+    bool parallel_ = false;
+    std::vector<std::thread> workers_;
+    std::vector<double> site_scores_;
+    std::vector<double> sequential_node_terms_;
+    std::atomic<std::size_t> next_site_{0};
+    std::mutex mutex_;
+    std::condition_variable start_cv_;
+    std::condition_variable done_cv_;
+    std::uint64_t generation_ = 0;
+    unsigned pending_workers_ = 0;
+    bool stop_ = false;
+    const std::vector<double>* phi_ = nullptr;
+    const std::vector<double>* eta_ = nullptr;
+};
+
+// Topology moves keep eta fixed.  Reparenting one node changes only selected
+// descendant-sum phi values, so retain the current site/node emissions and
+// recompute only changed node emissions for each topology candidate.  The
+// final site log-sum-exp still visits nodes in their original order.
+class TopologyLikelihoodWorkspace final {
+public:
+    TopologyLikelihoodWorkspace(const CanonicalTable& table, unsigned node_count, unsigned requested_threads)
+        : table_(table), node_count_(node_count), node_terms_(table.sites.size() * node_count),
+          site_scores_(table.sites.size()), log_eta_(node_count), current_phi_(node_count),
+          changed_nodes_(node_count, false), worker_count_(std::min<unsigned>(requested_threads, static_cast<unsigned>(table.sites.size()))) {
+        parallel_ = worker_count_ > 1U && table.sites.size() >= kParallelSiteThreshold;
+        if (parallel_) {
+            try {
+                for (unsigned worker = 0; worker < worker_count_; ++worker) workers_.emplace_back(&TopologyLikelihoodWorkspace::worker_loop, this);
+            } catch (...) {
+                stop_workers();
+                throw;
+            }
+        }
+    }
+
+    TopologyLikelihoodWorkspace(const TopologyLikelihoodWorkspace&) = delete;
+    TopologyLikelihoodWorkspace& operator=(const TopologyLikelihoodWorkspace&) = delete;
+
+    ~TopologyLikelihoodWorkspace() {
+        stop_workers();
+    }
+
+    void stop_workers() noexcept {
+        if (!parallel_) return;
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            stop_ = true;
+            ++generation_;
+        }
+        start_cv_.notify_all();
+        for (auto& worker : workers_) if (worker.joinable()) worker.join();
+    }
+
+    void prepare(const std::vector<double>& phi, const std::vector<double>& eta) {
+        if (phi.size() != node_count_ || eta.size() != node_count_) throw std::runtime_error("topology workspace state dimensions do not match");
+        current_phi_ = phi;
+        for (std::size_t node = 0; node < node_count_; ++node) log_eta_[node] = std::log(eta[node]);
+        if (parallel_) {
+            run_parallel(Job::prepare, nullptr);
+        } else {
+            prepare_sequential();
+        }
+        current_log_likelihood_ = sum_site_scores();
+    }
+
+    double score(const std::vector<double>& proposed_phi) {
+        if (proposed_phi.size() != node_count_) throw std::runtime_error("topology workspace proposal dimensions do not match");
+        changed_nodes_.assign(node_count_, false);
+        bool any_changed = false;
+        for (std::size_t node = 0; node < node_count_; ++node) {
+            changed_nodes_[node] = proposed_phi[node] != current_phi_[node];
+            any_changed = any_changed || changed_nodes_[node];
+        }
+        if (!any_changed) return current_log_likelihood_;
+        if (parallel_) {
+            run_parallel(Job::proposal, &proposed_phi);
+            return sum_site_scores();
+        }
+        return score_sequential(proposed_phi);
+    }
+
+private:
+    enum class Job { prepare, proposal };
+    static constexpr std::size_t kParallelSiteThreshold = 1024;
+
+    double row_score(const std::vector<double>& terms) const {
+        const double top = *std::max_element(terms.begin(), terms.end());
+        if (!std::isfinite(top)) return top;
+        double scaled_sum = 0.0;
+        for (const double term : terms) scaled_sum += std::exp(term - top);
+        if (!(scaled_sum > 0.0) || !std::isfinite(scaled_sum)) return -std::numeric_limits<double>::infinity();
+        return top + std::log(scaled_sum);
+    }
+
+    double sum_site_scores() const {
+        return std::accumulate(site_scores_.begin(), site_scores_.end(), 0.0);
+    }
+
+    void prepare_sequential() {
+        std::vector<double> terms(node_count_);
+        for (std::size_t site_index = 0; site_index < table_.sites.size(); ++site_index) {
+            const Site& site = table_.sites[site_index];
+            const std::size_t offset = site_index * node_count_;
+            for (std::size_t node = 0; node < node_count_; ++node) {
+                terms[node] = site_log_likelihood(site, current_phi_[node]) + log_eta_[node];
+                node_terms_[offset + node] = terms[node];
+            }
+            site_scores_[site_index] = row_score(terms);
+        }
+    }
+
+    double score_sequential(const std::vector<double>& proposed_phi) {
+        std::vector<double> terms(node_count_);
+        for (std::size_t site_index = 0; site_index < table_.sites.size(); ++site_index) {
+            const Site& site = table_.sites[site_index];
+            const std::size_t offset = site_index * node_count_;
+            for (std::size_t node = 0; node < node_count_; ++node) {
+                terms[node] = changed_nodes_[node]
+                    ? site_log_likelihood(site, proposed_phi[node]) + log_eta_[node]
+                    : node_terms_[offset + node];
+            }
+            site_scores_[site_index] = row_score(terms);
+        }
+        return sum_site_scores();
+    }
+
+    void run_parallel(Job job, const std::vector<double>* proposed_phi) {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            job_ = job;
+            proposed_phi_ = proposed_phi;
+            next_site_.store(0, std::memory_order_relaxed);
+            pending_workers_ = worker_count_;
+            ++generation_;
+        }
+        start_cv_.notify_all();
+        std::unique_lock<std::mutex> lock(mutex_);
+        done_cv_.wait(lock, [this] { return pending_workers_ == 0; });
+    }
+
+    void worker_loop() {
+        std::uint64_t seen_generation = 0;
+        while (true) {
+            Job job = Job::prepare;
+            const std::vector<double>* proposed_phi = nullptr;
+            {
+                std::unique_lock<std::mutex> lock(mutex_);
+                start_cv_.wait(lock, [this, seen_generation] { return stop_ || generation_ != seen_generation; });
+                if (stop_) return;
+                seen_generation = generation_;
+                job = job_;
+                proposed_phi = proposed_phi_;
+            }
+            std::vector<double> terms(node_count_);
+            while (true) {
+                const std::size_t site_index = next_site_.fetch_add(1, std::memory_order_relaxed);
+                if (site_index >= table_.sites.size()) break;
+                const Site& site = table_.sites[site_index];
+                const std::size_t offset = site_index * node_count_;
+                for (std::size_t node = 0; node < node_count_; ++node) {
+                    terms[node] = job == Job::prepare
+                        ? site_log_likelihood(site, current_phi_[node]) + log_eta_[node]
+                        : (changed_nodes_[node]
+                            ? site_log_likelihood(site, (*proposed_phi)[node]) + log_eta_[node]
+                            : node_terms_[offset + node]);
+                    if (job == Job::prepare) node_terms_[offset + node] = terms[node];
+                }
+                site_scores_[site_index] = row_score(terms);
+            }
+            {
+                std::lock_guard<std::mutex> lock(mutex_);
+                if (--pending_workers_ == 0) done_cv_.notify_one();
+            }
+        }
+    }
+
+    const CanonicalTable& table_;
+    std::size_t node_count_ = 0;
+    std::vector<double> node_terms_;
+    std::vector<double> site_scores_;
+    std::vector<double> log_eta_;
+    std::vector<double> current_phi_;
+    std::vector<bool> changed_nodes_;
+    unsigned worker_count_ = 1;
+    bool parallel_ = false;
+    std::vector<std::thread> workers_;
+    std::atomic<std::size_t> next_site_{0};
+    std::mutex mutex_;
+    std::condition_variable start_cv_;
+    std::condition_variable done_cv_;
+    std::uint64_t generation_ = 0;
+    unsigned pending_workers_ = 0;
+    bool stop_ = false;
+    Job job_ = Job::prepare;
+    const std::vector<double>* proposed_phi_ = nullptr;
+    double current_log_likelihood_ = -std::numeric_limits<double>::infinity();
+};
+
+double rb_log_likelihood(LikelihoodScorer& scorer, const std::vector<double>& phi,
+                         const std::vector<double>& eta) {
+    return scorer.score(phi, eta);
 }
 
 double particle_log_target(const CanonicalTable& table, const Particle& particle, double beta) {
@@ -200,12 +502,17 @@ std::vector<int> rb_map_assignments(const CanonicalTable& table, const Particle&
     const auto phi = cumulative_phi(particle.parents, particle.eta);
     std::vector<int> assignments;
     assignments.reserve(table.sites.size());
-    std::vector<double> node_terms(phi.size());
     for (const Site& site : table.sites) {
-        for (std::size_t node = 0; node < phi.size(); ++node) {
-            node_terms[node] = site_log_likelihood(site, phi[node]) + std::log(particle.eta[node]);
+        int best_node = 0;
+        double best_score = site_log_likelihood(site, phi[0]) + std::log(particle.eta[0]);
+        for (std::size_t node = 1; node < phi.size(); ++node) {
+            const double score = site_log_likelihood(site, phi[node]) + std::log(particle.eta[node]);
+            if (score > best_score) {
+                best_node = static_cast<int>(node);
+                best_score = score;
+            }
         }
-        assignments.push_back(static_cast<int>(std::distance(node_terms.begin(), std::max_element(node_terms.begin(), node_terms.end()))));
+        assignments.push_back(best_node);
     }
     return assignments;
 }
@@ -591,6 +898,7 @@ public:
         std::mt19937_64 rng(derived_seed);
         const double uniform_log_weight = -std::log(static_cast<double>(config.particles));
         const double uniform_particle_weight = 1.0 / static_cast<double>(config.particles);
+        LikelihoodScorer likelihood_scorer(table, config.threads);
 
         std::vector<Particle> particles;
         particles.reserve(config.particles);
@@ -598,7 +906,7 @@ public:
             Particle particle;
             particle.parents = sample_tree(config.num_nodes, rng);
             particle.eta = dirichlet_sample(tssb_mass_prior_alpha(particle.parents), rng);
-            particle.log_likelihood = rb_log_likelihood(table, cumulative_phi(particle.parents, particle.eta), particle.eta);
+            particle.log_likelihood = rb_log_likelihood(likelihood_scorer, cumulative_phi(particle.parents, particle.eta), particle.eta);
             particles.push_back(std::move(particle));
         }
         std::vector<double> log_weights(config.particles, uniform_log_weight);
@@ -611,6 +919,7 @@ public:
         std::iota(final_ancestors.begin(), final_ancestors.end(), 0);
         Counters counters;
         initialize_counters(counters);
+        TopologyLikelihoodWorkspace topology_workspace(table, config.num_nodes, config.threads);
 
         auto rejuvenate = [&](Particle& particle, std::uint64_t& eta_proposals,
                               std::uint64_t& eta_accepts, std::uint64_t& topology_proposals,
@@ -619,6 +928,7 @@ public:
             const std::size_t node = node_distribution(rng);
             const auto support = topology_support_for_node(particle.parents, node);
             if (!support.empty()) {
+                topology_workspace.prepare(cumulative_phi(particle.parents, particle.eta), particle.eta);
                 std::vector<double> support_scores;
                 std::vector<Particle> support_particles;
                 support_scores.reserve(support.size());
@@ -626,7 +936,7 @@ public:
                 for (const auto& parents : support) {
                     Particle proposal = particle;
                     proposal.parents = parents;
-                    proposal.log_likelihood = rb_log_likelihood(table, cumulative_phi(proposal.parents, proposal.eta), proposal.eta);
+                    proposal.log_likelihood = topology_workspace.score(cumulative_phi(proposal.parents, proposal.eta));
                     support_scores.push_back(particle_log_target(table, proposal, beta));
                     support_particles.push_back(std::move(proposal));
                 }
@@ -643,7 +953,7 @@ public:
             const auto eta_alpha = tssb_mass_prior_alpha(particle.parents);
             Particle proposal = particle;
             proposal.eta = dirichlet_sample(eta_alpha, rng);
-            proposal.log_likelihood = rb_log_likelihood(table, cumulative_phi(proposal.parents, proposal.eta), proposal.eta);
+            proposal.log_likelihood = rb_log_likelihood(likelihood_scorer, cumulative_phi(proposal.parents, proposal.eta), proposal.eta);
             const double log_acceptance = particle_log_target(table, proposal, beta) -
                 particle_log_target(table, particle, beta) +
                 dirichlet_logpdf(particle.eta, eta_alpha) - dirichlet_logpdf(proposal.eta, eta_alpha);
@@ -726,6 +1036,7 @@ public:
         std::vector<std::vector<double>> multiplicity_posterior_sums;
         multiplicity_posterior_sums.reserve(table.sites.size());
         for (const Site& site : table.sites) multiplicity_posterior_sums.emplace_back(site.multiplicity_candidates.size(), 0.0);
+        std::vector<double> node_terms(config.num_nodes, 0.0);
         SampleRecord best_sample;
         std::vector<int> best_assignments;
         bool has_best = false;
@@ -749,7 +1060,6 @@ public:
             retained.push_back(sample);
             for (std::size_t site_index = 0; site_index < table.sites.size(); ++site_index) {
                 ++assignment_counts[site_index][static_cast<std::size_t>(assignments[site_index])];
-                std::vector<double> node_terms(config.num_nodes, 0.0);
                 for (unsigned node = 0; node < config.num_nodes; ++node) node_terms[node] = site_log_likelihood(table.sites[site_index], phi[node]) + std::log(particle.eta[node]);
                 const double site_normalizer = log_sum_exp(node_terms);
                 for (unsigned node = 0; node < config.num_nodes; ++node) {
