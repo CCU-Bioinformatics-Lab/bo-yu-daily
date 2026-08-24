@@ -11,6 +11,7 @@ import inspect
 import io
 import json
 import os
+import signal
 import subprocess
 import sys
 import traceback
@@ -40,8 +41,20 @@ from .diagnostics import (
 )
 
 
+HEARTBEAT_TIMEOUT_SECONDS = 300
+
+
 class WorkflowError(RuntimeError):
     """Base class for fail-closed workflow failures."""
+
+
+class WorkflowInterrupted(WorkflowError):
+    """Raised when an external signal interrupts an active experiment."""
+
+    def __init__(self, signal_number: int) -> None:
+        self.signal_number = signal_number
+        self.signal_name = signal.Signals(signal_number).name
+        super().__init__(f"workflow interrupted by {self.signal_name}")
 
 
 class GateFailure(WorkflowError):
@@ -94,8 +107,8 @@ class ExperimentConfig:
     allow_dirty_worktree: bool = False
 
     def validate(self) -> None:
-        if self.mode not in {"smoke", "pilot", "formal", "all"}:
-            raise ValueError("mode must be smoke, pilot, formal, or all")
+        if self.mode not in {"smoke", "pilot", "pilot_quick", "formal", "all"}:
+            raise ValueError("mode must be smoke, pilot, pilot_quick, formal, or all")
         if self.table_path is None and self.build_inputs is None:
             raise ValueError("either table_path or build_inputs is required")
         if self.table_path is not None and self.build_inputs is not None:
@@ -106,7 +119,10 @@ class ExperimentConfig:
             raise ValueError("main_purity must be in (0, 1]")
         if abs(self.main_purity - 0.99) > 1e-12:
             raise ValueError("the agreed primary analysis requires ASCAT purity 0.99")
-        if tuple(self.pilot_nodes) != (4, 6, 8):
+        if self.mode == "pilot_quick":
+            if tuple(self.pilot_nodes) != (6,):
+                raise ValueError("pilot_quick must use the single K=6 diagnostic cell")
+        elif tuple(self.pilot_nodes) != (4, 6, 8):
             raise ValueError("the agreed finite-K sensitivity matrix is K=4,6,8")
         if tuple(self.sensitivity_purities) != (0.97, 0.95):
             raise ValueError("the agreed purity sensitivity values are 0.97 and 0.95")
@@ -121,8 +137,13 @@ class ExperimentConfig:
             )
         if self.formal_particles < 2 or self.pilot_particles < 2 or self.smoke_particles < 2:
             raise ValueError("all SMC particle budgets must be at least 2")
-        if self.pilot_repeats < 2 or self.smoke_repeats < 2:
-            raise ValueError("pilot and smoke SMC runs require at least two repeats")
+        if self.mode == "pilot_quick":
+            if self.pilot_repeats != 1:
+                raise ValueError("pilot_quick requires exactly one repeat")
+        elif self.pilot_repeats < 2:
+            raise ValueError("pilot SMC runs require at least two repeats")
+        if self.smoke_repeats < 2:
+            raise ValueError("smoke SMC runs require at least two repeats")
         if self.resume and not self.run_id:
             raise ValueError("resume requires an explicit run_id")
         if not 0.0 < self.holdout_fraction < 1.0:
@@ -173,7 +194,7 @@ def experiment_matrix(config: ExperimentConfig) -> tuple[RunCell, ...]:
     cells: list[RunCell] = []
     if config.mode in {"smoke", "all"}:
         cells.append(RunCell("smoke", 6, config.main_purity, False))
-    if config.mode in {"pilot", "all"}:
+    if config.mode in {"pilot", "pilot_quick", "all"}:
         cells.extend(RunCell("pilot", k, config.main_purity, False) for k in config.pilot_nodes)
     if config.mode in {"formal", "all"}:
         # K=6 is the prerequisite.  K sensitivity and then purity robustness
@@ -336,6 +357,92 @@ def _append_jsonl(path: Path, value: Mapping[str, Any]) -> None:
         handle.flush()
         os.fsync(handle.fileno())
     path.chmod(0o664)
+
+
+def _process_commandline(pid: int) -> str | None:
+    try:
+        return Path(f"/proc/{pid}/cmdline").read_bytes().replace(b"\x00", b" ").decode(
+            "utf-8", errors="replace"
+        ).strip()
+    except (OSError, UnicodeError):
+        return None
+
+
+def _process_start_time(pid: int) -> str | None:
+    """Return Linux process start ticks, which disambiguate reused PIDs."""
+
+    try:
+        stat_text = Path(f"/proc/{pid}/stat").read_text(encoding="utf-8")
+        after_command = stat_text.rsplit(")", 1)[1].strip()
+        fields = after_command.split()
+        return fields[19]
+    except (IndexError, OSError, UnicodeError):
+        return None
+
+
+def _process_exists(
+    pid: int,
+    *,
+    expected_commandline: str | None = None,
+    expected_start_time: str | None = None,
+) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    if expected_commandline is None and expected_start_time is None:
+        return True
+    actual_commandline = _process_commandline(pid)
+    actual_start_time = _process_start_time(pid)
+    # If /proc is temporarily unreadable, conservatively treat the process as
+    # alive so resume cannot incorrectly steal a live run.
+    if expected_commandline is not None and actual_commandline is None:
+        return True
+    if expected_start_time is not None and actual_start_time is None:
+        return True
+    if expected_commandline is not None and actual_commandline != expected_commandline:
+        return False
+    if expected_start_time is not None and actual_start_time != expected_start_time:
+        return False
+    return True
+
+
+def _stale_running_reason(
+    experiment_dir: Path,
+    *,
+    now: datetime | None = None,
+    timeout_seconds: int = HEARTBEAT_TIMEOUT_SECONDS,
+) -> str | None:
+    """Return a stale reason only after heartbeat expiry and process absence."""
+
+    heartbeat_path = experiment_dir / "heartbeat.json"
+    if not heartbeat_path.is_file():
+        return None
+    try:
+        heartbeat = _read_json(heartbeat_path)
+        updated_at = datetime.fromisoformat(str(heartbeat["updated_at"]))
+        pid = int(heartbeat["pid"])
+        expected_commandline = heartbeat.get("process_commandline")
+        expected_start_time = heartbeat.get("process_start_time")
+    except (KeyError, TypeError, ValueError, OSError, WorkflowError):
+        return None
+    current = now or datetime.now(timezone.utc)
+    if updated_at.tzinfo is None:
+        updated_at = updated_at.replace(tzinfo=timezone.utc)
+    age_seconds = (current - updated_at.astimezone(timezone.utc)).total_seconds()
+    if age_seconds <= timeout_seconds:
+        return None
+    if _process_exists(
+        pid,
+        expected_commandline=expected_commandline,
+        expected_start_time=expected_start_time,
+    ):
+        return None
+    return f"heartbeat_expired_process_missing(age_seconds={age_seconds:.1f},pid={pid})"
 
 
 def _sha256(path: Path) -> str:
@@ -982,6 +1089,8 @@ def _run_cell(
                     raise WorkflowError(
                         f"SMC adapter does not implement the workflow keyword contract {signature}"
                     ) from exc
+            except WorkflowInterrupted:
+                raise
             except Exception as exc:
                 emit(
                     "repeat_failed",
@@ -1141,6 +1250,8 @@ def run_experiment(
     lock_handle = None
     created = False
     trace_path: Path | None = None
+    heartbeat_path: Path | None = None
+    previous_signal_handlers: dict[int, Any] = {}
     current_context: dict[str, Any] = {"stage": "initialization", "scope": "before_run_directory"}
     try:
         if config.resume:
@@ -1165,9 +1276,23 @@ def run_experiment(
 
         _mkdir(experiment_dir / "logs", exist_ok=config.resume)
         trace_path = experiment_dir / "execution_trace.jsonl"
+        heartbeat_path = experiment_dir / "heartbeat.json"
 
         def record_trace(event: str, *, stage: str, status: str, **details: Any) -> None:
             assert trace_path is not None
+            current_context["stage"] = stage
+            if "scope" in details:
+                current_context["scope"] = details["scope"]
+            if event == "cell_started":
+                current_context.pop("holdout", None)
+                current_context.pop("repeat", None)
+                current_context.pop("seed", None)
+            elif event == "holdout_started":
+                current_context.pop("repeat", None)
+                current_context.pop("seed", None)
+            for key in ("cell", "holdout", "repeat", "seed", "K", "rho_ASCAT"):
+                if key in details:
+                    current_context[key] = details[key]
             _append_jsonl(
                 trace_path,
                 {
@@ -1179,8 +1304,48 @@ def run_experiment(
                     **details,
                 },
             )
+            assert heartbeat_path is not None
+            _atomic_json(
+                heartbeat_path,
+                {
+                    "pid": os.getpid(),
+                    "process_commandline": _process_commandline(os.getpid()),
+                    "process_start_time": _process_start_time(os.getpid()),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "event": event,
+                    "stage": stage,
+                    "scope": details.get("scope", current_context["scope"]),
+                },
+            )
+
+        def handle_interrupt(signum: int, _frame: Any) -> None:
+            raise WorkflowInterrupted(signum)
+
+        for signum in (signal.SIGINT, signal.SIGTERM):
+            previous_signal_handlers[signum] = signal.getsignal(signum)
+            signal.signal(signum, handle_interrupt)
 
         resume_index = len(list(experiment_dir.glob("resume_command.*.json"))) + 1
+        if config.resume:
+            existing_status = _read_json(experiment_dir / "status.json") if (experiment_dir / "status.json").is_file() else {}
+            if existing_status.get("status") == "running":
+                stale_reason = _stale_running_reason(experiment_dir)
+                if stale_reason is None:
+                    raise WorkflowError(
+                        "cannot resume a run marked running: heartbeat is not expired or its process is still alive"
+                    )
+                _atomic_json(
+                    experiment_dir / "status.json",
+                    {
+                        "status": "stale",
+                        "run_id": run_id,
+                        "stale_reason": stale_reason,
+                    },
+                )
+                _atomic_write(
+                    experiment_dir / "_FAILED",
+                    f"stale run detected before resume: {stale_reason}\n",
+                )
         if config.resume and (experiment_dir / "_FAILED").exists():
             failed = experiment_dir / "_FAILED"
             receipt = experiment_dir / "logs" / f"_FAILED.before_resume.{resume_index:03d}"
@@ -1339,23 +1504,99 @@ def run_experiment(
             )
         current_context = {"stage": "publication", "scope": "manifest_inventory_success"}
         record_trace("stage_started", stage="publication", status="running")
-        manifest = {
-            "run_id": run_id,
-            "status": "success",
-            "git_sha": resolved_git_sha,
-            "inference_algorithm": config.inference_algorithm,
-            "sample_kind": "smc_particle",
-            "independent_repeat_role": "posterior_particle_repeat",
-            "diagnostics_contract": "smc_gates_v1",
-            "input_tables": input_validations,
-            "cells": cell_summaries,
-        }
-        _atomic_json(experiment_dir / "manifest.json", manifest)
-        _atomic_json(experiment_dir / "status.json", {"status": "success", "run_id": run_id})
-        _atomic_json(experiment_dir / "artifact_inventory.json", _artifact_inventory(experiment_dir))
-        _atomic_write(experiment_dir / "_SUCCESS", "success\n")
-        record_trace("workflow_completed", stage="publication", status="completed")
+        publication_previous_handlers: dict[int, Any] = {}
+        for signum in (signal.SIGINT, signal.SIGTERM):
+            publication_previous_handlers[signum] = signal.getsignal(signum)
+            signal.signal(signum, signal.SIG_IGN)
+        try:
+            manifest = {
+                "run_id": run_id,
+                "status": "success",
+                "git_sha": resolved_git_sha,
+                "inference_algorithm": config.inference_algorithm,
+                "sample_kind": "smc_particle",
+                "independent_repeat_role": "posterior_particle_repeat",
+                "diagnostics_contract": "smc_gates_v1",
+                "input_tables": input_validations,
+                "cells": cell_summaries,
+            }
+            _atomic_json(experiment_dir / "manifest.json", manifest)
+            _atomic_json(experiment_dir / "status.json", {"status": "success", "run_id": run_id})
+            _atomic_json(experiment_dir / "artifact_inventory.json", _artifact_inventory(experiment_dir))
+            record_trace("workflow_completed", stage="publication", status="completed")
+            # This marker is deliberately the last fallible publication write.
+            _atomic_write(experiment_dir / "_SUCCESS", "success\n")
+        finally:
+            for signum, previous_handler in publication_previous_handlers.items():
+                signal.signal(signum, previous_handler)
         return experiment_dir
+    except WorkflowInterrupted as exc:
+        # _SUCCESS is the final publication marker.  A signal arriving in the
+        # tiny handler-restore/return window must not invalidate that receipt.
+        if created and experiment_dir.exists() and (experiment_dir / "_SUCCESS").is_file():
+            return experiment_dir
+        if created and experiment_dir.exists():
+            interrupted_at = datetime.now(timezone.utc).isoformat()
+            failure = {
+                "status": "interrupted",
+                "run_id": run_id,
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+                "signal": exc.signal_name,
+                "interrupted_at": interrupted_at,
+                "failed_stage": current_context["stage"],
+                "failed_scope": current_context["scope"],
+                "cell": current_context.get("cell"),
+                "holdout": current_context.get("holdout"),
+                "repeat": current_context.get("repeat"),
+                "seed": current_context.get("seed"),
+                "context": dict(current_context),
+            }
+            receipt_previous_handlers: dict[int, Any] = {}
+            receipt_errors: list[str] = []
+            for signum in (signal.SIGINT, signal.SIGTERM):
+                receipt_previous_handlers[signum] = signal.getsignal(signum)
+                signal.signal(signum, signal.SIG_IGN)
+            try:
+                try:
+                    _atomic_write(experiment_dir / "_FAILED", f"{exc.signal_name}: {exc}\n")
+                except Exception as receipt_exc:
+                    receipt_errors.append(f"_FAILED: {receipt_exc}")
+                try:
+                    if trace_path is not None:
+                        record_trace(
+                            "workflow_interrupted",
+                            stage=str(current_context["stage"]),
+                            status="interrupted",
+                            scope=str(current_context["scope"]),
+                            error_type=type(exc).__name__,
+                            error=str(exc),
+                            signal=exc.signal_name,
+                            context=dict(current_context),
+                        )
+                except Exception as receipt_exc:
+                    receipt_errors.append(f"execution_trace: {receipt_exc}")
+                try:
+                    _atomic_json(experiment_dir / "status.json", failure)
+                except Exception as receipt_exc:
+                    receipt_errors.append(f"status.json: {receipt_exc}")
+                try:
+                    _atomic_write(
+                        experiment_dir / "logs" / "workflow_error.log",
+                        traceback.format_exc(),
+                    )
+                except Exception as receipt_exc:
+                    receipt_errors.append(f"workflow_error.log: {receipt_exc}")
+            finally:
+                for signum, previous_handler in receipt_previous_handlers.items():
+                    signal.signal(signum, previous_handler)
+            if receipt_errors:
+                print(
+                    "workflow interruption receipt had write errors: "
+                    + "; ".join(receipt_errors),
+                    file=sys.stderr,
+                )
+        raise
     except Exception as exc:
         if created and experiment_dir.exists():
             failure = {
@@ -1365,6 +1606,7 @@ def run_experiment(
                 "error": str(exc),
                 "failed_stage": current_context["stage"],
                 "failed_scope": current_context["scope"],
+                "context": dict(current_context),
             }
             try:
                 if trace_path is not None:
@@ -1385,6 +1627,11 @@ def run_experiment(
             raise
         raise WorkflowError(str(exc)) from exc
     finally:
+        for signum, previous_handler in previous_signal_handlers.items():
+            try:
+                signal.signal(signum, previous_handler)
+            except ValueError:
+                pass
         if lock_handle is not None:
             try:
                 fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
