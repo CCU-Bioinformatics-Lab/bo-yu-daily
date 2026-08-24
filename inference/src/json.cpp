@@ -149,6 +149,11 @@ std::string json_parent_array(const std::vector<int>& values) { return json_int_
 std::string sample_json(const SampleRecord& sample) {
     return "{\"iteration\":" + json_u64(sample.iteration) +
            ",\"log_posterior\":" + json_number(sample.log_posterior) +
+           ",\"log_weight\":" + json_number(sample.log_weight) +
+           ",\"particle_weight\":" + json_number(sample.particle_weight) +
+           ",\"particle_index\":" + json_u64(sample.particle_index) +
+           ",\"sample_kind\":" + json_string(sample.sample_kind) +
+           ",\"topology\":{\"parents\":" + json_parent_array(sample.parents) + "}" +
            ",\"parents\":" + json_parent_array(sample.parents) +
            ",\"eta\":" + json_double_array(sample.eta) +
            ",\"phi\":" + json_double_array(sample.phi) +

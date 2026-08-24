@@ -1,112 +1,60 @@
 # Tumor-tree pipeline
 
 This package is the version-controlled execution source for the HCC1395
-30,490-site finite-K candidate tumor-tree analysis.
-
-Until the C++ implementation, rebuilt canonical input, tests, and workflow
-gates are synchronized and passing, every output is `diagnostic-only`.
+30,490-site candidate tumor-tree analysis.
 
 The model contract is [`../model.md`](../model.md); the replaceable inference
-algorithm contract is [`../inference_algo.md`](../inference_algo.md). This
-package owns table construction, workflow control, holdout handling and
-diagnostics rather than redefining the model or sampler specification.
+contract is [`../inference_algo.md`](../inference_algo.md). This package owns
+table construction, workflow control, grouped holdout handling, provenance
+and diagnostics.
 
 ## Module interfaces
 
 - `input_table.build_model_table(...)`: validated bulk/HP counts plus ASCAT
   CN/purity → canonical site-level table and provenance manifest.
-- `cpp_backend.run_chain_cpp(...)`: the active C++17 finite-K
-  PhyloWGS-inspired TSSB compound MCMC backend from the canonical table;
-  algorithm details and output contract are specified in
-  [`../inference_algo.md`](../inference_algo.md).
+- `cpp_backend.run_smc_cpp(...)`: invoke the active C++17 finite-K
+  Rao–Blackwellized annealed-SMC backend from the canonical table.
 - `workflow.run_experiment(...)`: smoke, pilot, K sensitivity, purity
-  sensitivity, independent chains for diagnostics, holdouts, atomic status
-  markers, and durable `execution_trace.jsonl` stage/cell/chain records. The
-  complete cross-module experiment contract is in
-  [`../experiment_workflow.md`](../experiment_workflow.md).
+  sensitivity, independent SMC repeats, grouped holdouts, atomic status
+  markers, and durable execution trace.
 
-## Baseline input → latent state → output
+The complete cross-module workflow is in
+[`../experiment_workflow.md`](../experiment_workflow.md).
+
+## Input → particle state → output
 
 ```text
-canonical likelihood_input.tsv.gz + ChainConfig
-        │
-        │  per SNV: bulk REF/ALT, ASCAT major/minor/total CN,
-        │  fixed rho_ASCAT; loader derives multiplicity,
-        │  rho_ASCAT = 0.99
+canonical likelihood_input.tsv.gz
+        │  bulk reads + ASCAT CN + rho_ASCAT
         ▼
-latent state: finite-K topology T, SNV assignment z, prevalence eta
-        │
-        │  C++ Gibbs assignment + eta MH + conditional subtree Gibbs sweep
+SMC particles: legal topology + eta
+        │  beta schedule, ESS, resampling, rejuvenation
         ▼
-samples.jsonl.gz + multiplicity_posterior.tsv.gz
-        + posterior_summary.tsv.gz + topology_summary.tsv
-        + diagnostics.json + representative_tree.json
-        + checkpoint.json.gz + chain_complete.json
+samples + CCF/phi + topology + assignment + multiplicity posterior
 ```
 
-The baseline uses the canonical table as its observed-data input. Model A uses
-bulk counts, ASCAT CN, fixed `rho_ASCAT=0.99`, and internal multiplicity. HP
-counts remain in the table as supplementary information but do not enter the
-primary likelihood. The latent
-state contains only the tree topology, the clone assignment of each included
-SNV, and the local clone-mass vector `eta`; `phi` is derived by summation over
-descendants and the structural tumor root has frequency one.
-The canonical table contains 18 required model columns plus
-`Supplementary information columns (not used in likelihood)`. The latter are
-kept for QC, provenance, holdout grouping, and result interpretation; they are
-not read into the likelihood state. `cnv_status` is the exception in workflow
-control: it is used upstream as an eligibility gate that sets
-`model_include`/`model_status`, but the `cnv_status` value itself is not a
-likelihood feature.
-Multiplicity is integrated using candidate copy counts that the C++ loader
-builds from major/minor CN. Bulk counts, purity, static CN and clone prevalence
-then update the candidate posterior responsibility at every retained state; the
-summary is written to `multiplicity_posterior.tsv.gz`. Multiplicity is not a
-canonical table field and the observed VAF is not overwritten. The chain
-output contains retained posterior draws, acceptance diagnostics, a
-representative tree, and checkpoint audit metadata. C++ resume is currently
-fail-closed until its versioned restore reader is implemented.
+Model A uses bulk counts, ASCAT CN, fixed `rho_ASCAT=0.99`, and multiplicity
+support built inside the C++ loader. HP counts remain supplementary and are
+not a primary likelihood term. `phi` is derived from descendant sums and the
+structural tumor root has frequency one.
 
-## Non-negotiable invariants
+## Invariants
 
 - Purity is the ASCAT output `rho_ASCAT = 0.99`; there is no
-  `tumor_dna_fraction` compatibility interface.
-- Multiplicity candidates enter from a CN-constrained distribution built inside
-  the C++ loader from `major_cn`/`minor_cn`; `multiplicity_candidates` and
-  `multiplicity_prior` are not canonical table fields or external inputs.
-  Bulk REF/ALT counts are used once in the observation likelihood, which also
-  produces the per-SNV multiplicity posterior output.
-- The active inference method is a finite-K TSSB-inspired compound MCMC
-  kernel: each iteration performs an all-SNV categorical Gibbs assignment
-  sweep, a TSSB-shaped local-mass independence MH update, and a conditional
-  subtree prune-and-regraft Gibbs update. It is a finite approximation, not a
-  claim to be the complete nonparametric PhyloWGS implementation.
-- PS is LongPhase-S upstream phasing metadata. It helps establish consistent
-  HP labels/counts for supplementary use. Once the table is built, PS and HP
-  counts are not part of the Model A primary likelihood, a
-  clone-assignment prior, or a topology-edge constraint; it may remain in
-  provenance/read-level audit and grouped holdout metadata.
-- Canonical loading is fail closed: no legacy files, diploid CN, or point
-  multiplicity fallbacks.
-- The active structural assumptions are exactly one tumor founder below the
-  structural root, no-loss/infinite-sites SNV inheritance, and fixed K
-  candidate clone nodes (`K=6` primary; `K=4/8` sensitivity). ASCAT CN is a
-  static context shared across tumor clones in Model A.
-- The baseline emission uses fixed sequencing error `e=0.005` and a Binomial
-  observation model. Prior predictive and posterior predictive checks are
-  required before promotion.
-- Normal contamination is handled only by `rho_ASCAT` in the emission model;
-  `eta` contains clone masses and is not a purity or normal-contamination
-  parameter.
-- CCF is summarized by posterior median and 95% credible interval. Topology
-  and edge support use label-invariant canonicalization; numeric clone labels
-  are not evidence of topology stability.
-- Production output directories are immutable and receive `_SUCCESS` only
-  after every required gate passes.
-- Failed runs receive `_FAILED`, `status.json.failed_stage`/
-  `failed_scope`, `logs/workflow_error.log`, and an append-only
-  `execution_trace.jsonl`; the trace identifies the failing K, purity,
-  holdout, chain, seed, and stage before any result is interpreted.
+  `tumor_dna_fraction` interface.
+- `multiplicity_candidates` and `multiplicity_prior` are not canonical table
+  fields; the loader creates their internal support from major/minor CN.
+- The active backend is `rao_blackwellized_annealed_smc`; its particle state is
+  topology and eta, while assignment and multiplicity are marginalized and
+  summarized after inference.
+- PS is upstream phase provenance for HP counts. It is not a clone label,
+  topology edge, or direct Model A likelihood feature.
+- Exactly one tumor founder, no-loss/infinite-sites SNV inheritance, fixed K
+  candidate nodes (`K=6` primary; `K=4/8` sensitivity), and static ASCAT CN are
+  the current structural assumptions.
+- Output directories are immutable. A run gets `_SUCCESS` only after every
+  requested stage and gate passes; failures get `_FAILED` and an execution
+  trace.
 
 Large BAM/VCF/ASCAT inputs remain outside Git and are referenced by manifests
-with paths, metadata, and hashes.
+with paths, metadata and hashes.

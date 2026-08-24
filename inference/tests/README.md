@@ -1,100 +1,58 @@
 # C++ inference contract tests
 
-These are black-box tests for the C++ finite-K PhyloWGS-inspired compound
-MCMC executable.
-They use only Python's standard library and do not import the Python pipeline.
-The tests deliberately live under `inference/tests/` so the C++ implementation
-can be replaced without changing the test seam.
+These black-box tests exercise the C++ Rao–Blackwellized annealed-SMC
+executable through its public CLI. They use only Python's standard library and
+do not import the Python workflow.
 
-## CLI contract under test
-
-The executable is invoked as:
+## CLI contract
 
 ```text
 inference_binary run \
   --input canonical.tsv \
   --output output_dir \
-  --algorithm phylowgs_inspired_tssb_mcmc \
+  --algorithm rao_blackwellized_annealed_smc \
   --seed 20260820 \
-  --chains 1 --threads 1 \
-  --iterations 24 --burnin 8 --thin 1 --num-nodes 2 \
-  --rho-ascat 0.99
+  --repeats 1 --threads 1 \
+  --annealing-stages 24 --particles 32 \
+  --num-nodes 2 --rho-ascat 0.99
 ```
 
-The `run` subcommand, `--output`, and `--rho-ascat` are compatibility aliases
-for the canonical `--outdir` and `--purity` interface.
+The `run` subcommand, `--output`, and `--rho-ascat` are accepted as friendly
+aliases for `--outdir` and `--purity`. The canonical table must use
+`hcc1395_tumor_tree_input/v4` and include all four HP count fields. The loader
+builds multiplicity candidates from major/minor CN; no multiplicity column is
+read.
 
-The canonical table must contain the current `hcc1395_tumor_tree_input/v4`
-required columns, including all four HP fields:
-`hp1_1_ref`, `hp1_1_alt`, `hp2_1_ref`, and `hp2_1_alt`. Every included row
-must carry `rho_ASCAT=0.99`; the loader builds the CN-constrained multiplicity
-candidate support from each row's major/minor CN, and the likelihood updates
-the candidate posterior responsibility using the observed counts and clone
-prevalence. No multiplicity field is read from the table.
-
-Model A parses and validates HP counts, including their conservation against
-bulk counts, but does not use them in the primary topology likelihood. A
-deterministic regression changes only HP allocation while holding bulk/CN/
-purity fixed; likelihood and multiplicity posterior must remain unchanged.
-HP-aware likelihood is reserved for a separately specified Model B.
-
-The model uses exactly one tumor founder: every posterior sample and
-`representative_tree.json` must contain exactly one `tumor_root` child. `K`
-is fixed candidate-clone count, so every sample exposes exactly `K` clone
-nodes. The baseline sequencing error is fixed at `e=0.005`.
+The tests verify that changing only supplementary HP allocation does not
+change the Model A likelihood or multiplicity posterior, that every particle
+has one tumor founder, that `phi` is the descendant sum of `eta`, and that
+beta reaches one with valid ESS/resampling/rejuvenation diagnostics.
 
 ## Output contract
 
-For one chain, the output directory contains the eight required artifacts:
+One repeat contains:
 
 ```text
 samples.jsonl.gz
+particle_history.jsonl.gz
 multiplicity_posterior.tsv.gz
 posterior_summary.tsv.gz
 topology_summary.tsv
 diagnostics.json
 representative_tree.json
 checkpoint.json.gz
-chain_complete.json
+smc_complete.json
 ```
 
-For `--chains 2`, the same eight artifacts are required under `chain_01/` and
-`chain_02/`. Each chain's `diagnostics.json` records a distinct derived seed.
-The diagnostics also identify the finite-K compound MCMC, schema `v4`, the
-observed site count, state variables `[parents, eta, z]`, ASCAT purity, the
-CN-constrained multiplicity-marginalized site term, and its posterior output
-artifact. They must also expose the fixed `e=0.005` baseline and the
-eta-independence-MH Hastings correction contract.
-
-`--threads 1` and `--threads 2` must produce identical decompressed artifacts.
-If an implementation intentionally permits thread-order differences, the
-outputs may differ only when `diagnostics.json` contains a non-empty
-`deterministic_policy` string explaining that policy.
-
-Completed output directories are immutable. Invalid schema, any
-`rho_ASCAT`/`--rho-ascat` mismatch, an unknown algorithm, and attempts to
-overwrite a completed directory must exit non-zero and must not leave a
-`chain_complete.json` marker.
+With `--repeats 2`, the same artifacts are written under `repeat_01/` and
+`repeat_02/`, with distinct derived seeds. Completed output directories are
+immutable. Invalid schema, purity mismatch, unknown algorithm, and overwrite
+attempts exit non-zero without leaving an `smc_complete.json` marker.
 
 ## Running
-
-After the CMake build:
 
 ```bash
 inference/tests/run_contract_tests.sh inference/build/tumor_tree_inference
 ```
 
-The wrapper also checks `INFERENCE_BINARY` and the conventional paths under
-`inference/build/`. A CMake project can register the same seam with:
-
-```cmake
-add_test(
-  NAME inference_contract
-  COMMAND ${Python3_EXECUTABLE}
-          ${CMAKE_CURRENT_SOURCE_DIR}/tests/contract_test.py
-          --binary $<TARGET_FILE:tumor_tree_inference>
-)
-```
-
-The test exits non-zero on any contract violation and uses a temporary output
-root, so it never modifies repository `output/` artifacts.
+The test uses a temporary output root and does not modify repository outputs.

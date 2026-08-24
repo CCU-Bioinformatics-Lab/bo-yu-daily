@@ -1,14 +1,8 @@
-"""Fail-closed multi-chain diagnostics for finite-K tumor-tree inference.
+"""Fail-closed diagnostics for the annealed SMC tumor-tree inference.
 
-The active C++ sampler is a finite-K TSSB-inspired compound MCMC chain. This
-module only compares separately seeded chain outputs for convergence and
-holdout gates; it does not add another transition kernel to the posterior
-sampler.
-
-The implementation intentionally depends only on NumPy and SciPy.  It follows
-the rank-normalized split/folded R-hat and rank-based bulk/tail ESS definitions
-used by modern MCMC practice closely enough to enforce the pipeline contract;
-it does not silently fall back to the legacy, unranked diagnostic.
+This module checks particle effective sample size, particle/ancestor diversity,
+repeat stability and strict holdout prediction.  It never interprets weighted
+particles as independent posterior draws and never applies MCMC convergence statistics.
 """
 
 from __future__ import annotations
@@ -26,7 +20,6 @@ import numpy as np
 try:
     from scipy.optimize import linear_sum_assignment
     from scipy.special import logsumexp as scipy_logsumexp
-    from scipy.stats import norm, rankdata
 except ImportError as exc:  # pragma: no cover - production fail-closed guard
     raise RuntimeError(
         "tumor_tree_pipeline diagnostics require the local SciPy installation; "
@@ -38,121 +31,6 @@ from .contracts import GateThresholds
 
 class DiagnosticError(ValueError):
     """Raised when samples cannot support a requested formal diagnostic."""
-
-
-def _equal_chains(chains: Sequence[Sequence[float]], *, minimum_draws: int = 8) -> np.ndarray:
-    if len(chains) < 2:
-        raise DiagnosticError("at least two independent chains are required")
-    arrays = [np.asarray(chain, dtype=float).reshape(-1) for chain in chains]
-    draw_count = min((array.size for array in arrays), default=0)
-    if draw_count < minimum_draws:
-        raise DiagnosticError(
-            f"at least {minimum_draws} retained draws per chain are required; got {draw_count}"
-        )
-    values = np.stack([array[-draw_count:] for array in arrays])
-    if not np.isfinite(values).all():
-        raise DiagnosticError("diagnostic samples contain NaN or infinite values")
-    return values
-
-
-def _split_chains(chains: Sequence[Sequence[float]]) -> np.ndarray:
-    values = _equal_chains(chains)
-    half = values.shape[1] // 2
-    if half < 4:
-        raise DiagnosticError("split diagnostics require at least four draws per half-chain")
-    return np.concatenate((values[:, :half], values[:, -half:]), axis=0)
-
-
-def _rank_normalize(values: np.ndarray) -> np.ndarray:
-    flat = np.asarray(values, dtype=float).reshape(-1)
-    ranks = rankdata(flat, method="average")
-    probabilities = (ranks - 3.0 / 8.0) / (flat.size + 1.0 / 4.0)
-    normalized = norm.ppf(probabilities)
-    return normalized.reshape(values.shape)
-
-
-def _basic_rhat(values: np.ndarray) -> float:
-    chain_count, draw_count = values.shape
-    if chain_count < 2 or draw_count < 2:
-        raise DiagnosticError("R-hat requires at least two chains and two draws")
-    chain_variances = np.var(values, axis=1, ddof=1)
-    within = float(np.mean(chain_variances))
-    between = float(draw_count * np.var(np.mean(values, axis=1), ddof=1))
-    if not math.isfinite(within) or within <= np.finfo(float).eps:
-        return math.inf
-    variance_plus = ((draw_count - 1.0) / draw_count) * within + between / draw_count
-    return max(1.0, math.sqrt(max(0.0, variance_plus / within)))
-
-
-def rank_normalized_split_folded_rhat(chains: Sequence[Sequence[float]]) -> dict[str, float]:
-    """Return rank-normalized split and folded R-hat.
-
-    A constant or otherwise degenerate trace returns infinite R-hat.  Treating
-    such a trace as converged would violate the formal fail-closed contract.
-    """
-
-    split = _split_chains(chains)
-    rank_rhat = _basic_rhat(_rank_normalize(split))
-    folded = np.abs(split - np.median(split))
-    folded_rhat = _basic_rhat(_rank_normalize(folded))
-    return {
-        "rank_normalized_split_rhat": rank_rhat,
-        "folded_rhat": folded_rhat,
-        "max_rhat": max(rank_rhat, folded_rhat),
-    }
-
-
-def _autocovariance(values: np.ndarray, lag: int) -> float:
-    centered = values - np.mean(values)
-    if lag == 0:
-        return float(np.dot(centered, centered) / values.size)
-    return float(np.dot(centered[:-lag], centered[lag:]) / values.size)
-
-
-def _multi_chain_ess(values: np.ndarray) -> float:
-    """Estimate total ESS with Geyer's initial-positive monotone sequence."""
-
-    chain_count, draw_count = values.shape
-    autocovariances = np.asarray(
-        [[_autocovariance(chain, lag) for lag in range(draw_count)] for chain in values],
-        dtype=float,
-    )
-    within = float(np.mean(autocovariances[:, 0]))
-    between = float(draw_count * np.var(np.mean(values, axis=1), ddof=1))
-    variance_plus = ((draw_count - 1.0) / draw_count) * within + between / draw_count
-    if not math.isfinite(variance_plus) or variance_plus <= np.finfo(float).eps:
-        return 0.0
-
-    rho = np.empty(draw_count, dtype=float)
-    rho[0] = 1.0
-    for lag in range(1, draw_count):
-        rho[lag] = 1.0 - (within - float(np.mean(autocovariances[:, lag]))) / variance_plus
-
-    pair_sums: list[float] = []
-    for lag in range(0, draw_count - 1, 2):
-        pair = float(rho[lag] + rho[lag + 1])
-        if pair <= 0.0:
-            break
-        if pair_sums:
-            pair = min(pair, pair_sums[-1])
-        pair_sums.append(pair)
-    if not pair_sums:
-        return 0.0
-    tau = max(1.0, -1.0 + 2.0 * sum(pair_sums))
-    return float(min(chain_count * draw_count, chain_count * draw_count / tau))
-
-
-def bulk_tail_ess(chains: Sequence[Sequence[float]]) -> dict[str, float]:
-    """Return total rank-based bulk ESS and the minimum 5%/95% tail ESS."""
-
-    split = _split_chains(chains)
-    bulk = _multi_chain_ess(_rank_normalize(split))
-    pooled = split.reshape(-1)
-    low, high = np.quantile(pooled, (0.05, 0.95))
-    low_indicator = (split <= low).astype(float)
-    high_indicator = (split >= high).astype(float)
-    tail = min(_multi_chain_ess(low_indicator), _multi_chain_ess(high_indicator))
-    return {"bulk_ess_total": bulk, "tail_ess_total": tail}
 
 
 def _assignment_pair_agreement(left: Sequence[Any], right: Sequence[Any]) -> float:
@@ -171,7 +49,7 @@ def _assignment_pair_agreement(left: Sequence[Any], right: Sequence[Any]) -> flo
 
 def minimum_assignment_agreement(assignment_maps: Sequence[Sequence[Any]]) -> float:
     if len(assignment_maps) < 2:
-        raise DiagnosticError("assignment agreement requires at least two chains")
+        raise DiagnosticError("assignment agreement requires at least two independent repeats")
     return min(
         _assignment_pair_agreement(assignment_maps[left], assignment_maps[right])
         for left, right in combinations(range(len(assignment_maps)), 2)
@@ -189,12 +67,12 @@ def _edge_set(draw: Any) -> frozenset[tuple[str, str]]:
 
 def maximum_edge_support_difference(edge_draws: Sequence[Sequence[Any]]) -> float:
     if len(edge_draws) < 2 or any(not draws for draws in edge_draws):
-        raise DiagnosticError("edge-support comparison requires non-empty draws from two chains")
-    normalized = [[_edge_set(draw) for draw in chain] for chain in edge_draws]
-    all_edges = set().union(*(set().union(*chain) for chain in normalized))
+        raise DiagnosticError("edge-support comparison requires non-empty draws from two independent repeats")
+    normalized = [[_edge_set(draw) for draw in repeat] for repeat in edge_draws]
+    all_edges = set().union(*(set().union(*repeat) for repeat in normalized))
     supports = [
-        {edge: sum(edge in draw for draw in chain) / len(chain) for edge in all_edges}
-        for chain in normalized
+        {edge: sum(edge in draw for draw in repeat) / len(repeat) for edge in all_edges}
+        for repeat in normalized
     ]
     if not all_edges:
         return 0.0
@@ -203,59 +81,6 @@ def maximum_edge_support_difference(edge_draws: Sequence[Sequence[Any]]) -> floa
         for left, right in combinations(range(len(supports)), 2)
         for edge in all_edges
     )
-
-
-def summarize_chains(chain_results: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
-    """Create formal diagnostics from the stable ``run_chain`` result payload."""
-
-    if len(chain_results) < 2:
-        raise DiagnosticError("multi-chain diagnostics require at least two chain results")
-    prevalence = [np.asarray(result["prevalence_draws"], dtype=float) for result in chain_results]
-    if any(draws.ndim != 2 or draws.shape[1] == 0 for draws in prevalence):
-        raise DiagnosticError("prevalence_draws must be a non-empty draws-by-K matrix")
-    node_count = prevalence[0].shape[1]
-    if any(draws.shape[1] != node_count for draws in prevalence):
-        raise DiagnosticError("all chains must have the same finite K")
-
-    rank_metrics: dict[str, dict[str, float]] = {}
-    for rank in range(node_count):
-        series = [np.sort(draws, axis=1)[:, ::-1][:, rank] for draws in prevalence]
-        metrics = rank_normalized_split_folded_rhat(series)
-        metrics.update(bulk_tail_ess(series))
-        if not all(math.isfinite(float(value)) for value in metrics.values()):
-            raise DiagnosticError(
-                "chain diagnostics contain non-finite R-hat/ESS; "
-                "the chain is not eligible for convergence reporting"
-            )
-        rank_metrics[f"prevalence_rank_{rank + 1}"] = metrics
-
-    assignment = minimum_assignment_agreement(
-        [list(result["assignment_map"]) for result in chain_results]
-    )
-    edge_difference = maximum_edge_support_difference(
-        [list(result["edge_draws"]) for result in chain_results]
-    )
-    coverages = [float(result["predictive_coverage"]) for result in chain_results]
-    log_scores = [float(result["predictive_log_score"]) for result in chain_results]
-    if not np.isfinite(coverages).all() or not np.isfinite(log_scores).all():
-        raise DiagnosticError("holdout coverage and log scores must be finite")
-
-    return {
-        "chain_count": len(chain_results),
-        "finite_k": node_count,
-        "prevalence_ranks": rank_metrics,
-        "max_rank_normalized_split_folded_rhat": max(
-            metric["max_rhat"] for metric in rank_metrics.values()
-        ),
-        "min_bulk_ess_total": min(metric["bulk_ess_total"] for metric in rank_metrics.values()),
-        "min_tail_ess_total": min(metric["tail_ess_total"] for metric in rank_metrics.values()),
-        "min_assignment_agreement": assignment,
-        "max_edge_support_difference": edge_difference,
-        "predictive_coverage_by_chain": coverages,
-        "predictive_log_score_by_chain": log_scores,
-        "min_predictive_log_score": min(log_scores),
-        "implementation": "numpy/scipy rank-normalized split/folded R-hat and rank ESS",
-    }
 
 
 def strict_holdout_predictive_metrics(
@@ -340,62 +165,52 @@ def strict_holdout_predictive_metrics(
     }
 
 
-def sampler_artifact_payload(
+def _smc_edge_draw(sample: Mapping[str, Any]) -> list[tuple[str, str]]:
+    parents = [int(parent) for parent in sample.get("parents", ())]
+    if len(parents) < 2 or parents[0] != -1:
+        raise DiagnosticError("SMC particle has an invalid single-founder topology")
+    for child, parent in enumerate(parents[1:], start=1):
+        if not 0 <= parent < child:
+            raise DiagnosticError("SMC particle has an invalid parent index")
+    return [
+        (
+            "tumor_root" if parent == -1 else f"clone_{parent + 1}",
+            f"clone_{child + 1}",
+        )
+        for child, parent in enumerate(parents)
+    ]
+
+
+def smc_artifact_payload(
     *,
     samples_path: Path,
     representative_tree_path: Path,
+    diagnostics_path: Path,
     table_path: Path,
     holdout_ids: frozenset[str],
     purity: float,
 ) -> dict[str, Any]:
-    """Adapt stable sampler artifacts to :func:`summarize_chains` input."""
+    """Adapt one SMC repeat to the run-level SMC diagnostics contract."""
 
     with gzip.open(samples_path, "rt", encoding="utf-8") as handle:
         samples = [json.loads(line) for line in handle if line.strip()]
     if not samples:
-        raise DiagnosticError(f"sampler produced no posterior samples: {samples_path}")
+        raise DiagnosticError(f"SMC backend produced no posterior particles: {samples_path}")
+    if any(sample.get("sample_kind") != "smc_particle" for sample in samples):
+        raise DiagnosticError("SMC samples must be explicitly tagged sample_kind=smc_particle")
+    diagnostic_payload = json.loads(diagnostics_path.read_text(encoding="utf-8"))
+    if diagnostic_payload.get("algorithm") != "rao_blackwellized_annealed_smc":
+        raise DiagnosticError("repeat diagnostics do not identify rao_blackwellized_annealed_smc")
+    if diagnostic_payload.get("sample_kind") != "smc_particle":
+        raise DiagnosticError("repeat diagnostics do not identify smc_particle artifacts")
     representative = json.loads(representative_tree_path.read_text(encoding="utf-8"))
     assignment_mapping = representative.get("posterior_map_assignments", {})
     if not assignment_mapping:
-        raise DiagnosticError("representative tree lacks posterior_map_assignments")
+        raise DiagnosticError("SMC representative tree lacks posterior_map_assignments")
     assignment_map = [
         assignment_mapping[mutation_id]["node"]
         for mutation_id in sorted(assignment_mapping)
     ]
-    edge_draws = []
-    for sample in samples:
-        parents = [int(parent) for parent in sample["parents"]]
-        phi = [float(value) for value in sample["phi"]]
-        children = [[] for _ in parents]
-        for child, parent in enumerate(parents):
-            if parent != -1:
-                children[parent].append(child)
-
-        def depth(node: int) -> int:
-            observed = {node}
-            value = 1
-            parent = parents[node]
-            while parent != -1:
-                if parent in observed:
-                    raise DiagnosticError("sampler emitted a cyclic topology")
-                observed.add(parent)
-                value += 1
-                parent = parents[parent]
-            return value
-
-        order = sorted(
-            range(len(parents)),
-            key=lambda node: (-phi[node], depth(node), -len(children[node]), node),
-        )
-        rank = {node: f"node_{index + 1}" for index, node in enumerate(order)}
-        edges = [
-            (
-                "tumor_root" if parent == -1 else rank[parent],
-                rank[child],
-            )
-            for child, parent in enumerate(parents)
-        ]
-        edge_draws.append(edges)
     predictive = strict_holdout_predictive_metrics(
         table_path,
         samples,
@@ -403,61 +218,150 @@ def sampler_artifact_payload(
         purity,
     )
     return {
+        "sample_kind": "smc_particle",
         "prevalence_draws": [sample["phi"] for sample in samples],
         "assignment_map": assignment_map,
-        "edge_draws": edge_draws,
+        "edge_draws": [_smc_edge_draw(sample) for sample in samples],
+        "smc_diagnostics": diagnostic_payload,
         **predictive,
     }
 
 
-def evaluate_formal_gates(
+def _pairwise_ccf_stability(prevalence: Sequence[np.ndarray]) -> float:
+    if len(prevalence) < 2:
+        raise DiagnosticError("SMC repeat stability requires at least two independent repeats")
+    means = [np.mean(np.sort(values, axis=1)[:, ::-1], axis=0) for values in prevalence]
+    distances = [
+        float(np.mean(np.abs(means[left] - means[right])))
+        for left, right in combinations(range(len(means)), 2)
+    ]
+    return max(0.0, min(1.0, 1.0 - max(distances)))
+
+
+def summarize_smc_repeats(repeat_results: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Summarize independent SMC repeats without MCMC chain diagnostics."""
+
+    if len(repeat_results) < 2:
+        raise DiagnosticError("SMC diagnostics require at least two independent repeats")
+    prevalence = [np.asarray(result["prevalence_draws"], dtype=float) for result in repeat_results]
+    if any(values.ndim != 2 or values.shape[1] == 0 for values in prevalence):
+        raise DiagnosticError("SMC prevalence_draws must be non-empty particle-by-K matrices")
+    node_count = prevalence[0].shape[1]
+    if any(values.shape[1] != node_count for values in prevalence):
+        raise DiagnosticError("all SMC repeats must have the same fixed K")
+    smc_payloads = [result.get("smc_diagnostics") for result in repeat_results]
+    if any(not isinstance(payload, Mapping) for payload in smc_payloads):
+        raise DiagnosticError("each SMC repeat must include its diagnostics payload")
+
+    metric_names = (
+        "conditional_ess_fraction",
+        "weighted_particle_ess_fraction",
+        "particle_diversity",
+        "ancestor_diversity",
+        "eta_acceptance",
+        "topology_acceptance",
+        "topology_change_rate",
+    )
+    repeat_metrics = []
+    for payload in smc_payloads:
+        assert isinstance(payload, Mapping)
+        if payload.get("algorithm") != "rao_blackwellized_annealed_smc":
+            raise DiagnosticError("all repeat diagnostics must use the active SMC algorithm")
+        if float(payload.get("annealing", {}).get("final_beta", -1.0)) < 1.0 - 1e-12:
+            raise DiagnosticError("SMC repeat did not reach beta=1")
+        repeat_metrics.append(
+            {
+                name: float(payload[name])
+                for name in metric_names
+            }
+            | {
+                "resampling_count": int(payload.get("resampling_count", 0)),
+                "rejuvenation_sweeps": list(payload.get("rejuvenation_sweeps", [])),
+            }
+        )
+    coverages = [float(result["predictive_coverage"]) for result in repeat_results]
+    log_scores = [float(result["predictive_log_score"]) for result in repeat_results]
+    if not np.isfinite(coverages).all() or not np.isfinite(log_scores).all():
+        raise DiagnosticError("SMC holdout coverage and log scores must be finite")
+    ccf_stability = _pairwise_ccf_stability(prevalence)
+    return {
+        "repeat_count": len(repeat_results),
+        "finite_k": node_count,
+        "repeat_metrics": repeat_metrics,
+        "min_conditional_ess_fraction": min(item["conditional_ess_fraction"] for item in repeat_metrics),
+        "min_weighted_particle_ess_fraction": min(item["weighted_particle_ess_fraction"] for item in repeat_metrics),
+        "min_particle_diversity": min(item["particle_diversity"] for item in repeat_metrics),
+        "min_ancestor_diversity": min(item["ancestor_diversity"] for item in repeat_metrics),
+        "min_eta_acceptance": min(item["eta_acceptance"] for item in repeat_metrics),
+        "min_topology_acceptance": min(item["topology_acceptance"] for item in repeat_metrics),
+        "ccf_stability": ccf_stability,
+        "min_assignment_agreement": minimum_assignment_agreement(
+            [list(result["assignment_map"]) for result in repeat_results]
+        ),
+        "max_edge_support_difference": maximum_edge_support_difference(
+            [list(result["edge_draws"]) for result in repeat_results]
+        ),
+        "predictive_coverage_by_repeat": coverages,
+        "predictive_log_score_by_repeat": log_scores,
+        "min_predictive_log_score": min(log_scores),
+        "implementation": "SMC conditional ESS, weighted particle ESS, diversity, annealing, rejuvenation, and repeat stability",
+        "smc_particle_gate": True,
+    }
+
+
+def evaluate_smc_gates(
     diagnostics: Mapping[str, Any],
-    thresholds: GateThresholds,
+    thresholds: Any,
     *,
     min_predictive_log_score: float,
 ) -> dict[str, Any]:
-    """Evaluate every formal gate; missing or non-finite metrics fail."""
+    """Evaluate formal particle and repeat gates."""
 
     thresholds.validate()
     checks = {
-        "rhat": float(diagnostics["max_rank_normalized_split_folded_rhat"])
-        < thresholds.max_rank_normalized_rhat,
-        "bulk_ess": float(diagnostics["min_bulk_ess_total"]) >= thresholds.min_bulk_ess_total,
-        "tail_ess": float(diagnostics["min_tail_ess_total"]) >= thresholds.min_tail_ess_total,
+        "conditional_ess": float(diagnostics["min_conditional_ess_fraction"])
+        >= thresholds.min_conditional_ess_fraction,
+        "weighted_particle_ess": float(diagnostics["min_weighted_particle_ess_fraction"])
+        >= thresholds.min_weighted_particle_ess_fraction,
+        "particle_diversity": float(diagnostics["min_particle_diversity"])
+        >= thresholds.min_particle_diversity,
+        "ancestor_diversity": float(diagnostics["min_ancestor_diversity"])
+        >= thresholds.min_ancestor_diversity,
+        "ccf_stability": float(diagnostics["ccf_stability"]) >= thresholds.min_ccf_stability,
         "assignment_agreement": float(diagnostics["min_assignment_agreement"])
         >= thresholds.min_assignment_agreement,
         "edge_support": float(diagnostics["max_edge_support_difference"])
         <= thresholds.max_edge_support_difference,
         "predictive_coverage": all(
             thresholds.min_predictive_coverage <= float(value) <= thresholds.max_predictive_coverage
-            for value in diagnostics["predictive_coverage_by_chain"]
+            for value in diagnostics["predictive_coverage_by_repeat"]
         ),
         "predictive_log_score": float(diagnostics["min_predictive_log_score"])
         >= min_predictive_log_score,
     }
-    finite = all(
-        math.isfinite(float(value))
-        for key, value in diagnostics.items()
-        if key
-        in {
-            "max_rank_normalized_split_folded_rhat",
-            "min_bulk_ess_total",
-            "min_tail_ess_total",
-            "min_assignment_agreement",
-            "max_edge_support_difference",
-            "min_predictive_log_score",
-        }
-    )
-    checks["finite_metrics"] = finite
-    return {"passed": all(checks.values()), "checks": checks}
+    finite_keys = {
+        "min_conditional_ess_fraction",
+        "min_weighted_particle_ess_fraction",
+        "min_particle_diversity",
+        "min_ancestor_diversity",
+        "ccf_stability",
+        "min_assignment_agreement",
+        "max_edge_support_difference",
+        "min_predictive_log_score",
+    }
+    checks["finite_metrics"] = all(
+        math.isfinite(float(diagnostics[key])) for key in finite_keys if key in diagnostics
+    ) and diagnostics.get("algorithm", "rao_blackwellized_annealed_smc") == "rao_blackwellized_annealed_smc"
+    return {"passed": all(checks.values()), "checks": checks, "contract": "smc_gates_v1"}
 
 
-def pilot_report(diagnostics: Mapping[str, Any]) -> dict[str, Any]:
-    """Report the agreed loose pilot signal without weakening formal gates."""
+def pilot_smc_report(diagnostics: Mapping[str, Any]) -> dict[str, Any]:
+    """Report pilot particle diagnostics without treating them as convergence gates."""
 
-    rhat = float(diagnostics["max_rank_normalized_split_folded_rhat"])
     return {
-        "pilot_rhat_threshold": 1.10,
-        "pilot_rhat_report_pass": math.isfinite(rhat) and rhat <= 1.10,
+        "pilot_particle_diversity": float(diagnostics["min_particle_diversity"]),
+        "pilot_ancestor_diversity": float(diagnostics["min_ancestor_diversity"]),
+        "pilot_ccf_stability": float(diagnostics["ccf_stability"]),
         "formal_gate_not_evaluated": True,
+        "smc_particle_gate": True,
     }

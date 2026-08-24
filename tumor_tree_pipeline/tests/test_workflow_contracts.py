@@ -2,18 +2,14 @@ from __future__ import annotations
 
 import csv
 import dataclasses
-import gzip
 import hashlib
 import json
-import math
 import stat
 import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
-
-import numpy as np
 
 from tumor_tree_pipeline.contracts import (
     MODEL_INPUT_SCHEMA_VERSION,
@@ -22,10 +18,11 @@ from tumor_tree_pipeline.contracts import (
 )
 from tumor_tree_pipeline.cli import main as cli_main
 from tumor_tree_pipeline.provenance import atomic_write_text
-from tumor_tree_pipeline.diagnostics import (
-    bulk_tail_ess,
-    rank_normalized_split_folded_rhat,
+from tumor_tree_pipeline.tests.smc_contract_fixture import (
+    assert_smc_artifacts,
+    write_synthetic_smc_run,
 )
+from tumor_tree_pipeline.diagnostics import evaluate_smc_gates
 from tumor_tree_pipeline.workflow import (
     ExperimentConfig,
     GateFailure,
@@ -112,32 +109,69 @@ def _write_formal_prerequisites(root: Path) -> tuple[Path, Path]:
     return ps, simulation
 
 
-def _passing_diagnostics() -> dict[str, object]:
+def _passing_smc_diagnostics() -> dict[str, object]:
     return {
-        "max_rank_normalized_split_folded_rhat": 1.001,
-        "min_bulk_ess_total": 500.0,
-        "min_tail_ess_total": 500.0,
+        "algorithm": "rao_blackwellized_annealed_smc",
+        "sample_semantics": "smc_particle",
+        "smc_particle_gate": True,
+        "min_conditional_ess_fraction": 0.80,
+        "min_weighted_particle_ess_fraction": 0.80,
+        "min_particle_diversity": 0.50,
+        "min_ancestor_diversity": 0.50,
+        "min_eta_acceptance": 0.20,
+        "min_topology_acceptance": 0.20,
+        "ccf_stability": 0.95,
         "min_assignment_agreement": 0.95,
         "max_edge_support_difference": 0.05,
-        "predictive_coverage_by_chain": [0.90] * 4,
-        "predictive_log_score_by_chain": [-1.0] * 4,
+        "predictive_coverage_by_repeat": [0.90] * 4,
+        "predictive_log_score_by_repeat": [-1.0] * 4,
         "min_predictive_log_score": -1.0,
     }
 
 
-class DiagnosticContractTests(unittest.TestCase):
-    def test_rank_normalized_diagnostics_are_finite_for_mixed_iid_chains(self) -> None:
-        rng = np.random.default_rng(20260819)
-        chains = [rng.normal(size=600) for _ in range(4)]
-        rhat = rank_normalized_split_folded_rhat(chains)
-        ess = bulk_tail_ess(chains)
-        self.assertLess(rhat["max_rhat"], 1.05)
-        self.assertGreater(ess["bulk_ess_total"], 200)
-        self.assertGreater(ess["tail_ess_total"], 200)
+def _fake_smc_payload(*, nodes: int = 6, rows: int = 20) -> dict[str, object]:
+    """Return the smallest sampler payload accepted by the SMC workflow."""
 
-    def test_constant_trace_fails_closed_instead_of_reporting_convergence(self) -> None:
-        rhat = rank_normalized_split_folded_rhat([[1.0] * 20 for _ in range(4)])
-        self.assertTrue(math.isinf(rhat["max_rhat"]))
+    particles = [
+        [0.75] + [0.25 / (nodes - 1)] * (nodes - 1),
+        [0.70] + [0.30 / (nodes - 1)] * (nodes - 1),
+    ]
+    return {
+        "sample_kind": "smc_particle",
+        "prevalence_draws": particles,
+        "assignment_map": ["clone_1"] * rows,
+        "edge_draws": [[("tumor_root", "node_1")], [("tumor_root", "node_1")]],
+        "predictive_coverage": 0.90,
+        "predictive_log_score": -1.0,
+        "smc_diagnostics": {
+            "algorithm": "rao_blackwellized_annealed_smc",
+            "annealing": {"final_beta": 1.0},
+            "conditional_ess_fraction": 0.80,
+            "weighted_particle_ess_fraction": 0.80,
+            "particle_diversity": 0.50,
+            "ancestor_diversity": 0.50,
+            "eta_acceptance": 0.20,
+            "topology_acceptance": 0.20,
+            "topology_change_rate": 0.20,
+            "resampling_count": 1,
+            "rejuvenation_sweeps": [3],
+        },
+    }
+
+
+class DiagnosticContractTests(unittest.TestCase):
+    def test_weighted_particle_ess_is_the_primary_effective_sample_gate(self) -> None:
+        passing = _passing_smc_diagnostics()
+        self.assertTrue(
+            evaluate_smc_gates(passing, GateThresholds(), min_predictive_log_score=-5.0)["passed"]
+        )
+        low_ess = dict(passing)
+        low_ess["min_weighted_particle_ess_fraction"] = 0.49
+        self.assertFalse(
+            evaluate_smc_gates(low_ess, GateThresholds(), min_predictive_log_score=-5.0)["passed"]
+        )
+        self.assertNotIn("rhat", json.dumps(passing).lower())
+        self.assertNotIn("chain_ess", json.dumps(passing).lower())
 
 
 class WorkflowContractTests(unittest.TestCase):
@@ -216,11 +250,11 @@ class WorkflowContractTests(unittest.TestCase):
             )
 
             def fake_runner(**kwargs):
-                return {}
+                return _fake_smc_payload()
 
             output = run_experiment(
                 config,
-                chain_runner=fake_runner,
+                sampler_runner=fake_runner,
                 now=FIXED_NOW,
                 git_sha=GIT_SHA,
             )
@@ -238,7 +272,7 @@ class WorkflowContractTests(unittest.TestCase):
             ]
             self.assertEqual(trace[0]["event"], "workflow_started")
             self.assertEqual(trace[-1]["event"], "workflow_completed")
-            self.assertIn("chain_completed", {event["event"] for event in trace})
+            self.assertIn("holdout_completed", {event["event"] for event in trace})
             inventory = json.loads((output / "artifact_inventory.json").read_text())
             inventory_paths = {item["path"] for item in inventory["artifacts"]}
             self.assertIn("manifest.json", inventory_paths)
@@ -247,50 +281,19 @@ class WorkflowContractTests(unittest.TestCase):
             with self.assertRaises(WorkflowError):
                 run_experiment(
                     config,
-                    chain_runner=fake_runner,
+                    sampler_runner=fake_runner,
                     now=FIXED_NOW,
                     git_sha=GIT_SHA,
                 )
             self.assertEqual((output / "_SUCCESS").read_text(), success_before)
             self.assertFalse((output / "_FAILED").exists())
 
-    def test_default_sampler_adapter_completes_only_the_tiny_smoke_contract(self) -> None:
+    def test_minimal_smc_fixture_covers_the_complete_output_surface(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            table, manifest, _ = _write_table_bundle(root, rows=8)
-            config = ExperimentConfig(
-                output_root=root / "out",
-                table_path=table,
-                validation_manifest=manifest,
-                mode="smoke",
-                smoke_iterations=10,
-                smoke_burnin=2,
-            )
-            output = run_experiment(config, now=FIXED_NOW, git_sha=GIT_SHA)
-            self.assertTrue((output / "_SUCCESS").is_file())
-            completed = list(output.glob("runs/**/chain_complete.json"))
-            self.assertEqual(len(completed), 2)
-            diagnostics = [
-                json.loads((path.parent / "diagnostics.json").read_text(encoding="utf-8"))
-                for path in completed
-            ]
-            self.assertEqual(len(diagnostics), 2)
-            for payload in diagnostics:
-                self.assertEqual(payload["model"], "finite_K_tssb_shaped_working_prior")
-                self.assertEqual(
-                    set(payload["counters"]),
-                    {
-                        "assignment_proposals",
-                        "assignment_accepted",
-                        "eta_proposals",
-                        "eta_accepted",
-                        "topology_proposals",
-                        "topology_accepted",
-                    },
-                )
-                self.assertNotIn("eta_bridge_acceptance", payload)
-                self.assertNotIn("eta_bridge_proposals", payload)
-                self.assertIn("gibbs", json.dumps(payload).lower())
+            output = write_synthetic_smc_run(Path(temporary) / "smc")
+            diagnostics = assert_smc_artifacts(output)
+            self.assertEqual(diagnostics["algorithm"], "rao_blackwellized_annealed_smc")
+            self.assertEqual(diagnostics["sample_semantics"], "smc_particle")
 
     def test_formal_gate_failure_is_non_success_and_stops_matrix(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -310,15 +313,15 @@ class WorkflowContractTests(unittest.TestCase):
 
             def fake_runner(**kwargs):
                 calls.append(kwargs)
-                return {}
+                return _fake_smc_payload(nodes=kwargs["config"].num_nodes)
 
-            failed = dict(_passing_diagnostics())
-            failed["max_rank_normalized_split_folded_rhat"] = 1.5
-            with mock.patch("tumor_tree_pipeline.workflow.summarize_chains", return_value=failed):
+            failed = dict(_passing_smc_diagnostics())
+            failed["min_weighted_particle_ess_fraction"] = 0.10
+            with mock.patch("tumor_tree_pipeline.workflow.summarize_smc_repeats", return_value=failed):
                 with self.assertRaises(GateFailure):
                     run_experiment(
                         config,
-                        chain_runner=fake_runner,
+                        sampler_runner=fake_runner,
                         now=FIXED_NOW,
                         git_sha=GIT_SHA,
                     )
@@ -362,15 +365,15 @@ class WorkflowContractTests(unittest.TestCase):
                 with Path(kwargs["table_path"]).open("r", encoding="utf-8") as handle:
                     first = next(csv.DictReader(handle, delimiter="\t"))
                 self.assertAlmostEqual(float(first["rho_ASCAT"]), kwargs["config"].ascat_purity)
-                return {}
+                return _fake_smc_payload(nodes=kwargs["config"].num_nodes)
 
             with mock.patch(
-                "tumor_tree_pipeline.workflow.summarize_chains",
-                return_value=_passing_diagnostics(),
+                "tumor_tree_pipeline.workflow.summarize_smc_repeats",
+                return_value=_passing_smc_diagnostics(),
             ):
                 output = run_experiment(
                     config,
-                    chain_runner=fake_runner,
+                    sampler_runner=fake_runner,
                     now=FIXED_NOW,
                     git_sha=GIT_SHA,
                 )
@@ -379,8 +382,8 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertEqual({call["holdout_kind"] for call in calls}, {"ps", "chromosome", "ascat_segment"})
             self.assertEqual({call["config"].num_nodes for call in calls}, {4, 6, 8})
             self.assertEqual({call["config"].ascat_purity for call in calls}, {0.99, 0.97, 0.95})
-            self.assertTrue(all(call["config"].iterations == 1500 for call in calls))
-            self.assertTrue(all(call["config"].burnin == 1000 for call in calls))
+            self.assertTrue(all(call["config"].max_annealing_stages == 64 for call in calls))
+            self.assertTrue(all(call["config"].particles == 1_024 for call in calls))
             self.assertEqual(len({call["config"].seed for call in calls}), len(calls))
 
     def test_formal_dirty_tree_fails_closed_and_smoke_override_is_explicit(self) -> None:
@@ -399,7 +402,7 @@ class WorkflowContractTests(unittest.TestCase):
                 min_predictive_log_score=-5.0,
             )
             with self.assertRaisesRegex(WorkflowError, "worktree is dirty"):
-                run_experiment(formal, chain_runner=lambda **_: {}, now=FIXED_NOW, git_sha=GIT_SHA)
+                run_experiment(formal, sampler_runner=lambda **_: _fake_smc_payload(), now=FIXED_NOW, git_sha=GIT_SHA)
             smoke = ExperimentConfig(
                 output_root=root / "smoke",
                 table_path=table,
@@ -407,7 +410,7 @@ class WorkflowContractTests(unittest.TestCase):
                 mode="smoke",
                 allow_dirty_worktree=True,
             )
-            output = run_experiment(smoke, chain_runner=lambda **_: {}, now=FIXED_NOW, git_sha=GIT_SHA)
+            output = run_experiment(smoke, sampler_runner=lambda **_: _fake_smc_payload(), now=FIXED_NOW, git_sha=GIT_SHA)
             self.assertTrue((output / "_SUCCESS").is_file())
 
     def test_holdout_metadata_must_exactly_match_eligible_model_ids(self) -> None:
@@ -427,7 +430,7 @@ class WorkflowContractTests(unittest.TestCase):
                 min_predictive_log_score=-5.0,
             )
             with self.assertRaisesRegex(WorkflowError, "exactly match"):
-                run_experiment(config, chain_runner=lambda **_: {}, now=FIXED_NOW, git_sha=GIT_SHA)
+                run_experiment(config, sampler_runner=lambda **_: _fake_smc_payload(), now=FIXED_NOW, git_sha=GIT_SHA)
 
     def test_failed_run_can_resume_same_run_but_success_cannot(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -442,7 +445,7 @@ class WorkflowContractTests(unittest.TestCase):
             with self.assertRaises(WorkflowError):
                 run_experiment(
                     config,
-                    chain_runner=mock.Mock(side_effect=RuntimeError("interrupt")),
+                    sampler_runner=mock.Mock(side_effect=RuntimeError("interrupt")),
                     now=FIXED_NOW,
                     git_sha=GIT_SHA,
                 )
@@ -451,69 +454,14 @@ class WorkflowContractTests(unittest.TestCase):
 
             def resumed_runner(**kwargs):
                 resumed_calls.append(kwargs)
-                return {}
+                return _fake_smc_payload()
 
             resumed = dataclasses.replace(config, run_id=run_dir.name, resume=True)
-            output = run_experiment(resumed, chain_runner=resumed_runner, git_sha=GIT_SHA)
+            output = run_experiment(resumed, sampler_runner=resumed_runner, git_sha=GIT_SHA)
             self.assertEqual(output, run_dir)
             self.assertTrue(any(call["resume"] for call in resumed_calls))
             with self.assertRaisesRegex(WorkflowError, "completed experiment is immutable"):
-                run_experiment(resumed, chain_runner=resumed_runner, git_sha=GIT_SHA)
-
-    def test_ess_only_failure_extends_checkpoints_with_bounded_ledger(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            table, manifest, metadata = _write_table_bundle(root)
-            ps, simulation = _write_formal_prerequisites(root)
-            config = ExperimentConfig(
-                output_root=root / "out",
-                table_path=table,
-                validation_manifest=manifest,
-                holdout_metadata=metadata,
-                ps_audit_manifest=ps,
-                simulation_manifest=simulation,
-                min_predictive_log_score=-5.0,
-                formal_max_iterations=2_000,
-                ess_extension_batch=500,
-            )
-            calls = []
-
-            def checkpoint_runner(**kwargs):
-                calls.append(kwargs)
-                chain_dir = Path(kwargs["output_dir"])
-                payload = {
-                    "config": dataclasses.asdict(kwargs["config"]),
-                    "next_iteration": kwargs["config"].iterations,
-                }
-                with gzip.open(chain_dir / "checkpoint.json.gz", "wt", encoding="utf-8") as handle:
-                    json.dump(payload, handle)
-                (chain_dir / "chain_complete.json").write_text("{}\n", encoding="utf-8")
-                return {}
-
-            ess_failed = _passing_diagnostics()
-            ess_failed["min_bulk_ess_total"] = 100.0
-            diagnostics = [ess_failed, _passing_diagnostics()]
-
-            def diagnostic_side_effect(_results):
-                return diagnostics.pop(0) if diagnostics else _passing_diagnostics()
-
-            with mock.patch(
-                "tumor_tree_pipeline.workflow.summarize_chains",
-                side_effect=diagnostic_side_effect,
-            ):
-                output = run_experiment(
-                    config,
-                    chain_runner=checkpoint_runner,
-                    now=FIXED_NOW,
-                    git_sha=GIT_SHA,
-                )
-            extension_calls = [call for call in calls if call["config"].iterations == 2_000]
-            self.assertEqual(len(extension_calls), 4)
-            self.assertTrue(all(call["resume"] for call in extension_calls))
-            ledger = json.loads((output / "command_ledger.json").read_text())["entries"]
-            extension_entries = [entry for entry in ledger if entry["action"] == "ess_extension"]
-            self.assertEqual(len(extension_entries), 4)
-            self.assertTrue(all(entry["from_iterations"] == 1_500 for entry in extension_entries))
+                run_experiment(resumed, sampler_runner=resumed_runner, git_sha=GIT_SHA)
 
     def test_prerequisites_record_ps_and_holdout_hashes_and_dirs_are_group_shared(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -530,12 +478,12 @@ class WorkflowContractTests(unittest.TestCase):
                 min_predictive_log_score=-5.0,
             )
             with mock.patch(
-                "tumor_tree_pipeline.workflow.summarize_chains",
-                return_value=_passing_diagnostics(),
+                "tumor_tree_pipeline.workflow.summarize_smc_repeats",
+                return_value=_passing_smc_diagnostics(),
             ):
                 output = run_experiment(
                     config,
-                    chain_runner=lambda **_: {},
+                    sampler_runner=lambda **_: _fake_smc_payload(),
                     now=FIXED_NOW,
                     git_sha=GIT_SHA,
                 )

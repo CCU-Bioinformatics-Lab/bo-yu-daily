@@ -28,6 +28,10 @@ std::string json_parent_array(const std::vector<int>& values);
 struct SampleRecord {
     std::uint64_t iteration = 0;
     double log_posterior = 0.0;
+    double log_weight = 0.0;
+    double particle_weight = 0.0;
+    std::uint64_t particle_index = 0;
+    std::string sample_kind = "posterior_draw";
     std::vector<int> parents;
     std::vector<double> eta;
     std::vector<double> phi;

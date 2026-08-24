@@ -1,27 +1,39 @@
-"""Adapter from the Python workflow contract to the C++ inference backend.
+"""Small adapter from the Python workflow to the C++ annealed-SMC backend.
 
-The Python layer remains responsible for canonical-table construction,
-holdout selection, provenance, and diagnostics.  The C++ executable owns the
-stateful finite-K TSSB-inspired compound MCMC chain. Keeping this adapter
-small makes the algorithm seam replaceable without duplicating the workflow.
+The workflow owns canonical-input validation, holdout selection and repeat
+diagnostics.  The C++ executable owns the particle population, adaptive
+annealing, systematic resampling, rejuvenation and posterior artifacts.  A
+single adapter keeps this seam replaceable without maintaining a second
+production sampler in Python.
 """
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
-from .contracts import ChainConfig
+from .contracts import INFERENCE_ALGORITHM_ID, SMCConfig
+
+
+SMC_ARTIFACTS = (
+    "samples.jsonl.gz",
+    "multiplicity_posterior.tsv.gz",
+    "posterior_summary.tsv.gz",
+    "topology_summary.tsv",
+    "diagnostics.json",
+    "representative_tree.json",
+    "checkpoint.json.gz",
+    "particle_history.jsonl.gz",
+    "smc_complete.json",
+)
 
 
 @dataclass(frozen=True)
-class ChainResult:
-    """Stable workflow result contract returned by the active C++ backend."""
-
+class SMCResult:
     outdir: Path
     samples: Path
     multiplicity_posterior: Path
@@ -30,20 +42,9 @@ class ChainResult:
     diagnostics: Path
     representative_tree: Path
     checkpoint: Path
+    particle_history: Path
     posterior_samples: int
     resumed: bool
-
-
-_ARTIFACTS = (
-    "samples.jsonl.gz",
-    "multiplicity_posterior.tsv.gz",
-    "posterior_summary.tsv.gz",
-    "topology_summary.tsv",
-    "diagnostics.json",
-    "representative_tree.json",
-    "checkpoint.json.gz",
-    "chain_complete.json",
-)
 
 
 def _repository_root() -> Path:
@@ -51,7 +52,7 @@ def _repository_root() -> Path:
 
 
 def find_inference_binary() -> Path:
-    """Find the explicitly configured or standard local C++ executable."""
+    """Find the configured or standard local C++ SMC executable."""
 
     configured = os.environ.get("TUMOR_TREE_INFERENCE_BIN")
     candidates = [Path(configured)] if configured else []
@@ -67,7 +68,7 @@ def find_inference_binary() -> Path:
             return candidate.resolve()
     searched = ", ".join(str(path) for path in candidates)
     raise RuntimeError(
-        "C++ inference backend is not built; expected an executable at "
+        "C++ SMC backend is not built; expected an executable at "
         f"{searched}. Build it with: cmake -S inference -B inference/build "
         "-DCMAKE_BUILD_TYPE=Release && cmake --build inference/build --parallel"
     )
@@ -77,7 +78,12 @@ def _write_exclude_file(ids: frozenset[str], directory: Path) -> Path | None:
     if not ids:
         return None
     handle = tempfile.NamedTemporaryFile(
-        mode="w", encoding="utf-8", prefix=".holdout.", suffix=".ids", dir=directory, delete=False
+        mode="w",
+        encoding="utf-8",
+        prefix=".holdout.",
+        suffix=".ids",
+        dir=directory,
+        delete=False,
     )
     try:
         with handle:
@@ -88,23 +94,57 @@ def _write_exclude_file(ids: frozenset[str], directory: Path) -> Path | None:
     return Path(handle.name)
 
 
-def run_chain_cpp(
+def _result(output_path: Path, *, resumed: bool) -> SMCResult:
+    missing = [name for name in SMC_ARTIFACTS if not (output_path / name).is_file()]
+    if missing:
+        raise RuntimeError(
+            "C++ SMC output is incomplete; missing artifacts: " + ", ".join(missing)
+        )
+    payload = json.loads((output_path / "diagnostics.json").read_text(encoding="utf-8"))
+    posterior_samples = payload.get("posterior_samples")
+    if not isinstance(posterior_samples, int) or posterior_samples <= 0:
+        raise RuntimeError("C++ SMC diagnostics has invalid posterior_samples")
+    return SMCResult(
+        outdir=output_path,
+        samples=output_path / "samples.jsonl.gz",
+        multiplicity_posterior=output_path / "multiplicity_posterior.tsv.gz",
+        posterior_summary=output_path / "posterior_summary.tsv.gz",
+        topology_summary=output_path / "topology_summary.tsv",
+        diagnostics=output_path / "diagnostics.json",
+        representative_tree=output_path / "representative_tree.json",
+        checkpoint=output_path / "checkpoint.json.gz",
+        particle_history=output_path / "particle_history.jsonl.gz",
+        posterior_samples=posterior_samples,
+        resumed=resumed,
+    )
+
+
+def run_smc_cpp(
     *,
     integrated_input: Path,
     outdir: Path,
-    config: ChainConfig,
-    algorithm: str = "phylowgs_inspired_tssb_mcmc",
+    config: SMCConfig,
+    algorithm: str = INFERENCE_ALGORITHM_ID,
     exclude_ids: frozenset[str] = frozenset(),
+    repeat_index: int = 1,
     resume: bool = False,
-) -> ChainResult:
-    """Execute one C++ chain and return the existing Python result contract."""
+) -> SMCResult:
+    """Run one independent C++ SMC repeat."""
 
     config.validate()
+    if algorithm != INFERENCE_ALGORITHM_ID:
+        raise ValueError(f"only {INFERENCE_ALGORITHM_ID} is available")
     input_path = Path(integrated_input).resolve()
     output_path = Path(outdir).resolve()
     if not input_path.is_file():
         raise FileNotFoundError(f"canonical integrated input does not exist: {input_path}")
     output_path.mkdir(parents=True, exist_ok=True)
+    if resume and (output_path / "smc_complete.json").is_file():
+        return _result(output_path, resumed=True)
+    if resume:
+        raise RuntimeError(
+            "C++ SMC checkpoint restore is not implemented; resume requires a completed immutable repeat"
+        )
     binary = find_inference_binary()
     try:
         site_threads = int(os.environ.get("TUMOR_TREE_INFERENCE_THREADS", "1"))
@@ -112,40 +152,42 @@ def run_chain_cpp(
         raise ValueError("TUMOR_TREE_INFERENCE_THREADS must be a positive integer") from exc
     if site_threads < 1:
         raise ValueError("TUMOR_TREE_INFERENCE_THREADS must be positive")
-    # Keep the transient file outside the chain directory: the C++ backend
-    # treats any non-empty output directory as an overwrite hazard.
+
+    annealing_stages = config.max_annealing_stages
     exclude_path = _write_exclude_file(frozenset(exclude_ids), output_path.parent)
     command = [
         str(binary),
         "--algorithm",
-        algorithm,
+        INFERENCE_ALGORITHM_ID,
         "--input",
         str(input_path),
         "--outdir",
         str(output_path),
         "--seed",
-        str(config.seed),
+        str(config.seed + max(0, repeat_index - 1)),
         "--num-nodes",
         str(config.num_nodes),
-        "--iterations",
-        str(config.iterations),
-        "--burnin",
-        str(config.burnin),
-        "--thin",
-        str(config.thin),
+        "--annealing-stages",
+        str(annealing_stages),
+        "--particles",
+        str(config.particles),
+        "--conditional-ess-target",
+        f"{config.conditional_ess_target:.17g}",
+        "--ess-threshold",
+        f"{config.resample_ess_threshold:.17g}",
+        "--rejuvenation-sweeps",
+        str(config.min_rejuvenation_sweeps),
         "--purity",
         f"{config.ascat_purity:.17g}",
         "--checkpoint-every",
         str(config.checkpoint_every),
         "--threads",
         str(site_threads),
-        "--chains",
+        "--repeats",
         "1",
     ]
     if exclude_path is not None:
         command.extend(("--exclude-file", str(exclude_path)))
-    if resume:
-        command.append("--resume")
     try:
         completed = subprocess.run(
             command,
@@ -159,34 +201,8 @@ def run_chain_cpp(
             exclude_path.unlink(missing_ok=True)
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()
-        raise RuntimeError(
-            f"C++ inference backend failed with exit {completed.returncode}: {detail}"
-        )
-    missing = [name for name in _ARTIFACTS if not (output_path / name).is_file()]
-    if missing:
-        raise RuntimeError(
-            "C++ inference backend exited successfully but did not produce "
-            f"required artifacts: {', '.join(missing)}"
-        )
-    return ChainResult(
-        outdir=output_path,
-        samples=output_path / "samples.jsonl.gz",
-        multiplicity_posterior=output_path / "multiplicity_posterior.tsv.gz",
-        posterior_summary=output_path / "posterior_summary.tsv.gz",
-        topology_summary=output_path / "topology_summary.tsv",
-        diagnostics=output_path / "diagnostics.json",
-        representative_tree=output_path / "representative_tree.json",
-        checkpoint=output_path / "checkpoint.json.gz",
-        posterior_samples=_posterior_sample_count(output_path / "diagnostics.json"),
-        resumed=resume,
-    )
+        raise RuntimeError(f"C++ SMC backend failed with exit {completed.returncode}: {detail}")
+    return _result(output_path, resumed=False)
 
 
-def _posterior_sample_count(path: Path) -> int:
-    import json
-
-    payload: Any = json.loads(path.read_text(encoding="utf-8"))
-    value = payload.get("posterior_samples") if isinstance(payload, dict) else None
-    if not isinstance(value, int) or value <= 0:
-        raise RuntimeError(f"C++ diagnostics has invalid posterior_samples: {path}")
-    return value
+run_smc = run_smc_cpp

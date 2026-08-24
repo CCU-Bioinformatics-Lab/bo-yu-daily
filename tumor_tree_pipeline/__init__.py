@@ -5,10 +5,10 @@ The package exposes three deep-module seams:
 ``build_model_table``
     Convert validated site counts and ASCAT projection into the canonical
     likelihood table.
-``run_chain_cpp``
-    Invoke the active C++17 finite-K posterior-chain backend.
+``run_smc_cpp``
+    Invoke the active C++17 finite-K annealed-SMC backend.
 ``run_experiment``
-    Orchestrate immutable, gated multi-chain experiments.
+    Orchestrate immutable, gated multi-repeat experiments.
 
 The public functions are imported lazily by their owning modules to keep the
 package import cheap for command-line validation and fixture tests.
@@ -16,16 +16,18 @@ package import cheap for command-line validation and fixture tests.
 
 from .contracts import (
     MODEL_INPUT_SCHEMA_VERSION,
+    INFERENCE_ALGORITHM_ID,
     BuildInputs,
-    ChainConfig,
     GateThresholds,
     PuritySpec,
+    SMCConfig,
 )
 
 __all__ = [
     "MODEL_INPUT_SCHEMA_VERSION",
+    "INFERENCE_ALGORITHM_ID",
     "BuildInputs",
-    "ChainConfig",
+    "SMCConfig",
     "GateThresholds",
     "PuritySpec",
 ]

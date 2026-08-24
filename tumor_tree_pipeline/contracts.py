@@ -11,6 +11,8 @@ from pathlib import Path
 
 
 MODEL_INPUT_SCHEMA_VERSION = "hcc1395_tumor_tree_input/v4"
+INFERENCE_ALGORITHM_ID = "rao_blackwellized_annealed_smc"
+SMC_SAMPLE_KIND = "smc_particle"
 
 MODEL_REQUIRED_COLUMNS = (
     "mutation_id",
@@ -83,34 +85,40 @@ class BuildInputs:
 
 
 @dataclass(frozen=True)
-class ChainConfig:
-    """One finite-K chain configuration.
-
-    Each chain is a seeded finite-K PhyloWGS-inspired compound MCMC chain:
-    assignment Gibbs, local-mass independence MH, and conditional topology
-    Gibbs. The workflow may run several independent seeds so that convergence
-    diagnostics can compare chains, but that outer wrapper is not part of this
-    per-chain contract.
-
-    The defaults are the agreed formal lower bound, not a claim that a fixed
-    number of iterations proves convergence.
-    """
+class SMCConfig:
+    """One independent repeat of the active Rao--Blackwellized SMC backend."""
 
     seed: int
     num_nodes: int = 6
-    iterations: int = 1_500
-    burnin: int = 1_000
-    thin: int = 1
+    particles: int = 1_024
+    max_annealing_stages: int = 64
+    conditional_ess_target: float = 0.80
+    resample_ess_threshold: float = 0.50
+    min_rejuvenation_sweeps: int = 3
+    max_rejuvenation_sweeps: int = 3
+    eta_rw_scale: float = 0.10
+    topology_global_probability: float = 0.20
     ascat_purity: float = 0.99
-    checkpoint_every: int = 100
+    checkpoint_every: int = 1
 
     def validate(self) -> None:
         if not 2 <= self.num_nodes <= 8:
             raise ValueError("num_nodes must be between 2 and 8")
-        if self.iterations <= self.burnin:
-            raise ValueError("iterations must exceed burnin")
-        if self.thin != 1:
-            raise ValueError("formal runs require thin=1")
+        if self.particles < 2:
+            raise ValueError("particles must be at least 2")
+        if self.max_annealing_stages <= 0:
+            raise ValueError("max_annealing_stages must be positive")
+        if not 0.0 < self.resample_ess_threshold < self.conditional_ess_target <= 1.0:
+            raise ValueError(
+                "SMC ESS thresholds must satisfy 0 < resample_ess_threshold "
+                "< conditional_ess_target <= 1"
+            )
+        if not 1 <= self.min_rejuvenation_sweeps <= self.max_rejuvenation_sweeps:
+            raise ValueError("rejuvenation sweep bounds are invalid")
+        if not 0.0 < self.eta_rw_scale:
+            raise ValueError("eta_rw_scale must be positive")
+        if not 0.0 <= self.topology_global_probability <= 1.0:
+            raise ValueError("topology_global_probability must be in [0, 1]")
         if not 0.0 < self.ascat_purity <= 1.0:
             raise ValueError("ascat_purity must be in (0, 1]")
         if self.checkpoint_every <= 0:
@@ -119,21 +127,28 @@ class ChainConfig:
 
 @dataclass(frozen=True)
 class GateThresholds:
-    """Formal numerical gates; pilot workflows may report looser diagnostics."""
+    """Formal SMC gates; particle ESS and repeat-stability metrics define this contract."""
 
-    max_rank_normalized_rhat: float = 1.01
-    min_bulk_ess_total: float = 400.0
-    min_tail_ess_total: float = 400.0
+    min_conditional_ess_fraction: float = 0.50
+    min_weighted_particle_ess_fraction: float = 0.50
+    min_particle_diversity: float = 0.25
+    min_ancestor_diversity: float = 0.25
+    min_ccf_stability: float = 0.90
     min_assignment_agreement: float = 0.90
     max_edge_support_difference: float = 0.10
     min_predictive_coverage: float = 0.85
     max_predictive_coverage: float = 0.95
 
     def validate(self) -> None:
-        if not 1.0 < self.max_rank_normalized_rhat <= 1.10:
-            raise ValueError("formal R-hat threshold must be in (1, 1.10]")
-        if self.min_bulk_ess_total <= 0 or self.min_tail_ess_total <= 0:
-            raise ValueError("ESS thresholds must be positive")
+        for name, value in (
+            ("min_conditional_ess_fraction", self.min_conditional_ess_fraction),
+            ("min_weighted_particle_ess_fraction", self.min_weighted_particle_ess_fraction),
+            ("min_particle_diversity", self.min_particle_diversity),
+            ("min_ancestor_diversity", self.min_ancestor_diversity),
+            ("min_ccf_stability", self.min_ccf_stability),
+        ):
+            if not 0.0 <= value <= 1.0:
+                raise ValueError(f"{name} must be in [0, 1]")
         if not 0.0 <= self.min_assignment_agreement <= 1.0:
             raise ValueError("assignment agreement must be in [0, 1]")
         if not 0.0 <= self.max_edge_support_difference <= 1.0:

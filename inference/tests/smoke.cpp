@@ -111,14 +111,12 @@ int main() {
     tti::InferenceConfig config;
     config.seed = 1234;
     config.num_nodes = 3;
-    config.iterations = 12;
-    config.burnin = 4;
-    config.thin = 1;
+    config.annealing_stages = 12;
     config.purity = 0.99;
     config.checkpoint_every = 2;
     config.threads = 1;
-    config.chains = 1;
-    auto algorithm = tti::AlgorithmRegistry::instance().create("phylowgs_inspired_tssb_mcmc");
+    config.repeats = 1;
+    auto algorithm = tti::AlgorithmRegistry::instance().create("rao_blackwellized_annealed_smc");
     tti::RunOptions one_options{root / "one", {}};
     algorithm->run(tti::load_canonical_table(compressed_input, 0.99, {}), config, one_options, 0);
     tti::RunOptions hp_changed_options{root / "hp_changed", {}};
@@ -128,7 +126,9 @@ int main() {
     algorithm->run(tti::load_canonical_table(input, 0.99, {}), config, two_options, 0);
 
     for (const auto& directory : {one_options.outdir, two_options.outdir}) {
-        for (const auto& name : {"samples.jsonl.gz", "multiplicity_posterior.tsv.gz", "posterior_summary.tsv.gz", "topology_summary.tsv", "diagnostics.json", "representative_tree.json", "checkpoint.json.gz", "chain_complete.json"}) assert(fs::is_regular_file(directory / name));
+        for (const auto& name : {"samples.jsonl.gz", "multiplicity_posterior.tsv.gz", "posterior_summary.tsv.gz", "topology_summary.tsv", "diagnostics.json", "representative_tree.json", "checkpoint.json.gz", "smc_complete.json", "particle_history.jsonl.gz"}) assert(fs::is_regular_file(directory / name));
+        const std::string samples = read_gzip(directory / "samples.jsonl.gz");
+        assert(samples.find("\"sample_kind\":\"smc_particle\"") != std::string::npos);
         const std::string multiplicity_table = read_gzip(directory / "multiplicity_posterior.tsv.gz");
         assert(multiplicity_table.find("mutation_id\tmultiplicity\tprior\tposterior_mean") == 0);
         assert(multiplicity_table.find("chr1:10:A>G\t") != std::string::npos);
@@ -156,34 +156,28 @@ int main() {
     // legitimately differ even when retained posterior states are identical.
     for (const auto& directory : {one_options.outdir, two_options.outdir}) {
         const std::string checkpoint = read_gzip(directory / "checkpoint.json.gz");
-        assert(checkpoint.find("\"checkpoint_version\":2") != std::string::npos);
+        assert(checkpoint.find("\"checkpoint_version\":3") != std::string::npos);
+        assert(checkpoint.find("\"sample_semantics\":\"smc_particle\"") != std::string::npos);
+        assert(checkpoint.find("\"checkpoint_semantics\":\"smc_stage_particle_state\"") != std::string::npos);
         assert(checkpoint.find("\"input_sha256\":") != std::string::npos);
-        assert(checkpoint.find("\"next_iteration\":12") != std::string::npos);
-        assert(checkpoint.find("\"parents\":") != std::string::npos);
-        assert(checkpoint.find("\"eta\":") != std::string::npos);
-        assert(checkpoint.find("\"z\":") != std::string::npos);
-        assert(checkpoint.find("\"counters\":") != std::string::npos);
-        assert(checkpoint.find("\"retained_samples\":") != std::string::npos);
-        assert(checkpoint.find("\"assignment_counts\":") != std::string::npos);
+        assert(checkpoint.find("\"stage\":") != std::string::npos);
+        assert(checkpoint.find("\"beta\":") != std::string::npos);
+        assert(checkpoint.find("\"particles\":") != std::string::npos);
+        assert(checkpoint.find("\"weights\":") != std::string::npos);
+        assert(checkpoint.find("\"ancestor_indices\":") != std::string::npos);
         assert(checkpoint.find("\"rng_state\":") != std::string::npos);
     }
     std::ifstream diagnostics(one_options.outdir / "diagnostics.json");
     std::stringstream diagnostic_text;
     diagnostic_text << diagnostics.rdbuf();
-    assert(diagnostic_text.str().find("finite_K_TSSB_shaped_working_tree_prior") != std::string::npos);
-    assert(diagnostic_text.str().find("single_chain_phylowgs_inspired_tssb_mcmc") != std::string::npos);
-    assert(diagnostic_text.str().find("all_SNV_categorical_Gibbs_sweep") != std::string::npos);
+    assert(diagnostic_text.str().find("rao_blackwellized_annealed_smc") != std::string::npos);
+    assert(diagnostic_text.str().find("smc_particle") != std::string::npos);
+    assert(diagnostic_text.str().find("conditional_ess") != std::string::npos);
+    assert(diagnostic_text.str().find("weighted_ess") != std::string::npos);
+    assert(diagnostic_text.str().find("rejuvenation") != std::string::npos);
     assert(diagnostic_text.str().find("multiplicity_posterior.tsv.gz") != std::string::npos);
-    assert(diagnostic_text.str().find("\"error_rate\":0.005") != std::string::npos);
-
-    config.resume = true;
-    bool resume_rejected = false;
-    try {
-        algorithm->run(tti::load_canonical_table(input, 0.99, {}), config, one_options, 0);
-    } catch (const std::runtime_error& error) {
-        resume_rejected = std::string(error.what()).find("fail-closed") != std::string::npos;
-    }
-    assert(resume_rejected);
+    assert(diagnostic_text.str().find("particle_weighted_quantiles") != std::string::npos);
+    assert(diagnostic_text.str().find("mcmc") == std::string::npos);
     fs::remove_all(root, ignored);
     return 0;
 }

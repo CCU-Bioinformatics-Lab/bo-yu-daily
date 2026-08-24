@@ -66,7 +66,7 @@ class ModelData:
 
 @dataclass(frozen=True)
 class CompiledModel:
-    """Vectorized form of :class:`ModelData` reused across MCMC proposals."""
+    """Vectorized form of :class:`ModelData` reused across SMC particle scoring."""
 
     data: ModelData
     ref: np.ndarray
@@ -489,7 +489,7 @@ def _log_factorial_coefficients(rows: Sequence[Sequence[int]]) -> np.ndarray:
 
 
 def compile_model(data: ModelData) -> CompiledModel:
-    """Compile immutable site records into arrays for repeated MCMC scoring."""
+    """Compile immutable site records into arrays for repeated particle scoring."""
 
     support = tuple(sorted({m for site in data.sites for m in site.multiplicities}))
     log_prior = np.full((len(data.sites), len(support)), -np.inf, dtype=float)
