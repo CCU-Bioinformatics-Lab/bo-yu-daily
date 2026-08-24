@@ -127,13 +127,12 @@ Agent 只在以下條件全部成立時標記 smoke 成功：
 
 ```text
 output/tumor_tree_pipeline/
-20260824T080107Z_fe3bf6a48e05_rho0p99_K6_seed20260824/
+20260824T084337Z_f9cf8ef5bd28_rho0p99_K6_seed20260824/
 ```
 
-這只證明 commit `fe3bf6a48e05` 下 20-site fixture 的端到端介面可運作，不是 HCC1395
-tumor tree 結果。後續加入 lifecycle 修正後另有 working-tree smoke receipt
-`20260824T082252Z_fe3bf6a48e05_rho0p99_K6_seed20260824`；它需在本次修改 commit
-後再重跑，才能成為新的 immutable SHA receipt。
+這只證明 commit `f9cf8ef5bd28` 下 20-site fixture 的端到端介面可運作，不是 HCC1395
+tumor tree 結果。先前 `fe3bf6a48e05` 下的 smoke 與 working-tree receipt 只保留作歷史
+紀錄，不作為目前 active commit 的驗收 receipt。
 
 ### D. Quick pilot
 
