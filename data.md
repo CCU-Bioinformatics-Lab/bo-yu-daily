@@ -636,7 +636,7 @@ PS block
 
 但這些 observation 會在後續 likelihood 中用來更新 multiplicity posterior；它們不會先形成一個外部 multiplicity table，再被 likelihood 重複使用。
 
-CN prior 是候選狀態的初始權重，不是最終 posterior；multiplicity 不需要作為獨立的 MCMC state，因為它在每個 likelihood evaluation 中解析邊際化。exact candidate construction 由 C++ loader 根據 `major_cn`／`minor_cn` 在記憶體內完成；Python builder 不產生這些欄位，canonical table 也不接受它們。posterior 只在正式 inference output 產生。詳細定義見 model.md。
+CN prior 是候選狀態的初始權重，不是最終 posterior；multiplicity 不需要作為獨立的 particle state，因為它在每個 likelihood evaluation 中解析邊際化。exact candidate construction 由 C++ loader 根據 `major_cn`／`minor_cn` 在記憶體內完成；Python builder 不產生這些欄位，canonical table 也不接受它們。posterior 只在正式 inference output 產生。詳細定義見 model.md。
 
 ---
 
