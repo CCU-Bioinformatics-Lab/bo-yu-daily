@@ -5,14 +5,14 @@
 
 namespace tumor_tree_inference {
 
-AlgorithmPtr make_phylowgs_inspired_tssb_mcmc();
+AlgorithmPtr make_rao_blackwellized_annealed_smc();
 
 struct AlgorithmRegistry::Impl {
     std::map<std::string, AlgorithmPtr (*)()> factories;
 };
 
 AlgorithmRegistry::AlgorithmRegistry() : impl_(std::make_unique<Impl>()) {
-    impl_->factories.emplace("phylowgs_inspired_tssb_mcmc", &make_phylowgs_inspired_tssb_mcmc);
+    impl_->factories.emplace("rao_blackwellized_annealed_smc", &make_rao_blackwellized_annealed_smc);
 }
 
 AlgorithmRegistry& AlgorithmRegistry::instance() {
@@ -22,7 +22,7 @@ AlgorithmRegistry& AlgorithmRegistry::instance() {
 
 AlgorithmPtr AlgorithmRegistry::create(const std::string& algorithm) const {
     const auto found = impl_->factories.find(algorithm);
-    if (found == impl_->factories.end()) throw std::runtime_error("unknown algorithm " + algorithm + "; available: phylowgs_inspired_tssb_mcmc");
+    if (found == impl_->factories.end()) throw std::runtime_error("unknown algorithm " + algorithm + "; available: rao_blackwellized_annealed_smc");
     return found->second();
 }
 

@@ -23,19 +23,20 @@ from pathlib import Path
 from typing import Any
 
 from .contracts import (
+    INFERENCE_ALGORITHM_ID,
     MODEL_FORBIDDEN_COLUMNS,
     MODEL_INPUT_SCHEMA_VERSION,
     MODEL_REQUIRED_COLUMNS,
     BuildInputs,
-    ChainConfig,
     GateThresholds,
     PuritySpec,
+    SMCConfig,
 )
 from .diagnostics import (
-    evaluate_formal_gates,
-    pilot_report,
-    sampler_artifact_payload,
-    summarize_chains,
+    evaluate_smc_gates,
+    pilot_smc_report,
+    smc_artifact_payload,
+    summarize_smc_repeats,
 )
 
 
@@ -52,10 +53,9 @@ class ExperimentConfig:
     """Configuration for one staged experiment matrix.
 
     ``mode=all`` performs smoke, K=4/6/8 pilots, then the dependency-ordered
-    formal matrix. Each outer chain uses the finite-K TSSB-inspired compound
-    MCMC kernel with a distinct derived seed. Formal execution keeps multiple chains only as
-    a convergence-diagnostic wrapper, starts at K=6/rho=0.99, and stops
-    immediately if a required gate fails.
+    formal matrix. Each independent repeat uses a distinct seed and an
+    annealed particle population. Formal execution starts at K=6/rho=0.99 and
+    stops immediately if a required SMC or holdout gate fails.
     """
 
     output_root: Path
@@ -66,24 +66,25 @@ class ExperimentConfig:
     ps_audit_manifest: Path | None = None
     simulation_manifest: Path | None = None
     mode: str = "formal"
-    inference_algorithm: str = "phylowgs_inspired_tssb_mcmc"
+    inference_algorithm: str = INFERENCE_ALGORITHM_ID
     seed: int = 20_260_819
     main_purity: float = 0.99
     pilot_nodes: tuple[int, ...] = (4, 6, 8)
     sensitivity_purities: tuple[float, ...] = (0.97, 0.95)
-    formal_chains: int = 4
-    formal_iterations: int = 1_500
-    formal_burnin: int = 1_000
-    formal_thin: int = 1
-    checkpoint_every: int = 100
-    ess_extension_batch: int = 500
-    formal_max_iterations: int = 5_000
-    pilot_chains: int = 4
-    pilot_iterations: int = 300
-    pilot_burnin: int = 100
-    smoke_chains: int = 2
-    smoke_iterations: int = 20
-    smoke_burnin: int = 5
+    formal_repeats: int = 4
+    formal_particles: int = 1_024
+    pilot_repeats: int = 4
+    pilot_particles: int = 256
+    smoke_repeats: int = 2
+    smoke_particles: int = 64
+    max_annealing_stages: int = 64
+    conditional_ess_target: float = 0.80
+    resample_ess_threshold: float = 0.50
+    min_rejuvenation_sweeps: int = 3
+    max_rejuvenation_sweeps: int = 3
+    eta_rw_scale: float = 0.10
+    topology_global_probability: float = 0.20
+    checkpoint_every: int = 1
     holdout_fraction: float = 0.20
     gate_thresholds: GateThresholds = field(default_factory=GateThresholds)
     min_predictive_log_score: float | None = None
@@ -109,23 +110,19 @@ class ExperimentConfig:
             raise ValueError("the agreed finite-K sensitivity matrix is K=4,6,8")
         if tuple(self.sensitivity_purities) != (0.97, 0.95):
             raise ValueError("the agreed purity sensitivity values are 0.97 and 0.95")
-        if self.inference_algorithm != "phylowgs_inspired_tssb_mcmc":
+        if self.inference_algorithm != INFERENCE_ALGORITHM_ID:
             raise ValueError(
                 "the current workflow supports only inference_algorithm="
-                "'phylowgs_inspired_tssb_mcmc'"
+                f"'{INFERENCE_ALGORITHM_ID}'"
             )
-        if self.formal_chains < 4:
+        if self.formal_repeats < 2:
             raise ValueError(
-                "formal convergence diagnostics require at least four independent chains"
+                "formal SMC repeat diagnostics require at least two independent repeats"
             )
-        if self.formal_iterations < 1_500 or self.formal_burnin < 1_000:
-            raise ValueError("formal lower bounds are 1500 iterations and 1000 burn-in")
-        if self.formal_iterations <= self.formal_burnin or self.formal_thin != 1:
-            raise ValueError("formal chains require iterations > burn-in and thin=1")
-        if self.ess_extension_batch <= 0:
-            raise ValueError("ess_extension_batch must be positive")
-        if self.formal_max_iterations < self.formal_iterations:
-            raise ValueError("formal_max_iterations must be >= formal_iterations")
+        if self.formal_particles < 2 or self.pilot_particles < 2 or self.smoke_particles < 2:
+            raise ValueError("all SMC particle budgets must be at least 2")
+        if self.pilot_repeats < 2 or self.smoke_repeats < 2:
+            raise ValueError("pilot and smoke SMC runs require at least two repeats")
         if self.resume and not self.run_id:
             raise ValueError("resume requires an explicit run_id")
         if not 0.0 < self.holdout_fraction < 1.0:
@@ -146,6 +143,20 @@ class ExperimentConfig:
                     "the workflow will not invent a study-specific threshold"
                 )
         self.gate_thresholds.validate()
+        SMCConfig(
+            seed=self.seed,
+            num_nodes=6,
+            particles=self.formal_particles,
+            max_annealing_stages=self.max_annealing_stages,
+            conditional_ess_target=self.conditional_ess_target,
+            resample_ess_threshold=self.resample_ess_threshold,
+            min_rejuvenation_sweeps=self.min_rejuvenation_sweeps,
+            max_rejuvenation_sweeps=self.max_rejuvenation_sweeps,
+            eta_rw_scale=self.eta_rw_scale,
+            topology_global_probability=self.topology_global_probability,
+            ascat_purity=self.main_purity,
+            checkpoint_every=self.checkpoint_every,
+        ).validate()
 
 
 @dataclass(frozen=True)
@@ -202,7 +213,37 @@ def load_config(path: Path | str) -> ExperimentConfig:
     config_path = Path(path).resolve()
     raw = dict(_load_mapping(config_path))
     base = config_path.parent
+    retired_sampler_keys = {
+        "formal_chains",
+        "pilot_chains",
+        "smoke_chains",
+        "formal_iterations",
+        "formal_burnin",
+        "formal_thin",
+        "pilot_iterations",
+        "pilot_burnin",
+        "smoke_iterations",
+        "smoke_burnin",
+        "ess_extension_batch",
+        "formal_max_iterations",
+    }
+    legacy_present = sorted(retired_sampler_keys & raw.keys())
+    if legacy_present:
+        raise WorkflowError(
+            "configuration contains retired sampler controls; use SMC repeat/particle fields: "
+            + ", ".join(legacy_present)
+        )
     thresholds_raw = raw.pop("gate_thresholds", {})
+    retired_gate_keys = {
+        "max_rank_normalized_rhat",
+        "min_bulk_ess_total",
+        "min_tail_ess_total",
+    }
+    retired_gates = sorted(retired_gate_keys & thresholds_raw.keys())
+    if retired_gates:
+        raise WorkflowError(
+            "configuration contains retired chain diagnostic gates: " + ", ".join(retired_gates)
+        )
     thresholds = GateThresholds(**thresholds_raw)
     build_raw = raw.pop("build_inputs", None)
     build_inputs = None
@@ -469,7 +510,7 @@ def _derive_purity_sensitivity_table(
     """Create an explicit, hashed table variant for a fixed-purity sensitivity.
 
     Repeating rho in the canonical table is part of its validation contract,
-    so a chain may never override a 0.99 table in memory.  Sensitivity runs get
+    so a sensitivity run may never override a 0.99 table in memory.  Sensitivity runs get
     their own immutable input artifact derived from the same counts/CN/prior.
     """
 
@@ -649,49 +690,45 @@ def _read_identifier_file(path: Path | None) -> frozenset[str]:
     )
 
 
-def _default_chain_runner(
+def _default_sampler_runner(
     *,
     table_path: Path,
-    config: ChainConfig,
+    config: SMCConfig,
     output_dir: Path,
     holdout_path: Path | None,
     holdout_kind: str,
-    chain_index: int,
+    repeat_index: int,
     algorithm: str,
     resume: bool,
 ) -> Any:
-    from .cpp_backend import run_chain_cpp
+    from .cpp_backend import SMC_ARTIFACTS, run_smc_cpp
 
     holdout_ids = _read_identifier_file(holdout_path)
-    complete = output_dir / "chain_complete.json"
+    complete = output_dir / "smc_complete.json"
     if resume and complete.is_file():
-        from .cpp_backend import _ARTIFACTS
-
-        missing = [name for name in _ARTIFACTS if not (output_dir / name).is_file()]
+        missing = [name for name in SMC_ARTIFACTS if not (output_dir / name).is_file()]
         if missing:
             raise WorkflowError(
-                "completed chain is missing current output artifacts: " + ", ".join(missing)
+                "completed SMC repeat is missing current output artifacts: " + ", ".join(missing)
             )
-        checkpoint = output_dir / "checkpoint.json.gz"
-        payload = _checkpoint_payload(checkpoint)
-        if int(payload.get("next_iteration", -1)) != config.iterations:
-            raise WorkflowError("completed chain checkpoint does not match requested iterations")
-        result = type(
-            "ExistingChainResult",
-            (),
-            {
-                "samples": output_dir / "samples.jsonl.gz",
-                "representative_tree": output_dir / "representative_tree.json",
-            },
-        )()
-    else:
-        result = run_chain_cpp(
+        result = run_smc_cpp(
             integrated_input=table_path,
             outdir=output_dir,
             config=config,
             algorithm=algorithm,
             exclude_ids=holdout_ids,
-            resume=resume,
+            repeat_index=repeat_index,
+            resume=True,
+        )
+    else:
+        result = run_smc_cpp(
+            integrated_input=table_path,
+            outdir=output_dir,
+            config=config,
+            algorithm=algorithm,
+            exclude_ids=holdout_ids,
+            repeat_index=repeat_index,
+            resume=False,
         )
     if holdout_kind == "none":
         # Smoke/pilot diagnostics still need a scoring partition.  They do not
@@ -705,74 +742,14 @@ def _default_chain_runner(
         )
         if not holdout_ids:
             holdout_ids = frozenset(identifiers[:1])
-    return sampler_artifact_payload(
+    return smc_artifact_payload(
         samples_path=result.samples,
         representative_tree_path=result.representative_tree,
+        diagnostics_path=result.diagnostics,
         table_path=table_path,
         holdout_ids=holdout_ids,
         purity=config.ascat_purity,
     )
-
-
-def _checkpoint_payload(path: Path) -> dict[str, Any]:
-    with gzip.open(path, "rt", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise WorkflowError(f"checkpoint must contain an object: {path}")
-    return value
-
-
-def _promote_checkpoint_iterations(
-    chain_dir: Path, old_config: ChainConfig, new_config: ChainConfig
-) -> None:
-    """Authorize a bounded ESS extension without changing any other chain input."""
-
-    checkpoint = chain_dir / "checkpoint.json.gz"
-    if not checkpoint.is_file():
-        raise WorkflowError(f"ESS extension checkpoint is missing: {checkpoint}")
-    payload = _checkpoint_payload(checkpoint)
-    if "requested_seed" in payload or "chain_index" in payload:
-        raise WorkflowError(
-            "C++ inference backend does not support ESS extension/resume yet; "
-            "start a fresh output directory"
-        )
-    observed = payload.get("config")
-    if observed != dataclasses.asdict(old_config):
-        raise WorkflowError("checkpoint config does not match the completed extension batch")
-    old_values = dataclasses.asdict(old_config)
-    new_values = dataclasses.asdict(new_config)
-    differences = {key for key in old_values if old_values[key] != new_values[key]}
-    if differences != {"iterations"} or new_config.iterations <= old_config.iterations:
-        raise WorkflowError("ESS extension may increase only ChainConfig.iterations")
-    next_iteration = int(payload.get("next_iteration", -1))
-    if next_iteration != old_config.iterations:
-        raise WorkflowError("checkpoint is not at the completed iteration boundary")
-    payload["config"] = new_values
-    encoded = gzip.compress(
-        (
-            json.dumps(payload, separators=(",", ":"), sort_keys=True, allow_nan=False)
-            + "\n"
-        ).encode(),
-        compresslevel=6,
-        mtime=0,
-    )
-    temporary = checkpoint.parent / f".{checkpoint.name}.{uuid.uuid4().hex}.tmp"
-    try:
-        with temporary.open("xb") as handle:
-            handle.write(encoded)
-            handle.flush()
-            os.fsync(handle.fileno())
-        temporary.chmod(0o664)
-        os.replace(temporary, checkpoint)
-    finally:
-        if temporary.exists():
-            temporary.unlink()
-    complete = chain_dir / "chain_complete.json"
-    if complete.exists():
-        archive = chain_dir / f"chain_complete.iter_{old_config.iterations}.json"
-        if archive.exists():
-            raise WorkflowError(f"extension receipt already exists: {archive}")
-        os.replace(complete, archive)
 
 
 def _gate_failures(gate: Mapping[str, Any]) -> frozenset[str]:
@@ -824,26 +801,26 @@ def _artifact_paths(result: Any) -> tuple[Path, Path]:
     raise WorkflowError("build_model_table must return table_path and manifest_path artifacts")
 
 
-def _chain_payload(result: Any) -> Mapping[str, Any]:
+def _sampler_payload(result: Any) -> Mapping[str, Any]:
     if dataclasses.is_dataclass(result):
         result = {field.name: getattr(result, field.name) for field in dataclasses.fields(result)}
     if isinstance(result, Mapping):
         return result
     if isinstance(result, (str, Path)):
         path = Path(result)
-        payload = path if path.is_file() else path / "chain_result.json"
+        payload = path if path.is_file() else path / "sampler_result.json"
         return _read_json(payload)
     if hasattr(result, "diagnostic_payload"):
         payload = result.diagnostic_payload()
         if isinstance(payload, Mapping):
             return payload
-    raise WorkflowError("run_chain must return a diagnostics payload or chain_result.json path")
+    raise WorkflowError("SMC sampler must return a diagnostics payload or sampler_result.json path")
 
 
-def _derive_seed(base_seed: int, cell: RunCell, holdout_kind: str, chain_index: int) -> int:
+def _derive_seed(base_seed: int, cell: RunCell, holdout_kind: str, repeat_index: int) -> int:
     material = (
         f"{base_seed}|{cell.stage}|K={cell.num_nodes}|rho={cell.purity:.8f}|"
-        f"holdout={holdout_kind}|chain={chain_index}"
+        f"holdout={holdout_kind}|repeat={repeat_index}"
     )
     return int.from_bytes(hashlib.sha256(material.encode()).digest()[:4], "big") & 0x7FFFFFFF
 
@@ -857,7 +834,7 @@ def _run_cell(
     cell: RunCell,
     table_paths: Mapping[float, Path],
     holdouts: Mapping[str, Mapping[str, Any]],
-    chain_runner: Callable[..., Any],
+    sampler_runner: Callable[..., Any],
     ledger: list[dict[str, Any]],
     resume: bool,
     trace: Callable[..., None] | None = None,
@@ -894,14 +871,11 @@ def _run_cell(
     except KeyError as exc:
         raise WorkflowError(f"no validated model table for rho={cell.purity}") from exc
     if cell.stage == "smoke":
-        chain_count = config.smoke_chains
-        iterations, burnin = config.smoke_iterations, config.smoke_burnin
+        repeat_count, particle_budget = config.smoke_repeats, config.smoke_particles
     elif cell.stage == "pilot":
-        chain_count = config.pilot_chains
-        iterations, burnin = config.pilot_iterations, config.pilot_burnin
+        repeat_count, particle_budget = config.pilot_repeats, config.pilot_particles
     else:
-        chain_count = config.formal_chains
-        iterations, burnin = config.formal_iterations, config.formal_burnin
+        repeat_count, particle_budget = config.formal_repeats, config.formal_particles
     holdout_items = holdouts.items() if cell.formal else (("none", {"holdout_path": None}),)
     holdout_summaries: dict[str, Any] = {}
 
@@ -917,148 +891,122 @@ def _run_cell(
         )
         fit_dir = cell_dir / holdout_kind
         _mkdir(fit_dir, exist_ok=resume)
-        current_iterations = iterations
-        prior_iterations: int | None = None
-        extension_round = 0
-        while True:
-            results: list[Mapping[str, Any]] = []
-            for chain_index in range(1, chain_count + 1):
-                chain_dir = fit_dir / f"chain_{chain_index:02d}"
-                chain_exists = chain_dir.exists()
-                _mkdir(chain_dir, exist_ok=resume or extension_round > 0)
-                seed = _derive_seed(config.seed, cell, holdout_kind, chain_index)
-                chain_config = ChainConfig(
-                    seed=seed,
-                    num_nodes=cell.num_nodes,
-                    iterations=current_iterations,
-                    burnin=burnin,
-                    thin=1,
-                    ascat_purity=cell.purity,
-                    checkpoint_every=config.checkpoint_every,
-                )
-                chain_config.validate()
-                chain_resume = chain_exists or extension_round > 0
-                if extension_round > 0:
-                    assert prior_iterations is not None
-                    old_config = dataclasses.replace(chain_config, iterations=prior_iterations)
-                    _promote_checkpoint_iterations(chain_dir, old_config, chain_config)
-                call = {
-                    "table_path": table_path,
-                    "config": chain_config,
-                    "output_dir": chain_dir,
-                    "holdout_path": holdout.get("holdout_path"),
-                    "holdout_kind": holdout_kind,
-                    "chain_index": chain_index,
-                    "algorithm": config.inference_algorithm,
-                    "resume": chain_resume,
+        results: list[Mapping[str, Any]] = []
+        for repeat_index in range(1, repeat_count + 1):
+            repeat_dir = fit_dir / f"repeat_{repeat_index:02d}"
+            repeat_exists = repeat_dir.exists()
+            _mkdir(repeat_dir, exist_ok=resume)
+            seed = _derive_seed(config.seed, cell, holdout_kind, repeat_index)
+            sampler_config = SMCConfig(
+                seed=seed,
+                num_nodes=cell.num_nodes,
+                particles=particle_budget,
+                max_annealing_stages=config.max_annealing_stages,
+                conditional_ess_target=config.conditional_ess_target,
+                resample_ess_threshold=config.resample_ess_threshold,
+                min_rejuvenation_sweeps=config.min_rejuvenation_sweeps,
+                max_rejuvenation_sweeps=config.max_rejuvenation_sweeps,
+                eta_rw_scale=config.eta_rw_scale,
+                topology_global_probability=config.topology_global_probability,
+                ascat_purity=cell.purity,
+                checkpoint_every=config.checkpoint_every,
+            )
+            sampler_config.validate()
+            call = {
+                "table_path": table_path,
+                "config": sampler_config,
+                "output_dir": repeat_dir,
+                "holdout_path": holdout.get("holdout_path"),
+                "holdout_kind": holdout_kind,
+                "repeat_index": repeat_index,
+                "algorithm": config.inference_algorithm,
+                "resume": resume and repeat_exists,
+            }
+            ledger.append(
+                {
+                    "adapter": "cpp_backend.run_smc_cpp",
+                    "action": "resume" if call["resume"] else "start",
+                    "cell": cell_id,
+                    "holdout": holdout_kind,
+                    "repeat": repeat_index,
+                    "seed": seed,
+                    "inference_algorithm": config.inference_algorithm,
+                    "sample_kind": "smc_particle",
+                    "independent_repeat_role": "posterior_particle_repeat",
+                    "config": _jsonable(sampler_config),
                 }
-                ledger.append(
-                    {
-                        "adapter": "cpp_backend.run_chain_cpp",
-                        "action": "ess_extension" if extension_round else ("resume" if chain_resume else "start"),
-                        "extension_round": extension_round,
-                        "from_iterations": prior_iterations,
-                        "to_iterations": current_iterations,
-                        "cell": cell_id,
-                        "holdout": holdout_kind,
-                        "chain": chain_index,
-                        "seed": seed,
-                        "inference_algorithm": config.inference_algorithm,
-                        "multi_chain_role": "convergence_diagnostic_wrapper",
-                        "config": _jsonable(chain_config),
-                    }
-                )
-                _atomic_json(experiment_dir / "command_ledger.json", {"entries": ledger})
-                try:
-                    emit(
-                        "chain_started",
-                        stage=cell.stage,
-                        status="running",
-                        cell=cell_id,
-                        holdout=holdout_kind,
-                        chain=chain_index,
-                        K=cell.num_nodes,
-                        rho_ASCAT=cell.purity,
-                        seed=seed,
-                        iterations=current_iterations,
-                    )
-                    try:
-                        result = chain_runner(**call)
-                    except TypeError as exc:
-                        signature = inspect.signature(chain_runner)
-                        raise WorkflowError(
-                            f"run_chain adapter does not implement the workflow keyword contract {signature}"
-                        ) from exc
-                except Exception as exc:
-                    emit(
-                        "chain_failed",
-                        stage=cell.stage,
-                        status="failed",
-                        cell=cell_id,
-                        holdout=holdout_kind,
-                        chain=chain_index,
-                        K=cell.num_nodes,
-                        rho_ASCAT=cell.purity,
-                        seed=seed,
-                        error_type=type(exc).__name__,
-                        error=str(exc),
-                    )
-                    raise WorkflowError(
-                        f"chain failed: stage={cell.stage} cell={cell_id} "
-                        f"holdout={holdout_kind} chain={chain_index}: {exc}"
-                    ) from exc
-                results.append(_chain_payload(result))
+            )
+            _atomic_json(experiment_dir / "command_ledger.json", {"entries": ledger})
+            try:
                 emit(
-                    "chain_completed",
+                    "repeat_started",
                     stage=cell.stage,
-                    status="completed",
+                    status="running",
                     cell=cell_id,
                     holdout=holdout_kind,
-                    chain=chain_index,
+                    repeat=repeat_index,
                     K=cell.num_nodes,
                     rho_ASCAT=cell.purity,
                     seed=seed,
-                    iterations=current_iterations,
+                    particles=particle_budget,
                 )
+                try:
+                    result = sampler_runner(**call)
+                except TypeError as exc:
+                    signature = inspect.signature(sampler_runner)
+                    raise WorkflowError(
+                        f"SMC adapter does not implement the workflow keyword contract {signature}"
+                    ) from exc
+            except Exception as exc:
+                emit(
+                    "repeat_failed",
+                    stage=cell.stage,
+                    status="failed",
+                    cell=cell_id,
+                    holdout=holdout_kind,
+                    repeat=repeat_index,
+                    K=cell.num_nodes,
+                    rho_ASCAT=cell.purity,
+                    seed=seed,
+                    error_type=type(exc).__name__,
+                    error=str(exc),
+                )
+                raise WorkflowError(
+                    f"SMC repeat failed: stage={cell.stage} cell={cell_id} "
+                    f"holdout={holdout_kind} repeat={repeat_index}: {exc}"
+                ) from exc
+            results.append(_sampler_payload(result))
+            emit(
+                "repeat_completed",
+                stage=cell.stage,
+                status="completed",
+                cell=cell_id,
+                holdout=holdout_kind,
+                repeat=repeat_index,
+                K=cell.num_nodes,
+                rho_ASCAT=cell.purity,
+                seed=seed,
+                particles=particle_budget,
+            )
 
-            try:
-                diagnostics = summarize_chains(results)
-            except Exception:
-                if cell.stage == "smoke":
-                    diagnostics = {
-                        "formal_diagnostics_available": False,
-                        "reason": "smoke validates I/O only",
-                    }
-                else:
-                    raise
-            diagnostics = {
-                "inference_algorithm": config.inference_algorithm,
-                "multi_chain_role": "convergence_diagnostic_wrapper",
-                "chain_count": chain_count,
-                **diagnostics,
-            }
-            if cell.formal:
-                assert config.min_predictive_log_score is not None
-                gate = evaluate_formal_gates(
-                    diagnostics,
-                    config.gate_thresholds,
-                    min_predictive_log_score=config.min_predictive_log_score,
-                )
-                failures = _gate_failures(gate)
-                ess_only = bool(failures) and failures <= {"bulk_ess", "tail_ess"}
-                if ess_only and current_iterations < config.formal_max_iterations:
-                    prior_iterations = current_iterations
-                    current_iterations = min(
-                        current_iterations + config.ess_extension_batch,
-                        config.formal_max_iterations,
-                    )
-                    extension_round += 1
-                    continue
-            elif cell.stage == "pilot":
-                gate = pilot_report(diagnostics)
-            else:
-                gate = {"smoke_completed": True, "formal_gate_not_evaluated": True}
-            break
+        diagnostics = {
+            "inference_algorithm": config.inference_algorithm,
+            "sample_kind": "smc_particle",
+            "independent_repeat_role": "posterior_particle_repeat",
+            "repeat_count": repeat_count,
+            **summarize_smc_repeats(results),
+        }
+        if cell.formal:
+            assert config.min_predictive_log_score is not None
+            gate = evaluate_smc_gates(
+                diagnostics,
+                config.gate_thresholds,
+                min_predictive_log_score=config.min_predictive_log_score,
+            )
+        elif cell.stage == "pilot":
+            gate = pilot_smc_report(diagnostics)
+        else:
+            gate = {"smoke_completed": True, "formal_gate_not_evaluated": True}
         summary = {"diagnostics": diagnostics, "gate": gate}
         _atomic_json(fit_dir / "diagnostics.json", summary)
         holdout_summaries[holdout_kind] = summary
@@ -1091,13 +1039,12 @@ def _run_cell(
         "stage": cell.stage,
         "K": cell.num_nodes,
         "rho_ASCAT": cell.purity,
-        "seed_derivation": "sha256(base|stage|K|rho|holdout|chain), first 31 bits",
-        "chains": chain_count,
-        "iterations": current_iterations,
-        "initial_iterations": iterations,
-        "ess_extension_rounds": extension_round,
-        "burnin": burnin,
-        "thin": 1,
+        "seed_derivation": "sha256(base|stage|K|rho|holdout|repeat), first 31 bits",
+        "inference_algorithm": config.inference_algorithm,
+        "sample_kind": "smc_particle",
+        "independent_repeats": repeat_count,
+        "particle_budget": particle_budget,
+        "annealing_contract": "adaptive_likelihood_tempering_beta_0_to_1",
         "holdouts": holdout_summaries,
         "passed": True,
     }
@@ -1117,7 +1064,7 @@ def _run_cell(
 def run_experiment(
     config: ExperimentConfig | Path | str,
     *,
-    chain_runner: Callable[..., Any] | None = None,
+    sampler_runner: Callable[..., Any] | None = None,
     table_builder: Callable[[BuildInputs, Path], Any] | None = None,
     now: datetime | None = None,
     git_sha: str | None = None,
@@ -1237,7 +1184,7 @@ def run_experiment(
         )
         ledger_path = experiment_dir / "command_ledger.json"
         ledger = list(_read_json(ledger_path).get("entries", [])) if config.resume and ledger_path.is_file() else []
-        runner = chain_runner or _default_chain_runner
+        runner = sampler_runner or _default_sampler_runner
 
         if config.build_inputs is not None:
             current_context = {"stage": "input_build", "scope": "builder"}
@@ -1359,7 +1306,7 @@ def run_experiment(
                     cell=cell,
                     table_paths=table_paths,
                     holdouts=holdouts,
-                    chain_runner=runner,
+                    sampler_runner=runner,
                     ledger=ledger,
                     resume=config.resume,
                     trace=record_trace,
@@ -1372,7 +1319,9 @@ def run_experiment(
             "status": "success",
             "git_sha": resolved_git_sha,
             "inference_algorithm": config.inference_algorithm,
-            "multi_chain_role": "convergence_diagnostic_wrapper",
+            "sample_kind": "smc_particle",
+            "independent_repeat_role": "posterior_particle_repeat",
+            "diagnostics_contract": "smc_gates_v1",
             "input_tables": input_validations,
             "cells": cell_summaries,
         }

@@ -10,9 +10,11 @@
 #include <fcntl.h>
 #include <functional>
 #include <iomanip>
+#include <limits>
 #include <map>
 #include <numeric>
 #include <random>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <unistd.h>
@@ -20,20 +22,13 @@
 namespace tumor_tree_inference {
 namespace {
 
-constexpr std::uint64_t kCheckpointVersion = 2;
 constexpr double kTssbAlphaDecay = 0.65;
 constexpr double kTssbMinimumMassShape = 0.25;
-const std::vector<std::string> kMoveTypes = {"assignment", "eta", "topology"};
 
-struct State {
+struct Particle {
     std::vector<int> parents;
     std::vector<double> eta;
-    std::vector<int> z;
-};
-
-struct ScoreResult {
-    double score = 0.0;
-    std::vector<double> phi;
+    double log_likelihood = -std::numeric_limits<double>::infinity();
 };
 
 using Counters = std::map<std::string, std::uint64_t>;
@@ -168,18 +163,51 @@ std::vector<double> dirichlet_sample(const std::vector<double>& alpha, std::mt19
     return result;
 }
 
-ScoreResult score_state(const CanonicalTable& table, const InferenceConfig& config, const State& state) {
-    if (state.z.size() != table.sites.size() || state.parents.size() != config.num_nodes) throw std::runtime_error("state dimensions do not match model/config");
-    const auto phi = cumulative_phi(state.parents, state.eta);
-    const auto prior_alpha = tssb_mass_prior_alpha(state.parents);
-    double score = tssb_tree_log_prior(state.parents) + dirichlet_logpdf(state.eta, prior_alpha);
-    // Fixed site-index reduction: the result is independent of worker scheduling.
-    for (std::size_t site = 0; site < state.z.size(); ++site) {
-        const int node = state.z[site];
-        if (node < 0 || node >= static_cast<int>(config.num_nodes)) throw std::runtime_error("assignment outside clone range");
-        score += site_log_likelihood(table.sites[site], phi[static_cast<std::size_t>(node)]) + std::log(state.eta[static_cast<std::size_t>(node)]);
+double log_sum_exp(const std::vector<double>& values) {
+    if (values.empty()) return -std::numeric_limits<double>::infinity();
+    const double maximum = *std::max_element(values.begin(), values.end());
+    if (!std::isfinite(maximum)) return maximum;
+    double total = 0.0;
+    for (const double value : values) total += std::exp(value - maximum);
+    if (!(total > 0.0) || !std::isfinite(total)) return -std::numeric_limits<double>::infinity();
+    return maximum + std::log(total);
+}
+
+double rb_log_likelihood(const CanonicalTable& table, const std::vector<double>& phi,
+                         const std::vector<double>& eta) {
+    if (phi.size() != eta.size() || phi.empty()) throw std::runtime_error("Rao-Blackwellized state dimensions do not match");
+    std::vector<double> node_terms(phi.size());
+    double result = 0.0;
+    for (const Site& site : table.sites) {
+        for (std::size_t node = 0; node < phi.size(); ++node) {
+            node_terms[node] = site_log_likelihood(site, phi[node]) + std::log(eta[node]);
+        }
+        const double site_score = log_sum_exp(node_terms);
+        if (!std::isfinite(site_score)) return site_score;
+        result += site_score;
     }
-    return {score, phi};
+    return result;
+}
+
+double particle_log_target(const CanonicalTable& table, const Particle& particle, double beta) {
+    static_cast<void>(table);
+    return tssb_tree_log_prior(particle.parents) +
+           dirichlet_logpdf(particle.eta, tssb_mass_prior_alpha(particle.parents)) +
+           beta * particle.log_likelihood;
+}
+
+std::vector<int> rb_map_assignments(const CanonicalTable& table, const Particle& particle) {
+    const auto phi = cumulative_phi(particle.parents, particle.eta);
+    std::vector<int> assignments;
+    assignments.reserve(table.sites.size());
+    std::vector<double> node_terms(phi.size());
+    for (const Site& site : table.sites) {
+        for (std::size_t node = 0; node < phi.size(); ++node) {
+            node_terms[node] = site_log_likelihood(site, phi[node]) + std::log(particle.eta[node]);
+        }
+        assignments.push_back(static_cast<int>(std::distance(node_terms.begin(), std::max_element(node_terms.begin(), node_terms.end()))));
+    }
+    return assignments;
 }
 
 std::size_t sample_log_categorical(const std::vector<double>& log_weights, std::mt19937_64& rng) {
@@ -198,22 +226,109 @@ std::size_t sample_log_categorical(const std::vector<double>& log_weights, std::
     return log_weights.size() - 1U;
 }
 
-std::string counters_json(const Counters& counters) {
-    std::string result = "{";
-    bool first = true;
-    for (const auto& [key, value] : counters) {
-        if (!first) result += ",";
-        first = false;
-        result += json_string(key) + ":" + json_u64(value);
+std::vector<int> sample_tree(unsigned num_nodes, std::mt19937_64& rng) {
+    if (num_nodes < 2) throw std::runtime_error("SMC requires at least two clone nodes");
+    std::vector<int> parents(num_nodes, -1);
+    // Keeping clone 0 as the initial founder preserves the fixed-K output
+    // convention.  Topology rejuvenation can subsequently move the founder.
+    for (unsigned child = 1; child < num_nodes; ++child) {
+        std::uniform_int_distribution<int> parent_distribution(0, static_cast<int>(child - 1U));
+        parents[child] = parent_distribution(rng);
     }
-    return result + "}";
+    return parents;
+}
+
+double weighted_ess(const std::vector<double>& log_weights) {
+    if (log_weights.empty()) return 0.0;
+    const double maximum = *std::max_element(log_weights.begin(), log_weights.end());
+    if (!std::isfinite(maximum)) return 0.0;
+    double sum = 0.0;
+    double squared_sum = 0.0;
+    for (const double log_weight : log_weights) {
+        const double weight = std::exp(log_weight - maximum);
+        sum += weight;
+        squared_sum += weight * weight;
+    }
+    if (!(sum > 0.0) || !(squared_sum > 0.0) || !std::isfinite(sum) || !std::isfinite(squared_sum)) return 0.0;
+    return (sum * sum) / squared_sum;
+}
+
+double normalize_log_weights(std::vector<double>& log_weights) {
+    const double normalizer = log_sum_exp(log_weights);
+    if (!std::isfinite(normalizer)) throw std::runtime_error("SMC particle weights have invalid normalization");
+    for (double& value : log_weights) value -= normalizer;
+    return normalizer;
+}
+
+std::vector<std::size_t> systematic_resample(const std::vector<double>& log_weights,
+                                             std::mt19937_64& rng) {
+    if (log_weights.empty()) throw std::runtime_error("cannot resample an empty particle set");
+    const double maximum = *std::max_element(log_weights.begin(), log_weights.end());
+    if (!std::isfinite(maximum)) throw std::runtime_error("cannot resample non-finite particle weights");
+    std::vector<double> weights(log_weights.size(), 0.0);
+    double total = 0.0;
+    for (std::size_t index = 0; index < log_weights.size(); ++index) {
+        weights[index] = std::exp(log_weights[index] - maximum);
+        total += weights[index];
+    }
+    if (!(total > 0.0) || !std::isfinite(total)) throw std::runtime_error("cannot resample invalid particle weights");
+    for (double& weight : weights) weight /= total;
+
+    std::vector<double> cumulative(weights.size(), 0.0);
+    std::partial_sum(weights.begin(), weights.end(), cumulative.begin());
+    cumulative.back() = 1.0;
+    const double offset = std::generate_canonical<double, 53>(rng) / static_cast<double>(weights.size());
+    std::vector<std::size_t> ancestors;
+    ancestors.reserve(weights.size());
+    std::size_t cursor = 0;
+    for (std::size_t draw = 0; draw < weights.size(); ++draw) {
+        const double position = offset + static_cast<double>(draw) / static_cast<double>(weights.size());
+        while (cursor + 1U < cumulative.size() && position > cumulative[cursor]) ++cursor;
+        ancestors.push_back(cursor);
+    }
+    return ancestors;
+}
+
+double ess_for_beta(double beta, double current_beta,
+                    const std::vector<double>& log_weights,
+                    const std::vector<Particle>& particles) {
+    std::vector<double> trial_weights(log_weights.size());
+    const double delta = beta - current_beta;
+    for (std::size_t index = 0; index < particles.size(); ++index) {
+        trial_weights[index] = log_weights[index] + delta * particles[index].log_likelihood;
+    }
+    return weighted_ess(trial_weights);
+}
+
+double next_annealing_beta(double current_beta, unsigned annealing_steps,
+                           double target_ess, const std::vector<double>& log_weights,
+                           const std::vector<Particle>& particles) {
+    if (current_beta >= 1.0) return 1.0;
+    const double nominal = std::min(1.0, current_beta + 1.0 / static_cast<double>(std::max(1U, annealing_steps)));
+    const double particle_count = static_cast<double>(particles.size());
+    if (ess_for_beta(nominal, current_beta, log_weights, particles) >= target_ess * particle_count) return nominal;
+
+    double low = current_beta;
+    double high = nominal;
+    for (unsigned iteration = 0; iteration < 32; ++iteration) {
+        const double middle = (low + high) * 0.5;
+        if (ess_for_beta(middle, current_beta, log_weights, particles) >= target_ess * particle_count) low = middle;
+        else high = middle;
+    }
+    // A single very informative site may make even the smallest proposed
+    // increment fall below the target.  Progress is mandatory; the next
+    // stage therefore uses the nominal beta in that degenerate case.
+    return low > current_beta + 1e-12 ? low : nominal;
 }
 
 std::string config_json(const InferenceConfig& config) {
     return "{\"seed\":" + json_u64(config.seed) + ",\"num_nodes\":" + std::to_string(config.num_nodes) +
-           ",\"iterations\":" + json_u64(config.iterations) + ",\"burnin\":" + json_u64(config.burnin) +
-           ",\"thin\":" + std::to_string(config.thin) + ",\"ascat_purity\":" + json_number(config.purity) +
-           ",\"checkpoint_every\":" + json_u64(config.checkpoint_every) + "}";
+           ",\"annealing_stages\":" + std::to_string(config.annealing_stages) + ",\"ascat_purity\":" + json_number(config.purity) +
+           ",\"checkpoint_every\":" + json_u64(config.checkpoint_every) +
+           ",\"particles\":" + std::to_string(config.particles) +
+           ",\"conditional_ess_target\":" + json_number(config.conditional_ess_target) +
+           ",\"resample_ess_threshold\":" + json_number(config.resample_ess_threshold) +
+           ",\"rejuvenation_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + "}";
 }
 
 std::string rng_json(const std::mt19937_64& rng) {
@@ -222,18 +337,9 @@ std::string rng_json(const std::mt19937_64& rng) {
     return json_string(stream.str());
 }
 
-std::string assignment_counts_json(const std::vector<std::vector<std::uint64_t>>& counts) {
-    std::string result = "[";
-    for (std::size_t i = 0; i < counts.size(); ++i) {
-        if (i != 0) result += ",";
-        result += json_u64_array(counts[i]);
-    }
-    return result + "]";
-}
-
-std::uint64_t chain_seed(std::uint64_t seed, unsigned chain_index) {
-    // The chain index is part of the seed derivation; no RNG or mutable state is shared.
-    return seed + static_cast<std::uint64_t>(chain_index);
+std::uint64_t repeat_seed(std::uint64_t seed, unsigned repeat_index) {
+    // Each independent repeat receives a deterministic, disjoint seed.
+    return seed + static_cast<std::uint64_t>(repeat_index);
 }
 
 class OutputLock final {
@@ -258,25 +364,6 @@ private:
     std::filesystem::path path_;
     int fd_ = -1;
 };
-
-std::string checkpoint_json(const CanonicalTable& table, const InferenceConfig& reported_config,
-                            std::uint64_t requested_seed,
-                            const std::vector<std::string>& exclude_ids, std::uint64_t next_iteration,
-                            const State& state, double score, const Counters& counters,
-                            const std::vector<SampleRecord>& retained, const std::vector<std::vector<std::uint64_t>>& counts,
-                            const SampleRecord* best_sample, const std::vector<int>* best_assignments,
-                            const std::mt19937_64& rng, unsigned chain_index) {
-    std::string result = "{\"checkpoint_version\":" + json_u64(kCheckpointVersion) +
-        ",\"input_sha256\":" + json_string(table.input_sha256) + ",\"config\":" + config_json(reported_config) +
-        ",\"requested_seed\":" + json_u64(requested_seed) + ",\"chain_index\":" + std::to_string(chain_index) + ",\"derived_seed\":" + json_u64(reported_config.seed) +
-        ",\"exclude_ids\":" + json_string_array(exclude_ids) + ",\"next_iteration\":" + json_u64(next_iteration) +
-        ",\"parents\":" + json_parent_array(state.parents) + ",\"eta\":" + json_double_array(state.eta) +
-        ",\"z\":" + json_int_array(state.z) + ",\"score\":" + json_number(score) + ",\"counters\":" + counters_json(counters) +
-        ",\"retained_samples\":" + sample_array_json(retained) + ",\"assignment_counts\":" + assignment_counts_json(counts);
-    if (best_sample == nullptr) result += ",\"best_sample\":null,\"best_assignments\":null";
-    else result += ",\"best_sample\":" + sample_json(*best_sample) + ",\"best_assignments\":" + json_int_array(*best_assignments);
-    return result + ",\"rng_state\":" + rng_json(rng) + "}\n";
-}
 
 std::string samples_jsonl(const std::vector<SampleRecord>& samples) {
     std::string result;
@@ -461,21 +548,22 @@ std::string multiplicity_posterior_tsv(
 }
 
 void initialize_counters(Counters& counters) {
-    for (const auto& move : kMoveTypes) {
+    for (const auto& move : {std::string("eta"), std::string("topology")}) {
         counters[move + "_proposals"] = 0;
         counters[move + "_accepted"] = 0;
     }
 }
 
-class PhyloWgsInspiredTssbMcmc final : public Algorithm {
+
+class RaoBlackwellizedAnnealedSmcContract final : public Algorithm {
 public:
     const std::string& name() const override {
-        static const std::string algorithm_name = "phylowgs_inspired_tssb_mcmc";
+        static const std::string algorithm_name = "rao_blackwellized_annealed_smc";
         return algorithm_name;
     }
 
-    ChainResult run(const CanonicalTable& table, const InferenceConfig& config,
-                    const RunOptions& options, unsigned chain_index) const override {
+    RepeatResult run(const CanonicalTable& table, const InferenceConfig& config,
+                     const RunOptions& options, unsigned repeat_index) const override {
         config.validate();
         if (config.resume) throw std::runtime_error("--resume is fail-closed: C++ checkpoint restore is not implemented; use a new outdir");
         if (std::filesystem::exists(options.outdir)) {
@@ -483,166 +571,221 @@ public:
         } else {
             std::filesystem::create_directories(options.outdir);
         }
-        // The empty-directory check above is intentionally followed by an
-        // O_EXCL lock.  This closes the TOCTOU window when two processes are
-        // accidentally pointed at the same chain directory.
         OutputLock output_lock(options.outdir);
 
-        const std::uint64_t derived_seed = chain_seed(config.seed, chain_index);
+        struct Stage {
+            std::uint64_t index = 0;
+            double beta = 0.0;
+            double conditional_ess = 0.0;
+            double weighted_ess = 0.0;
+            bool resampled = false;
+            double ancestor_diversity = 1.0;
+            std::uint64_t sweeps = 3;
+            double eta_acceptance = 0.0;
+            double topology_acceptance = 0.0;
+        };
+
+        const std::uint64_t derived_seed = repeat_seed(config.seed, repeat_index);
         InferenceConfig reported_config = config;
         reported_config.seed = derived_seed;
         std::mt19937_64 rng(derived_seed);
-        State state;
-        state.parents.resize(config.num_nodes);
-        // Start from a shallow TSSB truncation.  This avoids giving every
-        // chain the same artificial linear topology before the Gibbs kernel
-        // has had a chance to explore the tree.
-        // Clone 0 is the unique tumor founder under the structural root;
-        // every remaining candidate starts as its direct descendant.
-        state.parents[0] = -1;
-        std::fill(state.parents.begin() + 1, state.parents.end(), 0);
-        state.eta.assign(config.num_nodes, 1.0 / static_cast<double>(config.num_nodes));
-        const auto initial_phi = cumulative_phi(state.parents, state.eta);
-        const auto initial_matrix = likelihood_matrix(table, initial_phi, config.threads);
-        state.z.resize(table.sites.size());
-        std::vector<double> log_weights(config.num_nodes, 0.0);
-        for (std::size_t site = 0; site < state.z.size(); ++site) {
-            for (unsigned node = 0; node < config.num_nodes; ++node) log_weights[node] = initial_matrix[site][node] + std::log(state.eta[node]);
-            state.z[site] = static_cast<int>(sample_log_categorical(log_weights, rng));
-        }
-        auto current = score_state(table, config, state);
-        double current_score = current.score;
-        std::vector<double> current_phi = std::move(current.phi);
+        const double uniform_log_weight = -std::log(static_cast<double>(config.particles));
+        const double uniform_particle_weight = 1.0 / static_cast<double>(config.particles);
 
+        std::vector<Particle> particles;
+        particles.reserve(config.particles);
+        for (unsigned index = 0; index < config.particles; ++index) {
+            Particle particle;
+            particle.parents = sample_tree(config.num_nodes, rng);
+            particle.eta = dirichlet_sample(tssb_mass_prior_alpha(particle.parents), rng);
+            particle.log_likelihood = rb_log_likelihood(table, cumulative_phi(particle.parents, particle.eta), particle.eta);
+            particles.push_back(std::move(particle));
+        }
+        std::vector<double> log_weights(config.particles, uniform_log_weight);
+        std::vector<Stage> stages;
+        stages.reserve(static_cast<std::size_t>(config.annealing_stages));
+        std::string history;
+        double beta = 0.0;
+        double log_normalizer_estimate = 0.0;
+        std::vector<std::size_t> final_ancestors(config.particles, 0);
+        std::iota(final_ancestors.begin(), final_ancestors.end(), 0);
         Counters counters;
         initialize_counters(counters);
+
+        auto rejuvenate = [&](Particle& particle, std::uint64_t& eta_proposals,
+                              std::uint64_t& eta_accepts, std::uint64_t& topology_proposals,
+                              std::uint64_t& topology_accepts) {
+            std::uniform_int_distribution<std::size_t> node_distribution(0, config.num_nodes - 1U);
+            const std::size_t node = node_distribution(rng);
+            const auto support = topology_support_for_node(particle.parents, node);
+            if (!support.empty()) {
+                std::vector<double> support_scores;
+                std::vector<Particle> support_particles;
+                support_scores.reserve(support.size());
+                support_particles.reserve(support.size());
+                for (const auto& parents : support) {
+                    Particle proposal = particle;
+                    proposal.parents = parents;
+                    proposal.log_likelihood = rb_log_likelihood(table, cumulative_phi(proposal.parents, proposal.eta), proposal.eta);
+                    support_scores.push_back(particle_log_target(table, proposal, beta));
+                    support_particles.push_back(std::move(proposal));
+                }
+                const std::size_t selected = sample_log_categorical(support_scores, rng);
+                ++topology_proposals;
+                ++counters["topology_proposals"];
+                if (support_particles[selected].parents != particle.parents) {
+                    ++topology_accepts;
+                    ++counters["topology_accepted"];
+                }
+                particle = std::move(support_particles[selected]);
+            }
+
+            const auto eta_alpha = tssb_mass_prior_alpha(particle.parents);
+            Particle proposal = particle;
+            proposal.eta = dirichlet_sample(eta_alpha, rng);
+            proposal.log_likelihood = rb_log_likelihood(table, cumulative_phi(proposal.parents, proposal.eta), proposal.eta);
+            const double log_acceptance = particle_log_target(table, proposal, beta) -
+                particle_log_target(table, particle, beta) +
+                dirichlet_logpdf(particle.eta, eta_alpha) - dirichlet_logpdf(proposal.eta, eta_alpha);
+            ++eta_proposals;
+            ++counters["eta_proposals"];
+            if (std::log(std::max(1e-300, std::generate_canonical<double, 53>(rng))) < log_acceptance) {
+                ++eta_accepts;
+                ++counters["eta_accepted"];
+                particle = std::move(proposal);
+            }
+        };
+
+        const unsigned annealing_steps = std::max(1U, config.annealing_stages);
+        for (unsigned stage_number = 0; stage_number < annealing_steps; ++stage_number) {
+            const std::uint64_t stage_index = static_cast<std::uint64_t>(stage_number) + 1U;
+            const double next_beta = stage_index >= annealing_steps
+                ? 1.0
+                : next_annealing_beta(beta, annealing_steps, config.conditional_ess_target, log_weights, particles);
+            const double conditional_ess = ess_for_beta(next_beta, beta, log_weights, particles);
+            const double delta_beta = next_beta - beta;
+            for (std::size_t index = 0; index < particles.size(); ++index) log_weights[index] += delta_beta * particles[index].log_likelihood;
+            log_normalizer_estimate += normalize_log_weights(log_weights);
+            beta = next_beta;
+            const double weighted_ess_value = weighted_ess(log_weights);
+            Stage stage;
+            stage.index = stage_index;
+            stage.beta = beta;
+            stage.conditional_ess = conditional_ess;
+            stage.weighted_ess = weighted_ess_value;
+            std::vector<std::size_t> ancestors(config.particles, 0);
+            std::iota(ancestors.begin(), ancestors.end(), 0);
+            if (weighted_ess_value < config.resample_ess_threshold * static_cast<double>(config.particles)) {
+                ancestors = systematic_resample(log_weights, rng);
+                std::vector<Particle> resampled;
+                resampled.reserve(particles.size());
+                for (const std::size_t ancestor : ancestors) resampled.push_back(particles[ancestor]);
+                particles = std::move(resampled);
+                log_weights.assign(config.particles, uniform_log_weight);
+                stage.resampled = true;
+            }
+            std::vector<bool> ancestor_seen(config.particles, false);
+            for (const std::size_t ancestor : ancestors) ancestor_seen[ancestor] = true;
+            stage.ancestor_diversity = static_cast<double>(std::count(ancestor_seen.begin(), ancestor_seen.end(), true)) /
+                static_cast<double>(config.particles);
+
+            std::uint64_t eta_proposals = 0;
+            std::uint64_t eta_accepts = 0;
+            std::uint64_t topology_proposals = 0;
+            std::uint64_t topology_accepts = 0;
+            for (unsigned sweep = 0; sweep < config.rejuvenation_sweeps; ++sweep) {
+                for (Particle& particle : particles) rejuvenate(particle, eta_proposals, eta_accepts, topology_proposals, topology_accepts);
+            }
+            stage.eta_acceptance = static_cast<double>(eta_accepts) / static_cast<double>(std::max<std::uint64_t>(1, eta_proposals));
+            stage.topology_acceptance = static_cast<double>(topology_accepts) / static_cast<double>(std::max<std::uint64_t>(1, topology_proposals));
+            stages.push_back(stage);
+
+            for (std::size_t index = 0; index < particles.size(); ++index) {
+                history += "{\"stage\":" + json_u64(stage.index) + ",\"particle_index\":" + json_u64(index) +
+                    ",\"sample_kind\":\"smc_particle\",\"weight\":" + json_number(std::exp(log_weights[index])) +
+                    ",\"log_weight\":" + json_number(log_weights[index]) +
+                    ",\"ancestor_index\":" + json_u64(ancestors[index]) + ",\"topology\":{\"parents\":" + json_parent_array(particles[index].parents) +
+                    "},\"rejuvenation_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + "}\n";
+            }
+            final_ancestors = std::move(ancestors);
+        }
+
+        // Publish an equal-weight final posterior particle population.  This
+        // final systematic draw is also what makes samples/checkpoint stable
+        // to consume without exposing an unnormalised terminal weight vector.
+        const auto terminal_ancestors = systematic_resample(log_weights, rng);
+        std::vector<Particle> terminal_particles;
+        terminal_particles.reserve(particles.size());
+        for (const std::size_t ancestor : terminal_ancestors) terminal_particles.push_back(particles[ancestor]);
+        particles = std::move(terminal_particles);
+        log_weights.assign(config.particles, uniform_log_weight);
+
         std::vector<SampleRecord> retained;
+        retained.reserve(particles.size());
         std::vector<std::vector<std::uint64_t>> assignment_counts(table.sites.size(), std::vector<std::uint64_t>(config.num_nodes, 0));
         std::vector<std::vector<double>> multiplicity_posterior_sums;
         multiplicity_posterior_sums.reserve(table.sites.size());
-        for (const Site& site : table.sites) {
-            multiplicity_posterior_sums.emplace_back(site.multiplicity_candidates.size(), 0.0);
-        }
+        for (const Site& site : table.sites) multiplicity_posterior_sums.emplace_back(site.multiplicity_candidates.size(), 0.0);
         SampleRecord best_sample;
         std::vector<int> best_assignments;
         bool has_best = false;
-        auto write_checkpoint = [&](std::uint64_t next_iteration) {
-            atomic_write_gzip(options.outdir / "checkpoint.json.gz", checkpoint_json(table, reported_config, config.seed, options.exclude_ids, next_iteration, state, current_score, counters, retained, assignment_counts, has_best ? &best_sample : nullptr, has_best ? &best_assignments : nullptr, rng, chain_index));
-        };
 
-        for (std::uint64_t iteration = 0; iteration < config.iterations; ++iteration) {
-            // 1) Assignment Gibbs sweep.  The current phi is held fixed for
-            // this sweep, so the likelihood matrix is evaluated once and
-            // every SNV can move directly to any clone.
-            const auto assignment_matrix = likelihood_matrix(table, current_phi, config.threads);
-            for (std::size_t site = 0; site < state.z.size(); ++site) {
-                const int old_node = state.z[site];
-                for (unsigned node = 0; node < config.num_nodes; ++node) log_weights[node] = assignment_matrix[site][node] + std::log(state.eta[node]);
-                state.z[site] = static_cast<int>(sample_log_categorical(log_weights, rng));
-                ++counters["assignment_proposals"];
-                if (state.z[site] != old_node) ++counters["assignment_accepted"];
-                current_score += assignment_matrix[site][static_cast<std::size_t>(state.z[site])] + std::log(state.eta[static_cast<std::size_t>(state.z[site])]);
-                current_score -= assignment_matrix[site][static_cast<std::size_t>(old_node)] + std::log(state.eta[static_cast<std::size_t>(old_node)]);
-            }
-
-            // 2) Resample local masses from an independent, finite-K
-            // TSSB-shaped Dirichlet proposal.  The proposal depends on the
-            // fixed assignment/tree but not on the current eta, so its
-            // forward/reverse densities are equal.  We still evaluate both
-            // terms explicitly below: this is an independence-MH update,
-            // not a naive Gibbs replacement of eta.
-            std::vector<std::uint64_t> occupancy(config.num_nodes, 0);
-            for (int node : state.z) ++occupancy[static_cast<std::size_t>(node)];
-            auto eta_alpha = tssb_mass_prior_alpha(state.parents);
-            for (unsigned node = 0; node < config.num_nodes; ++node) eta_alpha[node] += static_cast<double>(occupancy[node]);
-            const auto proposal_eta = dirichlet_sample(eta_alpha, rng);
-            auto eta_proposal = state;
-            eta_proposal.eta = proposal_eta;
-            const auto eta_result = score_state(table, config, eta_proposal);
-            ++counters["eta_proposals"];
-            const double log_q_forward = dirichlet_logpdf(proposal_eta, eta_alpha);
-            const double log_q_reverse = dirichlet_logpdf(state.eta, eta_alpha);
-            const double log_acceptance = eta_result.score - current_score + log_q_reverse - log_q_forward;
-            if (std::log(std::max(1e-300, std::generate_canonical<double, 53>(rng))) < log_acceptance) {
-                state = std::move(eta_proposal);
-                current_score = eta_result.score;
-                current_phi = eta_result.phi;
-                ++counters["eta_accepted"];
-            }
-
-            // 3) Conditional subtree prune-and-regraft.  A selected node is
-            // detached together with its descendants and reattached to every
-            // legal parent in its finite support.  Sampling the support by
-            // posterior mass is a Gibbs update; it does not suffer from the
-            // old uniform-proposal topology acceptance collapse.
-            std::uniform_int_distribution<std::size_t> node_distribution(0, config.num_nodes - 1U);
-            const std::size_t node = node_distribution(rng);
-            const auto support = topology_support_for_node(state.parents, node);
-            if (!support.empty()) {
-                std::vector<double> support_scores;
-                support_scores.reserve(support.size());
-                std::vector<ScoreResult> support_results;
-                support_results.reserve(support.size());
-                for (const auto& parents : support) {
-                    auto proposal = state;
-                    proposal.parents = parents;
-                    auto result = score_state(table, config, proposal);
-                    support_scores.push_back(result.score);
-                    support_results.push_back(std::move(result));
-                }
-                const std::size_t selected = sample_log_categorical(support_scores, rng);
-                ++counters["topology_proposals"];
-                if (support[selected][node] != state.parents[node]) ++counters["topology_accepted"];
-                state.parents = support[selected];
-                current_score = support_results[selected].score;
-                current_phi = support_results[selected].phi;
-            }
-
-            const std::uint64_t completed_iteration = iteration + 1U;
-            if (completed_iteration > config.burnin && ((completed_iteration - config.burnin - 1U) % config.thin == 0U)) {
-                const auto phi = cumulative_phi(state.parents, state.eta);
-                SampleRecord sample;
-                sample.iteration = completed_iteration;
-                sample.log_posterior = current_score;
-                sample.parents = state.parents;
-                sample.eta = state.eta;
-                sample.phi = phi;
-                sample.occupancy.assign(config.num_nodes, 0);
-                for (int node : state.z) ++sample.occupancy[static_cast<std::size_t>(node)];
-                retained.push_back(sample);
-                for (std::size_t site = 0; site < state.z.size(); ++site) {
-                    ++assignment_counts[site][static_cast<std::size_t>(state.z[site])];
-                    const auto multiplicity_posterior = site_multiplicity_posterior(
-                        table.sites[site], phi[static_cast<std::size_t>(state.z[site])]);
+        for (std::size_t particle_index = 0; particle_index < particles.size(); ++particle_index) {
+            const Particle& particle = particles[particle_index];
+            const auto phi = cumulative_phi(particle.parents, particle.eta);
+            const auto assignments = rb_map_assignments(table, particle);
+            SampleRecord sample;
+            sample.iteration = stages.size();
+            sample.log_posterior = particle_log_target(table, particle, 1.0);
+            sample.log_weight = uniform_log_weight;
+            sample.particle_weight = uniform_particle_weight;
+            sample.particle_index = particle_index;
+            sample.sample_kind = "smc_particle";
+            sample.parents = particle.parents;
+            sample.eta = particle.eta;
+            sample.phi = phi;
+            sample.occupancy.assign(config.num_nodes, 0);
+            for (const int node : assignments) ++sample.occupancy[static_cast<std::size_t>(node)];
+            retained.push_back(sample);
+            for (std::size_t site_index = 0; site_index < table.sites.size(); ++site_index) {
+                ++assignment_counts[site_index][static_cast<std::size_t>(assignments[site_index])];
+                std::vector<double> node_terms(config.num_nodes, 0.0);
+                for (unsigned node = 0; node < config.num_nodes; ++node) node_terms[node] = site_log_likelihood(table.sites[site_index], phi[node]) + std::log(particle.eta[node]);
+                const double site_normalizer = log_sum_exp(node_terms);
+                for (unsigned node = 0; node < config.num_nodes; ++node) {
+                    const double clone_responsibility = std::exp(node_terms[node] - site_normalizer);
+                    const auto multiplicity_posterior = site_multiplicity_posterior(table.sites[site_index], phi[node]);
                     for (std::size_t candidate = 0; candidate < multiplicity_posterior.size(); ++candidate) {
-                        multiplicity_posterior_sums[site][candidate] += multiplicity_posterior[candidate];
+                        multiplicity_posterior_sums[site_index][candidate] += clone_responsibility * multiplicity_posterior[candidate];
                     }
                 }
-                if (!has_best || current_score > best_sample.log_posterior) { best_sample = sample; best_assignments = state.z; has_best = true; }
             }
-            if (completed_iteration % config.checkpoint_every == 0U) write_checkpoint(completed_iteration);
+            if (!has_best || sample.log_posterior > best_sample.log_posterior) {
+                best_sample = sample;
+                best_assignments = assignments;
+                has_best = true;
+            }
         }
-        if (!has_best) throw std::runtime_error("chain retained no posterior samples");
-        write_checkpoint(config.iterations);
+        if (!has_best) throw std::runtime_error("SMC retained no posterior particles");
 
-        const auto samples_path = options.outdir / "samples.jsonl.gz";
-        atomic_write_gzip(samples_path, samples_jsonl(retained));
-        atomic_write_gzip(
-            options.outdir / "multiplicity_posterior.tsv.gz",
-            multiplicity_posterior_tsv(table, multiplicity_posterior_sums, retained.size()));
-        atomic_write_gzip(
-            options.outdir / "posterior_summary.tsv.gz",
-            posterior_summary_tsv(retained, config.num_nodes));
-        atomic_write_text(
-            options.outdir / "topology_summary.tsv",
-            topology_summary_tsv(retained));
-        double minimum = retained.front().log_posterior, maximum = minimum, mean = 0.0;
-        for (const auto& sample : retained) { minimum = std::min(minimum, sample.log_posterior); maximum = std::max(maximum, sample.log_posterior); mean += sample.log_posterior; }
-        mean /= static_cast<double>(retained.size());
+        atomic_write_gzip(options.outdir / "samples.jsonl.gz", samples_jsonl(retained));
+        atomic_write_gzip(options.outdir / "particle_history.jsonl.gz", history);
+        atomic_write_gzip(options.outdir / "multiplicity_posterior.tsv.gz",
+                          multiplicity_posterior_tsv(table, multiplicity_posterior_sums, retained.size()));
+        atomic_write_gzip(options.outdir / "posterior_summary.tsv.gz", posterior_summary_tsv(retained, config.num_nodes));
+        atomic_write_text(options.outdir / "topology_summary.tsv", topology_summary_tsv(retained));
+
         std::vector<double> phi_mean(config.num_nodes, 0.0);
+        double minimum = retained.front().log_posterior;
+        double maximum = minimum;
+        double mean = 0.0;
         for (const auto& sample : retained) {
+            minimum = std::min(minimum, sample.log_posterior);
+            maximum = std::max(maximum, sample.log_posterior);
+            mean += sample.log_posterior;
             for (std::size_t node = 0; node < sample.phi.size(); ++node) phi_mean[node] += sample.phi[node];
         }
+        mean /= static_cast<double>(retained.size());
         for (double& value : phi_mean) value /= static_cast<double>(retained.size());
         std::vector<std::size_t> map_assignment(table.sites.size(), 0);
         std::vector<double> map_probability(table.sites.size(), 0.0);
@@ -651,37 +794,79 @@ public:
             map_assignment[site] = static_cast<std::size_t>(std::distance(assignment_counts[site].begin(), found));
             map_probability[site] = static_cast<double>(*found) / static_cast<double>(retained.size());
         }
-        const std::string model_name = "finite_K_tssb_shaped_working_prior";
-        const auto assignment_rate = static_cast<double>(counters["assignment_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["assignment_proposals"]));
-        const auto eta_rate = static_cast<double>(counters["eta_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["eta_proposals"]));
-        const auto topology_rate = static_cast<double>(counters["topology_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["topology_proposals"]));
-        std::string diagnostics = "{\"model\":" + json_string(model_name) + ",\"algorithm\":\"single_chain_phylowgs_inspired_tssb_mcmc\",\"input_schema\":\"hcc1395_tumor_tree_input/v4\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"observed_sites\":" + json_u64(table.sites.size()) + ",\"excluded_sites\":" + json_u64(options.exclude_ids.size()) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"config\":" + config_json(reported_config) + ",\"requested_seed\":" + json_u64(config.seed) + ",\"chain_index\":" + std::to_string(chain_index) + ",\"derived_seed\":" + json_u64(derived_seed) + ",\"resumed\":false,\"state_variables\":[\"parents\",\"eta\",\"z\"],\"target\":{\"tree_prior\":\"finite_K_TSSB_shaped_working_tree_prior\",\"eta_prior\":\"finite_K_TSSB_shaped_depth_width_Dirichlet_working_prior\",\"assignment_prior\":\"categorical_local_node_mass\",\"site_terms\":\"bulk_only_CN_constrained_multiplicity_candidates_marginalized_with_emission_posterior\"},\"tree_constraint\":\"exactly_one_tumor_founder_under_structural_root\",\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"error_rate\":0.005,\"sequencing_error\":0.005,\"hp_role\":\"loaded_and_conservation_checked_only; reserved_for_Model_B\",\"multiplicity_role\":\"CN_constrained_latent_state_with_per_site_posterior; not_a_table_column\",\"multiplicity_posterior_artifact\":\"multiplicity_posterior.tsv.gz\",\"ps_role\":\"upstream_phase_block_used_to_derive_HP_counts; not_an_explicit_downstream_state_or_tree_constraint\",\"proposal_kernel\":{\"compound_sweep_per_iteration\":true,\"assignment\":\"all_SNV_categorical_Gibbs_sweep\",\"eta\":\"finite_K_TSSB_shaped_Dirichlet_independence_MH_with_explicit_forward_reverse_correction\",\"topology\":\"conditional_subtree_prune_and_regraft_Gibbs_over_valid_single_founder_trees\"},\"hastings_correction\":{\"assignment_gibbs\":true,\"eta_independence_MH\":true,\"topology_gibbs\":true},\"assignment_acceptance\":" + json_number(assignment_rate) + ",\"eta_acceptance\":" + json_number(eta_rate) + ",\"topology_acceptance\":" + json_number(topology_rate) + ",\"acceptance_semantics\":{\"assignment\":\"fraction_of_SNV_Gibbs_updates_that_changed_label\",\"eta\":\"MH_acceptance\",\"topology\":\"fraction_of_conditional_parent_updates_that_changed_parent\"},\"counters\":" + counters_json(counters) + ",\"log_posterior\":{\"minimum\":" + json_number(minimum) + ",\"maximum\":" + json_number(maximum) + ",\"mean\":" + json_number(mean) + "},\"checkpoint\":\"checkpoint.json.gz\"}\n";
-        const std::string checkpoint_marker = ",\"checkpoint\":\"checkpoint.json.gz\"";
-        const auto marker_position = diagnostics.rfind(checkpoint_marker);
-        if (marker_position == std::string::npos) throw std::runtime_error("internal diagnostics checkpoint marker is missing");
-        diagnostics.insert(marker_position, ",\"phi_mean\":" + json_double_array(phi_mean) +
-            ",\"posterior_summary_artifact\":\"posterior_summary.tsv.gz\",\"topology_summary_artifact\":\"topology_summary.tsv\"");
+        std::set<std::vector<int>> unique_topologies;
+        for (const auto& sample : retained) unique_topologies.insert(sample.parents);
+        const double particle_diversity = static_cast<double>(unique_topologies.size()) /
+            static_cast<double>(retained.size());
+
+        std::string beta_schedule = "[0.0";
+        std::string annealing_stage_json = "[";
+        std::string rejuvenation_stage_json = "[";
+        for (std::size_t index = 0; index < stages.size(); ++index) {
+            const auto& stage = stages[index];
+            beta_schedule += "," + json_number(stage.beta);
+            if (index != 0) {
+                annealing_stage_json += ",";
+                rejuvenation_stage_json += ",";
+            }
+            annealing_stage_json += "{\"stage\":" + json_u64(stage.index) + ",\"beta\":" + json_number(stage.beta) +
+                ",\"conditional_ess\":" + json_number(stage.conditional_ess) + ",\"weighted_ess\":" + json_number(stage.weighted_ess) +
+                ",\"resampled\":" + json_bool(stage.resampled) + ",\"ancestor_diversity\":" + json_number(stage.ancestor_diversity) + "}";
+            rejuvenation_stage_json += "{\"stage\":" + json_u64(stage.index) + ",\"sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"stop_reason\":\"fixed_sweeps\",\"eta_acceptance\":" +
+                json_number(stage.eta_acceptance) + ",\"topology_acceptance\":" + json_number(stage.topology_acceptance) + "}";
+        }
+        beta_schedule += "]";
+        annealing_stage_json += "]";
+        rejuvenation_stage_json += "]";
+
+        const double eta_rate = static_cast<double>(counters["eta_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["eta_proposals"]));
+        const double topology_rate = static_cast<double>(counters["topology_accepted"]) / static_cast<double>(std::max<std::uint64_t>(1, counters["topology_proposals"]));
+        const std::string algorithm_name = "rao_blackwellized_annealed_smc";
+        std::string diagnostics = "{\"model\":" + json_string(algorithm_name) + ",\"algorithm\":" + json_string(algorithm_name) +
+            ",\"sample_semantics\":\"smc_particle\",\"checkpoint_semantics\":\"smc_stage_particle_state\",\"input_schema\":\"hcc1395_tumor_tree_input/v4\",\"input_sha256\":" + json_string(table.input_sha256) +
+            ",\"observed_sites\":" + json_u64(table.sites.size()) + ",\"excluded_sites\":" + json_u64(options.exclude_ids.size()) + ",\"posterior_samples\":" + json_u64(retained.size()) +
+            ",\"particle_count\":" + std::to_string(config.particles) + ",\"independent_repeat\":" + std::to_string(repeat_index + 1U) + ",\"requested_seed\":" + json_u64(config.seed) +
+            ",\"derived_seed\":" + json_u64(derived_seed) + ",\"resumed\":false,\"state_variables\":[\"topology\",\"eta\"],\"rao_blackwellized_variables\":[\"assignment\",\"multiplicity\"],\"config\":" + config_json(reported_config) +
+            ",\"target\":{\"tree_prior\":\"finite_K_TSSB_shaped_working_tree_prior\",\"eta_prior\":\"finite_K_TSSB_shaped_depth_width_Dirichlet_working_prior\",\"likelihood_tempering\":\"product_site_likelihood_to_beta\",\"site_terms\":\"CN_constrained_joint_multiplicity_responsibility_Rao_Blackwellized\"},\"tree_constraint\":\"exactly_one_tumor_founder_under_structural_root\",\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"error_rate\":0.005,\"hp_role\":\"loaded_and_conservation_checked_only; reserved_for_Model_B\",\"multiplicity_role\":\"Rao_Blackwellized_joint_responsibility; not_a_table_column\",\"multiplicity_semantics\":\"weighted_joint_responsibility_marginalized_over_clone\",\"annealing\":{\"beta_schedule\":" + beta_schedule + ",\"stages\":" + annealing_stage_json + ",\"conditional_ess_target_fraction\":" + json_number(config.conditional_ess_target) + ",\"weighted_ess_resampling_threshold_fraction\":" + json_number(config.resample_ess_threshold) + "},\"rejuvenation\":{\"min_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"max_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"eta_kernel\":\"prior_shaped_Dirichlet_rejuvenation\",\"topology_kernel\":\"conditional_single_founder_topology_Gibbs\",\"stages\":" + rejuvenation_stage_json + "},\"weighted_particle_ess_fraction\":" + json_number(stages.empty() ? 1.0 : stages.back().weighted_ess / static_cast<double>(config.particles)) +
+            ",\"conditional_ess_fraction\":" + json_number(stages.empty() ? 1.0 : stages.back().conditional_ess / static_cast<double>(config.particles)) + ",\"particle_diversity\":" + json_number(particle_diversity) + ",\"ancestor_diversity\":" + json_number(stages.empty() ? 1.0 : stages.back().ancestor_diversity) +
+            ",\"resampling_count\":" + json_u64(static_cast<std::uint64_t>(std::count_if(stages.begin(), stages.end(), [](const Stage& stage) { return stage.resampled; }))) +
+            ",\"eta_acceptance\":" + json_number(eta_rate) + ",\"topology_acceptance\":" + json_number(topology_rate) + ",\"ccf_summary_semantics\":\"particle_weighted_quantiles\",\"topology_summary_semantics\":\"particle_weighted_canonical_edge_support\",\"particle_history_artifact\":\"particle_history.jsonl.gz\",\"posterior_summary_artifact\":\"posterior_summary.tsv.gz\",\"topology_summary_artifact\":\"topology_summary.tsv\",\"multiplicity_posterior_artifact\":\"multiplicity_posterior.tsv.gz\",\"diagnostics_contract\":\"smc_particle_diagnostics_v1\",\"phi_mean\":" + json_double_array(phi_mean) +
+            ",\"log_posterior\":{\"minimum\":" + json_number(minimum) + ",\"maximum\":" + json_number(maximum) + ",\"mean\":" + json_number(mean) + "},\"checkpoint\":\"checkpoint.json.gz\"}\n";
         atomic_write_text(options.outdir / "diagnostics.json", diagnostics);
 
-        std::string representative = "{\"model\":" + json_string(model_name) + ",\"posterior_status\":\"candidate_tree\",\"root\":\"tumor_root\",\"root_semantics\":\"structural_root_with_frequency_one; eta_contains_clone_masses_only\",\"selected_edges\":[";
+        std::string representative = "{\"model\":" + json_string(algorithm_name) + ",\"selection_semantics\":\"highest_posterior_weight_particle\",\"selected_edges\":[";
         for (std::size_t child = 0; child < best_sample.parents.size(); ++child) {
             if (child != 0) representative += ",";
             const int parent = best_sample.parents[child];
             representative += "{\"parent\":" + json_string(parent == -1 ? "tumor_root" : "clone_" + std::to_string(parent + 1)) + ",\"child\":" + json_string("clone_" + std::to_string(child + 1)) + "}";
         }
-        representative += "],\"best_sample\":" + sample_json(best_sample) + ",\"best_sample_assignments\":{";
-        for (std::size_t site = 0; site < table.sites.size(); ++site) {
-            if (site != 0) representative += ",";
-            representative += json_string(table.sites[site].mutation_id) + ":" + json_string("clone_" + std::to_string(best_assignments[site] + 1));
-        }
-        representative += "},\"posterior_map_assignments\":{";
+        representative += "],\"posterior_map_assignments\":{";
         for (std::size_t site = 0; site < table.sites.size(); ++site) {
             if (site != 0) representative += ",";
             representative += json_string(table.sites[site].mutation_id) + ":{\"node\":" + json_string("clone_" + std::to_string(map_assignment[site] + 1)) + ",\"probability\":" + json_number(map_probability[site]) + "}";
         }
         representative += "}}\n";
         atomic_write_text(options.outdir / "representative_tree.json", representative);
-        atomic_write_text(options.outdir / "chain_complete.json", "{\"status\":\"complete\",\"input_sha256\":" + json_string(table.input_sha256) + ",\"posterior_samples\":" + json_u64(retained.size()) + ",\"artifacts\":[\"samples.jsonl.gz\",\"multiplicity_posterior.tsv.gz\",\"posterior_summary.tsv.gz\",\"topology_summary.tsv\",\"diagnostics.json\",\"representative_tree.json\",\"checkpoint.json.gz\"]}\n");
+
+        std::string checkpoint = "{\"checkpoint_version\":3,\"checkpoint_semantics\":\"smc_stage_particle_state\",\"sample_semantics\":\"smc_particle\",\"stage\":" + json_u64(stages.size()) +
+            ",\"beta\":" + json_number(beta) + ",\"input_sha256\":" + json_string(table.input_sha256) + ",\"config\":" + config_json(reported_config) + ",\"particles\":[";
+        for (std::size_t index = 0; index < particles.size(); ++index) {
+            if (index != 0) checkpoint += ",";
+            checkpoint += "{\"particle_index\":" + json_u64(index) + ",\"topology\":{\"parents\":" + json_parent_array(particles[index].parents) + "},\"eta\":" + json_double_array(particles[index].eta) + ",\"weight\":" + json_number(uniform_particle_weight) + "}";
+        }
+        checkpoint += "],\"weights\":[";
+        for (std::size_t index = 0; index < particles.size(); ++index) {
+            if (index != 0) checkpoint += ",";
+            checkpoint += json_number(uniform_particle_weight);
+        }
+        checkpoint += "],\"ancestor_indices\":[";
+        for (std::size_t index = 0; index < particles.size(); ++index) {
+            if (index != 0) checkpoint += ",";
+            checkpoint += json_u64(index);
+        }
+        checkpoint += "],\"normalizing_constant_log_estimate\":" + json_number(log_normalizer_estimate) + ",\"rng_state\":" + rng_json(rng) + "}\n";
+        atomic_write_gzip(options.outdir / "checkpoint.json.gz", checkpoint);
+        atomic_write_text(options.outdir / "smc_complete.json", "{\"status\":\"complete\",\"algorithm\":" + json_string(algorithm_name) + ",\"sample_semantics\":\"smc_particle\",\"checkpoint_semantics\":\"smc_stage_particle_state\",\"particle_count\":" + std::to_string(config.particles) + ",\"artifacts\":[\"samples.jsonl.gz\",\"multiplicity_posterior.tsv.gz\",\"posterior_summary.tsv.gz\",\"topology_summary.tsv\",\"diagnostics.json\",\"representative_tree.json\",\"checkpoint.json.gz\",\"particle_history.jsonl.gz\",\"smc_complete.json\"]}\n");
         return {options.outdir, retained.size()};
     }
 };
@@ -690,14 +875,16 @@ public:
 
 void InferenceConfig::validate() const {
     if (num_nodes < 2 || num_nodes > 8) throw std::runtime_error("num-nodes must be between 2 and 8");
-    if (iterations <= burnin) throw std::runtime_error("iterations must exceed burnin");
-    if (thin == 0) throw std::runtime_error("thin must be positive");
+    if (annealing_stages == 0) throw std::runtime_error("annealing-stages must be positive");
     if (!(purity > 0.0 && purity <= 1.0)) throw std::runtime_error("purity must be in (0,1]");
     if (checkpoint_every == 0) throw std::runtime_error("checkpoint-every must be positive");
     if (threads == 0) throw std::runtime_error("threads must be positive");
-    if (chains == 0) throw std::runtime_error("chains must be positive");
+    if (repeats == 0) throw std::runtime_error("repeats must be positive");
+    if (particles < 2 || particles > 100000) throw std::runtime_error("particles must be between 2 and 100000");
+    if (!(resample_ess_threshold > 0.0 && resample_ess_threshold < conditional_ess_target && conditional_ess_target <= 1.0)) throw std::runtime_error("SMC ESS thresholds must satisfy 0 < ess-threshold < conditional-ess-target <= 1");
+    if (rejuvenation_sweeps == 0) throw std::runtime_error("rejuvenation-sweeps must be positive");
 }
 
-AlgorithmPtr make_phylowgs_inspired_tssb_mcmc() { return std::make_unique<PhyloWgsInspiredTssbMcmc>(); }
+AlgorithmPtr make_rao_blackwellized_annealed_smc() { return std::make_unique<RaoBlackwellizedAnnealedSmcContract>(); }
 
 }  // namespace tumor_tree_inference

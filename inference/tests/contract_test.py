@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Black-box contract tests for the C++ inference executable.
+"""Black-box contract tests for the C++ annealed-SMC inference executable.
 
 The tests intentionally use only the Python standard library. They exercise
 the executable through its CLI and inspect only the public input/output
@@ -49,8 +49,11 @@ ARTIFACTS = (
     "diagnostics.json",
     "representative_tree.json",
     "checkpoint.json.gz",
-    "chain_complete.json",
+    "smc_complete.json",
+    "particle_history.jsonl.gz",
 )
+
+SMC_ALGORITHM = "rao_blackwellized_annealed_smc"
 
 
 class ContractFailure(AssertionError):
@@ -75,8 +78,8 @@ def write_tsv(path: Path, rows: list[dict[str, str]], fields: Iterable[str]) -> 
         writer.writerows(rows)
 
 
-def fixture_rows(*, hp_shift: int = 0, purity: str = "0.99") -> list[dict[str, str]]:
-    """Return a small valid table with all active observation columns.
+def fixture_rows(*, hp_shift: int = 0, purity: str = "0.99", sites: int = 2) -> list[dict[str, str]]:
+    """Return the minimal deterministic synthetic table with active columns.
 
     The alternate HP layout keeps bulk/CN/purity fixed while changing the
     tagged-read allocation.  Model A must accept both layouts and produce the
@@ -85,7 +88,7 @@ def fixture_rows(*, hp_shift: int = 0, purity: str = "0.99") -> list[dict[str, s
     """
 
     rows: list[dict[str, str]] = []
-    for index in range(1, 7):
+    for index in range(1, sites + 1):
         ref_reads = 22 + index
         alt_reads = 8 + (index % 3)
         hp1_ref = 3 + (index % 2)
@@ -128,10 +131,10 @@ def invoke(
     input_path: Path,
     output_path: Path,
     seed: int = 20260820,
-    chains: int = 1,
+    independent_repeats: int = 1,
     threads: int = 1,
     rho_ascat: str = "0.99",
-    algorithm: str = "phylowgs_inspired_tssb_mcmc",
+    algorithm: str = SMC_ALGORITHM,
 ) -> subprocess.CompletedProcess[str]:
     command = [
         str(binary),
@@ -144,16 +147,12 @@ def invoke(
         algorithm,
         "--seed",
         str(seed),
-        "--chains",
-        str(chains),
+        "--repeats",
+        str(independent_repeats),
         "--threads",
         str(threads),
-        "--iterations",
+        "--annealing-stages",
         "24",
-        "--burnin",
-        "8",
-        "--thin",
-        "1",
         "--num-nodes",
         "2",
         "--rho-ascat",
@@ -210,8 +209,12 @@ def read_jsonl_gz(path: Path) -> list[dict[str, Any]]:
             records.append(value)
     check(records, f"samples artifact is empty: {path}")
     check(
-        all(isinstance(record.get("log_posterior"), (int, float)) for record in records),
-        f"samples do not expose numeric log_posterior values: {path}",
+        all(record.get("sample_kind") == "smc_particle" for record in records),
+        f"samples do not identify particle semantics: {path}",
+    )
+    check(
+        all(isinstance(record.get("log_weight"), (int, float)) for record in records),
+        f"samples do not expose numeric log_weight values: {path}",
     )
     return records
 
@@ -230,22 +233,25 @@ def _ancestor_path(parents: list[int], node: int) -> set[int]:
     return ancestors
 
 
-def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[str, Any]:
+def assert_smc_artifacts(output_dir: Path, *, expected_sites: int = 2) -> dict[str, Any]:
     for artifact in ARTIFACTS:
-        check((chain_dir / artifact).is_file(), f"missing {artifact} in {chain_dir}")
+        check((output_dir / artifact).is_file(), f"missing SMC artifact {artifact} in {output_dir}")
 
-    diagnostics = read_json(chain_dir / "diagnostics.json")
-    completion = read_json(chain_dir / "chain_complete.json")
-    tree = read_json(chain_dir / "representative_tree.json")
-    read_gzip_json(chain_dir / "checkpoint.json.gz")
-    samples = read_jsonl_gz(chain_dir / "samples.jsonl.gz")
-    with gzip.open(chain_dir / "multiplicity_posterior.tsv.gz", "rt", encoding="utf-8") as handle:
+    diagnostics = read_json(output_dir / "diagnostics.json")
+    completion = read_json(output_dir / "smc_complete.json")
+    tree = read_json(output_dir / "representative_tree.json")
+    checkpoint = read_gzip_json(output_dir / "checkpoint.json.gz")
+    samples = read_jsonl_gz(output_dir / "samples.jsonl.gz")
+    history = read_jsonl_gz(output_dir / "particle_history.jsonl.gz")
+    with gzip.open(output_dir / "multiplicity_posterior.tsv.gz", "rt", encoding="utf-8") as handle:
         posterior_lines = [line.rstrip("\n") for line in handle if line.strip()]
     check(
         posterior_lines
         and posterior_lines[0] == "mutation_id\tmultiplicity\tprior\tposterior_mean",
         "multiplicity posterior artifact has the wrong header",
     )
+    config = diagnostics.get("config")
+    check(isinstance(config, dict), "diagnostics.config is missing")
     posterior_by_site: dict[str, float] = {}
     for line in posterior_lines[1:]:
         fields = line.split("\t")
@@ -256,16 +262,16 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
         all(abs(value - 1.0) < 1e-9 for value in posterior_by_site.values()),
         "multiplicity posterior probabilities do not normalize per SNV",
     )
-    with gzip.open(chain_dir / "posterior_summary.tsv.gz", "rt", encoding="utf-8") as handle:
+    with gzip.open(output_dir / "posterior_summary.tsv.gz", "rt", encoding="utf-8") as handle:
         ccf_lines = [line.rstrip("\n") for line in handle if line.strip()]
     check(
         ccf_lines
         and ccf_lines[0] == "clone\tccf_median\tccf_q025\tccf_q975\tphi_median\tphi_q025\tphi_q975",
         "posterior summary artifact has the wrong header",
     )
-    check(len(ccf_lines) == 1 + int(json.loads((chain_dir / "diagnostics.json").read_text()).get("config", {}).get("num_nodes", 0)),
+    check(len(ccf_lines) == 1 + int(config.get("num_nodes", 0)),
           "posterior summary must contain one row per fixed-K clone")
-    with (chain_dir / "topology_summary.tsv").open(encoding="utf-8") as handle:
+    with (output_dir / "topology_summary.tsv").open(encoding="utf-8") as handle:
         topology_lines = [line.rstrip("\n") for line in handle if line.strip()]
     check(
         topology_lines
@@ -276,18 +282,18 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
 
     algorithm = str(diagnostics.get("algorithm", ""))
     model = str(diagnostics.get("model", ""))
+    check(algorithm == SMC_ALGORITHM, "diagnostics do not identify the annealed SMC sampler")
+    check(diagnostics.get("sample_semantics") == "smc_particle", "samples are not marked as SMC particles")
     check(
-        "phylowgs_inspired_tssb_mcmc" in algorithm,
-        f"diagnostics do not identify the PhyloWGS-inspired sampler: {chain_dir}",
+        diagnostics.get("checkpoint_semantics") == "smc_stage_particle_state",
+        "checkpoint semantics are not marked as SMC particle state",
     )
     check(diagnostics.get("input_schema") == SCHEMA_VERSION, "input schema is not recorded")
     check(diagnostics.get("observed_sites") == expected_sites, "observed site count is wrong")
     check(
-        diagnostics.get("state_variables") == ["parents", "eta", "z"],
-        "the sampler state must be parents/eta/z",
+        diagnostics.get("state_variables") == ["topology", "eta"],
+        "the SMC particle state must be topology/eta",
     )
-    config = diagnostics.get("config")
-    check(isinstance(config, dict), "diagnostics.config is missing")
     check(config.get("ascat_purity") == 0.99, "diagnostics did not record rho_ASCAT=0.99")
     phi_mean = diagnostics.get("phi_mean")
     check(
@@ -318,7 +324,9 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
     }
     check(actual_children == expected_children, "fixed-K tree child labels are incomplete")
     for sample in samples:
-        parents = sample.get("parents")
+        topology = sample.get("topology")
+        check(isinstance(topology, dict), "SMC particle is missing topology state")
+        parents = topology.get("parents")
         eta = sample.get("eta")
         phi = sample.get("phi")
         check(
@@ -374,55 +382,47 @@ def assert_chain_artifacts(chain_dir: Path, *, expected_sites: int = 6) -> dict[
     target = diagnostics.get("target")
     check(isinstance(target, dict), "diagnostics.target is missing")
     check(
-        "CN_constrained_multiplicity_candidates_marginalized_with_emission_posterior"
-        in str(target.get("site_terms", "")),
-        "CN-constrained multiplicity posterior is not recorded as the site likelihood term",
+        "joint_multiplicity_responsibility" in str(target.get("site_terms", "")),
+        "diagnostics do not record Rao-Blackwellized multiplicity responsibilities",
     )
     check(
-        diagnostics.get("multiplicity_role")
-        == "CN_constrained_latent_state_with_per_site_posterior; not_a_table_column",
-        "diagnostics do not record model-owned multiplicity posterior derivation",
+        diagnostics.get("multiplicity_semantics")
+        == "weighted_joint_responsibility_marginalized_over_clone",
+        "multiplicity output is not identified as weighted joint responsibility",
     )
+    annealing = diagnostics.get("annealing")
+    check(isinstance(annealing, dict), "annealing diagnostics are missing")
+    stages = annealing.get("stages")
+    check(isinstance(stages, list) and stages, "annealing stage diagnostics are empty")
+    check(annealing.get("beta_schedule", [])[0] == 0.0, "annealing must start at beta=0")
+    check(annealing.get("beta_schedule", [])[-1] == 1.0, "annealing must finish at beta=1")
+    for stage in stages:
+        check(0.0 <= float(stage["beta"]) <= 1.0, "annealing beta is out of range")
+        check(float(stage["conditional_ess"]) > 0.0, "conditional ESS is missing")
+        check(float(stage["weighted_ess"]) > 0.0, "weighted particle ESS is missing")
+        check("resampled" in stage and "ancestor_diversity" in stage, "ESS ancestry decision is missing")
     check(
-        diagnostics.get("error_rate") == 0.005,
-        "diagnostics do not record the fixed e=0.005 Model A baseline",
+        annealing.get("weighted_ess_resampling_threshold_fraction") == 0.5,
+        "weighted ESS resampling threshold is not recorded",
     )
-    proposal_kernel = diagnostics.get("proposal_kernel")
-    check(isinstance(proposal_kernel, dict), "proposal kernel metadata is missing")
-    check(
-        "independence_MH" in str(proposal_kernel.get("eta", "")),
-        "eta proposal is not identified as independence-MH",
-    )
-    corrections = diagnostics.get("hastings_correction")
-    check(
-        isinstance(corrections, dict) and corrections.get("eta_independence_MH") is True,
-        "eta independence-MH Hastings correction is not observable in diagnostics",
-    )
-    check(
-        set(diagnostics.get("counters", {}))
-        == {
-            "assignment_accepted",
-            "assignment_proposals",
-            "eta_accepted",
-            "eta_proposals",
-            "topology_accepted",
-            "topology_proposals",
-        },
-        "sampler counters contain an unexpected move field",
-    )
-    check(completion.get("status") == "complete", "chain completion status is not complete")
-    check(
-        "multiplicity_posterior.tsv.gz" in completion.get("artifacts", []),
-        "completion manifest does not list multiplicity posterior output",
-    )
-    check(
-        {"posterior_summary.tsv.gz", "topology_summary.tsv"}.issubset(
-            set(completion.get("artifacts", []))
-        ),
-        "completion manifest does not list posterior/topology summary outputs",
-    )
-    check(tree.get("model") == diagnostics.get("model"), "tree/model contract mismatch")
-    check(len(samples) > 0, "no retained posterior samples")
+    rejuvenation = diagnostics.get("rejuvenation")
+    check(isinstance(rejuvenation, dict), "rejuvenation diagnostics are missing")
+    for stage in rejuvenation.get("stages", []):
+        check(3 <= int(stage["sweeps"]) <= 20, "rejuvenation sweep count is outside the contract")
+        check(stage.get("stop_reason"), "rejuvenation stop reason is missing")
+        check("eta_acceptance" in stage and "topology_acceptance" in stage, "rejuvenation rates are missing")
+    check(completion.get("status") == "complete", "completion status is not complete")
+    check(completion.get("sample_semantics") == "smc_particle", "completion is not marked as particle output")
+    check(set(ARTIFACTS).issubset(set(completion.get("artifacts", []))), "completion manifest omits SMC artifacts")
+    check(checkpoint.get("sample_semantics") == "smc_particle", "checkpoint is not marked as particle output")
+    check(checkpoint.get("checkpoint_semantics") == "smc_stage_particle_state", "checkpoint stage semantics are missing")
+    check(isinstance(checkpoint.get("particles"), list) and checkpoint["particles"], "checkpoint particles are missing")
+    weights = checkpoint.get("weights")
+    check(isinstance(weights, list) and abs(sum(weights) - 1.0) < 1e-9, "checkpoint weights do not normalize")
+    check(len(checkpoint.get("ancestor_indices", [])) == len(checkpoint["particles"]), "checkpoint ancestry is incomplete")
+    check(history and all(record.get("sample_kind") == "smc_particle" for record in history), "particle history semantics are missing")
+    check(tree.get("model") == diagnostics.get("algorithm"), "tree/model contract mismatch")
+    check("mcmc" not in json.dumps(diagnostics).lower(), "SMC diagnostics contain MCMC semantics")
     return diagnostics
 
 
@@ -430,7 +430,7 @@ def assert_failed_output_is_not_complete(path: Path) -> None:
     if not path.exists():
         return
     check(
-        not list(path.glob("**/chain_complete.json")),
+        not list(path.glob("**/smc_complete.json")),
         f"failed invocation left a completed output behind: {path}",
     )
 
@@ -451,15 +451,15 @@ def test_model_a_ignores_hp_counts(binary: Path, root: Path) -> None:
         invoke(binary, input_path=shifted, output_path=changed_hp),
         "canonical TSV with changed HP evidence",
     )
-    assert_chain_artifacts(baseline)
-    assert_chain_artifacts(changed_hp)
+    assert_smc_artifacts(baseline)
+    assert_smc_artifacts(changed_hp)
 
     baseline_scores = [
-        record["log_posterior"]
+        record["log_weight"]
         for record in read_jsonl_gz(baseline / "samples.jsonl.gz")
     ]
     changed_scores = [
-        record["log_posterior"]
+        record["log_weight"]
         for record in read_jsonl_gz(changed_hp / "samples.jsonl.gz")
     ]
     check(
@@ -474,7 +474,7 @@ def test_model_a_ignores_hp_counts(binary: Path, root: Path) -> None:
     )
 
 
-def test_thread_policy(binary: Path, root: Path) -> None:
+def test_particle_thread_policy(binary: Path, root: Path) -> None:
     canonical = root / "canonical_threads.tsv"
     write_tsv(canonical, fixture_rows(), REQUIRED_COLUMNS)
     one = root / "threads_1"
@@ -487,9 +487,9 @@ def test_thread_policy(binary: Path, root: Path) -> None:
         invoke(binary, input_path=canonical, output_path=two, threads=2),
         "threads=2",
     )
-    diag_one = assert_chain_artifacts(one)
-    diag_two = assert_chain_artifacts(two)
-    # Retained posterior samples are the deterministic cross-thread contract.
+    diag_one = assert_smc_artifacts(one)
+    diag_two = assert_smc_artifacts(two)
+    # Final equally weighted particles are the deterministic cross-thread contract.
     # Checkpoint is an audit/state snapshot and must not be compared byte-for-
     # byte because runtime metadata may legitimately differ.
     check(
@@ -503,22 +503,24 @@ def test_thread_policy(binary: Path, root: Path) -> None:
     )
 
 
-def test_multiple_chains_have_distinct_seeded_outputs(binary: Path, root: Path) -> None:
-    canonical = root / "canonical_chains.tsv"
-    output = root / "chains_2"
+def test_independent_repeats_have_distinct_seeded_particles(binary: Path, root: Path) -> None:
+    canonical = root / "canonical_repeats.tsv"
+    output = root / "repeats_2"
     write_tsv(canonical, fixture_rows(), REQUIRED_COLUMNS)
     assert_success(
-        invoke(binary, input_path=canonical, output_path=output, chains=2, threads=2),
-        "chains=2",
+        invoke(binary, input_path=canonical, output_path=output, independent_repeats=2, threads=2),
+        "two independent SMC repeats",
     )
-    chain_one = output / "chain_01"
-    chain_two = output / "chain_02"
-    diag_one = assert_chain_artifacts(chain_one)
-    diag_two = assert_chain_artifacts(chain_two)
-    seed_one = diag_one.get("derived_seed")
-    seed_two = diag_two.get("derived_seed")
-    check(isinstance(seed_one, int) and isinstance(seed_two, int), "chain seeds are not recorded")
-    check(seed_one != seed_two, "chain_01 and chain_02 reused the same seed")
+    repeat_one = output / "repeat_01"
+    repeat_two = output / "repeat_02"
+    diag_one = assert_smc_artifacts(repeat_one)
+    diag_two = assert_smc_artifacts(repeat_two)
+    seed_one = diag_one.get("derived_seed", diag_one.get("config", {}).get("seed"))
+    seed_two = diag_two.get("derived_seed", diag_two.get("config", {}).get("seed"))
+    check(isinstance(seed_one, int) and isinstance(seed_two, int), "repeat seeds are not recorded")
+    check(seed_one != seed_two, "independent SMC repeats reused the same seed")
+    check(diag_one.get("sample_semantics") == "smc_particle", "repeat_01 lacks particle semantics")
+    check(diag_two.get("sample_semantics") == "smc_particle", "repeat_02 lacks particle semantics")
 
 
 def test_fail_closed(binary: Path, root: Path) -> None:
@@ -589,8 +591,8 @@ def run(binary: Path) -> None:
     with tempfile.TemporaryDirectory(prefix="inference-contract-") as temporary:
         root = Path(temporary)
         test_model_a_ignores_hp_counts(binary, root)
-        test_thread_policy(binary, root)
-        test_multiple_chains_have_distinct_seeded_outputs(binary, root)
+        test_particle_thread_policy(binary, root)
+        test_independent_repeats_have_distinct_seeded_particles(binary, root)
         test_fail_closed(binary, root)
 
 
@@ -603,7 +605,7 @@ def main(argv: list[str] | None = None) -> int:
     except ContractFailure as exc:
         print(f"inference contract FAILED: {exc}", file=sys.stderr)
         return 1
-    print("inference contract PASSED: schema, likelihood, threads, chains, artifacts, fail-closed")
+    print("inference contract PASSED: schema, particles, annealing, weighted-ESS, rejuvenation, artifacts, fail-closed")
     return 0
 
 
