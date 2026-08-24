@@ -577,7 +577,32 @@ def _validate_simulation_gate(path: Path) -> dict[str, Any]:
     passed = _nested(manifest, ("passed",), ("gate", "passed"), ("simulation_pass",))
     if passed is not True:
         raise WorkflowError("formal execution requires a passing synthetic-recovery manifest")
-    return {"passed": True, "manifest": str(path), "sha256": _sha256(path)}
+    schema = manifest.get("schema")
+    if schema != "synthetic_recovery_gate/v1":
+        raise WorkflowError(
+            "formal synthetic-recovery manifest must use schema "
+            "synthetic_recovery_gate/v1"
+        )
+    input_schema = _nested(manifest, ("validation", "input_schema"), ("input_schema",))
+    if input_schema != MODEL_INPUT_SCHEMA_VERSION:
+        raise WorkflowError(
+            "formal synthetic-recovery manifest input schema does not match the active "
+            f"model input contract: expected {MODEL_INPUT_SCHEMA_VERSION}, observed {input_schema!r}"
+        )
+    algorithm = _nested(manifest, ("inference_algorithm",), ("algorithm",))
+    if algorithm != INFERENCE_ALGORITHM_ID:
+        raise WorkflowError(
+            "formal synthetic-recovery manifest algorithm does not match the active backend: "
+            f"expected {INFERENCE_ALGORITHM_ID}, observed {algorithm!r}"
+        )
+    return {
+        "passed": True,
+        "schema": schema,
+        "input_schema": input_schema,
+        "inference_algorithm": algorithm,
+        "manifest": str(path),
+        "sha256": _sha256(path),
+    }
 
 
 def _read_metadata(path: Path) -> list[dict[str, str]]:
