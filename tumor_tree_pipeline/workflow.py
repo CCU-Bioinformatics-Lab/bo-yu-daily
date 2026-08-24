@@ -1128,7 +1128,10 @@ def _run_cell(
             "sample_kind": "smc_particle",
             "independent_repeat_role": "posterior_particle_repeat",
             "repeat_count": repeat_count,
-            **summarize_smc_repeats(results),
+            **summarize_smc_repeats(
+                results,
+                allow_single_repeat=config.mode == "pilot_quick",
+            ),
         }
         if cell.formal:
             assert config.min_predictive_log_score is not None
