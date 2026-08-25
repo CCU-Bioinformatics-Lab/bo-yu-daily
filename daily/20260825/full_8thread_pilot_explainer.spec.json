@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "language": "zh-TW",
+  "mode": "incident",
+  "modeData": {
+    "normalSceneId": "normal",
+    "breakNodeId": "repeated",
+    "timeline": [
+      { "marker": "T+0", "nodeId": "input", "label": "資料進入模型" },
+      { "marker": "T+1", "nodeId": "sampler", "label": "模型嘗試不同樹" },
+      { "marker": "T+2", "nodeId": "output", "label": "流程產生輸出" },
+      { "marker": "T+3", "nodeId": "repeated", "label": "候選答案高度重複" },
+      { "marker": "T+4", "nodeId": "unstable", "label": "不同 repeat 的樹邊不一致" },
+      { "marker": "T+5", "nodeId": "blocked", "label": "暫時不能當正式答案" },
+      { "marker": "T+6", "nodeId": "explore", "label": "改善模型探索" },
+      { "marker": "T+7", "nodeId": "record", "label": "補齊執行紀錄" },
+      { "marker": "T+8", "nodeId": "formal", "label": "再做正式驗證" }
+    ],
+    "rootCauseEvidenceIds": ["inferred-explanation", "diagnostic-k4", "diagnostic-k6", "diagnostic-k8"],
+    "recoveryNodeIds": ["explore", "record", "formal"]
+  },
+  "title": "8-thread 實驗：跑完了，但為什麼樹還不能相信？",
+  "summary": "主流程只有三步：先產生候選樹，再看出候選答案高度重複，最後改善探索並重新做正式驗證。",
+  "truthLadder": {
+    "analogy": "想像很多人一起畫腫瘤樹；如果最後大家拿到的草稿都很像，就表示沒有充分比較其他畫法。",
+    "technical": "SMC pilot 有完整輸出，但 K4/K6/K8 的有效資訊量、候選多樣性與跨 repeat 樹邊穩定性不足。",
+    "caveat": "這次是 pilot、holdout=none，formal gate 尚未評估；可以確認流程完成，不能把任一棵樹稱為正式高可信度答案。"
+  },
+  "scenes": [
+    {
+      "id": "normal",
+      "title": "1｜先產生候選樹",
+      "summary": "資料交給 SMC，模型同時保留多個可能的樹。",
+      "evidence": ["run-command", "run-status"],
+      "nodes": [
+        {
+          "id": "input",
+          "kind": "store",
+          "label": "30,490 個 SNV",
+          "detail": "ASCAT purity 0.99。",
+          "evidence": ["run-command"]
+        },
+        {
+          "id": "sampler",
+          "kind": "process",
+          "label": "SMC 嘗試不同樹",
+          "detail": "K=4/6/8，各保留 256 個候選答案並重複 4 次。",
+          "evidence": ["run-command"]
+        },
+        {
+          "id": "output",
+          "kind": "store",
+          "label": "產生候選樹",
+          "detail": "有樹、診斷檔與 _SUCCESS；這只代表流程跑完。",
+          "evidence": ["run-status"]
+        }
+      ],
+      "edges": [
+        { "id": "input-sampler", "from": "input", "to": "sampler", "label": "交給模型" },
+        { "id": "sampler-output", "from": "sampler", "to": "output", "label": "留下候選" }
+      ]
+    },
+    {
+      "id": "diagnose",
+      "title": "2｜候選答案高度重複",
+      "summary": "輸出存在，但模型留下的不同答案太少，導致不同 repeat 對樹的連接方式沒有共識。",
+      "evidence": ["diagnostic-k4", "diagnostic-k6", "diagnostic-k8", "workflow-rules"],
+      "nodes": [
+        {
+          "id": "repeated",
+          "kind": "event",
+          "label": "答案變得太像",
+          "detail": "白話說：很多候選樹幾乎是同一張草稿。",
+          "evidence": ["diagnostic-k4", "diagnostic-k6", "diagnostic-k8"],
+          "failure": {
+            "impact": "模型比較不同樹的能力下降。",
+            "symptom": "候選多樣性很低。",
+            "fallback": "先改善模型探索方式。"
+          }
+        },
+        {
+          "id": "unstable",
+          "kind": "event",
+          "label": "repeat 不同意",
+          "detail": "不同 repeat 對部分樹邊的支持差很多。",
+          "evidence": ["diagnostic-k4", "diagnostic-k6", "diagnostic-k8"],
+          "failure": {
+            "impact": "不能把一棵代表樹當成穩定答案。",
+            "symptom": "跨 repeat 的樹邊穩定性不足。",
+            "fallback": "增加拓樸探索，再重新比較樹。"
+          }
+        },
+        {
+          "id": "blocked",
+          "kind": "decision",
+          "label": "暫時不能正式引用",
+          "detail": "不是程式壞掉，而是 pilot 還沒通過正式可信度檢查。",
+          "evidence": ["workflow-rules"],
+          "failure": {
+            "impact": "不能宣稱 high-confidence tree。",
+            "symptom": "formal_gate_not_evaluated=true。",
+            "fallback": "修正後再進 formal validation。"
+          }
+        }
+      ],
+      "edges": [
+        { "id": "repeated-unstable", "from": "repeated", "to": "unstable", "label": "樹邊不一致" },
+        { "id": "unstable-blocked", "from": "unstable", "to": "blocked", "label": "所以先暫停正式結論" }
+      ]
+    },
+    {
+      "id": "recover",
+      "title": "3｜修正後再驗證",
+      "summary": "兩件事平行處理：改善模型探索，補齊執行紀錄；完成前置條件後才重跑正式驗證。",
+      "evidence": ["run-command", "workflow-rules", "inferred-explanation"],
+      "nodes": [
+        {
+          "id": "explore",
+          "kind": "process",
+          "label": "改善模型探索",
+          "detail": "讓模型保留更多不同的樹與分支可能。",
+          "evidence": ["inferred-explanation"],
+          "failure": {
+            "impact": "樹邊仍會不穩。",
+            "symptom": "候選多樣性沒有改善。",
+            "fallback": "回到小型資料做 sampler diagnostic。"
+          }
+        },
+        {
+          "id": "record",
+          "kind": "process",
+          "label": "補齊執行紀錄",
+          "detail": "保存 8 threads 與 clean Git SHA；threads 只影響分工速度，不會自動修好探索。",
+          "evidence": ["run-command", "workflow-rules"]
+        },
+        {
+          "id": "formal",
+          "kind": "event",
+          "label": "重新做正式驗證",
+          "detail": "完成 v4 synthetic recovery gate 與前置檢查後，才進 formal validation。",
+          "evidence": ["workflow-rules"]
+        }
+      ],
+      "edges": [
+        { "id": "explore-formal", "from": "explore", "to": "formal", "label": "診斷達標" },
+        { "id": "record-formal", "from": "record", "to": "formal", "label": "條件可追溯" }
+      ]
+    }
+  ],
+  "trace": [
+    { "nodeId": "input", "label": "資料進入模型" },
+    { "nodeId": "sampler", "label": "模型嘗試不同樹" },
+    { "nodeId": "output", "label": "流程產生輸出" },
+    { "nodeId": "repeated", "label": "候選答案高度重複" },
+    { "nodeId": "unstable", "label": "repeat 的樹邊不一致" },
+    { "nodeId": "blocked", "label": "暫時不能正式引用" },
+    { "nodeId": "explore", "label": "改善模型探索" },
+    { "nodeId": "record", "label": "補齊執行紀錄" },
+    { "nodeId": "formal", "label": "重新做正式驗證" }
+  ],
+  "glossary": [
+    { "term": "候選樹", "definition": "模型暫時保留的一種可能腫瘤演化樹。" },
+    { "term": "ESS", "definition": "考慮權重與樣本相似性後，這批候選大約還剩多少有效資訊；低 ESS 表示有效資訊量少。" },
+    { "term": "8 threads", "definition": "同時分擔計算工作的數量，主要影響速度，不會直接修正模型探索。" }
+  ],
+  "teachBack": [
+    { "question": "這次是不是完全跑壞了？", "answer": "不是。流程完成並產生樹，但候選答案太像、repeat 對樹邊沒有共識，所以還不能正式引用。" },
+    { "question": "下一步最重要的是什麼？", "answer": "先讓模型真的探索更多不同的樹，再補齊執行紀錄與 synthetic recovery gate，最後才跑 formal validation。" }
+  ],
+  "evidence": [
+    {
+      "id": "run-status",
+      "status": "verified",
+      "label": "昨日 run status",
+      "note": "run root status=success 並存在 _SUCCESS；這支持流程完成，但不代表正式驗證通過。",
+      "path": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/status.json"
+    },
+    {
+      "id": "run-command",
+      "status": "verified",
+      "label": "昨日 command receipt",
+      "note": "記錄 pilot、K=4/6/8、30,490 sites、ASCAT purity 0.99、256 particles、4 repeats 與 SMC；receipt 沒有保存 TUMOR_TREE_INFERENCE_THREADS。",
+      "path": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/command.json"
+    },
+    {
+      "id": "diagnostic-k4",
+      "status": "verified",
+      "label": "K=4 診斷",
+      "note": "CCF stability=0.989、候選多樣性=0.0039、ESS=0.302、edge support difference=1.0。K4 的 CCF 較高，但其他指標仍顯示答案過度集中。",
+      "path": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K4_seed960115502/summary.json"
+    },
+    {
+      "id": "diagnostic-k6",
+      "status": "verified",
+      "label": "K=6 診斷",
+      "note": "CCF stability=0.839、候選多樣性=0.0039、ESS=0.158、edge support difference=1.0。",
+      "path": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K6_seed1919528150/summary.json"
+    },
+    {
+      "id": "diagnostic-k8",
+      "status": "verified",
+      "label": "K=8 診斷",
+      "note": "CCF stability=0.821、候選多樣性=0.0156、ESS=0.229、edge support difference=1.0。",
+      "path": "/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K8_seed1203086123/summary.json"
+    },
+    {
+      "id": "workflow-rules",
+      "status": "verified",
+      "label": "目前實驗流程規則",
+      "note": "experiment_workflow.md 區分 pilot workflow success 與 formal validation，並要求新的 v4 synthetic recovery gate 與 clean Git SHA。",
+      "path": "/bip8_disk/boyu114/main_work/experiment_workflow.md"
+    },
+    {
+      "id": "inferred-explanation",
+      "status": "inferred",
+      "label": "失敗原因的整合推論",
+      "note": "由低候選多樣性、低 ESS 與高 edge support difference 一起推論：模型沒有充分探索不同樹；這不是 workflow runtime crash。"
+    }
+  ]
+}
