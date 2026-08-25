@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-08-25｜Full 8-thread Pilot 復盤</title>
+  <style>
+    :root { --ink:#18212f; --muted:#667085; --line:#d9e1ec; --blue:#315efb; --green:#138a5b; --amber:#b66a00; --red:#c5364a; --paper:#f7f9fc; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif; line-height:1.55; }
+    main { max-width:1080px; margin:0 auto; padding:34px 22px 60px; }
+    header { background:#17233a; color:#fff; border-radius:22px; padding:28px 30px; box-shadow:0 12px 32px #17233a1c; }
+    h1 { margin:0 0 8px; font-size:clamp(24px,4vw,40px); letter-spacing:-.02em; }
+    h2 { margin:0 0 16px; font-size:22px; }
+    h3 { margin:0 0 8px; font-size:17px; }
+    p { margin:7px 0; }
+    .lead { color:#dbe5ff; max-width:760px; }
+    .badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+    .badge, .tag { display:inline-flex; align-items:center; border-radius:999px; padding:4px 10px; font-size:13px; font-weight:700; }
+    .ok { background:#dff7ec; color:#087849; } .warn { background:#fff0d3; color:#965800; } .fail { background:#ffe1e6; color:#a5263b; } .info { background:#e5ecff; color:#2f51b6; }
+    section { margin-top:24px; background:#fff; border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:0 5px 18px #1b355a0b; }
+    .flow { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; align-items:center; gap:12px; }
+    .flow-box { min-height:105px; display:grid; place-items:center; text-align:center; border:2px solid #9cb2ff; border-radius:15px; padding:16px; background:#f2f5ff; font-weight:700; }
+    .arrow { color:var(--blue); font-size:28px; text-align:center; }
+    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .card { border:1px solid var(--line); border-radius:14px; padding:16px; background:#fff; }
+    .card p { color:#475467; font-size:14px; }
+    .metric { font-size:28px; font-weight:800; margin:4px 0; }
+    .sub { color:var(--muted); font-size:13px; }
+    dl { display:grid; grid-template-columns:190px 1fr; margin:0; }
+    dt, dd { padding:9px 0; border-bottom:1px solid #edf1f6; }
+    dt { color:var(--muted); font-weight:700; } dd { margin:0; }
+    .callout { border-left:5px solid var(--amber); background:#fff8e8; padding:13px 16px; border-radius:10px; margin-top:16px; }
+    .callout.red { border-left-color:var(--red); background:#fff1f3; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { text-align:left; padding:11px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { color:var(--muted); background:#f8fafc; font-size:13px; }
+    td strong { font-size:17px; }
+    .bar { height:8px; border-radius:8px; background:#e9edf4; overflow:hidden; margin-top:6px; }
+    .bar i { display:block; height:100%; border-radius:8px; background:var(--blue); }
+    .bar i.bad { background:var(--red); }
+    .links { display:grid; gap:8px; }
+    a { color:#2453c5; text-decoration:none; } a:hover { text-decoration:underline; }
+    code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; background:#f1f4f8; padding:2px 5px; border-radius:5px; }
+    footer { color:var(--muted); font-size:13px; margin-top:20px; }
+    @media (max-width:760px) { .flow { grid-template-columns:1fr; } .arrow { transform:rotate(90deg); } .grid { grid-template-columns:1fr; } dl { grid-template-columns:1fr; } dt { border-bottom:0; padding-bottom:0; } dd { padding-top:2px; } table { display:block; overflow-x:auto; white-space:nowrap; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>2026-08-25｜昨日 Full 8-thread Pilot 復盤</h1>
+    <p class="lead">今日尚無已提交變更；本頁整理 2026-08-24 的 full-data K=4/6/8 pilot。流程本身完成，但診斷指標沒有達到正式結果的可信度要求。</p>
+    <div class="badges">
+      <span class="badge ok">執行完成：_SUCCESS</span>
+      <span class="badge fail">尚未通過：SMC 診斷</span>
+      <span class="badge warn">不是 formal validation</span>
+      <span class="badge info">evidence: historical + conversation</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>這次實驗做了什麼</h2>
+    <div class="flow">
+      <div class="flow-box">30,490 sites<br><span class="sub">ASCAT purity = 0.99</span></div>
+      <div class="arrow">→</div>
+      <div class="flow-box">Rao–Blackwellized<br>annealed SMC<br><span class="sub">K = 4 / 6 / 8</span></div>
+      <div class="arrow">→</div>
+      <div class="flow-box">每個 K：256 particles<br>× 4 repeats<br><span class="sub">64 stages、3 sweeps</span></div>
+    </div>
+    <div class="callout"><strong>8 threads 的注意事項：</strong>昨天的執行脈絡設定為 8 threads；但 <code>command.json</code> 沒有保存 <code>TUMOR_TREE_INFERENCE_THREADS</code>，所以目前只能確認「曾以 8-thread 設定執行」，不能從 artifact 完整重建 thread provenance。</div>
+  </section>
+
+  <section>
+    <h2>實際結果：跑完，但不是可信度通過</h2>
+    <div class="grid">
+      <div class="card"><div class="sub">Workflow status</div><div class="metric" style="color:var(--green)">SUCCESS</div><p>根目錄有 <code>_SUCCESS</code>，沒有 <code>_FAILED</code>；所有 K 的 4 個 repeat 都產生完整 SMC artifacts。</p></div>
+      <div class="card"><div class="sub">Inference</div><div class="metric">SMC</div><p>使用 <code>rao_blackwellized_annealed_smc</code>，不是舊 plain-MH。</p></div>
+      <div class="card"><div class="sub">Formal gate</div><div class="metric" style="color:var(--red)">未評估</div><p>每個 summary 都標示 <code>formal_gate_not_evaluated=true</code>，因此不能宣稱正式通過。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>各 K 的診斷摘要</h2>
+    <p class="sub">主要門檻：CCF stability ≥ 0.90、conditional ESS ≥ 0.50、particle diversity ≥ 0.25、predictive coverage ≥ 0.85、edge support difference ≤ 0.10。</p>
+    <table>
+      <thead><tr><th>K</th><th>CCF stability</th><th>min ESS</th><th>min particle diversity</th><th>predictive coverage</th><th>判讀</th></tr></thead>
+      <tbody>
+        <tr><td><strong>4</strong></td><td>0.989<br><div class="bar"><i style="width:99%"></i></div></td><td>0.302<br><div class="bar"><i class="bad" style="width:60%"></i></div></td><td>0.0039<br><div class="bar"><i class="bad" style="width:2%"></i></div></td><td>0.714–0.745</td><td><span class="tag warn">線性候選，但粒子退化</span></td></tr>
+        <tr><td><strong>6</strong></td><td>0.839<br><div class="bar"><i class="bad" style="width:84%"></i></div></td><td>0.158<br><div class="bar"><i class="bad" style="width:32%"></i></div></td><td>0.0039<br><div class="bar"><i class="bad" style="width:2%"></i></div></td><td>0.715–0.741</td><td><span class="tag fail">穩定度不足</span></td></tr>
+        <tr><td><strong>8</strong></td><td>0.821<br><div class="bar"><i class="bad" style="width:82%"></i></div></td><td>0.229<br><div class="bar"><i class="bad" style="width:46%"></i></div></td><td>0.0156<br><div class="bar"><i class="bad" style="width:6%"></i></div></td><td>0.701–0.744</td><td><span class="tag fail">分支候選不穩定</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout red"><strong>共同問題：</strong>三個 K 的 <code>max_edge_support_difference=1.0</code> 都高於 0.10；表示不同 repeat 對樹邊的支持不一致。這不是「沒有輸出樹」，而是「目前還無法信任某一顆樹是穩定答案」。</div>
+  </section>
+
+  <section>
+    <h2>目前失敗的原因</h2>
+    <div class="grid">
+      <div class="card"><h3>1｜SMC 粒子退化</h3><p>resampling 後大量 particles 變成相同或近似狀態：K4/K6 的最低 diversity 只有 0.0039，K8 也只有 0.0156。</p></div>
+      <div class="card"><h3>2｜拓樸探索不充分</h3><p>topology acceptance 約 0.013–0.319，且 edge support difference = 1.0；不同 repeat 找到的樹邊不一致。</p></div>
+      <div class="card"><h3>3｜K 增加後混合更差</h3><p>K6/K8 的 CCF stability 降到 0.839/0.821，min ESS 也低於 0.50，顯示較複雜的樹空間目前探索不足。</p></div>
+      <div class="card"><h3>4｜8 threads 不是統計修正</h3><p>threads 只影響計算速度與平行化，不會自動改善 SMC 的 proposal、resampling 或 posterior mixing；目前沒有證據說 8 threads 是失敗原因。</p></div>
+      <div class="card"><h3>5｜驗證層尚未完成</h3><p>這是 <code>mode=pilot</code>、<code>holdout=none</code>；formal gate 沒有執行，不能把 pilot 的 <code>_SUCCESS</code> 當成 biological validation PASS。</p></div>
+      <div class="card"><h3>6｜Provenance 不完整</h3><p>run 允許 dirty worktree，且 command receipt 沒保存 thread env；因此即使結果存在，也還不能算完整可重現的正式紀錄。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>目前判定與下一步</h2>
+    <p><span class="badge ok">已完成</span> C++ SMC full-data pilot、K4/K6/K8、各 4 repeats，以及 output artifact 產生。</p>
+    <p><span class="badge fail">未完成</span> 穩定的 topology selection、branch edge support、獨立 validation 與 formal gate。</p>
+    <p><span class="badge warn">下一步</span> 先改善 SMC particle diversity 與 topology proposal mixing；同時把 thread count 寫入 receipt、在 clean Git SHA 下重跑，再進入 formal workflow。</p>
+  </section>
+
+  <section>
+    <h2>可追溯檔案</h2>
+    <div class="links">
+      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/status.json">昨日 run status.json</a>
+      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/command.json">昨日 command.json（含設定與 dirty worktree）</a>
+      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/execution_trace.jsonl">昨日 execution_trace.jsonl</a>
+      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K4_seed960115502/summary.json">K=4 summary</a>
+      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K6_seed1919528150/summary.json">K=6 summary</a>
+      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K8_seed1203086123/summary.json">K=8 summary</a>
+      <a href="../../experiment_workflow.md">目前 experiment_workflow.md</a>
+    </div>
+    <p class="sub" style="margin-top:16px">Git evidence：2026-08-25 尚無已提交 commit。工作樹另有未提交的 <code>golden_tree/research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md</code>，與本次 daily 頁面無法可靠歸為同一工作群組，因此未納入本次 commit。</p>
+  </section>
+
+  <footer>紀錄日期：2026-08-25（Asia/Taipei）｜昨日 run 日期：2026-08-24｜本頁只整理可追溯的 pilot 結果，不把它提升為正式生物學結論。</footer>
+</main>
+</body>
+</html>
