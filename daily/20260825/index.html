@@ -1,133 +1,1910 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026-08-25｜Full 8-thread Pilot 復盤</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="fireworks-open-eli5-spec-sha256" content="5926dc1cae4aa545e4a89e8f15b3869e38f6f072e8d9a3a891e62f7428662383">
+	  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'sha256-mc0MyGMTW4DgGRK47HlJ9pSaCBp4cluHBIRCV0qJKK4='; script-src 'sha256-p/FRb1P1eWhW+g/g1tGA/GIrc+sdH0Dd6Bgtg3CXmgU='; img-src data:; font-src 'none'; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>8-thread 實驗：跑完了，但為什麼樹還不能相信？</title>
   <style>
-    :root { --ink:#18212f; --muted:#667085; --line:#d9e1ec; --blue:#315efb; --green:#138a5b; --amber:#b66a00; --red:#c5364a; --paper:#f7f9fc; }
-    * { box-sizing:border-box; }
-    body { margin:0; color:var(--ink); background:var(--paper); font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif; line-height:1.55; }
-    main { max-width:1080px; margin:0 auto; padding:34px 22px 60px; }
-    header { background:#17233a; color:#fff; border-radius:22px; padding:28px 30px; box-shadow:0 12px 32px #17233a1c; }
-    h1 { margin:0 0 8px; font-size:clamp(24px,4vw,40px); letter-spacing:-.02em; }
-    h2 { margin:0 0 16px; font-size:22px; }
-    h3 { margin:0 0 8px; font-size:17px; }
-    p { margin:7px 0; }
-    .lead { color:#dbe5ff; max-width:760px; }
-    .badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
-    .badge, .tag { display:inline-flex; align-items:center; border-radius:999px; padding:4px 10px; font-size:13px; font-weight:700; }
-    .ok { background:#dff7ec; color:#087849; } .warn { background:#fff0d3; color:#965800; } .fail { background:#ffe1e6; color:#a5263b; } .info { background:#e5ecff; color:#2f51b6; }
-    section { margin-top:24px; background:#fff; border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:0 5px 18px #1b355a0b; }
-    .flow { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; align-items:center; gap:12px; }
-    .flow-box { min-height:105px; display:grid; place-items:center; text-align:center; border:2px solid #9cb2ff; border-radius:15px; padding:16px; background:#f2f5ff; font-weight:700; }
-    .arrow { color:var(--blue); font-size:28px; text-align:center; }
-    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-    .card { border:1px solid var(--line); border-radius:14px; padding:16px; background:#fff; }
-    .card p { color:#475467; font-size:14px; }
-    .metric { font-size:28px; font-weight:800; margin:4px 0; }
-    .sub { color:var(--muted); font-size:13px; }
-    dl { display:grid; grid-template-columns:190px 1fr; margin:0; }
-    dt, dd { padding:9px 0; border-bottom:1px solid #edf1f6; }
-    dt { color:var(--muted); font-weight:700; } dd { margin:0; }
-    .callout { border-left:5px solid var(--amber); background:#fff8e8; padding:13px 16px; border-radius:10px; margin-top:16px; }
-    .callout.red { border-left-color:var(--red); background:#fff1f3; }
-    table { width:100%; border-collapse:collapse; font-size:14px; }
-    th, td { text-align:left; padding:11px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
-    th { color:var(--muted); background:#f8fafc; font-size:13px; }
-    td strong { font-size:17px; }
-    .bar { height:8px; border-radius:8px; background:#e9edf4; overflow:hidden; margin-top:6px; }
-    .bar i { display:block; height:100%; border-radius:8px; background:var(--blue); }
-    .bar i.bad { background:var(--red); }
-    .links { display:grid; gap:8px; }
-    a { color:#2453c5; text-decoration:none; } a:hover { text-decoration:underline; }
-    code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; background:#f1f4f8; padding:2px 5px; border-radius:5px; }
-    footer { color:var(--muted); font-size:13px; margin-top:20px; }
-    @media (max-width:760px) { .flow { grid-template-columns:1fr; } .arrow { transform:rotate(90deg); } .grid { grid-template-columns:1fr; } dl { grid-template-columns:1fr; } dt { border-bottom:0; padding-bottom:0; } dd { padding-top:2px; } table { display:block; overflow-x:auto; white-space:nowrap; } }
+    :root{--paper:#f4efdf;--paper-2:#fffaf0;--ink:#18203b;--muted:#596071;--indigo:#40458f;--teal:#0f7c78;--amber:#d48a19;--red:#b44b43;--line:#c9c3b4;--shadow:0 14px 40px rgba(34,36,61,.1);--radius:18px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:hidden}body{margin:0;background:var(--paper);color:var(--ink);font-family:ui-rounded,"Avenir Next","Trebuchet MS",sans-serif;line-height:1.55;overflow-x:hidden;background-image:radial-gradient(rgba(64,69,143,.08) 1px,transparent 1px);background-size:24px 24px}
+    button,a,[tabindex]{outline-offset:4px}button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--amber)}button{min-height:44px;border:1.5px solid var(--ink);border-radius:999px;padding:9px 16px;background:var(--paper-2);color:var(--ink);font:inherit;font-weight:750;cursor:pointer}button:hover{transform:translateY(-1px);box-shadow:0 4px 0 rgba(24,32,59,.18)}
+    .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.workspace-launcher{position:fixed;top:16px;left:16px;z-index:20;background:var(--ink);color:white;box-shadow:0 8px 24px rgba(24,32,59,.24)}.workspace-scrim{position:fixed;inset:0;z-index:29;background:rgba(24,32,59,.36);backdrop-filter:blur(2px)}.workspace-drawer{position:fixed;inset:0 auto 0 0;z-index:30;width:min(430px,calc(100vw - 18px));padding:22px;background:var(--paper-2);border-right:1px solid var(--line);box-shadow:18px 0 50px rgba(24,32,59,.2);overflow-y:auto;transform:translateX(-105%);transition:transform .22s ease}.workspace-drawer[data-open="true"]{transform:translateX(0)}body.workspace-open{overflow:hidden}.workspace-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}.workspace-header h2{font-size:1.75rem;margin:.2em 0}.workspace-consent{margin-top:16px;padding:14px;border:1px solid var(--amber);border-radius:12px;background:#fff5d9}.workspace-consent p{margin:0 0 10px}.workspace-favorites{padding:18px 0;border-bottom:1px solid var(--line)}.workspace-favorites h3{margin:0 0 10px;color:var(--indigo)}.workspace-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:16px 0}.workspace-tabs button{padding-inline:10px}.workspace-tabs [aria-selected="true"]{background:var(--indigo);color:white}.workspace-panel{padding:4px 0 12px}.document-favorite{width:100%;margin-bottom:12px}.workspace-export{padding:12px 0 16px;border-bottom:1px solid var(--line)}.workspace-export h3{margin:0 0 10px;color:var(--indigo)}.workspace-export>div{display:grid;gap:8px}.workspace-export button{width:100%}.workspace-export p{margin:.5em 0 0;color:var(--muted)}.workspace-outline{list-style:none;padding:0;margin:12px 0 0}.workspace-outline li{border-top:1px solid var(--line)}.workspace-outline a,.workspace-list a{display:flex;gap:10px;align-items:flex-start;padding:12px 8px;color:var(--ink);text-decoration:none;border-radius:10px}.workspace-outline a:hover,.workspace-outline a[aria-current="location"],.workspace-list a:hover{background:#ece9f7}.workspace-outline span{font:800 .75rem ui-monospace,SFMono-Regular,monospace;color:var(--amber);padding-top:3px}.workspace-list{display:grid;gap:8px}.workspace-empty{margin:0;color:var(--muted)}.workspace-item{border:1px solid var(--line);border-radius:12px;background:white;padding:10px}.workspace-item a{padding:2px}.workspace-item small{display:block;color:var(--muted);margin-top:4px}.workspace-item-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.workspace-item-actions button{min-height:38px;padding:6px 12px;font-size:.82rem}.workspace-storage-note{border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:.85rem}.annotation-editor{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#f6f2e8;margin-bottom:12px}.annotation-editor label{font-weight:800}.annotation-editor select,.annotation-editor textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:white;color:var(--ink);font:inherit}.annotation-editor textarea{resize:vertical;min-height:110px}.annotation-editor-actions{display:flex;gap:8px;flex-wrap:wrap}.annotation-body{white-space:pre-wrap;overflow-wrap:anywhere;margin:.35em 0}.annotation-browse-mode .scene[data-has-notes="true"]{box-shadow:0 0 0 3px rgba(212,138,25,.34),var(--shadow)}
+    main{width:min(1180px,calc(100% - 40px));margin:auto;padding:48px 0 80px}.hero{padding:7vw 0 4vw;max-width:930px}.eyebrow,.section-kicker,.node-kind{text-transform:uppercase;letter-spacing:.14em;font-weight:800;font-size:.75rem;color:var(--teal)}h1{font-family:Georgia,serif;font-size:clamp(2.7rem,7vw,6.6rem);line-height:.93;letter-spacing:-.055em;margin:.2em 0;color:var(--indigo);text-wrap:balance}.dek{font-size:clamp(1.1rem,2vw,1.5rem);max-width:780px;color:var(--muted)}
+	    h2{font-family:Georgia,serif;font-size:clamp(1.7rem,3.3vw,3rem);line-height:1.08;margin:.25em 0 .65em}h3{line-height:1.15}.truth-ladder,.mode-panel,.trace-console,.scene,.reference-grid>div,.teach-back{background:rgba(255,250,240,.94);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+	    .truth-ladder{padding:clamp(24px,5vw,56px);margin-bottom:24px}.tab-list{display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}.tab-list [aria-selected="true"]{background:var(--indigo);color:white}.truth-panel{font-family:Georgia,serif;font-size:clamp(1.15rem,2vw,1.5rem);max-width:900px}
+	    .mode-panel{padding:clamp(22px,4vw,42px);margin-bottom:24px}.mode-strip,.tradeoff-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.mode-card,.option-card{border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--paper-2)}.mode-card h3,.option-card h3{margin:.1em 0 .7em;color:var(--indigo)}.mode-card p,.option-card p{margin:.35em 0;color:var(--muted)}.mode-card code{display:block;margin:.5em 0;overflow-wrap:anywhere;color:var(--teal)}.mode-lede,.decision-rule{border-left:4px solid var(--teal);padding:10px 14px;background:#edf6ee}.tradeoff-options{margin:16px 0}.option-card ul{list-style:none;padding:0;margin:14px 0 0}.option-card li{border-top:1px solid var(--line);padding:12px 0}.option-card li>div{display:flex;gap:8px;align-items:center;justify-content:space-between}.fit{display:inline-block;border-radius:99px;padding:4px 8px;white-space:nowrap;font-size:.72rem;font-weight:800}.fit-strong{background:#cfe9df;color:#075e54}.fit-mixed,.fit-depends{background:#f8e0ad;color:#744900}.fit-weak{background:#f2d1ce;color:#7c2f29}.incident-timeline{list-style:none;padding:0;margin:18px 0;display:grid;gap:0}.incident-timeline li{display:grid;grid-template-columns:90px 1fr;gap:14px;padding:13px 0 13px 22px;border-left:3px solid var(--indigo);position:relative}.incident-timeline li::before{content:"";position:absolute;left:-8px;top:20px;width:13px;height:13px;border-radius:50%;background:var(--amber);border:2px solid var(--paper-2)}.incident-timeline span{font:800 .75rem ui-monospace,SFMono-Regular,monospace;color:var(--teal)}.incident-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.incident-summary p{border-top:1px solid var(--line);padding-top:12px}
+    .trace-console{padding:22px 26px;margin-bottom:24px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;position:sticky;top:12px;z-index:4}.trace-console h2{font-size:1.35rem;margin:.1em 0}.trace-console p{margin:0;color:var(--muted)}.trace-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.trace-controls [aria-pressed="true"]{background:var(--amber)}.failure-reader{grid-column:1/-1;border-left:4px solid var(--red);padding:4px 14px}.failure-reader strong{color:var(--red)}
+    .trace-context{font-size:.92rem;font-weight:700;max-width:760px;padding-top:4px}.trace-progress{height:7px;max-width:760px;margin-top:10px;border-radius:99px;background:#e3ded0;overflow:hidden}.trace-progress span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .4s cubic-bezier(.22,1,.36,1)}
+    .scenes{display:grid;gap:24px}.scene{padding:clamp(20px,4vw,42px);overflow:hidden;scroll-margin-top:150px}.scene-heading{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}.scene-number{font:800 1.1rem/1 ui-monospace,SFMono-Regular,monospace;color:var(--amber);border:1px solid var(--amber);padding:8px;border-radius:50%}.scene-heading h2{margin:0}.scene-heading p{color:var(--muted);margin:.4em 0 .9em}.scene-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin:0 0 14px;padding-bottom:14px;border-bottom:1px solid var(--line)}.scene-actions button{min-height:40px;padding:7px 13px;font-size:.86rem}.scene-actions [aria-pressed="true"]{background:#fff0bd;border-color:var(--amber)}.scene-note-count{font-size:.8rem;font-weight:800;color:var(--amber)}.evidence-ref{display:inline-block;font:700 .7rem/1 ui-monospace,SFMono-Regular,monospace;color:var(--indigo);border:1px solid #a8aad1;border-radius:99px;padding:5px 8px;margin:3px}
+    .scene{transition:box-shadow .35s ease,border-color .35s ease}.scene.trace-scene-active{border-color:rgba(212,138,25,.72);box-shadow:0 0 0 3px rgba(212,138,25,.14),0 18px 54px rgba(34,36,61,.15)}.evidence-ref{text-decoration:none;transition:background .2s ease,border-color .2s ease}.evidence-ref:hover,.evidence-ref:focus-visible{background:#ece9f7;border-color:var(--indigo)}.scene-evidence{margin-top:24px;padding:20px;border:1px solid var(--line);border-radius:16px;background:rgba(246,242,232,.88)}.scene-evidence-heading{display:grid;grid-template-columns:minmax(180px,.72fr) minmax(280px,1.28fr);gap:18px;align-items:end;margin-bottom:14px}.scene-evidence-heading h3{margin:.2em 0 0;font-family:Georgia,serif;font-size:1.45rem;color:var(--indigo)}.scene-evidence-heading p{margin:0;color:var(--muted);font-size:.9rem}.scene-evidence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.scene-evidence-card{min-width:0;padding:15px;border:1px solid var(--line);border-top:4px solid var(--indigo);border-radius:13px;background:var(--paper-2);transition:opacity .28s ease,transform .28s ease,border-color .28s ease,box-shadow .28s ease}.scene-evidence-card.status-card-verified{border-top-color:var(--teal)}.scene-evidence-card.status-card-inferred{border-top-color:var(--amber)}.scene-evidence-card.status-card-analogy{border-top-color:var(--indigo)}.scene-evidence-card.trace-evidence-active{opacity:1;transform:translateY(-3px);border-color:var(--amber);box-shadow:0 10px 24px rgba(212,138,25,.16)}.scene-evidence-card.trace-evidence-muted{opacity:.48}.scene-evidence-meta{display:flex;align-items:flex-start;gap:8px}.scene-evidence-meta>strong{line-height:1.25}.evidence-core{margin:.75em 0;color:var(--muted);font-size:.92rem}.evidence-core>span{display:block;margin-bottom:3px;color:var(--teal);font:800 .67rem ui-monospace,SFMono-Regular,monospace;text-transform:uppercase;letter-spacing:.1em}.evidence-supports{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:.65em 0;font-size:.76rem}.evidence-supports span{color:var(--muted)}.evidence-supports strong{padding:3px 7px;border-radius:99px;background:#ece9f7;color:var(--indigo)}.evidence-source{display:grid;gap:2px;margin-top:10px;padding:10px;border-radius:10px;background:#edf6ee;color:var(--teal);text-decoration:none;overflow-wrap:anywhere}.evidence-source span{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.evidence-source strong,.evidence-source code{font-size:.82rem;overflow-wrap:anywhere}.evidence-source-local{background:#f0edf8}.evidence-boundary{margin:.7em 0;padding:9px;border-radius:10px;background:#f8e0ad;color:#744900;font-size:.8rem}.evidence-audit-link{display:inline-block;margin-top:10px;color:var(--indigo);font-size:.78rem;font-weight:800}.scene-evidence[data-focused="false"] .scene-evidence-card{opacity:1;transform:none}
+    .diagram{width:100%;min-height:290px;margin-top:18px}.diagram svg{display:block;width:100%;height:auto;overflow:visible}.svg-edge{fill:none;stroke:#8c8e9d;stroke-width:2}.svg-edge-label{font-size:12px;fill:var(--muted);font-weight:700}.svg-label-bg{fill:var(--paper-2);stroke:var(--line)}.svg-node rect{fill:var(--paper-2);stroke:var(--indigo);stroke-width:2}.svg-node.kind-store rect{stroke:var(--teal);stroke-dasharray:5 3}.svg-node.kind-decision rect{stroke:var(--amber)}.svg-node.kind-event rect{stroke:var(--red)}.svg-node text{fill:var(--ink)}.svg-node .svg-kind{fill:var(--teal);font-size:11px;font-weight:800;letter-spacing:1px}.svg-node .svg-title{font-size:15px;font-weight:800}.svg-node .svg-detail{font-size:12px;fill:var(--muted)}.svg-node.trace-active rect{fill:#fff0bd;stroke:var(--amber);stroke-width:4}.failure-mode .svg-node[data-has-failure="true"] rect{filter:drop-shadow(0 0 5px rgba(180,75,67,.55));stroke:var(--red)}.mobile-flow{display:none}.flow-node{border:2px solid var(--indigo);border-radius:14px;padding:16px;background:var(--paper-2)}.flow-node h3{margin:.2em 0}.flow-node p{margin:.4em 0}.flow-node.trace-active{border-color:var(--amber);background:#fff0bd}.mobile-routes{display:grid;gap:6px;padding:0 8px 8px 18px}.mobile-route{display:grid;grid-template-columns:minmax(82px,auto) 1fr;gap:8px;align-items:center;padding:8px 10px;border-left:3px solid #8c8e9d;border-radius:0 10px 10px 0;background:rgba(255,250,240,.72);color:var(--muted);font-size:.8rem}.mobile-route span{font-weight:800;color:var(--teal)}.mobile-route strong{font-weight:750;color:var(--ink);overflow-wrap:anywhere}.failure-button{display:none;margin-top:10px}.failure-mode .failure-button{display:inline-flex;align-items:center;gap:6px}.failure-panel{border-left:3px solid var(--red);padding-left:12px;margin-top:12px}.failure-panel dl{margin:0}.failure-panel dt{font-weight:800}.failure-panel dd{margin:0 0 8px}
+    .svg-edge{transition:stroke .25s ease,stroke-width .25s ease,opacity .25s ease,filter .25s ease}.svg-edge.trace-edge-visited{stroke:var(--teal);opacity:.7}.svg-edge.trace-edge-active{stroke:var(--amber);stroke-width:4;stroke-dasharray:12 9;filter:drop-shadow(0 0 3px rgba(212,138,25,.42));animation:trace-edge-flow .72s linear infinite}body:not(.trace-running) .svg-edge.trace-edge-active{animation:none;stroke-dashoffset:0}.svg-edge-label,.svg-label-bg{transition:fill .25s ease,stroke .25s ease,opacity .25s ease}.svg-edge-label.trace-edge-visited{fill:var(--teal)}.svg-edge-label.trace-edge-active{fill:#8b5600}.svg-label-bg.trace-edge-active{fill:#fff0bd;stroke:var(--amber)}.svg-node{transition:opacity .28s ease}.svg-node rect{transform-box:fill-box;transform-origin:center;transition:fill .28s ease,stroke .28s ease,stroke-width .28s ease,filter .28s ease}.svg-node.trace-visited rect{fill:#edf6ee;stroke:var(--teal)}.svg-node.trace-next{opacity:.78}.svg-node.trace-active{opacity:1}.svg-node.trace-active rect{filter:drop-shadow(0 6px 7px rgba(212,138,25,.22))}.flow-node{transition:background .28s ease,border-color .28s ease,opacity .28s ease,transform .28s ease,box-shadow .28s ease}.flow-node.trace-visited{background:#edf6ee;border-color:var(--teal)}.flow-node.trace-next{opacity:.72}.flow-node.trace-active{transform:translateY(-2px);box-shadow:0 10px 25px rgba(212,138,25,.16)}.mobile-route{transition:color .25s ease,transform .25s ease,opacity .25s ease,border-color .25s ease,background .25s ease,box-shadow .25s ease}.mobile-route.trace-mobile-edge-active{border-color:var(--amber);background:#fff0bd;transform:translateX(3px);box-shadow:0 6px 18px rgba(212,138,25,.14);animation:trace-route-pulse .72s ease-in-out infinite alternate}.mobile-route.trace-mobile-edge-active span,.mobile-route.trace-mobile-edge-active strong{color:#8b5600}.mobile-route.trace-mobile-edge-visited{border-color:var(--teal);background:#edf6ee;opacity:.78}body:not(.trace-running) .mobile-route.trace-mobile-edge-active{animation:none}body[data-playback-phase="enter"] .svg-node.trace-active rect{animation:trace-node-enter .46s cubic-bezier(.2,.9,.25,1)}body[data-playback-phase="hold"] .svg-node.trace-active rect{animation:trace-node-hold 1.3s ease-in-out infinite alternate}body[data-playback-phase="enter"] .flow-node.trace-active{animation:trace-card-enter .46s cubic-bezier(.2,.9,.25,1)}@keyframes trace-edge-flow{to{stroke-dashoffset:-21}}@keyframes trace-node-enter{0%{opacity:.35;filter:drop-shadow(0 0 0 rgba(212,138,25,0))}65%{filter:drop-shadow(0 0 13px rgba(212,138,25,.45))}100%{opacity:1}}@keyframes trace-node-hold{from{filter:drop-shadow(0 4px 5px rgba(212,138,25,.18))}to{filter:drop-shadow(0 8px 11px rgba(212,138,25,.35))}}@keyframes trace-card-enter{from{opacity:.42;transform:translateY(8px)}to{opacity:1;transform:translateY(-2px)}}@keyframes trace-route-pulse{from{opacity:.68}to{opacity:1}}
+    .reference-grid{display:grid;grid-template-columns:1fr 1.35fr;gap:24px;margin-top:24px}.reference-grid>div,.teach-back{padding:clamp(22px,4vw,42px)}.glossary>div{border-top:1px solid var(--line);padding:14px 0}.glossary dt{font-weight:800}.glossary dd{margin:4px 0;color:var(--muted)}.evidence-list{padding:0;list-style:none}.evidence-list li{border-top:1px solid var(--line);padding:16px 0}.evidence-list strong{margin-left:8px}.evidence-list p{margin:.4em 0;color:var(--muted)}.evidence-list a,.evidence-list code{display:block;overflow-wrap:anywhere;color:var(--indigo)}.status{display:inline-block;flex:0 0 auto;white-space:nowrap;border-radius:99px;padding:4px 8px;text-transform:uppercase;font:800 .65rem ui-monospace,SFMono-Regular,monospace}.status-verified{background:#cfe9df;color:#075e54}.status-inferred{background:#f8e0ad;color:#744900}.status-analogy{background:#dddaf6;color:#393978}.teach-back{margin-top:24px}.teach-back article{border-top:1px solid var(--line);padding:15px 0}.teach-back article p{font-family:Georgia,serif;font-size:1.1rem}
+    .mini-player{display:none}
+	    @media(max-width:640px){main{width:min(100% - 24px,600px);padding-top:18px}.hero{padding-top:76px}h1{font-size:clamp(2.65rem,15vw,4.5rem)}.workspace-launcher{top:12px;left:12px}.workspace-drawer{width:100vw;padding:18px}.workspace-tabs{position:sticky;top:-18px;z-index:2;background:var(--paper-2)}.workspace-item-actions button{min-height:44px}.mode-strip,.tradeoff-options,.incident-summary{grid-template-columns:1fr}.incident-timeline li{grid-template-columns:72px 1fr;padding-left:18px}.trace-console{position:relative;top:auto;grid-template-columns:1fr;padding:18px}.trace-controls{justify-content:flex-start}.trace-controls button{flex:1 1 44%}.diagram{display:none}.mobile-flow{display:grid;gap:8px}.reference-grid{grid-template-columns:1fr}.scene-heading{grid-template-columns:1fr}.scene-number{width:40px}.scene-actions{display:grid;grid-template-columns:1fr 1fr;justify-content:stretch}.scene-actions button{min-height:44px}.flow-node{max-width:100%;overflow-wrap:anywhere}.scene-evidence{padding:15px}.scene-evidence-heading{grid-template-columns:1fr;gap:7px}.scene-evidence-grid{grid-template-columns:1fr}.trace-running .scene-evidence-card.trace-evidence-muted{display:none}.evidence-source{min-height:44px;align-content:center}.tab-list button{flex:1 1 100%}.trace-running .mini-player{position:fixed;left:12px;right:12px;bottom:12px;z-index:22;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--ink);border-radius:14px;background:var(--ink);color:white;box-shadow:0 12px 36px rgba(24,32,59,.28)}.mini-player span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mini-player button{flex:0 0 auto;background:var(--paper-2)}.trace-running main{padding-bottom:150px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+	    @media print{body{background:white}.workspace-launcher,.workspace-drawer,.workspace-scrim,.mini-player,.trace-console,.failure-button,.scene-actions,.tab-list{display:none!important}main{width:100%;padding:0}.truth-panel[hidden]{display:block}.scene,.truth-ladder,.mode-panel,.reference-grid>div,.teach-back{box-shadow:none;break-inside:avoid}.diagram{display:block}.mobile-flow{display:none}a{color:black}}
   </style>
 </head>
 <body>
-<main>
-  <header>
-    <h1>2026-08-25｜昨日 Full 8-thread Pilot 復盤</h1>
-    <p class="lead">今日尚無已提交變更；本頁整理 2026-08-24 的 full-data K=4/6/8 pilot。流程本身完成，但診斷指標沒有達到正式結果的可信度要求。</p>
-    <div class="badges">
-      <span class="badge ok">執行完成：_SUCCESS</span>
-      <span class="badge fail">尚未通過：SMC 診斷</span>
-      <span class="badge warn">不是 formal validation</span>
-      <span class="badge info">evidence: historical + conversation</span>
+	  <button type="button" class="workspace-launcher" data-workspace-open aria-expanded="false" aria-controls="workspace-drawer">目錄</button>
+    <div class="workspace-scrim" data-workspace-scrim hidden></div>
+    <aside class="workspace-drawer" id="workspace-drawer" role="dialog" aria-modal="true" aria-labelledby="workspace-title" aria-hidden="true" inert>
+      <header class="workspace-header"><div><div class="section-kicker">目錄</div><h2 id="workspace-title">講解資料庫</h2></div><button type="button" data-workspace-close>關閉</button></header>
+      <section class="workspace-consent" data-library-consent>
+        <p>啟用後，目前站點開啟過的講解、收藏和批註會保存在這個瀏覽器中。</p>
+        <button type="button" data-library-enable>啟用本機資料庫</button>
+      </section>
+      <section class="workspace-favorites" aria-labelledby="workspace-favorites-title">
+        <h3 id="workspace-favorites-title">我的收藏</h3>
+        <div id="workspace-favorites" class="workspace-list"></div>
+      </section>
+      <div class="workspace-tabs" role="tablist" aria-label="講解資料庫">
+        <button type="button" role="tab" id="workspace-tab-contents" aria-controls="workspace-panel-contents" aria-selected="true">本頁目錄</button>
+        <button type="button" role="tab" id="workspace-tab-history" aria-controls="workspace-panel-history" aria-selected="false" tabindex="-1">開啟歷史</button>
+        <button type="button" role="tab" id="workspace-tab-annotations" aria-controls="workspace-panel-annotations" aria-selected="false" tabindex="-1">批註瀏覽</button>
+      </div>
+      <section class="workspace-panel" role="tabpanel" id="workspace-panel-contents" aria-labelledby="workspace-tab-contents">
+        <button type="button" class="document-favorite" data-document-favorite aria-pressed="false">收藏本文</button>
+        <section class="workspace-export" aria-labelledby="workspace-export-title"><h3 id="workspace-export-title">一鍵匯出</h3><div><button type="button" data-export-pdf>列印 / 匯出 PDF</button><button type="button" data-export-pptx>全部場景匯出 PPTX</button><button type="button" data-export-image>目前場景匯出 PNG</button><button type="button" data-export-docx>Pages 可開啟（DOCX）</button><button type="button" data-export-pages>匯出原生 Pages（.pages）</button></div><p id="workspace-export-status" aria-live="polite"></p></section>
+        <ol class="workspace-outline"><li><a href="#scene-normal" data-outline-scene="normal"><span>01</span>1｜先產生候選樹</a></li><li><a href="#scene-diagnose" data-outline-scene="diagnose"><span>02</span>2｜候選答案高度重複</a></li><li><a href="#scene-recover" data-outline-scene="recover"><span>03</span>3｜修正後再驗證</a></li></ol>
+      </section>
+      <section class="workspace-panel" role="tabpanel" id="workspace-panel-history" aria-labelledby="workspace-tab-history" hidden>
+        <div id="workspace-history" class="workspace-list"></div>
+      </section>
+      <section class="workspace-panel" role="tabpanel" id="workspace-panel-annotations" aria-labelledby="workspace-tab-annotations" hidden>
+        <div class="annotation-editor">
+          <label for="annotation-scene">批註位置</label>
+          <select id="annotation-scene"><option value="normal">1｜先產生候選樹</option><option value="diagnose">2｜候選答案高度重複</option><option value="recover">3｜修正後再驗證</option></select>
+          <label for="annotation-text" class="sr-only">寫下對這一節的理解、疑問或補充。</label>
+          <textarea id="annotation-text" maxlength="1200" rows="5" placeholder="寫下對這一節的理解、疑問或補充。"></textarea>
+          <div class="annotation-editor-actions"><button type="button" data-annotation-save>儲存批註</button><button type="button" data-annotation-cancel hidden>取消編輯</button></div>
+        </div>
+        <div id="workspace-annotations" class="workspace-list"></div>
+      </section>
+      <p class="workspace-storage-note" id="workspace-storage-note" tabindex="-1" aria-live="polite">收藏、歷史和批註只保存在本瀏覽器的目前站點，不會同步或寫回 HTML。</p>
+    </aside>
+    <div class="mini-player" aria-live="polite"><span id="mini-player-status">準備開始追蹤。</span><button type="button" data-mini-pause>暫停</button></div>
+    <main id="explainer">
+    <header class="hero">
+      <p class="eyebrow">故障 · zh-TW</p>
+      <h1>8-thread 實驗：跑完了，但為什麼樹還不能相信？</h1>
+      <p class="dek">主流程只有三步：先產生候選樹，再看出候選答案高度重複，最後改善探索並重新做正式驗證。</p>
+    </header>
+    <section class="truth-ladder" aria-labelledby="truth-title">
+      <div class="section-kicker">事實階梯</div><h2 id="truth-title">先說白話，再把事實講到底。</h2>
+      <div class="tab-list" role="tablist" aria-label="解釋層級">
+        <button type="button" role="tab" id="tab-analogy" aria-controls="panel-analogy" aria-selected="true" tabindex="0">類比</button><button type="button" role="tab" id="tab-technical" aria-controls="panel-technical" aria-selected="false" tabindex="-1">技術事實</button><button type="button" role="tab" id="tab-caveat" aria-controls="panel-caveat" aria-selected="false" tabindex="-1">邊界與限制</button>
+      </div>
+      <div class="truth-panel" role="tabpanel" id="panel-analogy" aria-labelledby="tab-analogy"><p>想像很多人一起畫腫瘤樹；如果最後大家拿到的草稿都很像，就表示沒有充分比較其他畫法。</p></div><div class="truth-panel" role="tabpanel" id="panel-technical" aria-labelledby="tab-technical" hidden><p>SMC pilot 有完整輸出，但 K4/K6/K8 的有效資訊量、候選多樣性與跨 repeat 樹邊穩定性不足。</p></div><div class="truth-panel" role="tabpanel" id="panel-caveat" aria-labelledby="tab-caveat" hidden><p>這次是 pilot、holdout=none，formal gate 尚未評估；可以確認流程完成，不能把任一棵樹稱為正式高可信度答案。</p></div>
+    </section>
+    <section class="mode-panel mode-incident" aria-labelledby="mode-title">
+    <div class="section-kicker">故事語法</div><h2 id="mode-title">故障時間線</h2>
+    <ol class="incident-timeline"><li><span>T+0</span><strong>30,490 個 SNV</strong></li><li><span>T+1</span><strong>SMC 嘗試不同樹</strong></li><li><span>T+2</span><strong>產生候選樹</strong></li><li><span>T+3</span><strong>答案變得太像</strong></li><li><span>T+4</span><strong>repeat 不同意</strong></li><li><span>T+5</span><strong>暫時不能正式引用</strong></li><li><span>T+6</span><strong>改善模型探索</strong></li><li><span>T+7</span><strong>補齊執行紀錄</strong></li><li><span>T+8</span><strong>重新做正式驗證</strong></li></ol>
+    <div class="incident-summary">
+      <p><strong>首次斷點:</strong> 答案變得太像</p>
+      <p><strong>恢復:</strong> 改善模型探索 → 補齊執行紀錄 → 重新做正式驗證</p>
+      <p><strong>根因證據:</strong> <a class="evidence-ref" data-evidence-ref="inferred-explanation" href="#evidence-inferred-explanation">inferred-explanation</a><a class="evidence-ref" data-evidence-ref="diagnostic-k4" href="#evidence-diagnostic-k4">diagnostic-k4</a><a class="evidence-ref" data-evidence-ref="diagnostic-k6" href="#evidence-diagnostic-k6">diagnostic-k6</a><a class="evidence-ref" data-evidence-ref="diagnostic-k8" href="#evidence-diagnostic-k8">diagnostic-k8</a></p>
     </div>
-  </header>
-
-  <section>
-    <h2>這次實驗做了什麼</h2>
-    <div class="flow">
-      <div class="flow-box">30,490 sites<br><span class="sub">ASCAT purity = 0.99</span></div>
-      <div class="arrow">→</div>
-      <div class="flow-box">Rao–Blackwellized<br>annealed SMC<br><span class="sub">K = 4 / 6 / 8</span></div>
-      <div class="arrow">→</div>
-      <div class="flow-box">每個 K：256 particles<br>× 4 repeats<br><span class="sub">64 stages、3 sweeps</span></div>
+  </section>
+    <section class="trace-console" aria-labelledby="trace-title">
+      <div><div class="section-kicker">追蹤模式</div><h2 id="trace-title">跟著一個物件走完整條鏈路</h2><p id="trace-status" aria-live="polite">準備開始追蹤。</p><p class="trace-context" id="trace-context" hidden></p><div class="trace-progress" role="progressbar" aria-label="追蹤進度" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0"><span></span></div></div>
+      <div class="trace-controls"><button type="button" data-trace="play">播放</button><button type="button" data-trace="previous">上一步</button><button type="button" data-trace="next">下一步</button><button type="button" data-trace="reset">重設</button><button type="button" data-failure-toggle aria-pressed="false">故障透鏡</button></div>
+    </section>
+    <div class="scenes"><section class="scene" id="scene-normal" data-scene-id="normal" aria-labelledby="scene-title-normal">
+    <header class="scene-heading"><span class="scene-number">01</span><div><h2 id="scene-title-normal">1｜先產生候選樹</h2><p>資料交給 SMC，模型同時保留多個可能的樹。</p></div></header>
+    <div class="scene-actions" aria-label="1｜先產生候選樹">
+      <button type="button" data-scene-play="normal" aria-pressed="false">局部播放</button>
+      <button type="button" data-scene-favorite="normal" aria-pressed="false">收藏</button>
+      <button type="button" data-scene-annotate="normal">新增批註</button>
+      <button type="button" data-scene-image="normal">匯出 PNG</button>
+      <span class="scene-note-count" data-scene-note-count="normal" hidden></span>
     </div>
-    <div class="callout"><strong>8 threads 的注意事項：</strong>昨天的執行脈絡設定為 8 threads；但 <code>command.json</code> 沒有保存 <code>TUMOR_TREE_INFERENCE_THREADS</code>，所以目前只能確認「曾以 8-thread 設定執行」，不能從 artifact 完整重建 thread provenance。</div>
+    <a class="evidence-ref" data-evidence-ref="run-command" href="#evidence-run-command" title="昨日 command receipt">run-command</a><a class="evidence-ref" data-evidence-ref="run-status" href="#evidence-run-status" title="昨日 run status">run-status</a>
+    <div class="diagram" data-scene-diagram="normal" role="group" aria-label="1｜先產生候選樹 圖解"></div>
+    <div class="mobile-flow" aria-label="1｜先產生候選樹 堆疊流程"><article class="flow-node kind-store" data-node-id="input" tabindex="0">
+    <p class="node-kind">儲存</p>
+    <h3>30,490 個 SNV</h3>
+    <p>ASCAT purity 0.99。</p>
+    <a class="evidence-ref" data-evidence-ref="run-command" href="#evidence-run-command" title="昨日 command receipt">run-command</a>
+    
+  </article><div class="mobile-routes" role="list" aria-label="30,490 個 SNV">
+          <div class="mobile-route" role="listitem" data-mobile-edge-id="input-sampler" data-mobile-edge-key="normal:input-sampler" data-mobile-edge-from="input" data-mobile-edge-to="sampler">
+            <span>交給模型</span><strong aria-label="30,490 個 SNV → SMC 嘗試不同樹">→ SMC 嘗試不同樹</strong>
+          </div>
+        </div><article class="flow-node kind-process" data-node-id="sampler" tabindex="0">
+    <p class="node-kind">處理</p>
+    <h3>SMC 嘗試不同樹</h3>
+    <p>K=4/6/8，各保留 256 個候選答案並重複 4 次。</p>
+    <a class="evidence-ref" data-evidence-ref="run-command" href="#evidence-run-command" title="昨日 command receipt">run-command</a>
+    
+  </article><div class="mobile-routes" role="list" aria-label="SMC 嘗試不同樹">
+          <div class="mobile-route" role="listitem" data-mobile-edge-id="sampler-output" data-mobile-edge-key="normal:sampler-output" data-mobile-edge-from="sampler" data-mobile-edge-to="output">
+            <span>留下候選</span><strong aria-label="SMC 嘗試不同樹 → 產生候選樹">→ 產生候選樹</strong>
+          </div>
+        </div><article class="flow-node kind-store" data-node-id="output" tabindex="0">
+    <p class="node-kind">儲存</p>
+    <h3>產生候選樹</h3>
+    <p>有樹、診斷檔與 _SUCCESS；這只代表流程跑完。</p>
+    <a class="evidence-ref" data-evidence-ref="run-status" href="#evidence-run-status" title="昨日 run status">run-status</a>
+    
+  </article></div>
+    <section class="scene-evidence" data-scene-evidence="normal" aria-labelledby="scene-evidence-title-normal">
+    <header class="scene-evidence-heading">
+      <div><div class="section-kicker">場景內證據</div><h3 id="scene-evidence-title-normal">這一節的結論依據</h3></div>
+      <p data-evidence-context="normal" aria-live="polite">預設顯示本節依據；播放時會聚焦目前步驟對應的來源。</p>
+    </header>
+    <div class="scene-evidence-grid"><article class="scene-evidence-card status-card-verified" id="scene-evidence-normal-run-command" data-evidence-card="run-command" data-evidence-nodes="input sampler">
+      <div class="scene-evidence-meta"><span class="status status-verified">已驗證</span><strong>昨日 command receipt</strong></div>
+      <p class="evidence-core"><span>核心依據</span>記錄 pilot、K=4/6/8、30,490 sites、ASCAT purity 0.99、256 particles、4 repeats 與 SMC；receipt 沒有保存 TUMOR_TREE_INFERENCE_THREADS。</p>
+      <p class="evidence-supports"><span>支持結論</span><strong>30,490 個 SNV</strong><strong>SMC 嘗試不同樹</strong></p>
+      <div class="evidence-source evidence-source-local"><span>本機來源</span><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/command.json</code></div>
+      <a class="evidence-audit-link" href="#evidence-run-command">查看完整證據記錄</a>
+    </article><article class="scene-evidence-card status-card-verified" id="scene-evidence-normal-run-status" data-evidence-card="run-status" data-evidence-nodes="output">
+      <div class="scene-evidence-meta"><span class="status status-verified">已驗證</span><strong>昨日 run status</strong></div>
+      <p class="evidence-core"><span>核心依據</span>run root status=success 並存在 _SUCCESS；這支持流程完成，但不代表正式驗證通過。</p>
+      <p class="evidence-supports"><span>支持結論</span><strong>產生候選樹</strong></p>
+      <div class="evidence-source evidence-source-local"><span>本機來源</span><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/status.json</code></div>
+      <a class="evidence-audit-link" href="#evidence-run-status">查看完整證據記錄</a>
+    </article></div>
   </section>
-
-  <section>
-    <h2>實際結果：跑完，但不是可信度通過</h2>
-    <div class="grid">
-      <div class="card"><div class="sub">Workflow status</div><div class="metric" style="color:var(--green)">SUCCESS</div><p>根目錄有 <code>_SUCCESS</code>，沒有 <code>_FAILED</code>；所有 K 的 4 個 repeat 都產生完整 SMC artifacts。</p></div>
-      <div class="card"><div class="sub">Inference</div><div class="metric">SMC</div><p>使用 <code>rao_blackwellized_annealed_smc</code>，不是舊 plain-MH。</p></div>
-      <div class="card"><div class="sub">Formal gate</div><div class="metric" style="color:var(--red)">未評估</div><p>每個 summary 都標示 <code>formal_gate_not_evaluated=true</code>，因此不能宣稱正式通過。</p></div>
+  </section><section class="scene" id="scene-diagnose" data-scene-id="diagnose" aria-labelledby="scene-title-diagnose">
+    <header class="scene-heading"><span class="scene-number">02</span><div><h2 id="scene-title-diagnose">2｜候選答案高度重複</h2><p>輸出存在，但模型留下的不同答案太少，導致不同 repeat 對樹的連接方式沒有共識。</p></div></header>
+    <div class="scene-actions" aria-label="2｜候選答案高度重複">
+      <button type="button" data-scene-play="diagnose" aria-pressed="false">局部播放</button>
+      <button type="button" data-scene-favorite="diagnose" aria-pressed="false">收藏</button>
+      <button type="button" data-scene-annotate="diagnose">新增批註</button>
+      <button type="button" data-scene-image="diagnose">匯出 PNG</button>
+      <span class="scene-note-count" data-scene-note-count="diagnose" hidden></span>
     </div>
+    <a class="evidence-ref" data-evidence-ref="diagnostic-k4" href="#evidence-diagnostic-k4" title="K=4 診斷">diagnostic-k4</a><a class="evidence-ref" data-evidence-ref="diagnostic-k6" href="#evidence-diagnostic-k6" title="K=6 診斷">diagnostic-k6</a><a class="evidence-ref" data-evidence-ref="diagnostic-k8" href="#evidence-diagnostic-k8" title="K=8 診斷">diagnostic-k8</a><a class="evidence-ref" data-evidence-ref="workflow-rules" href="#evidence-workflow-rules" title="目前實驗流程規則">workflow-rules</a>
+    <div class="diagram" data-scene-diagram="diagnose" role="group" aria-label="2｜候選答案高度重複 圖解"></div>
+    <div class="mobile-flow" aria-label="2｜候選答案高度重複 堆疊流程"><article class="flow-node kind-event" data-node-id="repeated" tabindex="0">
+    <p class="node-kind">事件</p>
+    <h3>答案變得太像</h3>
+    <p>白話說：很多候選樹幾乎是同一張草稿。</p>
+    <a class="evidence-ref" data-evidence-ref="diagnostic-k4" href="#evidence-diagnostic-k4" title="K=4 診斷">diagnostic-k4</a><a class="evidence-ref" data-evidence-ref="diagnostic-k6" href="#evidence-diagnostic-k6" title="K=6 診斷">diagnostic-k6</a><a class="evidence-ref" data-evidence-ref="diagnostic-k8" href="#evidence-diagnostic-k8" title="K=8 診斷">diagnostic-k8</a>
+    <button class="failure-button" type="button" data-failure-node="repeated" aria-expanded="false"><span aria-hidden="true">⚠</span> 查看故障</button>
+       <div class="failure-panel" id="failure-repeated" hidden>
+         <dl><div><dt>影響</dt><dd>模型比較不同樹的能力下降。</dd></div><div><dt>表象</dt><dd>候選多樣性很低。</dd></div><div><dt>備援</dt><dd>先改善模型探索方式。</dd></div></dl>
+       </div>
+  </article><div class="mobile-routes" role="list" aria-label="答案變得太像">
+          <div class="mobile-route" role="listitem" data-mobile-edge-id="repeated-unstable" data-mobile-edge-key="diagnose:repeated-unstable" data-mobile-edge-from="repeated" data-mobile-edge-to="unstable">
+            <span>樹邊不一致</span><strong aria-label="答案變得太像 → repeat 不同意">→ repeat 不同意</strong>
+          </div>
+        </div><article class="flow-node kind-event" data-node-id="unstable" tabindex="0">
+    <p class="node-kind">事件</p>
+    <h3>repeat 不同意</h3>
+    <p>不同 repeat 對部分樹邊的支持差很多。</p>
+    <a class="evidence-ref" data-evidence-ref="diagnostic-k4" href="#evidence-diagnostic-k4" title="K=4 診斷">diagnostic-k4</a><a class="evidence-ref" data-evidence-ref="diagnostic-k6" href="#evidence-diagnostic-k6" title="K=6 診斷">diagnostic-k6</a><a class="evidence-ref" data-evidence-ref="diagnostic-k8" href="#evidence-diagnostic-k8" title="K=8 診斷">diagnostic-k8</a>
+    <button class="failure-button" type="button" data-failure-node="unstable" aria-expanded="false"><span aria-hidden="true">⚠</span> 查看故障</button>
+       <div class="failure-panel" id="failure-unstable" hidden>
+         <dl><div><dt>影響</dt><dd>不能把一棵代表樹當成穩定答案。</dd></div><div><dt>表象</dt><dd>跨 repeat 的樹邊穩定性不足。</dd></div><div><dt>備援</dt><dd>增加拓樸探索，再重新比較樹。</dd></div></dl>
+       </div>
+  </article><div class="mobile-routes" role="list" aria-label="repeat 不同意">
+          <div class="mobile-route" role="listitem" data-mobile-edge-id="unstable-blocked" data-mobile-edge-key="diagnose:unstable-blocked" data-mobile-edge-from="unstable" data-mobile-edge-to="blocked">
+            <span>所以先暫停正式結論</span><strong aria-label="repeat 不同意 → 暫時不能正式引用">→ 暫時不能正式引用</strong>
+          </div>
+        </div><article class="flow-node kind-decision" data-node-id="blocked" tabindex="0">
+    <p class="node-kind">決策</p>
+    <h3>暫時不能正式引用</h3>
+    <p>不是程式壞掉，而是 pilot 還沒通過正式可信度檢查。</p>
+    <a class="evidence-ref" data-evidence-ref="workflow-rules" href="#evidence-workflow-rules" title="目前實驗流程規則">workflow-rules</a>
+    <button class="failure-button" type="button" data-failure-node="blocked" aria-expanded="false"><span aria-hidden="true">⚠</span> 查看故障</button>
+       <div class="failure-panel" id="failure-blocked" hidden>
+         <dl><div><dt>影響</dt><dd>不能宣稱 high-confidence tree。</dd></div><div><dt>表象</dt><dd>formal_gate_not_evaluated=true。</dd></div><div><dt>備援</dt><dd>修正後再進 formal validation。</dd></div></dl>
+       </div>
+  </article></div>
+    <section class="scene-evidence" data-scene-evidence="diagnose" aria-labelledby="scene-evidence-title-diagnose">
+    <header class="scene-evidence-heading">
+      <div><div class="section-kicker">場景內證據</div><h3 id="scene-evidence-title-diagnose">這一節的結論依據</h3></div>
+      <p data-evidence-context="diagnose" aria-live="polite">預設顯示本節依據；播放時會聚焦目前步驟對應的來源。</p>
+    </header>
+    <div class="scene-evidence-grid"><article class="scene-evidence-card status-card-verified" id="scene-evidence-diagnose-diagnostic-k4" data-evidence-card="diagnostic-k4" data-evidence-nodes="repeated unstable">
+      <div class="scene-evidence-meta"><span class="status status-verified">已驗證</span><strong>K=4 診斷</strong></div>
+      <p class="evidence-core"><span>核心依據</span>CCF stability=0.989、候選多樣性=0.0039、ESS=0.302、edge support difference=1.0。K4 的 CCF 較高，但其他指標仍顯示答案過度集中。</p>
+      <p class="evidence-supports"><span>支持結論</span><strong>答案變得太像</strong><strong>repeat 不同意</strong></p>
+      <div class="evidence-source evidence-source-local"><span>本機來源</span><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K4_seed960115502/summary.json</code></div>
+      <a class="evidence-audit-link" href="#evidence-diagnostic-k4">查看完整證據記錄</a>
+    </article><article class="scene-evidence-card status-card-verified" id="scene-evidence-diagnose-diagnostic-k6" data-evidence-card="diagnostic-k6" data-evidence-nodes="repeated unstable">
+      <div class="scene-evidence-meta"><span class="status status-verified">已驗證</span><strong>K=6 診斷</strong></div>
+      <p class="evidence-core"><span>核心依據</span>CCF stability=0.839、候選多樣性=0.0039、ESS=0.158、edge support difference=1.0。</p>
+      <p class="evidence-supports"><span>支持結論</span><strong>答案變得太像</strong><strong>repeat 不同意</strong></p>
+      <div class="evidence-source evidence-source-local"><span>本機來源</span><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K6_seed1919528150/summary.json</code></div>
+      <a class="evidence-audit-link" href="#evidence-diagnostic-k6">查看完整證據記錄</a>
+    </article><article class="scene-evidence-card status-card-verified" id="scene-evidence-diagnose-diagnostic-k8" data-evidence-card="diagnostic-k8" data-evidence-nodes="repeated unstable">
+      <div class="scene-evidence-meta"><span class="status status-verified">已驗證</span><strong>K=8 診斷</strong></div>
+      <p class="evidence-core"><span>核心依據</span>CCF stability=0.821、候選多樣性=0.0156、ESS=0.229、edge support difference=1.0。</p>
+      <p class="evidence-supports"><span>支持結論</span><strong>答案變得太像</strong><strong>repeat 不同意</strong></p>
+      <div class="evidence-source evidence-source-local"><span>本機來源</span><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K8_seed1203086123/summary.json</code></div>
+      <a class="evidence-audit-link" href="#evidence-diagnostic-k8">查看完整證據記錄</a>
+    </article><article class="scene-evidence-card status-card-verified" id="scene-evidence-diagnose-workflow-rules" data-evidence-card="workflow-rules" data-evidence-nodes="blocked">
+      <div class="scene-evidence-meta"><span class="status status-verified">已驗證</span><strong>目前實驗流程規則</strong></div>
+      <p class="evidence-core"><span>核心依據</span>experiment_workflow.md 區分 pilot workflow success 與 formal validation，並要求新的 v4 synthetic recovery gate 與 clean Git SHA。</p>
+      <p class="evidence-supports"><span>支持結論</span><strong>暫時不能正式引用</strong></p>
+      <div class="evidence-source evidence-source-local"><span>本機來源</span><code>/bip8_disk/boyu114/main_work/experiment_workflow.md</code></div>
+      <a class="evidence-audit-link" href="#evidence-workflow-rules">查看完整證據記錄</a>
+    </article></div>
   </section>
-
-  <section>
-    <h2>各 K 的診斷摘要</h2>
-    <p class="sub">主要門檻：CCF stability ≥ 0.90、conditional ESS ≥ 0.50、particle diversity ≥ 0.25、predictive coverage ≥ 0.85、edge support difference ≤ 0.10。</p>
-    <table>
-      <thead><tr><th>K</th><th>CCF stability</th><th>min ESS</th><th>min particle diversity</th><th>predictive coverage</th><th>判讀</th></tr></thead>
-      <tbody>
-        <tr><td><strong>4</strong></td><td>0.989<br><div class="bar"><i style="width:99%"></i></div></td><td>0.302<br><div class="bar"><i class="bad" style="width:60%"></i></div></td><td>0.0039<br><div class="bar"><i class="bad" style="width:2%"></i></div></td><td>0.714–0.745</td><td><span class="tag warn">線性候選，但粒子退化</span></td></tr>
-        <tr><td><strong>6</strong></td><td>0.839<br><div class="bar"><i class="bad" style="width:84%"></i></div></td><td>0.158<br><div class="bar"><i class="bad" style="width:32%"></i></div></td><td>0.0039<br><div class="bar"><i class="bad" style="width:2%"></i></div></td><td>0.715–0.741</td><td><span class="tag fail">穩定度不足</span></td></tr>
-        <tr><td><strong>8</strong></td><td>0.821<br><div class="bar"><i class="bad" style="width:82%"></i></div></td><td>0.229<br><div class="bar"><i class="bad" style="width:46%"></i></div></td><td>0.0156<br><div class="bar"><i class="bad" style="width:6%"></i></div></td><td>0.701–0.744</td><td><span class="tag fail">分支候選不穩定</span></td></tr>
-      </tbody>
-    </table>
-    <div class="callout red"><strong>共同問題：</strong>三個 K 的 <code>max_edge_support_difference=1.0</code> 都高於 0.10；表示不同 repeat 對樹邊的支持不一致。這不是「沒有輸出樹」，而是「目前還無法信任某一顆樹是穩定答案」。</div>
-  </section>
-
-  <section>
-    <h2>目前失敗的原因</h2>
-    <div class="grid">
-      <div class="card"><h3>1｜SMC 粒子退化</h3><p>resampling 後大量 particles 變成相同或近似狀態：K4/K6 的最低 diversity 只有 0.0039，K8 也只有 0.0156。</p></div>
-      <div class="card"><h3>2｜拓樸探索不充分</h3><p>topology acceptance 約 0.013–0.319，且 edge support difference = 1.0；不同 repeat 找到的樹邊不一致。</p></div>
-      <div class="card"><h3>3｜K 增加後混合更差</h3><p>K6/K8 的 CCF stability 降到 0.839/0.821，min ESS 也低於 0.50，顯示較複雜的樹空間目前探索不足。</p></div>
-      <div class="card"><h3>4｜8 threads 不是統計修正</h3><p>threads 只影響計算速度與平行化，不會自動改善 SMC 的 proposal、resampling 或 posterior mixing；目前沒有證據說 8 threads 是失敗原因。</p></div>
-      <div class="card"><h3>5｜驗證層尚未完成</h3><p>這是 <code>mode=pilot</code>、<code>holdout=none</code>；formal gate 沒有執行，不能把 pilot 的 <code>_SUCCESS</code> 當成 biological validation PASS。</p></div>
-      <div class="card"><h3>6｜Provenance 不完整</h3><p>run 允許 dirty worktree，且 command receipt 沒保存 thread env；因此即使結果存在，也還不能算完整可重現的正式紀錄。</p></div>
+  </section><section class="scene" id="scene-recover" data-scene-id="recover" aria-labelledby="scene-title-recover">
+    <header class="scene-heading"><span class="scene-number">03</span><div><h2 id="scene-title-recover">3｜修正後再驗證</h2><p>兩件事平行處理：改善模型探索，補齊執行紀錄；完成前置條件後才重跑正式驗證。</p></div></header>
+    <div class="scene-actions" aria-label="3｜修正後再驗證">
+      <button type="button" data-scene-play="recover" aria-pressed="false">局部播放</button>
+      <button type="button" data-scene-favorite="recover" aria-pressed="false">收藏</button>
+      <button type="button" data-scene-annotate="recover">新增批註</button>
+      <button type="button" data-scene-image="recover">匯出 PNG</button>
+      <span class="scene-note-count" data-scene-note-count="recover" hidden></span>
     </div>
+    <a class="evidence-ref" data-evidence-ref="run-command" href="#evidence-run-command" title="昨日 command receipt">run-command</a><a class="evidence-ref" data-evidence-ref="workflow-rules" href="#evidence-workflow-rules" title="目前實驗流程規則">workflow-rules</a><a class="evidence-ref" data-evidence-ref="inferred-explanation" href="#evidence-inferred-explanation" title="失敗原因的整合推論">inferred-explanation</a>
+    <div class="diagram" data-scene-diagram="recover" role="group" aria-label="3｜修正後再驗證 圖解"></div>
+    <div class="mobile-flow" aria-label="3｜修正後再驗證 堆疊流程"><article class="flow-node kind-process" data-node-id="explore" tabindex="0">
+    <p class="node-kind">處理</p>
+    <h3>改善模型探索</h3>
+    <p>讓模型保留更多不同的樹與分支可能。</p>
+    <a class="evidence-ref" data-evidence-ref="inferred-explanation" href="#evidence-inferred-explanation" title="失敗原因的整合推論">inferred-explanation</a>
+    <button class="failure-button" type="button" data-failure-node="explore" aria-expanded="false"><span aria-hidden="true">⚠</span> 查看故障</button>
+       <div class="failure-panel" id="failure-explore" hidden>
+         <dl><div><dt>影響</dt><dd>樹邊仍會不穩。</dd></div><div><dt>表象</dt><dd>候選多樣性沒有改善。</dd></div><div><dt>備援</dt><dd>回到小型資料做 sampler diagnostic。</dd></div></dl>
+       </div>
+  </article><div class="mobile-routes" role="list" aria-label="改善模型探索">
+          <div class="mobile-route" role="listitem" data-mobile-edge-id="explore-formal" data-mobile-edge-key="recover:explore-formal" data-mobile-edge-from="explore" data-mobile-edge-to="formal">
+            <span>診斷達標</span><strong aria-label="改善模型探索 → 重新做正式驗證">→ 重新做正式驗證</strong>
+          </div>
+        </div><article class="flow-node kind-process" data-node-id="record" tabindex="0">
+    <p class="node-kind">處理</p>
+    <h3>補齊執行紀錄</h3>
+    <p>保存 8 threads 與 clean Git SHA；threads 只影響分工速度，不會自動修好探索。</p>
+    <a class="evidence-ref" data-evidence-ref="run-command" href="#evidence-run-command" title="昨日 command receipt">run-command</a><a class="evidence-ref" data-evidence-ref="workflow-rules" href="#evidence-workflow-rules" title="目前實驗流程規則">workflow-rules</a>
+    
+  </article><div class="mobile-routes" role="list" aria-label="補齊執行紀錄">
+          <div class="mobile-route" role="listitem" data-mobile-edge-id="record-formal" data-mobile-edge-key="recover:record-formal" data-mobile-edge-from="record" data-mobile-edge-to="formal">
+            <span>條件可追溯</span><strong aria-label="補齊執行紀錄 → 重新做正式驗證">→ 重新做正式驗證</strong>
+          </div>
+        </div><article class="flow-node kind-event" data-node-id="formal" tabindex="0">
+    <p class="node-kind">事件</p>
+    <h3>重新做正式驗證</h3>
+    <p>完成 v4 synthetic recovery gate 與前置檢查後，才進 formal validation。</p>
+    <a class="evidence-ref" data-evidence-ref="workflow-rules" href="#evidence-workflow-rules" title="目前實驗流程規則">workflow-rules</a>
+    
+  </article></div>
+    <section class="scene-evidence" data-scene-evidence="recover" aria-labelledby="scene-evidence-title-recover">
+    <header class="scene-evidence-heading">
+      <div><div class="section-kicker">場景內證據</div><h3 id="scene-evidence-title-recover">這一節的結論依據</h3></div>
+      <p data-evidence-context="recover" aria-live="polite">預設顯示本節依據；播放時會聚焦目前步驟對應的來源。</p>
+    </header>
+    <div class="scene-evidence-grid"><article class="scene-evidence-card status-card-verified" id="scene-evidence-recover-run-command" data-evidence-card="run-command" data-evidence-nodes="record">
+      <div class="scene-evidence-meta"><span class="status status-verified">已驗證</span><strong>昨日 command receipt</strong></div>
+      <p class="evidence-core"><span>核心依據</span>記錄 pilot、K=4/6/8、30,490 sites、ASCAT purity 0.99、256 particles、4 repeats 與 SMC；receipt 沒有保存 TUMOR_TREE_INFERENCE_THREADS。</p>
+      <p class="evidence-supports"><span>支持結論</span><strong>補齊執行紀錄</strong></p>
+      <div class="evidence-source evidence-source-local"><span>本機來源</span><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/command.json</code></div>
+      <a class="evidence-audit-link" href="#evidence-run-command">查看完整證據記錄</a>
+    </article><article class="scene-evidence-card status-card-verified" id="scene-evidence-recover-workflow-rules" data-evidence-card="workflow-rules" data-evidence-nodes="record formal">
+      <div class="scene-evidence-meta"><span class="status status-verified">已驗證</span><strong>目前實驗流程規則</strong></div>
+      <p class="evidence-core"><span>核心依據</span>experiment_workflow.md 區分 pilot workflow success 與 formal validation，並要求新的 v4 synthetic recovery gate 與 clean Git SHA。</p>
+      <p class="evidence-supports"><span>支持結論</span><strong>補齊執行紀錄</strong><strong>重新做正式驗證</strong></p>
+      <div class="evidence-source evidence-source-local"><span>本機來源</span><code>/bip8_disk/boyu114/main_work/experiment_workflow.md</code></div>
+      <a class="evidence-audit-link" href="#evidence-workflow-rules">查看完整證據記錄</a>
+    </article><article class="scene-evidence-card status-card-inferred" id="scene-evidence-recover-inferred-explanation" data-evidence-card="inferred-explanation" data-evidence-nodes="explore">
+      <div class="scene-evidence-meta"><span class="status status-inferred">推論</span><strong>失敗原因的整合推論</strong></div>
+      <p class="evidence-core"><span>核心依據</span>由低候選多樣性、低 ESS 與高 edge support difference 一起推論：模型沒有充分探索不同樹；這不是 workflow runtime crash。</p>
+      <p class="evidence-supports"><span>支持結論</span><strong>改善模型探索</strong></p>
+      <p class="evidence-boundary">這是教學類比或跨來源歸納，沒有外部定位連結。</p>
+      <a class="evidence-audit-link" href="#evidence-inferred-explanation">查看完整證據記錄</a>
+    </article></div>
   </section>
+  </section></div>
+    <section class="reference-grid">
+      <div><div class="section-kicker">術語表</div><h2>值得記住的詞</h2><dl class="glossary"><div><dt>候選樹</dt><dd>模型暫時保留的一種可能腫瘤演化樹。</dd></div><div><dt>ESS</dt><dd>考慮權重與樣本相似性後，這批候選大約還剩多少有效資訊；低 ESS 表示有效資訊量少。</dd></div><div><dt>8 threads</dt><dd>同時分擔計算工作的數量，主要影響速度，不會直接修正模型探索。</dd></div></dl></div>
+      <div><div class="section-kicker">證據地圖</div><h2>每個結論依據什麼</h2><ol class="evidence-list"><li id="evidence-run-status"><span class="status status-verified">已驗證</span><strong>昨日 run status</strong><p>run root status=success 並存在 _SUCCESS；這支持流程完成，但不代表正式驗證通過。</p><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/status.json</code></li><li id="evidence-run-command"><span class="status status-verified">已驗證</span><strong>昨日 command receipt</strong><p>記錄 pilot、K=4/6/8、30,490 sites、ASCAT purity 0.99、256 particles、4 repeats 與 SMC；receipt 沒有保存 TUMOR_TREE_INFERENCE_THREADS。</p><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/command.json</code></li><li id="evidence-diagnostic-k4"><span class="status status-verified">已驗證</span><strong>K=4 診斷</strong><p>CCF stability=0.989、候選多樣性=0.0039、ESS=0.302、edge support difference=1.0。K4 的 CCF 較高，但其他指標仍顯示答案過度集中。</p><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K4_seed960115502/summary.json</code></li><li id="evidence-diagnostic-k6"><span class="status status-verified">已驗證</span><strong>K=6 診斷</strong><p>CCF stability=0.839、候選多樣性=0.0039、ESS=0.158、edge support difference=1.0。</p><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K6_seed1919528150/summary.json</code></li><li id="evidence-diagnostic-k8"><span class="status status-verified">已驗證</span><strong>K=8 診斷</strong><p>CCF stability=0.821、候選多樣性=0.0156、ESS=0.229、edge support difference=1.0。</p><code>/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K8_seed1203086123/summary.json</code></li><li id="evidence-workflow-rules"><span class="status status-verified">已驗證</span><strong>目前實驗流程規則</strong><p>experiment_workflow.md 區分 pilot workflow success 與 formal validation，並要求新的 v4 synthetic recovery gate 與 clean Git SHA。</p><code>/bip8_disk/boyu114/main_work/experiment_workflow.md</code></li><li id="evidence-inferred-explanation"><span class="status status-inferred">推論</span><strong>失敗原因的整合推論</strong><p>由低候選多樣性、低 ESS 與高 edge support difference 一起推論：模型沒有充分探索不同樹；這不是 workflow runtime crash。</p></li></ol></div>
+    </section>
+    <section class="teach-back" aria-labelledby="teach-title"><div class="section-kicker">複述檢驗</div><h2 id="teach-title">現在能用自己的話講清楚嗎？</h2>
+      <article><h3>這次是不是完全跑壞了？</h3><button type="button" class="reveal" aria-expanded="false" aria-controls="answer-0">查看答案</button><p id="answer-0" hidden>不是。流程完成並產生樹，但候選答案太像、repeat 對樹邊沒有共識，所以還不能正式引用。</p></article><article><h3>下一步最重要的是什麼？</h3><button type="button" class="reveal" aria-expanded="false" aria-controls="answer-1">查看答案</button><p id="answer-1" hidden>先讓模型真的探索更多不同的樹，再補齊執行紀錄與 synthetic recovery gate，最後才跑 formal validation。</p></article>
+    </section>
+  </main>
+	  <script id="eli5-data" type="application/json">{"evidence":[{"id":"run-status","label":"昨日 run status","note":"run root status=success 並存在 _SUCCESS；這支持流程完成，但不代表正式驗證通過。","path":"/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/status.json","status":"verified"},{"id":"run-command","label":"昨日 command receipt","note":"記錄 pilot、K=4/6/8、30,490 sites、ASCAT purity 0.99、256 particles、4 repeats 與 SMC；receipt 沒有保存 TUMOR_TREE_INFERENCE_THREADS。","path":"/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/command.json","status":"verified"},{"id":"diagnostic-k4","label":"K=4 診斷","note":"CCF stability=0.989、候選多樣性=0.0039、ESS=0.302、edge support difference=1.0。K4 的 CCF 較高，但其他指標仍顯示答案過度集中。","path":"/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K4_seed960115502/summary.json","status":"verified"},{"id":"diagnostic-k6","label":"K=6 診斷","note":"CCF stability=0.839、候選多樣性=0.0039、ESS=0.158、edge support difference=1.0。","path":"/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K6_seed1919528150/summary.json","status":"verified"},{"id":"diagnostic-k8","label":"K=8 診斷","note":"CCF stability=0.821、候選多樣性=0.0156、ESS=0.229、edge support difference=1.0。","path":"/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K8_seed1203086123/summary.json","status":"verified"},{"id":"workflow-rules","label":"目前實驗流程規則","note":"experiment_workflow.md 區分 pilot workflow success 與 formal validation，並要求新的 v4 synthetic recovery gate 與 clean Git SHA。","path":"/bip8_disk/boyu114/main_work/experiment_workflow.md","status":"verified"},{"id":"inferred-explanation","label":"失敗原因的整合推論","note":"由低候選多樣性、低 ESS 與高 edge support difference 一起推論：模型沒有充分探索不同樹；這不是 workflow runtime crash。","status":"inferred"}],"glossary":[{"definition":"模型暫時保留的一種可能腫瘤演化樹。","term":"候選樹"},{"definition":"考慮權重與樣本相似性後，這批候選大約還剩多少有效資訊；低 ESS 表示有效資訊量少。","term":"ESS"},{"definition":"同時分擔計算工作的數量，主要影響速度，不會直接修正模型探索。","term":"8 threads"}],"language":"zh-TW","mode":"incident","modeData":{"breakNodeId":"repeated","normalSceneId":"normal","recoveryNodeIds":["explore","record","formal"],"rootCauseEvidenceIds":["inferred-explanation","diagnostic-k4","diagnostic-k6","diagnostic-k8"],"timeline":[{"label":"資料進入模型","marker":"T+0","nodeId":"input"},{"label":"模型嘗試不同樹","marker":"T+1","nodeId":"sampler"},{"label":"流程產生輸出","marker":"T+2","nodeId":"output"},{"label":"候選答案高度重複","marker":"T+3","nodeId":"repeated"},{"label":"不同 repeat 的樹邊不一致","marker":"T+4","nodeId":"unstable"},{"label":"暫時不能當正式答案","marker":"T+5","nodeId":"blocked"},{"label":"改善模型探索","marker":"T+6","nodeId":"explore"},{"label":"補齊執行紀錄","marker":"T+7","nodeId":"record"},{"label":"再做正式驗證","marker":"T+8","nodeId":"formal"}]},"scenes":[{"edges":[{"from":"input","id":"input-sampler","label":"交給模型","to":"sampler"},{"from":"sampler","id":"sampler-output","label":"留下候選","to":"output"}],"evidence":["run-command","run-status"],"id":"normal","nodes":[{"detail":"ASCAT purity 0.99。","evidence":["run-command"],"id":"input","kind":"store","label":"30,490 個 SNV"},{"detail":"K=4/6/8，各保留 256 個候選答案並重複 4 次。","evidence":["run-command"],"id":"sampler","kind":"process","label":"SMC 嘗試不同樹"},{"detail":"有樹、診斷檔與 _SUCCESS；這只代表流程跑完。","evidence":["run-status"],"id":"output","kind":"store","label":"產生候選樹"}],"summary":"資料交給 SMC，模型同時保留多個可能的樹。","title":"1｜先產生候選樹"},{"edges":[{"from":"repeated","id":"repeated-unstable","label":"樹邊不一致","to":"unstable"},{"from":"unstable","id":"unstable-blocked","label":"所以先暫停正式結論","to":"blocked"}],"evidence":["diagnostic-k4","diagnostic-k6","diagnostic-k8","workflow-rules"],"id":"diagnose","nodes":[{"detail":"白話說：很多候選樹幾乎是同一張草稿。","evidence":["diagnostic-k4","diagnostic-k6","diagnostic-k8"],"failure":{"fallback":"先改善模型探索方式。","impact":"模型比較不同樹的能力下降。","symptom":"候選多樣性很低。"},"id":"repeated","kind":"event","label":"答案變得太像"},{"detail":"不同 repeat 對部分樹邊的支持差很多。","evidence":["diagnostic-k4","diagnostic-k6","diagnostic-k8"],"failure":{"fallback":"增加拓樸探索，再重新比較樹。","impact":"不能把一棵代表樹當成穩定答案。","symptom":"跨 repeat 的樹邊穩定性不足。"},"id":"unstable","kind":"event","label":"repeat 不同意"},{"detail":"不是程式壞掉，而是 pilot 還沒通過正式可信度檢查。","evidence":["workflow-rules"],"failure":{"fallback":"修正後再進 formal validation。","impact":"不能宣稱 high-confidence tree。","symptom":"formal_gate_not_evaluated=true。"},"id":"blocked","kind":"decision","label":"暫時不能正式引用"}],"summary":"輸出存在，但模型留下的不同答案太少，導致不同 repeat 對樹的連接方式沒有共識。","title":"2｜候選答案高度重複"},{"edges":[{"from":"explore","id":"explore-formal","label":"診斷達標","to":"formal"},{"from":"record","id":"record-formal","label":"條件可追溯","to":"formal"}],"evidence":["run-command","workflow-rules","inferred-explanation"],"id":"recover","nodes":[{"detail":"讓模型保留更多不同的樹與分支可能。","evidence":["inferred-explanation"],"failure":{"fallback":"回到小型資料做 sampler diagnostic。","impact":"樹邊仍會不穩。","symptom":"候選多樣性沒有改善。"},"id":"explore","kind":"process","label":"改善模型探索"},{"detail":"保存 8 threads 與 clean Git SHA；threads 只影響分工速度，不會自動修好探索。","evidence":["run-command","workflow-rules"],"id":"record","kind":"process","label":"補齊執行紀錄"},{"detail":"完成 v4 synthetic recovery gate 與前置檢查後，才進 formal validation。","evidence":["workflow-rules"],"id":"formal","kind":"event","label":"重新做正式驗證"}],"summary":"兩件事平行處理：改善模型探索，補齊執行紀錄；完成前置條件後才重跑正式驗證。","title":"3｜修正後再驗證"}],"summary":"主流程只有三步：先產生候選樹，再看出候選答案高度重複，最後改善探索並重新做正式驗證。","teachBack":[{"answer":"不是。流程完成並產生樹，但候選答案太像、repeat 對樹邊沒有共識，所以還不能正式引用。","question":"這次是不是完全跑壞了？"},{"answer":"先讓模型真的探索更多不同的樹，再補齊執行紀錄與 synthetic recovery gate，最後才跑 formal validation。","question":"下一步最重要的是什麼？"}],"title":"8-thread 實驗：跑完了，但為什麼樹還不能相信？","trace":[{"label":"資料進入模型","nodeId":"input"},{"label":"模型嘗試不同樹","nodeId":"sampler"},{"label":"流程產生輸出","nodeId":"output"},{"label":"候選答案高度重複","nodeId":"repeated"},{"label":"repeat 的樹邊不一致","nodeId":"unstable"},{"label":"暫時不能正式引用","nodeId":"blocked"},{"label":"改善模型探索","nodeId":"explore"},{"label":"補齊執行紀錄","nodeId":"record"},{"label":"重新做正式驗證","nodeId":"formal"}],"truthLadder":{"analogy":"想像很多人一起畫腫瘤樹；如果最後大家拿到的草稿都很像，就表示沒有充分比較其他畫法。","caveat":"這次是 pilot、holdout=none，formal gate 尚未評估；可以確認流程完成，不能把任一棵樹稱為正式高可信度答案。","technical":"SMC pilot 有完整輸出，但 K4/K6/K8 的有效資訊量、候選多樣性與跨 repeat 樹邊穩定性不足。"},"version":1}</script>
+	  <script id="eli5-ui" type="application/json">{"mode":{"concept":"概念","module":"模組","tradeoff":"權衡","incident":"故障"},"kind":{"actor":"參與者","process":"處理","store":"儲存","decision":"決策","event":"事件"},"status":{"verified":"已驗證","inferred":"推論","analogy":"類比"},"truthKicker":"事實階梯","truthTitle":"先說白話，再把事實講到底。","depthLabel":"解釋層級","analogy":"類比","technical":"技術事實","caveat":"邊界與限制","traceKicker":"追蹤模式","traceTitle":"跟著一個物件走完整條鏈路","ready":"準備開始追蹤。","step":"步驟","of":"/","play":"播放","pause":"暫停","previous":"上一步","next":"下一步","reset":"重設","failureLens":"故障透鏡","inspectFailure":"查看故障","workspace":{"menu":"目錄","close":"關閉","title":"講解資料庫","favorites":"我的收藏","noFavorites":"還沒有收藏內容。","enableLibrary":"啟用本機資料庫","enableLibraryDetail":"啟用後，目前站點開啟過的講解、收藏和批註會保存在這個瀏覽器中。","contents":"本頁目錄","history":"開啟歷史","annotations":"批註瀏覽","favoriteDocument":"收藏本文","favoritedDocument":"本文已收藏","playScene":"局部播放","pauseScene":"暫停局部播放","favoriteScene":"收藏","favoritedScene":"已收藏","annotate":"新增批註","current":"目前頁面","noHistory":"還沒有以前開啟過的講解。","noAnnotations":"還沒有批註。","annotationScene":"批註位置","annotationPlaceholder":"寫下對這一節的理解、疑問或補充。","saveAnnotation":"儲存批註","cancelEdit":"取消編輯","edit":"編輯","remove":"刪除","exportTitle":"一鍵匯出","exportPdf":"列印 / 匯出 PDF","exportPptx":"全部場景匯出 PPTX","exportImage":"目前場景匯出 PNG","exportDocx":"Pages 可開啟（DOCX）","exportPages":"匯出原生 Pages（.pages）","exportSceneImage":"匯出 PNG","exporting":"正在產生匯出檔案…","pagesConverting":"正在透過本機 Pages Helper 轉換…","pagesUnavailable":"原生 Pages 匯出需要在已安裝 Pages 的 Mac 上透過隨附的本機 Helper 開啟此檔案；DOCX 匯出仍可使用。","pagesBusy":"Pages 正在轉換另一個檔案。完成後可重試；DOCX 匯出仍可使用。","pagesTimedOut":"瀏覽器已停止等待，但 Pages 可能仍在本機收尾。可等它關閉後重試，或直接匯出 DOCX。","pagesFailed":"原生 Pages 轉換已安全失敗，沒有冒充產生檔案；可改用 DOCX，或重新執行 Helper 後再試。","exportReady":"檔案已產生：","exportFailed":"目前瀏覽器未能完成匯出。","storageLocal":"收藏、歷史和批註只保存在本瀏覽器的目前站點，不會同步或寫回 HTML。","storageUnavailable":"瀏覽器持久化儲存不可用；本次修改只在目前分頁有效。","libraryLimit":"本機資料庫已達上限，請先刪除一則收藏或批註再繼續新增。","opened":"開啟於","noteCount":"則批註"},"impact":"影響","symptom":"表象","fallback":"備援","diagramSuffix":"圖解","stackedFlowSuffix":"堆疊流程","glossaryKicker":"術語表","glossaryTitle":"值得記住的詞","evidenceKicker":"證據地圖","evidenceTitle":"每個結論依據什麼","sceneEvidenceKicker":"場景內證據","sceneEvidenceTitle":"這一節的結論依據","sceneEvidenceDefault":"預設顯示本節依據；播放時會聚焦目前步驟對應的來源。","sceneEvidenceCurrent":"目前步驟依據","evidenceCore":"核心依據","openSource":"開啟原文","localSource":"本機來源","fullEvidence":"查看完整證據記錄","supports":"支持結論","noSourceLocator":"這是教學類比或跨來源歸納，沒有外部定位連結。","traceProgress":"追蹤進度","teachKicker":"複述檢驗","teachTitle":"現在能用自己的話講清楚嗎？","reveal":"查看答案","hide":"收起答案","grammarKicker":"故事語法","conceptMapTitle":"直覺 → 機制 → 邊界","intuition":"直覺","mechanism":"機制","boundary":"邊界","moduleMapTitle":"模組契約","entry":"入口","outputs":"輸出","sourceAnchors":"原始碼錨點","tradeoffMapTitle":"決策框架","sharedGoal":"共同目標","decisionRule":"決策規則","incidentMapTitle":"故障時間線","firstBreak":"首次斷點","recovery":"恢復","rootCauseEvidence":"根因證據","fit":{"strong":"強匹配","mixed":"部分匹配","weak":"弱匹配","depends":"視情況"}}</script>
+	  <script>
+  "use strict";
+  (() => {
+	    const dataNode = document.getElementById("eli5-data");
+	    const spec = JSON.parse(dataNode.textContent);
+	    const ui = JSON.parse(document.getElementById("eli5-ui").textContent);
+    const ns = "http://www.w3.org/2000/svg";
+    const makeSvg = (name, attrs = {}, text = "") => {
+      const el = document.createElementNS(ns, name);
+      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, String(value)));
+      if (text) el.textContent = text;
+      return el;
+    };
+    const measureContext = document.createElement("canvas").getContext("2d");
+    const measuredWidth = (text, font) => {
+      if (!measureContext) return Array.from(text).length * 7;
+      measureContext.font = font;
+      return measureContext.measureText(text).width;
+    };
+    const wrap = (text, maxWidth, lines, font) => {
+      const out = [];
+      let current = "";
+      for (const character of Array.from(text)) {
+        const next = current + character;
+        if (measuredWidth(next, font) <= maxWidth || !current) {
+          current = next;
+          continue;
+        }
+        const breakAt = current.lastIndexOf(" ");
+        if (breakAt > 0) {
+          out.push(current.slice(0, breakAt).trimEnd());
+          current = `${current.slice(breakAt + 1)}${character}`.trimStart();
+        } else {
+          out.push(current);
+          current = character;
+        }
+      }
+      if (current.trim()) out.push(current.trim());
+      if (out.length > lines) {
+        out.length = lines;
+        let last = out[lines - 1];
+        while (last && measuredWidth(`${last}…`, font) > maxWidth) last = Array.from(last).slice(0, -1).join("");
+        out[lines - 1] = `${last.trimEnd()}…`;
+      }
+      return out;
+    };
+    const addText = (group, x, y, text, className, maxWidth, lines, font) => {
+      const element = makeSvg("text", { x, y, class: className });
+      wrap(text, maxWidth, lines, font).forEach((line, i) => {
+        const span = makeSvg("tspan", { x, dy: i ? 17 : 0 }, line);
+        element.append(span);
+      });
+      group.append(element);
+    };
+    const inspectFailure = (node) => {
+      if (!node.failure) return;
+      let reader = document.getElementById("failure-reader");
+      if (!reader) {
+        reader = document.createElement("aside");
+        reader.id = "failure-reader";
+        reader.className = "failure-reader";
+        reader.setAttribute("aria-live", "polite");
+        document.querySelector(".trace-console").append(reader);
+      }
+      reader.replaceChildren();
+      const title = document.createElement("strong");
+	      title.textContent = `${node.label} — ${ui.failureLens}`;
+	      const body = document.createElement("p");
+	      body.textContent = `${ui.impact}: ${node.failure.impact} · ${ui.symptom}: ${node.failure.symptom} · ${ui.fallback}: ${node.failure.fallback}`;
+      reader.append(title, body);
+    };
+    const boxesOverlap = (a, b, pad = 5) => a.x < b.x + b.width + pad && a.x + a.width + pad > b.x && a.y < b.y + b.height + pad && a.y + a.height + pad > b.y;
+    const routeSegments = (points) => points.slice(0, -1).map((point, index) => ({ x1: point.x, y1: point.y, x2: points[index + 1].x, y2: points[index + 1].y })).filter((segment) => segment.x1 !== segment.x2 || segment.y1 !== segment.y2);
+    const segmentLength = (segment) => Math.abs(segment.x2 - segment.x1) + Math.abs(segment.y2 - segment.y1);
+    const segmentHitsBox = (segment, box, pad = 0) => {
+      const left = box.x - pad, right = box.x + box.width + pad, top = box.y - pad, bottom = box.y + box.height + pad;
+      const dx = segment.x2 - segment.x1, dy = segment.y2 - segment.y1;
+      let near = 0, far = 1;
+      for (const [p, q] of [[-dx, segment.x1 - left], [dx, right - segment.x1], [-dy, segment.y1 - top], [dy, bottom - segment.y1]]) {
+        if (p === 0) {
+          if (q < 0) return false;
+          continue;
+        }
+        const ratio = q / p;
+        if (p < 0) near = Math.max(near, ratio);
+        else far = Math.min(far, ratio);
+        if (near > far) return false;
+      }
+      return true;
+    };
+    const collinearOverlap = (first, second) => {
+      if (first.y1 === first.y2 && second.y1 === second.y2 && first.y1 === second.y1) {
+        return Math.min(Math.max(first.x1, first.x2), Math.max(second.x1, second.x2)) - Math.max(Math.min(first.x1, first.x2), Math.min(second.x1, second.x2));
+      }
+      if (first.x1 === first.x2 && second.x1 === second.x2 && first.x1 === second.x1) {
+        return Math.min(Math.max(first.y1, first.y2), Math.max(second.y1, second.y2)) - Math.max(Math.min(first.y1, first.y2), Math.min(second.y1, second.y2));
+      }
+      return 0;
+    };
+    const perpendicularCross = (first, second, clearance = 1) => {
+      const firstHorizontal = first.y1 === first.y2;
+      const firstVertical = first.x1 === first.x2;
+      const secondHorizontal = second.y1 === second.y2;
+      const secondVertical = second.x1 === second.x2;
+      if (!(firstHorizontal && secondVertical) && !(firstVertical && secondHorizontal)) return false;
+      const horizontal = firstHorizontal ? first : second;
+      const vertical = firstVertical ? first : second;
+      const within = (value, start, end) => value > Math.min(start, end) + clearance && value < Math.max(start, end) - clearance;
+      return within(vertical.x1, horizontal.x1, horizontal.x2) && within(horizontal.y1, vertical.y1, vertical.y2);
+    };
+    const routePath = (points) => points.map((point, index) => `${index ? "L" : "M"}${point.x} ${point.y}`).join(" ");
+    spec.scenes.forEach((scene) => {
+      const host = document.querySelector(`[data-scene-diagram="${scene.id}"]`);
+      const width = 1040, nodeWidth = 260, nodeHeight = 164, columns = Math.min(3, scene.nodes.length);
+      const gap = (width - nodeWidth * columns) / Math.max(1, columns - 1);
+      const rows = Math.ceil(scene.nodes.length / columns);
+      const grid = new Map(scene.nodes.map((node, index) => [node.id, { row: Math.floor(index / columns), column: index % columns }]));
+      const isLongSameRow = (edge) => {
+        const from = grid.get(edge.from), to = grid.get(edge.to);
+        return from.row === to.row && Math.abs(from.column - to.column) > 1;
+      };
+      const longSide = (edge) => {
+        const from = grid.get(edge.from), to = grid.get(edge.to);
+        const forward = to.column >= from.column;
+        if (rows === 1) return forward ? "top" : "bottom";
+        if (from.row === 0) return forward ? "top" : "bottom";
+        return forward ? "bottom" : "top";
+      };
+      const topLongCount = scene.edges.filter((edge) => isLongSameRow(edge) && grid.get(edge.from).row === 0 && longSide(edge) === "top").length;
+      const bottomLongCount = scene.edges.filter((edge) => isLongSameRow(edge) && grid.get(edge.from).row === rows - 1 && longSide(edge) === "bottom").length;
+      const internalLongCount = scene.edges.filter((edge) => isLongSameRow(edge) && !(
+        (grid.get(edge.from).row === 0 && longSide(edge) === "top")
+        || (grid.get(edge.from).row === rows - 1 && longSide(edge) === "bottom")
+      )).length;
+      const internalBottomCount = scene.edges.filter((edge) => isLongSameRow(edge) && grid.get(edge.from).row < rows - 1 && longSide(edge) === "bottom").length;
+      const internalTopCount = scene.edges.filter((edge) => isLongSameRow(edge) && grid.get(edge.from).row > 0 && longSide(edge) === "top").length;
+      const diagonalEdges = scene.edges.filter((edge) => {
+        const from = grid.get(edge.from), to = grid.get(edge.to);
+        return from.row !== to.row && from.column !== to.column;
+      }).sort((a, b) => a.id.localeCompare(b.id));
+      const corridorHeight = rows > 1 ? Math.max(104, 76 + (diagonalEdges.length + internalLongCount) * 40) : 0;
+      const topMargin = topLongCount ? 74 + Math.max(0, topLongCount - 1) * 44 : 62;
+      const bottomMargin = bottomLongCount ? 74 + Math.max(0, bottomLongCount - 1) * 44 : 62;
+      const positions = new Map(scene.nodes.map((node, index) => {
+        const cell = grid.get(node.id);
+        return [node.id, { x: cell.column * (nodeWidth + gap), y: topMargin + cell.row * (nodeHeight + corridorHeight), ...cell }];
+      }));
+      const lastRowY = topMargin + (rows - 1) * (nodeHeight + corridorHeight);
+      const height = lastRowY + nodeHeight + bottomMargin;
+      const svg = makeSvg("svg", { viewBox: `0 0 ${width} ${height}`, role: "group", "aria-label": scene.title });
+      const defs = makeSvg("defs");
+      const marker = makeSvg("marker", { id: `arrow-${scene.id}`, markerWidth: 9, markerHeight: 9, refX: 8, refY: 4.5, orient: "auto" });
+      marker.append(makeSvg("path", { d: "M0,0 L9,4.5 L0,9 z", fill: "#8c8e9d" }));
+      const visitedMarker = makeSvg("marker", { id: `arrow-visited-${scene.id}`, markerWidth: 9, markerHeight: 9, refX: 8, refY: 4.5, orient: "auto" });
+      visitedMarker.append(makeSvg("path", { d: "M0,0 L9,4.5 L0,9 z", fill: "#0f7c78" }));
+      const activeMarker = makeSvg("marker", { id: `arrow-active-${scene.id}`, markerWidth: 10, markerHeight: 10, refX: 9, refY: 5, orient: "auto" });
+      activeMarker.append(makeSvg("path", { d: "M0,0 L10,5 L0,10 z", fill: "#d48a19" }));
+      defs.append(marker, visitedMarker, activeMarker); svg.append(defs);
+      const nodeBoxes = Array.from(positions.entries()).map(([id, pos]) => ({ id, x: pos.x, y: pos.y, width: nodeWidth, height: nodeHeight }));
+      const portGroups = new Map();
+      const endpointMeta = new Map();
+      const registerPort = (edge, endpoint, nodeId, side, counterpartAxis) => {
+        const key = `${nodeId}:${side}`;
+        if (!portGroups.has(key)) portGroups.set(key, []);
+        portGroups.get(key).push({ edge, endpoint, nodeId, side, counterpartAxis });
+      };
+      scene.edges.forEach((edge) => {
+        const from = positions.get(edge.from), to = positions.get(edge.to);
+        if (from.row === to.row) {
+          if (isLongSameRow(edge)) {
+            const side = longSide(edge);
+            registerPort(edge, "from", edge.from, side, to.x + nodeWidth / 2);
+            registerPort(edge, "to", edge.to, side, from.x + nodeWidth / 2);
+          } else {
+            const forward = to.x >= from.x;
+            registerPort(edge, "from", edge.from, forward ? "right" : "left", to.y + nodeHeight / 2);
+            registerPort(edge, "to", edge.to, forward ? "left" : "right", from.y + nodeHeight / 2);
+          }
+        } else {
+          const down = from.row < to.row;
+          registerPort(edge, "from", edge.from, down ? "bottom" : "top", to.x + nodeWidth / 2);
+          registerPort(edge, "to", edge.to, down ? "top" : "bottom", from.x + nodeWidth / 2);
+        }
+      });
+      portGroups.forEach((ports) => {
+        ports.sort((a, b) => a.counterpartAxis - b.counterpartAxis || a.edge.id.localeCompare(b.edge.id) || a.endpoint.localeCompare(b.endpoint));
+        ports.forEach((port, index) => {
+          const pos = positions.get(port.nodeId);
+          const ratio = ports.length === 1 ? 0.5 : 0.16 + index * (0.68 / (ports.length - 1));
+          endpointMeta.set(`${port.edge.id}:${port.endpoint}`, {
+            x: port.side === "left" ? pos.x : port.side === "right" ? pos.x + nodeWidth : pos.x + nodeWidth * ratio,
+            y: port.side === "top" ? pos.y : port.side === "bottom" ? pos.y + nodeHeight : pos.y + nodeHeight * ratio,
+            side: port.side
+          });
+        });
+      });
+      const downDiagonalEdges = diagonalEdges.filter((edge) => grid.get(edge.from).row < grid.get(edge.to).row);
+      const upDiagonalEdges = diagonalEdges.filter((edge) => grid.get(edge.from).row > grid.get(edge.to).row);
+      const downDiagonalTrack = new Map(downDiagonalEdges.map((edge, index) => [edge.id, index]));
+      const upDiagonalTrack = new Map(upDiagonalEdges.map((edge, index) => [edge.id, index]));
+      const adjacentTracks = new Map();
+      const adjacentGroups = new Map();
+      scene.edges.filter((edge) => {
+        const from = grid.get(edge.from), to = grid.get(edge.to);
+        return from.row === to.row && !isLongSameRow(edge);
+      }).forEach((edge) => {
+        const from = grid.get(edge.from), to = grid.get(edge.to);
+        const key = `${from.row}:${Math.min(from.column, to.column)}:${Math.max(from.column, to.column)}`;
+        if (!adjacentGroups.has(key)) adjacentGroups.set(key, []);
+        adjacentGroups.get(key).push(edge);
+      });
+      adjacentGroups.forEach((edges) => {
+        edges.sort((a, b) => a.id.localeCompare(b.id));
+        const sampleFrom = positions.get(edges[0].from), sampleTo = positions.get(edges[0].to);
+        const left = Math.min(sampleFrom.x, sampleTo.x) + nodeWidth;
+        const right = Math.max(sampleFrom.x, sampleTo.x);
+        edges.forEach((edge, index) => {
+          const ratio = edges.length === 1 ? 0.5 : 0.26 + index * (0.48 / (edges.length - 1));
+          adjacentTracks.set(edge.id, left + (right - left) * ratio);
+        });
+      });
+      const outerLaneCounts = new Map();
+      const routes = scene.edges.map((edge) => {
+        const from = positions.get(edge.from), to = positions.get(edge.to);
+        const sameRow = from.row === to.row;
+        const longSameRow = isLongSameRow(edge);
+        const points = [];
+        if (sameRow && !longSameRow) {
+          const forward = to.x >= from.x;
+          const source = endpointMeta.get(`${edge.id}:from`);
+          const target = endpointMeta.get(`${edge.id}:to`);
+          const trackX = adjacentTracks.get(edge.id);
+          const targetPoint = { x: target.x + (forward ? -8 : 8), y: target.y };
+          if (Math.abs(source.y - target.y) < 1) points.push({ x: source.x, y: source.y }, targetPoint);
+          else points.push(
+            { x: source.x, y: source.y },
+            { x: trackX, y: source.y },
+            { x: trackX, y: target.y },
+            targetPoint
+          );
+        } else if (longSameRow) {
+          const side = longSide(edge);
+          const laneKey = `${from.row}:${side}`;
+          const lane = outerLaneCounts.get(laneKey) ?? 0;
+          outerLaneCounts.set(laneKey, lane + 1);
+          const laneY = side === "top" ? from.y - 34 - lane * 44 : from.y + nodeHeight + 34 + lane * 44;
+          const source = endpointMeta.get(`${edge.id}:from`);
+          const target = endpointMeta.get(`${edge.id}:to`);
+          const targetY = target.y + (side === "top" ? -8 : 8);
+          points.push(
+            { x: source.x, y: source.y },
+            { x: source.x, y: laneY },
+            { x: target.x, y: laneY },
+            { x: target.x, y: targetY }
+          );
+        } else {
+          const source = { ...endpointMeta.get(`${edge.id}:from`) };
+          const target = { ...endpointMeta.get(`${edge.id}:to`) };
+          const down = from.row < to.row;
+          const targetY = target.y + (down ? -8 : 8);
+          if (from.column === to.column && Math.abs(source.x - target.x) < 1) {
+            points.push({ x: source.x, y: source.y }, { x: target.x, y: targetY });
+          } else {
+            const upper = from.row < to.row ? from : to;
+            const lower = from.row < to.row ? to : from;
+            const lane = down ? (downDiagonalTrack.get(edge.id) ?? 0) : (upDiagonalTrack.get(edge.id) ?? 0);
+            const groupSize = down ? downDiagonalEdges.length : upDiagonalEdges.length;
+            const laneOffset = (lane - (groupSize - 1) / 2) * 28 + (down ? -18 : 18);
+            source.x = Math.max(from.x + nodeWidth * 0.16, Math.min(from.x + nodeWidth * 0.84, source.x + laneOffset));
+            target.x = Math.max(to.x + nodeWidth * 0.16, Math.min(to.x + nodeWidth * 0.84, target.x + laneOffset));
+            const mixedDirections = downDiagonalEdges.length > 0 && upDiagonalEdges.length > 0;
+            if (!down && mixedDirections) {
+              const inwardRatio = from.column > to.column ? 0.42 : 0.58;
+              target.x = to.x + nodeWidth * inwardRatio + lane * (from.column > to.column ? -16 : 16);
+            }
+            const trackY = down
+              ? upper.y + nodeHeight + 38 + internalBottomCount * 44 + lane * 40
+              : mixedDirections ? lower.y - 4 - lane * 12
+                : lower.y - 38 - internalTopCount * 44 - lane * 40;
+            points.push(
+              { x: source.x, y: source.y },
+              { x: source.x, y: trackY },
+              { x: target.x, y: trackY },
+              { x: target.x, y: targetY }
+            );
+          }
+        }
+        const segments = routeSegments(points);
+        return { edge, points, segments };
+      });
+      const renderedEndpointMeta = new Map();
+      routes.forEach((route) => {
+        const source = route.points[0], target = route.points.at(-1);
+        renderedEndpointMeta.set(`${route.edge.id}:from`, { ...endpointMeta.get(`${route.edge.id}:from`), x: source.x, y: source.y });
+        renderedEndpointMeta.set(`${route.edge.id}:to`, { ...endpointMeta.get(`${route.edge.id}:to`), x: target.x, y: target.y });
+      });
+      routes.forEach((route) => {
+        svg.append(makeSvg("path", {
+          d: routePath(route.points),
+          class: "svg-edge",
+          "data-edge-id": route.edge.id,
+          "data-edge-from": route.edge.from,
+          "data-edge-to": route.edge.to,
+          "marker-end": `url(#arrow-${scene.id})`
+        }));
+      });
+      const labelBoxes = [];
+      routes.forEach((route) => {
+        const edge = route.edge;
+        if (!edge.label) return;
+        const labelWidth = Math.min(138, Math.max(54, measuredWidth(edge.label, "700 12px ui-rounded") + 18));
+        const candidates = [];
+        route.segments.slice().sort((a, b) => {
+          const orientation = (segment) => segment.y1 === segment.y2 ? 0 : 1;
+          return orientation(a) - orientation(b) || segmentLength(b) - segmentLength(a);
+        }).forEach((segment) => {
+          for (const ratio of [0.5, 0.35, 0.65]) {
+            if (segment.y1 === segment.y2 && segmentLength(segment) >= labelWidth + 18) {
+              const centerX = segment.x1 + (segment.x2 - segment.x1) * ratio;
+              candidates.push(
+                { x: centerX - labelWidth / 2, y: segment.y1 - 30, width: labelWidth, height: 21 },
+                { x: centerX - labelWidth / 2, y: segment.y1 + 9, width: labelWidth, height: 21 }
+              );
+            } else if (segment.x1 === segment.x2 && segmentLength(segment) >= 50) {
+              const centerY = segment.y1 + (segment.y2 - segment.y1) * ratio;
+              candidates.push(
+                { x: segment.x1 + 9, y: centerY - 10.5, width: labelWidth, height: 21 },
+                { x: segment.x1 - labelWidth - 9, y: centerY - 10.5, width: labelWidth, height: 21 }
+              );
+            }
+          }
+        });
+        const inBounds = (box) => box.x >= 4 && box.y >= 4 && box.x + box.width <= width - 4 && box.y + box.height <= height - 4;
+        const collisionCount = (box) => {
+          const nodeHits = nodeBoxes.filter((node) => boxesOverlap(box, node, 5)).length;
+          const labelHits = labelBoxes.filter((label) => boxesOverlap(box, label, 5)).length;
+          const pathHits = routes.filter((other) => other !== route).flatMap((other) => other.segments).filter((segment) => segmentHitsBox(segment, box, 5)).length;
+          return nodeHits + labelHits + pathHits;
+        };
+        const ranked = candidates.filter(inBounds).map((box, index) => ({ box, index, collisions: collisionCount(box) })).sort((a, b) => a.collisions - b.collisions || a.index - b.index);
+        const selected = ranked[0] ?? { box: { x: 4, y: 4, width: labelWidth, height: 21 }, collisions: 1 };
+        const labelBox = { ...selected.box, edgeId: edge.id, collisions: selected.collisions };
+        labelBoxes.push(labelBox);
+        svg.append(makeSvg("rect", {
+          x: labelBox.x, y: labelBox.y, width: labelBox.width, height: labelBox.height, rx: 10,
+          class: "svg-label-bg", "data-edge-label-bg": edge.id, "data-collisions": labelBox.collisions
+        }));
+        svg.append(makeSvg("text", {
+          x: labelBox.x + labelBox.width / 2, y: labelBox.y + 15, "text-anchor": "middle",
+          class: "svg-edge-label", "data-edge-label": edge.id
+        }, edge.label));
+      });
+      const geometryErrors = [];
+      portGroups.forEach((ports, key) => {
+        const coordinates = ports.map((port) => {
+          const endpoint = renderedEndpointMeta.get(`${port.edge.id}:${port.endpoint}`);
+          return port.side === "left" || port.side === "right" ? endpoint.y : endpoint.x;
+        }).sort((a, b) => a - b);
+        coordinates.slice(1).forEach((coordinate, index) => {
+          if (coordinate - coordinates[index] < 9) geometryErrors.push(`port-spacing:${key}`);
+        });
+      });
+      labelBoxes.forEach((label, index) => {
+        if (label.collisions) geometryErrors.push(`label-collision:${label.edgeId}`);
+        labelBoxes.slice(index + 1).forEach((other) => { if (boxesOverlap(label, other, 0)) geometryErrors.push(`label-label:${label.edgeId}:${other.edgeId}`); });
+      });
+      routes.forEach((route) => {
+        const sourceEndpoint = renderedEndpointMeta.get(`${route.edge.id}:from`);
+        const firstSegment = route.segments[0];
+        const sourceLeavesOutward = sourceEndpoint.side === "left" ? firstSegment.x2 <= firstSegment.x1
+          : sourceEndpoint.side === "right" ? firstSegment.x2 >= firstSegment.x1
+            : sourceEndpoint.side === "top" ? firstSegment.y2 <= firstSegment.y1
+              : firstSegment.y2 >= firstSegment.y1;
+        if (!sourceLeavesOutward) geometryErrors.push(`port-direction:${route.edge.id}:from`);
+        const targetEndpoint = renderedEndpointMeta.get(`${route.edge.id}:to`);
+        const lastSegment = route.segments.at(-1);
+        const targetApproachesInward = targetEndpoint.side === "left" ? lastSegment.x2 >= lastSegment.x1
+          : targetEndpoint.side === "right" ? lastSegment.x2 <= lastSegment.x1
+            : targetEndpoint.side === "top" ? lastSegment.y2 >= lastSegment.y1
+              : lastSegment.y2 <= lastSegment.y1;
+        if (!targetApproachesInward) geometryErrors.push(`port-direction:${route.edge.id}:to`);
+        route.segments.forEach((segment, segmentIndex) => {
+          nodeBoxes.forEach((node) => {
+            if (node.id === route.edge.from && segmentIndex === 0) return;
+            if (segmentHitsBox(segment, node, 3)) geometryErrors.push(`path-node:${route.edge.id}:${node.id}`);
+          });
+        });
+      });
+      routes.forEach((route, index) => {
+        routes.slice(index + 1).forEach((other) => {
+          route.segments.forEach((first) => other.segments.forEach((second) => {
+            if (collinearOverlap(first, second) > 1) geometryErrors.push(`path-overlap:${route.edge.id}:${other.edge.id}`);
+            if (perpendicularCross(first, second)) geometryErrors.push(`path-crossing:${route.edge.id}:${other.edge.id}`);
+          }));
+        });
+      });
+      svg.dataset.geometryErrors = geometryErrors.join(",");
+      svg.dataset.geometryValid = String(geometryErrors.length === 0);
+      scene.nodes.forEach((node) => {
+        const pos = positions.get(node.id);
+	        const accessibleLabel = `${node.label}. ${node.detail}${node.failure ? `. ${ui.inspectFailure}` : ""}`;
+	        const groupAttrs = { class: `svg-node kind-${node.kind || "process"}`, "data-node-id": node.id, "data-has-failure": Boolean(node.failure), role: node.failure ? "button" : "group", "aria-label": accessibleLabel };
+	        if (node.failure) groupAttrs.tabindex = "0";
+	        const group = makeSvg("g", groupAttrs);
+	        group.append(makeSvg("title", {}, accessibleLabel));
+	        group.append(makeSvg("rect", { x: pos.x, y: pos.y, width: nodeWidth, height: nodeHeight, rx: 15 }));
+	        addText(group, pos.x + 16, pos.y + 23, ui.kind[node.kind || "process"], "svg-kind", nodeWidth - 32, 1, "800 11px ui-rounded");
+        addText(group, pos.x + 16, pos.y + 52, node.label, "svg-title", nodeWidth - 32, 2, "800 15px ui-rounded");
+        addText(group, pos.x + 16, pos.y + 102, node.detail, "svg-detail", nodeWidth - 32, 3, "12px ui-rounded");
+        const activate = () => inspectFailure(node);
+        group.addEventListener("click", activate);
+        group.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); activate(); } });
+        svg.append(group);
+      });
+      host.append(svg);
+    });
+    let selectWorkspaceTab = () => {};
+    document.querySelectorAll('[role="tablist"]').forEach((tabList) => {
+      const tabs = Array.from(tabList.querySelectorAll('[role="tab"]'));
+      const selectTab = (tab) => {
+        tabs.forEach((item) => {
+          const selected = item === tab;
+          item.setAttribute("aria-selected", String(selected));
+          item.tabIndex = selected ? 0 : -1;
+          document.getElementById(item.getAttribute("aria-controls")).hidden = !selected;
+        });
+        if (tabList.classList.contains("workspace-tabs")) {
+          document.body.classList.toggle("annotation-browse-mode", tab.id === "workspace-tab-annotations");
+        }
+      };
+      if (tabList.classList.contains("workspace-tabs")) selectWorkspaceTab = selectTab;
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => selectTab(tab));
+        tab.addEventListener("keydown", (event) => {
+          let nextIndex;
+          if (event.key === "Home") nextIndex = 0;
+          else if (event.key === "End") nextIndex = tabs.length - 1;
+          else if (event.key === "ArrowLeft") nextIndex = (index + tabs.length - 1) % tabs.length;
+          else if (event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+          else return;
+          event.preventDefault();
+          selectTab(tabs[nextIndex]);
+          tabs[nextIndex].focus();
+        });
+      });
+    });
+    let traceIndex = -1, timer = 0, phaseTimer = 0, playbackQueue = [], playbackCursor = -1, playbackLoop = false, activePlayButton = null;
+    const ENTER_MS = 460, HOLD_MS = 1850, EXIT_MS = 300;
+    const status = document.getElementById("trace-status");
+    const traceContext = document.getElementById("trace-context");
+    const traceProgress = document.querySelector(".trace-progress");
+    const traceProgressBar = traceProgress.querySelector("span");
+    const miniStatus = document.getElementById("mini-player-status");
+    const traceConsole = document.querySelector(".trace-console");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const globalPlayButton = document.querySelector('[data-trace="play"]');
+    const scenesById = new Map(spec.scenes.map((scene) => [scene.id, scene]));
+    const nodesById = new Map(spec.scenes.flatMap((scene) => scene.nodes.map((node) => [node.id, node])));
+    const evidenceById = new Map(spec.evidence.map((item) => [item.id, item]));
+    const nodeScene = new Map(spec.scenes.flatMap((scene) => scene.nodes.map((node) => [node.id, scene.id])));
+    const edgeRecords = spec.scenes.flatMap((scene) => scene.edges.map((edge) => ({ ...edge, sceneId: scene.id, key: `${scene.id}:${edge.id}` })));
+    const visitedNodeIds = new Set();
+    const visitedEdgeKeys = new Set();
+    const outgoingEdges = (nodeId) => edgeRecords.filter((edge) => edge.from === nodeId);
+    const activeEdges = (nodeId) => {
+      const outgoing = outgoingEdges(nodeId);
+      return outgoing.length ? outgoing : edgeRecords.filter((edge) => edge.to === nodeId);
+    };
+    const edgeParts = (edge) => {
+      const scene = document.getElementById(`scene-${edge.sceneId}`);
+      return {
+        path: scene?.querySelector(`[data-edge-id="${edge.id}"]`),
+        label: scene?.querySelector(`[data-edge-label="${edge.id}"]`),
+        background: scene?.querySelector(`[data-edge-label-bg="${edge.id}"]`)
+      };
+    };
+    const setEdgeState = (edge, state = "") => {
+      const parts = edgeParts(edge);
+      [parts.path, parts.label, parts.background].forEach((part) => {
+        if (!part) return;
+        part.classList.toggle("trace-edge-active", state === "active");
+        part.classList.toggle("trace-edge-visited", state === "visited");
+      });
+      if (parts.path) {
+        const marker = state === "active" ? `arrow-active-${edge.sceneId}` : state === "visited" ? `arrow-visited-${edge.sceneId}` : `arrow-${edge.sceneId}`;
+        parts.path.setAttribute("marker-end", `url(#${marker})`);
+      }
+      document.querySelectorAll(`[data-mobile-edge-key="${edge.key}"]`).forEach((route) => {
+        route.classList.toggle("trace-mobile-edge-active", state === "active");
+        route.classList.toggle("trace-mobile-edge-visited", state === "visited");
+      });
+    };
+    const setPlaybackPhase = (phase = "") => {
+      if (phase) document.body.dataset.playbackPhase = phase;
+      else delete document.body.dataset.playbackPhase;
+      document.querySelectorAll(".scene").forEach((scene) => {
+        if (scene.classList.contains("trace-scene-active") && phase) scene.dataset.playbackPhase = phase;
+        else delete scene.dataset.playbackPhase;
+      });
+    };
+    const resetEvidenceDocks = () => {
+      document.querySelectorAll("[data-scene-evidence]").forEach((dock) => {
+        dock.dataset.focused = "false";
+        dock.querySelectorAll("[data-evidence-card]").forEach((card) => card.classList.remove("trace-evidence-active", "trace-evidence-muted"));
+        const sceneId = dock.dataset.sceneEvidence;
+        const context = dock.querySelector(`[data-evidence-context="${sceneId}"]`);
+        if (context) context.textContent = ui.sceneEvidenceDefault;
+      });
+    };
+    const focusEvidenceForNode = (nodeId) => {
+      resetEvidenceDocks();
+      if (!nodeId) return;
+      const sceneId = nodeScene.get(nodeId);
+      const node = nodesById.get(nodeId);
+      const dock = document.querySelector(`[data-scene-evidence="${sceneId}"]`);
+      if (!dock || !node) return;
+      const evidenceIds = new Set(node.evidence ?? []);
+      if (!evidenceIds.size) return;
+      dock.dataset.focused = "true";
+      dock.querySelectorAll("[data-evidence-card]").forEach((card) => {
+        const active = evidenceIds.has(card.dataset.evidenceCard);
+        card.classList.toggle("trace-evidence-active", active);
+        card.classList.toggle("trace-evidence-muted", !active);
+      });
+      const context = dock.querySelector(`[data-evidence-context="${sceneId}"]`);
+      if (context) context.textContent = `${ui.sceneEvidenceCurrent} · ${node.label}`;
+    };
+    const followActiveNode = (nodes) => {
+      const node = nodes.find((candidate) => candidate.getClientRects().length > 0);
+      if (!node) return;
+      window.requestAnimationFrame(() => {
+        const rect = node.getBoundingClientRect();
+        const consoleRect = traceConsole.getBoundingClientRect();
+        const stickyBottom = window.innerWidth > 640 && consoleRect.top <= 16 ? consoleRect.bottom : 0;
+        const visibleTop = Math.max(12, stickyBottom + 12);
+        const visibleBottom = window.innerHeight - (window.innerWidth <= 640 && activePlayButton ? 88 : 24);
+        if (rect.top >= visibleTop && rect.bottom <= visibleBottom) return;
+        const available = Math.max(1, visibleBottom - visibleTop);
+        const desiredTop = rect.height >= available ? visibleTop : visibleTop + (available - rect.height) / 2;
+        window.scrollTo({
+          top: Math.max(0, window.scrollY + rect.top - desiredTop),
+          behavior: reducedMotion.matches ? "auto" : "smooth"
+        });
+      });
+    };
+    const nextTraceIndex = () => {
+      if (playbackQueue.length) {
+        const nextCursor = playbackCursor + 1;
+        if (nextCursor < playbackQueue.length) return playbackQueue[nextCursor];
+        return playbackLoop ? playbackQueue[0] : -1;
+      }
+      return traceIndex + 1 < spec.trace.length ? traceIndex + 1 : -1;
+    };
+    const highlight = () => {
+      document.querySelectorAll("[data-node-id]").forEach((node) => {
+        const nodeId = node.dataset.nodeId;
+        node.classList.remove("trace-active", "trace-next");
+        node.classList.toggle("trace-visited", visitedNodeIds.has(nodeId));
+        node.removeAttribute("aria-current");
+      });
+      document.querySelectorAll("[data-outline-scene]").forEach((link) => link.removeAttribute("aria-current"));
+      document.querySelectorAll(".scene").forEach((scene) => scene.classList.remove("trace-scene-active"));
+      edgeRecords.forEach((edge) => setEdgeState(edge, visitedEdgeKeys.has(edge.key) ? "visited" : ""));
+      if (traceIndex < 0) {
+        status.textContent = ui.ready;
+        miniStatus.textContent = ui.ready;
+        traceContext.hidden = true;
+        traceProgress.setAttribute("aria-valuenow", "0");
+        traceProgressBar.style.width = "0%";
+        resetEvidenceDocks();
+        return;
+      }
+      const step = spec.trace[traceIndex];
+      const node = nodesById.get(step.nodeId);
+      const activeNodes = Array.from(document.querySelectorAll(`[data-node-id="${step.nodeId}"]`));
+      activeNodes.forEach((item) => {
+        item.classList.remove("trace-visited");
+        item.classList.add("trace-active");
+        item.setAttribute("aria-current", "step");
+      });
+      const upcomingIndex = nextTraceIndex();
+      if (upcomingIndex >= 0) {
+        document.querySelectorAll(`[data-node-id="${spec.trace[upcomingIndex].nodeId}"]`).forEach((item) => item.classList.add("trace-next"));
+      }
+      const sceneId = nodeScene.get(step.nodeId);
+      document.getElementById(`scene-${sceneId}`)?.classList.add("trace-scene-active");
+      document.querySelector(`[data-outline-scene="${sceneId}"]`)?.setAttribute("aria-current", "location");
+      activeEdges(step.nodeId).forEach((edge) => setEdgeState(edge, "active"));
+      const localPlayback = activePlayButton?.hasAttribute("data-scene-play");
+      const displayedIndex = localPlayback ? playbackCursor + 1 : traceIndex + 1;
+      const displayedTotal = localPlayback ? playbackQueue.length : spec.trace.length;
+      const traceText = ui.of === "/" ? `${ui.step} ${displayedIndex}/${displayedTotal}：${step.label}` : `${ui.step} ${displayedIndex} ${ui.of} ${displayedTotal}: ${step.label}`;
+      status.textContent = traceText;
+      miniStatus.textContent = traceText;
+      traceContext.hidden = false;
+      traceContext.textContent = `${node.label} · ${node.detail}`;
+      traceProgress.setAttribute("aria-valuemax", String(displayedTotal));
+      traceProgress.setAttribute("aria-valuenow", String(displayedIndex));
+      traceProgressBar.style.width = `${Math.max(0, Math.min(100, displayedIndex / displayedTotal * 100))}%`;
+      focusEvidenceForNode(step.nodeId);
+      followActiveNode(activeNodes);
+    };
+    const clearPlaybackTimers = () => {
+      if (timer) window.clearTimeout(timer);
+      if (phaseTimer) window.clearTimeout(phaseTimer);
+      timer = 0;
+      phaseTimer = 0;
+    };
+    const stop = () => {
+      clearPlaybackTimers();
+      if (activePlayButton) {
+        activePlayButton.textContent = activePlayButton.hasAttribute("data-scene-play") ? ui.workspace.playScene : ui.play;
+        activePlayButton.setAttribute("aria-pressed", "false");
+      }
+      activePlayButton = null;
+      playbackQueue = [];
+      playbackCursor = -1;
+      playbackLoop = false;
+      document.body.classList.remove("trace-running");
+      setPlaybackPhase(traceIndex >= 0 ? "paused" : "");
+      resetEvidenceDocks();
+    };
+    const markDepartedNode = () => {
+      if (traceIndex < 0) return;
+      const nodeId = spec.trace[traceIndex].nodeId;
+      visitedNodeIds.add(nodeId);
+      outgoingEdges(nodeId).forEach((edge) => visitedEdgeKeys.add(edge.key));
+    };
+    const runPlaybackStep = () => {
+      markDepartedNode();
+      const nextCursor = playbackCursor + 1;
+      if (nextCursor >= playbackQueue.length) {
+        if (!playbackLoop) { stop(); return; }
+        playbackCursor = 0;
+      } else playbackCursor = nextCursor;
+      traceIndex = playbackQueue[playbackCursor];
+      highlight();
+      setPlaybackPhase(reducedMotion.matches ? "hold" : "enter");
+      if (!reducedMotion.matches) {
+        phaseTimer = window.setTimeout(() => {
+          phaseTimer = 0;
+          setPlaybackPhase("hold");
+        }, ENTER_MS);
+      }
+      timer = window.setTimeout(() => {
+        timer = 0;
+        if (reducedMotion.matches) { runPlaybackStep(); return; }
+        setPlaybackPhase("exit");
+        phaseTimer = window.setTimeout(() => {
+          phaseTimer = 0;
+          runPlaybackStep();
+        }, EXIT_MS);
+      }, reducedMotion.matches ? HOLD_MS : ENTER_MS + HOLD_MS);
+    };
+    const startPlayback = (indices, button, loop) => {
+      if (activePlayButton === button) { stop(); return; }
+      stop();
+      if (!indices.length) return;
+      visitedNodeIds.clear();
+      visitedEdgeKeys.clear();
+      playbackQueue = indices;
+      playbackCursor = loop ? indices.indexOf(traceIndex) : -1;
+      if (!loop) traceIndex = -1;
+      playbackLoop = loop;
+      activePlayButton = button;
+      button.textContent = button.hasAttribute("data-scene-play") ? ui.workspace.pauseScene : ui.pause;
+      button.setAttribute("aria-pressed", "true");
+      document.body.classList.add("trace-running");
+      runPlaybackStep();
+    };
+    const next = () => {
+      visitedNodeIds.clear();
+      visitedEdgeKeys.clear();
+      traceIndex = (traceIndex + 1) % spec.trace.length;
+      highlight();
+      setPlaybackPhase("hold");
+    };
+    const previous = () => {
+      visitedNodeIds.clear();
+      visitedEdgeKeys.clear();
+      traceIndex = (traceIndex - 1 + spec.trace.length) % spec.trace.length;
+      highlight();
+      setPlaybackPhase("hold");
+    };
+    document.querySelector('[data-trace="previous"]').addEventListener("click", () => { stop(); previous(); });
+    document.querySelector('[data-trace="next"]').addEventListener("click", () => { stop(); next(); });
+    document.querySelector('[data-trace="reset"]').addEventListener("click", () => {
+      stop();
+      traceIndex = -1;
+      visitedNodeIds.clear();
+      visitedEdgeKeys.clear();
+      setPlaybackPhase("");
+      highlight();
+    });
+    globalPlayButton.setAttribute("aria-pressed", "false");
+    globalPlayButton.addEventListener("click", () => startPlayback(spec.trace.map((_, index) => index), globalPlayButton, true));
+    document.querySelectorAll("[data-scene-play]").forEach((button) => {
+      const scene = scenesById.get(button.dataset.scenePlay);
+      const sceneNodes = new Set(scene.nodes.map((node) => node.id));
+      const indices = spec.trace.map((step, index) => sceneNodes.has(step.nodeId) ? index : -1).filter((index) => index >= 0);
+      if (!indices.length) button.disabled = true;
+      button.addEventListener("click", () => startPlayback(indices, button, false));
+    });
+    document.querySelectorAll("[data-node-id]").forEach((node) => {
+      const preview = () => {
+        if (activePlayButton) return;
+        focusEvidenceForNode(node.dataset.nodeId);
+      };
+      const restore = () => focusEvidenceForNode(traceIndex >= 0 ? spec.trace[traceIndex].nodeId : null);
+      node.addEventListener("mouseenter", preview);
+      node.addEventListener("mouseleave", restore);
+      node.addEventListener("focusin", preview);
+      node.addEventListener("focusout", restore);
+      node.addEventListener("click", preview);
+    });
+    document.querySelector("[data-mini-pause]").addEventListener("click", stop);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); });
+    window.addEventListener("wheel", () => { if (activePlayButton) stop(); }, { passive: true });
+    window.addEventListener("touchstart", () => { if (activePlayButton) stop(); }, { passive: true });
+    reducedMotion.addEventListener?.("change", () => {
+      if (!activePlayButton || !reducedMotion.matches) return;
+      clearPlaybackTimers();
+      setPlaybackPhase("hold");
+      timer = window.setTimeout(() => {
+        timer = 0;
+        runPlaybackStep();
+      }, HOLD_MS);
+    });
+    const workspaceLauncher = document.querySelector("[data-workspace-open]");
+    const workspaceDrawer = document.getElementById("workspace-drawer");
+    const workspaceScrim = document.querySelector("[data-workspace-scrim]");
+    const explainer = document.getElementById("explainer");
+    const openWorkspace = (tabId) => {
+      workspaceDrawer.inert = false;
+      workspaceDrawer.dataset.open = "true";
+      workspaceDrawer.setAttribute("aria-hidden", "false");
+      workspaceLauncher.setAttribute("aria-expanded", "true");
+      workspaceScrim.hidden = false;
+      document.body.classList.add("workspace-open");
+      explainer.inert = true;
+      if (tabId) {
+        const tab = document.getElementById(`workspace-tab-${tabId}`);
+        if (tab) selectWorkspaceTab(tab);
+      }
+      window.requestAnimationFrame(() => workspaceDrawer.querySelector("[data-workspace-close]").focus());
+    };
+    const closeWorkspace = () => {
+      workspaceDrawer.dataset.open = "false";
+      workspaceDrawer.setAttribute("aria-hidden", "true");
+      workspaceDrawer.inert = true;
+      workspaceLauncher.setAttribute("aria-expanded", "false");
+      workspaceScrim.hidden = true;
+      document.body.classList.remove("workspace-open");
+      explainer.inert = false;
+      workspaceLauncher.focus();
+    };
+    workspaceLauncher.addEventListener("click", () => openWorkspace());
+    workspaceDrawer.querySelector("[data-workspace-close]").addEventListener("click", closeWorkspace);
+    workspaceScrim.addEventListener("click", closeWorkspace);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && workspaceDrawer.dataset.open === "true") closeWorkspace();
+    });
+    workspaceDrawer.addEventListener("keydown", (event) => {
+      if (event.key !== "Tab") return;
+      const focusable = Array.from(workspaceDrawer.querySelectorAll("button:not([disabled]),a[href],select,textarea")).filter((element) => !element.hidden && element.getClientRects().length);
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+    document.querySelectorAll("[data-outline-scene]").forEach((link) => link.addEventListener("click", closeWorkspace));
 
-  <section>
-    <h2>目前判定與下一步</h2>
-    <p><span class="badge ok">已完成</span> C++ SMC full-data pilot、K4/K6/K8、各 4 repeats，以及 output artifact 產生。</p>
-    <p><span class="badge fail">未完成</span> 穩定的 topology selection、branch edge support、獨立 validation 與 formal gate。</p>
-    <p><span class="badge warn">下一步</span> 先改善 SMC particle diversity 與 topology proposal mixing；同時把 thread count 寫入 receipt、在 clean Git SHA 下重跑，再進入 formal workflow。</p>
-  </section>
-
-  <section>
-    <h2>可追溯檔案</h2>
-    <div class="links">
-      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/status.json">昨日 run status.json</a>
-      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/command.json">昨日 command.json（含設定與 dirty worktree）</a>
-      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/execution_trace.jsonl">昨日 execution_trace.jsonl</a>
-      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K4_seed960115502/summary.json">K=4 summary</a>
-      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K6_seed1919528150/summary.json">K=6 summary</a>
-      <a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K8_seed1203086123/summary.json">K=8 summary</a>
-      <a href="../../experiment_workflow.md">目前 experiment_workflow.md</a>
-    </div>
-    <p class="sub" style="margin-top:16px">Git evidence：2026-08-25 尚無已提交 commit。工作樹另有未提交的 <code>golden_tree/research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md</code>，與本次 daily 頁面無法可靠歸為同一工作群組，因此未納入本次 commit。</p>
-  </section>
-
-  <footer>紀錄日期：2026-08-25（Asia/Taipei）｜昨日 run 日期：2026-08-24｜本頁只整理可追溯的 pilot 結果，不把它提升為正式生物學結論。</footer>
-</main>
+    const STORAGE_KEY = "fireworks-open-eli5:library:v1";
+    const MAX_LIBRARY_BYTES = 1572864;
+    const MAX_DOCUMENTS = 100;
+    const MAX_FAVORITES = 300;
+    const MAX_ANNOTATIONS = 500;
+    const specHash = document.querySelector('meta[name="fireworks-open-eli5-spec-sha256"]').content;
+    const currentUrl = (() => { const url = new URL(window.location.href); url.hash = ""; return url.href; })();
+    const currentSceneTitles = new Map(spec.scenes.map((scene) => [scene.id, scene.title]));
+    const sceneOrder = new Map(spec.scenes.map((scene, index) => [scene.id, index]));
+    const emptyLibrary = () => ({ schemaVersion: 1, noticeVersion: 0, documents: [], favorites: [], annotations: [] });
+    const cleanText = (value, limit) => typeof value === "string" ? value.slice(0, limit) : "";
+    const safeStoredUrl = (value) => {
+      if (!["http:", "https:"].includes(window.location.protocol)) return null;
+      try {
+        const url = new URL(value, window.location.href);
+        if (!["http:", "https:"].includes(url.protocol) || url.origin !== window.location.origin) return null;
+        url.hash = "";
+        return url.href;
+      } catch {
+        return null;
+      }
+    };
+    const finiteTime = (value) => Number.isFinite(value) && value > 0 ? value : 0;
+    const decodeLibrary = (value) => {
+      if (!value || typeof value !== "object" || value.schemaVersion !== 1) throw new Error("unsupported library schema");
+      const documents = (Array.isArray(value.documents) ? value.documents : []).slice(0, MAX_DOCUMENTS).flatMap((item) => {
+        const url = safeStoredUrl(item?.url);
+        const contentId = cleanText(item?.contentId, 64);
+        const title = cleanText(item?.title, 100);
+        if (!url || !contentId || !title) return [];
+        return [{ id: url, contentId, title, language: cleanText(item?.language, 12), url, lastOpenedAt: finiteTime(item?.lastOpenedAt) }];
+      });
+      const favorites = (Array.isArray(value.favorites) ? value.favorites : []).slice(0, MAX_FAVORITES).flatMap((item) => {
+        const type = item?.type === "document" || item?.type === "scene" ? item.type : null;
+        const url = safeStoredUrl(item?.url);
+        const contentId = cleanText(item?.contentId, 64);
+        const sceneId = cleanText(item?.sceneId, 80);
+        if (!type || !url || !contentId || (type === "scene" && !sceneId)) return [];
+        return [{
+          id: cleanText(item?.id, 320),
+          type,
+          contentId,
+          sceneId,
+          title: cleanText(item?.title, 100),
+          sceneTitle: cleanText(item?.sceneTitle, 100),
+          url,
+          createdAt: finiteTime(item?.createdAt)
+        }];
+      });
+      const annotations = (Array.isArray(value.annotations) ? value.annotations : []).slice(0, MAX_ANNOTATIONS).flatMap((item) => {
+        const url = safeStoredUrl(item?.url);
+        const contentId = cleanText(item?.contentId, 64);
+        const sceneId = cleanText(item?.sceneId, 80);
+        const body = cleanText(item?.body, 1200).trim();
+        if (!url || !contentId || !sceneId || !body) return [];
+        return [{
+          id: cleanText(item?.id, 320),
+          contentId,
+          sceneId,
+          body,
+          documentTitle: cleanText(item?.documentTitle, 100),
+          sceneTitle: cleanText(item?.sceneTitle, 100),
+          url,
+          createdAt: finiteTime(item?.createdAt),
+          updatedAt: finiteTime(item?.updatedAt)
+        }];
+      });
+      return { schemaVersion: 1, noticeVersion: value.noticeVersion === 1 ? 1 : 0, documents, favorites, annotations };
+    };
+    let library = emptyLibrary(), libraryEnabled = false;
+    let storageAvailable = ["http:", "https:"].includes(window.location.protocol);
+    let editingAnnotationId = "";
+    const storageNote = document.getElementById("workspace-storage-note");
+    if (storageAvailable) {
+      try {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          library = decodeLibrary(JSON.parse(saved));
+          libraryEnabled = library.noticeVersion === 1;
+        }
+      } catch {
+        storageAvailable = false;
+        libraryEnabled = true;
+        library = emptyLibrary();
+      }
+    }
+    const registerCurrentDocument = () => {
+      if (!libraryEnabled) return;
+      const record = { id: currentUrl, contentId: specHash, title: spec.title, language: spec.language, url: currentUrl, lastOpenedAt: Date.now() };
+      library.documents = [record, ...library.documents.filter((item) => item.url !== currentUrl)].slice(0, MAX_DOCUMENTS);
+      library.favorites = library.favorites.map((item) => item.contentId === specHash ? { ...item, title: spec.title, sceneTitle: item.sceneId ? currentSceneTitles.get(item.sceneId) ?? item.sceneTitle : "", url: currentUrl } : item);
+      library.annotations = library.annotations.map((item) => item.contentId === specHash ? { ...item, documentTitle: spec.title, sceneTitle: currentSceneTitles.get(item.sceneId) ?? item.sceneTitle, url: currentUrl } : item);
+    };
+    const updateStorageNotice = () => {
+      document.querySelector("[data-library-consent]").hidden = libraryEnabled || !storageAvailable;
+      storageNote.textContent = storageAvailable ? ui.workspace.storageLocal : ui.workspace.storageUnavailable;
+    };
+    const rejectLibraryGrowth = () => {
+      openWorkspace();
+      storageNote.textContent = ui.workspace.libraryLimit;
+      window.requestAnimationFrame(() => {
+        workspaceDrawer.scrollTop = workspaceDrawer.scrollHeight;
+        storageNote.focus();
+      });
+    };
+    const persistLibrary = () => {
+      if (!libraryEnabled || !storageAvailable) { updateStorageNotice(); return false; }
+      try {
+        const serialized = JSON.stringify(library);
+        if (new TextEncoder().encode(serialized).byteLength > MAX_LIBRARY_BYTES) throw new Error("library quota");
+        window.localStorage.setItem(STORAGE_KEY, serialized);
+        updateStorageNotice();
+        return true;
+      } catch {
+        storageAvailable = false;
+        updateStorageNotice();
+        return false;
+      }
+    };
+    const ensureLibrary = () => {
+      if (libraryEnabled) return true;
+      openWorkspace();
+      window.requestAnimationFrame(() => document.querySelector("[data-library-enable]").focus());
+      return false;
+    };
+    const emptyMessage = (container, message) => {
+      const paragraph = document.createElement("p");
+      paragraph.className = "workspace-empty";
+      paragraph.textContent = message;
+      container.replaceChildren(paragraph);
+    };
+    const formatOpened = (value) => {
+      try { return new Date(value).toLocaleString(spec.language); }
+      catch { return ""; }
+    };
+    const favoriteId = (type, sceneId = "") => `${type}:${specHash}:${sceneId}`;
+    const renderFavorites = () => {
+      const container = document.getElementById("workspace-favorites");
+      const items = [...library.favorites].sort((a, b) => {
+        if (a.type !== b.type) return a.type === "document" ? -1 : 1;
+        if (a.contentId === specHash && b.contentId === specHash && a.type === "scene") return (sceneOrder.get(a.sceneId) ?? 999) - (sceneOrder.get(b.sceneId) ?? 999);
+        return a.createdAt - b.createdAt;
+      });
+      if (!items.length) { emptyMessage(container, ui.workspace.noFavorites); return; }
+      container.replaceChildren();
+      items.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "workspace-item";
+        const link = document.createElement("a");
+        link.href = `${item.url}${item.type === "scene" ? `#scene-${encodeURIComponent(item.sceneId)}` : ""}`;
+        link.textContent = item.type === "scene" ? item.sceneTitle : item.title;
+        link.addEventListener("click", closeWorkspace);
+        const small = document.createElement("small");
+        small.textContent = item.type === "scene" ? item.title : ui.workspace.favoriteDocument;
+        const actions = document.createElement("div");
+        actions.className = "workspace-item-actions";
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.textContent = ui.workspace.remove;
+        remove.addEventListener("click", () => {
+          library.favorites = library.favorites.filter((entry) => entry.id !== item.id);
+          persistLibrary();
+          renderLibrary();
+        });
+        actions.append(remove);
+        card.append(link, small, actions);
+        container.append(card);
+      });
+    };
+    const renderHistory = () => {
+      const container = document.getElementById("workspace-history");
+      const items = [...library.documents].sort((a, b) => b.lastOpenedAt - a.lastOpenedAt);
+      if (!items.length) { emptyMessage(container, ui.workspace.noHistory); return; }
+      container.replaceChildren();
+      items.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "workspace-item";
+        const link = document.createElement("a");
+        link.href = item.url;
+        link.textContent = item.title;
+        link.addEventListener("click", closeWorkspace);
+        const small = document.createElement("small");
+        const current = item.url === currentUrl ? ` · ${ui.workspace.current}` : "";
+        small.textContent = `${ui.workspace.opened} ${formatOpened(item.lastOpenedAt)}${current}`;
+        card.append(link, small);
+        container.append(card);
+      });
+    };
+    const resetAnnotationEditor = () => {
+      editingAnnotationId = "";
+      document.getElementById("annotation-text").value = "";
+      document.querySelector("[data-annotation-cancel]").hidden = true;
+    };
+    const editAnnotation = (item) => {
+      if (item.contentId !== specHash || !currentSceneTitles.has(item.sceneId)) return;
+      editingAnnotationId = item.id;
+      document.getElementById("annotation-scene").value = item.sceneId;
+      document.getElementById("annotation-text").value = item.body;
+      document.querySelector("[data-annotation-cancel]").hidden = false;
+      document.getElementById("annotation-text").focus();
+    };
+    const renderAnnotations = () => {
+      const container = document.getElementById("workspace-annotations");
+      const items = [...library.annotations].sort((a, b) => b.updatedAt - a.updatedAt);
+      if (!items.length) emptyMessage(container, ui.workspace.noAnnotations);
+      else {
+        container.replaceChildren();
+        items.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = "workspace-item";
+          const link = document.createElement("a");
+          link.href = `${item.url}#scene-${encodeURIComponent(item.sceneId)}`;
+          link.textContent = `${item.documentTitle} · ${item.sceneTitle}`;
+          link.addEventListener("click", closeWorkspace);
+          const body = document.createElement("p");
+          body.className = "annotation-body";
+          body.textContent = item.body;
+          const actions = document.createElement("div");
+          actions.className = "workspace-item-actions";
+          if (item.contentId === specHash && currentSceneTitles.has(item.sceneId)) {
+            const edit = document.createElement("button");
+            edit.type = "button";
+            edit.textContent = ui.workspace.edit;
+            edit.addEventListener("click", () => editAnnotation(item));
+            actions.append(edit);
+          }
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.textContent = ui.workspace.remove;
+          remove.addEventListener("click", () => {
+            if (!window.confirm(`${ui.workspace.remove}?`)) return;
+            library.annotations = library.annotations.filter((entry) => entry.id !== item.id);
+            persistLibrary();
+            renderLibrary();
+          });
+          actions.append(remove);
+          card.append(link, body, actions);
+          container.append(card);
+        });
+      }
+      spec.scenes.forEach((scene) => {
+        const count = library.annotations.filter((item) => item.contentId === specHash && item.sceneId === scene.id).length;
+        const badge = document.querySelector(`[data-scene-note-count="${scene.id}"]`);
+        badge.hidden = count === 0;
+        badge.textContent = `${count} ${ui.workspace.noteCount}`;
+        document.getElementById(`scene-${scene.id}`).dataset.hasNotes = String(count > 0);
+      });
+    };
+    const renderFavoriteButtons = () => {
+      const documentFavorite = library.favorites.some((item) => item.id === favoriteId("document"));
+      const documentButton = document.querySelector("[data-document-favorite]");
+      documentButton.setAttribute("aria-pressed", String(documentFavorite));
+      documentButton.textContent = documentFavorite ? ui.workspace.favoritedDocument : ui.workspace.favoriteDocument;
+      document.querySelectorAll("[data-scene-favorite]").forEach((button) => {
+        const active = library.favorites.some((item) => item.id === favoriteId("scene", button.dataset.sceneFavorite));
+        button.setAttribute("aria-pressed", String(active));
+        button.textContent = active ? ui.workspace.favoritedScene : ui.workspace.favoriteScene;
+      });
+    };
+    const renderLibrary = () => {
+      updateStorageNotice();
+      renderFavorites();
+      renderHistory();
+      renderAnnotations();
+      renderFavoriteButtons();
+    };
+    document.querySelector("[data-library-enable]").addEventListener("click", () => {
+      libraryEnabled = true;
+      library.noticeVersion = 1;
+      registerCurrentDocument();
+      persistLibrary();
+      renderLibrary();
+    });
+    document.querySelector("[data-document-favorite]").addEventListener("click", () => {
+      if (!ensureLibrary()) return;
+      const id = favoriteId("document");
+      if (library.favorites.some((item) => item.id === id)) library.favorites = library.favorites.filter((item) => item.id !== id);
+      else {
+        if (library.favorites.length >= MAX_FAVORITES) { rejectLibraryGrowth(); return; }
+        library.favorites.push({ id, type: "document", contentId: specHash, sceneId: "", title: spec.title, sceneTitle: "", url: currentUrl, createdAt: Date.now() });
+      }
+      persistLibrary();
+      renderLibrary();
+    });
+    document.querySelectorAll("[data-scene-favorite]").forEach((button) => button.addEventListener("click", () => {
+      if (!ensureLibrary()) return;
+      const sceneId = button.dataset.sceneFavorite;
+      const id = favoriteId("scene", sceneId);
+      if (library.favorites.some((item) => item.id === id)) library.favorites = library.favorites.filter((item) => item.id !== id);
+      else {
+        if (library.favorites.length >= MAX_FAVORITES) { rejectLibraryGrowth(); return; }
+        library.favorites.push({ id, type: "scene", contentId: specHash, sceneId, title: spec.title, sceneTitle: currentSceneTitles.get(sceneId), url: currentUrl, createdAt: Date.now() });
+      }
+      persistLibrary();
+      renderLibrary();
+    }));
+    document.querySelectorAll("[data-scene-annotate]").forEach((button) => button.addEventListener("click", () => {
+      if (!ensureLibrary()) return;
+      resetAnnotationEditor();
+      document.getElementById("annotation-scene").value = button.dataset.sceneAnnotate;
+      openWorkspace("annotations");
+      window.requestAnimationFrame(() => document.getElementById("annotation-text").focus());
+    }));
+    document.querySelector("[data-annotation-save]").addEventListener("click", () => {
+      if (!ensureLibrary()) return;
+      const textarea = document.getElementById("annotation-text");
+      const body = textarea.value.trim();
+      if (!body) {
+        textarea.setCustomValidity(ui.workspace.annotationPlaceholder);
+        textarea.reportValidity();
+        return;
+      }
+      textarea.setCustomValidity("");
+      const sceneId = document.getElementById("annotation-scene").value;
+      const now = Date.now();
+      if (editingAnnotationId) {
+        library.annotations = library.annotations.map((item) => item.id === editingAnnotationId ? { ...item, sceneId, sceneTitle: currentSceneTitles.get(sceneId), body: body.slice(0, 1200), updatedAt: now } : item);
+      } else {
+        if (library.annotations.length >= MAX_ANNOTATIONS) { rejectLibraryGrowth(); return; }
+        library.annotations.push({
+          id: `annotation:${specHash}:${sceneId}:${now.toString(36)}`,
+          contentId: specHash,
+          sceneId,
+          body: body.slice(0, 1200),
+          documentTitle: spec.title,
+          sceneTitle: currentSceneTitles.get(sceneId),
+          url: currentUrl,
+          createdAt: now,
+          updatedAt: now
+        });
+      }
+      resetAnnotationEditor();
+      persistLibrary();
+      renderLibrary();
+    });
+    document.querySelector("[data-annotation-cancel]").addEventListener("click", resetAnnotationEditor);
+    window.addEventListener("storage", (event) => {
+      if (event.key !== STORAGE_KEY && event.key !== null) return;
+      if (event.newValue === null) {
+        library = emptyLibrary();
+        libraryEnabled = false;
+        storageAvailable = ["http:", "https:"].includes(window.location.protocol);
+        renderLibrary();
+        return;
+      }
+      try {
+        library = decodeLibrary(JSON.parse(event.newValue));
+        libraryEnabled = library.noticeVersion === 1;
+        storageAvailable = ["http:", "https:"].includes(window.location.protocol);
+        renderLibrary();
+      } catch {
+        storageAvailable = false;
+        updateStorageNotice();
+      }
+    });
+    if (libraryEnabled) {
+      registerCurrentDocument();
+      persistLibrary();
+    }
+    renderLibrary();
+    const exportStatus = document.getElementById("workspace-export-status");
+    const safeFilename = (value) => value.replace(/[\\/:*?"<>|]+/g, "-").replace(/\s+/g, "-").slice(0, 80) || "fireworks-open-eli5";
+    let lastExportUrl = "";
+    const downloadBlob = (blob, filename, metadata = {}) => {
+      if (lastExportUrl) URL.revokeObjectURL(lastExportUrl);
+      const url = URL.createObjectURL(blob);
+      lastExportUrl = url;
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.textContent = filename;
+      link.dataset.exportSize = String(blob.size);
+      link.dataset.exportType = blob.type;
+      Object.entries(metadata).forEach(([key, value]) => { link.dataset[key] = String(value); });
+      exportStatus.replaceChildren(document.createTextNode(`${ui.workspace.exportReady} `), link);
+      link.click();
+    };
+    window.addEventListener("beforeunload", () => { if (lastExportUrl) URL.revokeObjectURL(lastExportUrl); });
+    const canvasTokens = (text) => {
+      const tokens = [];
+      let word = "";
+      const flushWord = () => {
+        if (!word) return;
+        tokens.push(word);
+        word = "";
+      };
+      for (const character of Array.from(String(text ?? ""))) {
+        if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(character)) {
+          flushWord();
+          tokens.push(character);
+        } else if (/\s/u.test(character)) {
+          flushWord();
+          tokens.push(character);
+        } else if (/[\p{Letter}\p{Number}\p{Mark}]/u.test(character) || (word && /[-_'./+]/u.test(character))) {
+          word += character;
+        } else {
+          flushWord();
+          tokens.push(character);
+        }
+      }
+      flushWord();
+      return tokens;
+    };
+    const canvasLines = (context, text, maxWidth, maxLines) => {
+      const lines = [];
+      let current = "";
+      const pushCurrent = () => {
+        if (!current.trim()) return;
+        lines.push(current.trim());
+        current = "";
+      };
+      const appendOversizedToken = (token) => {
+        for (const character of Array.from(token)) {
+          const next = current + character;
+          if (context.measureText(next).width <= maxWidth || !current) current = next;
+          else {
+            pushCurrent();
+            current = character.trimStart();
+          }
+        }
+      };
+      for (const token of canvasTokens(text)) {
+        if (!current && /^\s+$/u.test(token)) continue;
+        const next = current + token;
+        if (context.measureText(next).width <= maxWidth) {
+          current = next;
+          continue;
+        }
+        pushCurrent();
+        const nextLineToken = token.trimStart();
+        if (!nextLineToken) continue;
+        if (context.measureText(nextLineToken).width <= maxWidth) current = nextLineToken;
+        else appendOversizedToken(nextLineToken);
+      }
+      pushCurrent();
+      if (lines.length > maxLines) {
+        lines.length = maxLines;
+        let last = lines[maxLines - 1];
+        while (last && context.measureText(`${last}…`).width > maxWidth) last = Array.from(last).slice(0, -1).join("");
+        lines[maxLines - 1] = `${last.trimEnd()}…`;
+      }
+      return lines;
+    };
+    const canvasRoundedRect = (context, x, y, width, height, radius) => {
+      const r = Math.min(radius, width / 2, height / 2);
+      context.beginPath();
+      context.moveTo(x + r, y);
+      context.lineTo(x + width - r, y);
+      context.quadraticCurveTo(x + width, y, x + width, y + r);
+      context.lineTo(x + width, y + height - r);
+      context.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+      context.lineTo(x + r, y + height);
+      context.quadraticCurveTo(x, y + height, x, y + height - r);
+      context.lineTo(x, y + r);
+      context.quadraticCurveTo(x, y, x + r, y);
+      context.closePath();
+    };
+    const sceneEvidenceForExport = (scene) => [...new Set([...(scene.evidence ?? []), ...scene.nodes.flatMap((node) => node.evidence ?? [])])]
+      .map((id) => evidenceById.get(id))
+      .filter(Boolean);
+    const exportedSceneCanvas = async (sceneId) => {
+      const scene = spec.scenes.find((item) => item.id === sceneId);
+      const source = document.querySelector(`[data-scene-diagram="${sceneId}"] svg`);
+      if (!scene || !source) throw new Error("missing scene");
+      const clone = source.cloneNode(true);
+      clone.setAttribute("xmlns", ns);
+      clone.removeAttribute("role");
+      clone.removeAttribute("aria-label");
+      clone.querySelectorAll("[tabindex]").forEach((node) => node.removeAttribute("tabindex"));
+      clone.querySelectorAll(".trace-active,.trace-visited,.trace-next,.trace-edge-active,.trace-edge-visited").forEach((node) => {
+        node.classList.remove("trace-active", "trace-visited", "trace-next", "trace-edge-active", "trace-edge-visited");
+      });
+      clone.querySelectorAll("[data-edge-id]").forEach((edge) => edge.setAttribute("marker-end", `url(#arrow-${sceneId})`));
+      const style = makeSvg("style", {}, `
+        .svg-edge{fill:none;stroke:#8c8e9d;stroke-width:2}
+        .svg-edge-label{font:700 12px ui-rounded,Arial,sans-serif;fill:#596071}
+        .svg-label-bg{fill:#fffaf0;stroke:#c9c3b4}
+        .svg-node rect{fill:#fffaf0;stroke:#40458f;stroke-width:2}
+        .svg-node.kind-store rect{stroke:#0f7c78;stroke-dasharray:5 3}
+        .svg-node.kind-decision rect{stroke:#d48a19}
+        .svg-node.kind-event rect{stroke:#b44b43}
+        .svg-node text{fill:#18203b}
+        .svg-kind{fill:#0f7c78!important;font:800 11px ui-rounded,Arial,sans-serif;letter-spacing:1px}
+        .svg-title{font:800 15px ui-rounded,Arial,sans-serif}
+        .svg-detail{fill:#596071!important;font:12px ui-rounded,Arial,sans-serif}
+      `);
+      clone.prepend(style);
+      const serialized = new XMLSerializer().serializeToString(clone);
+      const diagramImage = new Image();
+      await new Promise((resolve, reject) => {
+        diagramImage.onload = resolve;
+        diagramImage.onerror = reject;
+        diagramImage.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(serialized)}`;
+      });
+      const canvas = document.createElement("canvas");
+      canvas.width = 1600;
+      canvas.height = 900;
+      const context = canvas.getContext("2d");
+      context.fillStyle = "#f4efdf";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = "rgba(64,69,143,.08)";
+      for (let x = 24; x < canvas.width; x += 24) {
+        for (let y = 24; y < canvas.height; y += 24) {
+          context.beginPath();
+          context.arc(x, y, 1, 0, Math.PI * 2);
+          context.stroke();
+        }
+      }
+      const index = spec.scenes.findIndex((item) => item.id === sceneId) + 1;
+      context.strokeStyle = "#d48a19";
+      context.lineWidth = 2;
+      context.beginPath();
+      context.arc(90, 90, 32, 0, Math.PI * 2);
+      context.stroke();
+      context.fillStyle = "#d48a19";
+      context.font = "800 25px ui-monospace,monospace";
+      context.textAlign = "center";
+      context.fillText(String(index).padStart(2, "0"), 90, 99);
+      context.textAlign = "left";
+      context.fillStyle = "#18203b";
+      context.font = "700 58px Georgia,serif";
+      canvasLines(context, scene.title, 1320, 2).forEach((line, lineIndex) => context.fillText(line, 150, 92 + lineIndex * 62));
+      context.fillStyle = "#596071";
+      context.font = "28px ui-rounded,Arial,sans-serif";
+      canvasLines(context, scene.summary, 1320, 2).forEach((line, lineIndex) => context.fillText(line, 150, 178 + lineIndex * 38));
+      const viewBox = source.viewBox.baseVal;
+      const availableWidth = 1500, availableHeight = 460;
+      const scale = Math.min(availableWidth / viewBox.width, availableHeight / viewBox.height);
+      const drawWidth = viewBox.width * scale, drawHeight = viewBox.height * scale;
+      context.drawImage(diagramImage, (canvas.width - drawWidth) / 2, 238 + (availableHeight - drawHeight) / 2, drawWidth, drawHeight);
+      const evidenceItems = sceneEvidenceForExport(scene);
+      const shownEvidence = evidenceItems.slice(0, 3);
+      if (shownEvidence.length) {
+        const gap = 18, left = 50, top = 716, height = 160;
+        const cardWidth = (1500 - gap * (shownEvidence.length - 1)) / shownEvidence.length;
+        shownEvidence.forEach((item, evidenceIndex) => {
+          const x = left + evidenceIndex * (cardWidth + gap);
+          canvasRoundedRect(context, x, top, cardWidth, height, 16);
+          context.fillStyle = "rgba(255,250,240,.96)";
+          context.fill();
+          context.strokeStyle = item.status === "verified" ? "#0f7c78" : item.status === "inferred" ? "#d48a19" : "#40458f";
+          context.lineWidth = 3;
+          context.stroke();
+          context.fillStyle = context.strokeStyle;
+          context.font = "800 15px ui-monospace,monospace";
+          context.fillText(ui.status[item.status], x + 16, top + 25);
+          context.fillStyle = "#18203b";
+          context.font = "800 20px ui-rounded,Arial,sans-serif";
+          canvasLines(context, item.label, cardWidth - 32, 2).forEach((line, lineIndex) => context.fillText(line, x + 16, top + 52 + lineIndex * 21));
+          context.fillStyle = "#596071";
+          context.font = "15px ui-rounded,Arial,sans-serif";
+          canvasLines(context, item.note, cardWidth - 32, 2).forEach((line, lineIndex) => context.fillText(line, x + 16, top + 101 + lineIndex * 19));
+          const sourceLabel = item.url ? new URL(item.url).hostname.replace(/^www\./, "") : item.path ?? ui.noSourceLocator;
+          context.fillStyle = "#40458f";
+          context.font = "800 13px ui-monospace,monospace";
+          canvasLines(context, sourceLabel, cardWidth - 32, 1).forEach((line) => context.fillText(line, x + 16, top + 146));
+        });
+      }
+      return canvas;
+    };
+    const canvasPngBlob = (canvas) => new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("PNG encoding failed")), "image/png"));
+    const currentSceneId = () => {
+      const active = document.querySelector(".trace-active")?.closest(".scene")?.dataset.sceneId;
+      if (active) return active;
+      const center = window.innerHeight / 2;
+      return spec.scenes.map((scene) => {
+        const rect = document.getElementById(`scene-${scene.id}`).getBoundingClientRect();
+        return { id: scene.id, distance: Math.abs((rect.top + rect.bottom) / 2 - center) };
+      }).sort((a, b) => a.distance - b.distance)[0].id;
+    };
+    const xmlEscape = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
+    const crcTable = (() => {
+      const table = new Uint32Array(256);
+      for (let n = 0; n < 256; n += 1) {
+        let c = n;
+        for (let k = 0; k < 8; k += 1) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+        table[n] = c >>> 0;
+      }
+      return table;
+    })();
+    const crc32 = (bytes) => {
+      let crc = 0xffffffff;
+      for (const byte of bytes) crc = crcTable[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+      return (crc ^ 0xffffffff) >>> 0;
+    };
+    const zipStored = (files, mimeType) => {
+      const encoder = new TextEncoder();
+      const localParts = [], centralParts = [];
+      let offset = 0, centralSize = 0;
+      files.forEach((file) => {
+        const name = encoder.encode(file.name);
+        const data = typeof file.data === "string" ? encoder.encode(file.data) : file.data;
+        const crc = crc32(data);
+        const local = new Uint8Array(30 + name.length);
+        const localView = new DataView(local.buffer);
+        localView.setUint32(0, 0x04034b50, true);
+        localView.setUint16(4, 20, true);
+        localView.setUint16(6, 0x0800, true);
+        localView.setUint16(8, 0, true);
+        localView.setUint16(10, 0, true);
+        localView.setUint16(12, 33, true);
+        localView.setUint32(14, crc, true);
+        localView.setUint32(18, data.length, true);
+        localView.setUint32(22, data.length, true);
+        localView.setUint16(26, name.length, true);
+        local.set(name, 30);
+        localParts.push(local, data);
+        const central = new Uint8Array(46 + name.length);
+        const centralView = new DataView(central.buffer);
+        centralView.setUint32(0, 0x02014b50, true);
+        centralView.setUint16(4, 20, true);
+        centralView.setUint16(6, 20, true);
+        centralView.setUint16(8, 0x0800, true);
+        centralView.setUint16(10, 0, true);
+        centralView.setUint16(12, 0, true);
+        centralView.setUint16(14, 33, true);
+        centralView.setUint32(16, crc, true);
+        centralView.setUint32(20, data.length, true);
+        centralView.setUint32(24, data.length, true);
+        centralView.setUint16(28, name.length, true);
+        centralView.setUint32(42, offset, true);
+        central.set(name, 46);
+        centralParts.push(central);
+        centralSize += central.length;
+        offset += local.length + data.length;
+      });
+      const end = new Uint8Array(22);
+      const endView = new DataView(end.buffer);
+      endView.setUint32(0, 0x06054b50, true);
+      endView.setUint16(8, files.length, true);
+      endView.setUint16(10, files.length, true);
+      endView.setUint32(12, centralSize, true);
+      endView.setUint32(16, offset, true);
+      return new Blob([...localParts, ...centralParts, end], { type: mimeType });
+    };
+    const groupShape = `<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>`;
+    const pptxBlob = (images) => {
+      const slideOverrides = images.map((_, index) => `<Override PartName="/ppt/slides/slide${index + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`).join("");
+      const slideIds = images.map((_, index) => `<p:sldId id="${256 + index}" r:id="rId${index + 2}"/>`).join("");
+      const slideRels = images.map((_, index) => `<Relationship Id="rId${index + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${index + 1}.xml"/>`).join("");
+      const theme = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Fireworks Open ELI5"><a:themeElements><a:clrScheme name="Fireworks"><a:dk1><a:srgbClr val="18203B"/></a:dk1><a:lt1><a:srgbClr val="FFFaf0"/></a:lt1><a:dk2><a:srgbClr val="40458F"/></a:dk2><a:lt2><a:srgbClr val="F4EFDF"/></a:lt2><a:accent1><a:srgbClr val="40458F"/></a:accent1><a:accent2><a:srgbClr val="0F7C78"/></a:accent2><a:accent3><a:srgbClr val="D48A19"/></a:accent3><a:accent4><a:srgbClr val="B44B43"/></a:accent4><a:accent5><a:srgbClr val="596071"/></a:accent5><a:accent6><a:srgbClr val="C9C3B4"/></a:accent6><a:hlink><a:srgbClr val="40458F"/></a:hlink><a:folHlink><a:srgbClr val="B44B43"/></a:folHlink></a:clrScheme><a:fontScheme name="Fireworks"><a:majorFont><a:latin typeface="Georgia"/><a:ea typeface="PingFang SC"/><a:cs typeface="Arial"/></a:majorFont><a:minorFont><a:latin typeface="Aptos"/><a:ea typeface="PingFang SC"/><a:cs typeface="Arial"/></a:minorFont></a:fontScheme><a:fmtScheme name="Fireworks"><a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:fillStyleLst><a:lnStyleLst><a:ln w="12700"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements><a:objectDefaults/><a:extraClrSchemeLst/></a:theme>`;
+      const files = [
+        { name: "[Content_Types].xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>${slideOverrides}</Types>` },
+        { name: "_rels/.rels", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/></Relationships>` },
+        { name: "ppt/presentation.xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>${slideIds}</p:sldIdLst><p:sldSz cx="12192000" cy="6858000" type="screen16x9"/><p:notesSz cx="6858000" cy="9144000"/><p:defaultTextStyle/></p:presentation>` },
+        { name: "ppt/_rels/presentation.xml.rels", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>${slideRels}</Relationships>` },
+        { name: "ppt/slideMasters/slideMaster1.xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree>${groupShape}</p:spTree></p:cSld><p:clrMap accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" bg1="lt1" bg2="lt2" folHlink="folHlink" hlink="hlink" tx1="dk1" tx2="dk2"/><p:sldLayoutIdLst><p:sldLayoutId id="1" r:id="rId1"/></p:sldLayoutIdLst><p:txStyles><p:titleStyle/><p:bodyStyle/><p:otherStyle/></p:txStyles></p:sldMaster>` },
+        { name: "ppt/slideMasters/_rels/slideMaster1.xml.rels", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme1.xml"/></Relationships>` },
+        { name: "ppt/slideLayouts/slideLayout1.xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" type="blank" preserve="1"><p:cSld name="Blank"><p:spTree>${groupShape}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>` },
+        { name: "ppt/slideLayouts/_rels/slideLayout1.xml.rels", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="../slideMasters/slideMaster1.xml"/></Relationships>` },
+        { name: "ppt/theme/theme1.xml", data: theme }
+      ];
+      images.forEach((image, index) => {
+        const slideNumber = index + 1;
+        files.push(
+          { name: `ppt/slides/slide${slideNumber}.xml`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree>${groupShape}<p:pic><p:nvPicPr><p:cNvPr id="2" name="${xmlEscape(spec.scenes[index].title)}"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="rId2"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12192000" cy="6858000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic></p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>` },
+          { name: `ppt/slides/_rels/slide${slideNumber}.xml.rels`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image${slideNumber}.png"/></Relationships>` },
+          { name: `ppt/media/image${slideNumber}.png`, data: image }
+        );
+      });
+      return zipStored(files, "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+    };
+    const docxBlob = (images) => {
+      const imageRelationships = images.map((_, index) => `<Relationship Id="rId${index + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image${index + 1}.png"/>`).join("");
+      const pages = images.map((_, index) => {
+        const scene = spec.scenes[index];
+        const pageBreak = index < images.length - 1 ? `<w:r><w:br w:type="page"/></w:r>` : "";
+        return `<w:p><w:pPr><w:spacing w:after="0" w:line="1" w:lineRule="exact"/></w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="12192000" cy="6858000"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="${index + 1}" name="Scene ${index + 1}" descr="${xmlEscape(scene.title)}"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${index + 1}" name="${xmlEscape(scene.title)}"/><pic:cNvPicPr><a:picLocks noChangeAspect="1"/></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId${index + 1}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12192000" cy="6858000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>${pageBreak}</w:p>`;
+      }).join("");
+      const files = [
+        { name: "[Content_Types].xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>` },
+        { name: "_rels/.rels", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>` },
+        { name: "word/document.xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>${pages}<w:sectPr><w:pgSz w:w="19200" w:h="10800" w:orient="landscape"/><w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0"/><w:cols w:space="0"/><w:docGrid w:linePitch="360"/></w:sectPr></w:body></w:document>` },
+        { name: "word/_rels/document.xml.rels", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${imageRelationships}<Relationship Id="rIdSettings" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/></Relationships>` },
+        { name: "word/settings.xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:zoom w:percent="80"/><w:displayBackgroundShape/></w:settings>` },
+        { name: "docProps/core.xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${xmlEscape(spec.title)}</dc:title><dc:creator>fireworks-open-eli5</dc:creator><cp:lastModifiedBy>fireworks-open-eli5</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">2000-01-01T00:00:00Z</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">2000-01-01T00:00:00Z</dcterms:modified></cp:coreProperties>` },
+        { name: "docProps/app.xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>fireworks-open-eli5</Application><Pages>${images.length}</Pages><Company></Company><AppVersion>1.0</AppVersion></Properties>` }
+      ];
+      images.forEach((image, index) => files.push({ name: `word/media/image${index + 1}.png`, data: image }));
+      return zipStored(files, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+    };
+    const allSceneImages = async () => {
+      const images = [];
+      for (const scene of spec.scenes) {
+        const canvas = await exportedSceneCanvas(scene.id);
+        images.push(new Uint8Array(await (await canvasPngBlob(canvas)).arrayBuffer()));
+      }
+      return images;
+    };
+    const hasZipSignature = async (blob) => {
+      const signature = new Uint8Array(await blob.slice(0, 4).arrayBuffer());
+      return ![80, 75, 3, 4].some((byte, index) => signature[index] !== byte);
+    };
+    const exportScenePng = async (sceneId) => {
+      exportStatus.textContent = ui.workspace.exporting;
+      try {
+        const canvas = await exportedSceneCanvas(sceneId);
+        const blob = await canvasPngBlob(canvas);
+        const signature = new Uint8Array(await blob.slice(0, 8).arrayBuffer());
+        if ([137, 80, 78, 71, 13, 10, 26, 10].some((byte, index) => signature[index] !== byte)) throw new Error("invalid PNG");
+        downloadBlob(blob, `${safeFilename(spec.title)}-${String(spec.scenes.findIndex((item) => item.id === sceneId) + 1).padStart(2, "0")}.png`, { exportKind: "png", sceneId });
+      } catch {
+        exportStatus.textContent = ui.workspace.exportFailed;
+      }
+    };
+    document.querySelector("[data-export-pdf]").addEventListener("click", () => {
+      closeWorkspace();
+      window.requestAnimationFrame(() => window.print());
+    });
+    document.querySelector("[data-export-image]").addEventListener("click", () => exportScenePng(currentSceneId()));
+    document.querySelectorAll("[data-scene-image]").forEach((button) => button.addEventListener("click", () => exportScenePng(button.dataset.sceneImage)));
+    document.querySelector("[data-export-pptx]").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      exportStatus.textContent = ui.workspace.exporting;
+      try {
+        const images = await allSceneImages();
+        const blob = pptxBlob(images);
+        if (!await hasZipSignature(blob)) throw new Error("invalid PPTX zip");
+        downloadBlob(blob, `${safeFilename(spec.title)}.pptx`, { exportKind: "pptx", slideCount: images.length });
+      } catch {
+        exportStatus.textContent = ui.workspace.exportFailed;
+      } finally {
+        button.disabled = false;
+      }
+    });
+    document.querySelector("[data-export-docx]").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      exportStatus.textContent = ui.workspace.exporting;
+      try {
+        const images = await allSceneImages();
+        const blob = docxBlob(images);
+        if (!await hasZipSignature(blob)) throw new Error("invalid DOCX zip");
+        downloadBlob(blob, `${safeFilename(spec.title)}.docx`, { exportKind: "docx", pageCount: images.length });
+      } catch {
+        exportStatus.textContent = ui.workspace.exportFailed;
+      } finally {
+        button.disabled = false;
+      }
+    });
+    const PAGES_CAPABILITY_TIMEOUT_MS = 10000;
+    const PAGES_POST_TIMEOUT_MS = 210000;
+    document.querySelector("[data-export-pages]").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      const isLoopback = window.location.hostname === "127.0.0.1";
+      if (!isLoopback) {
+        exportStatus.textContent = ui.workspace.pagesUnavailable;
+        return;
+      }
+      button.disabled = true;
+      let helperReady = false;
+      let conversionStarted = false;
+      try {
+        exportStatus.textContent = ui.workspace.exporting;
+        const capabilityController = new AbortController();
+        const capabilityTimeout = window.setTimeout(() => capabilityController.abort(), PAGES_CAPABILITY_TIMEOUT_MS);
+        let capabilityResponse;
+        try {
+          capabilityResponse = await fetch("/__fireworks/capabilities", {
+            cache: "no-store",
+            credentials: "same-origin",
+            headers: { Accept: "application/json" },
+            signal: capabilityController.signal
+          });
+        } finally {
+          window.clearTimeout(capabilityTimeout);
+        }
+        if (!capabilityResponse.ok) throw new Error("helper unavailable");
+        const capability = await capabilityResponse.json();
+        if (capability?.version !== 1 || capability?.pages !== true || typeof capability?.token !== "string" || capability.token.length < 32) throw new Error("Pages unavailable");
+        helperReady = true;
+        const images = await allSceneImages();
+        const source = docxBlob(images);
+        if (!await hasZipSignature(source)) throw new Error("invalid DOCX zip");
+        exportStatus.textContent = ui.workspace.pagesConverting;
+        const postController = new AbortController();
+        const postTimeout = window.setTimeout(() => postController.abort(), PAGES_POST_TIMEOUT_MS);
+        conversionStarted = true;
+        let response;
+        try {
+          response = await fetch("/__fireworks/pages", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+              "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              "X-Fireworks-Token": capability.token,
+              "X-Fireworks-Filename": encodeURIComponent(safeFilename(spec.title))
+            },
+            body: source,
+            signal: postController.signal
+          });
+        } finally {
+          window.clearTimeout(postTimeout);
+        }
+        if (!response.ok) {
+          const error = new Error("Pages conversion failed");
+          error.status = response.status;
+          throw error;
+        }
+        const blob = await response.blob();
+        if (blob.type !== "application/vnd.apple.pages" || !await hasZipSignature(blob)) throw new Error("invalid Pages package");
+        downloadBlob(blob, `${safeFilename(spec.title)}.pages`, { exportKind: "pages", pageCount: images.length });
+      } catch (error) {
+        exportStatus.textContent = error?.name === "AbortError" ? (conversionStarted ? ui.workspace.pagesTimedOut : ui.workspace.pagesUnavailable)
+          : error?.status === 409 ? ui.workspace.pagesBusy
+            : helperReady ? ui.workspace.pagesFailed : ui.workspace.pagesUnavailable;
+      } finally {
+        button.disabled = false;
+      }
+    });
+    document.querySelector("[data-failure-toggle]").addEventListener("click", (event) => {
+      const active = document.body.classList.toggle("failure-mode");
+      event.currentTarget.setAttribute("aria-pressed", String(active));
+    });
+    document.querySelectorAll(".failure-button").forEach((button) => button.addEventListener("click", () => {
+      const panel = document.getElementById(`failure-${button.dataset.failureNode}`);
+      panel.hidden = !panel.hidden;
+      button.setAttribute("aria-expanded", String(!panel.hidden));
+    }));
+    document.querySelectorAll(".reveal").forEach((button) => button.addEventListener("click", () => {
+      const answer = document.getElementById(button.getAttribute("aria-controls"));
+      answer.hidden = !answer.hidden;
+      button.setAttribute("aria-expanded", String(!answer.hidden));
+	      button.textContent = answer.hidden ? ui.reveal : ui.hide;
+    }));
+  })();
+  </script>
 </body>
 </html>
