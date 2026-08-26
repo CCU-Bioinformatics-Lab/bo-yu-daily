@@ -1,6 +1,6 @@
 # HCC1395 tumor-tree agent experiment workflow
 
-更新日期：2026-08-24
+更新日期：2026-08-25
 
 本文件把 [`arch.md`](arch.md) 的五個可替換模組接成一條可執行、可追蹤且
 fail-closed 的實驗流程。正式推理 backend 是 C++17
@@ -10,18 +10,34 @@ fail-closed 的實驗流程。正式推理 backend 是 C++17
 data input → model ↔ inference_algo → output → validation
 ```
 
+本 workflow 的目標 VAF observation model 是 PhyClone xi v1，並固定文件設定
+error_rate=0.001。這是本次文件同步的 target spec；Python、C++、tests 與 config
+尚未修改，故目前 runtime 仍未套用此公式。任何 smoke、pilot 或 formal receipt 在
+VAF contract sync 前，都不能宣稱已驗證 PhyClone xi。
+
 ## 1. 目前模組實作
 
 | 模組 | 規格文件 | 目前實作或資料 | 2026-08-24 狀態 |
 |---|---|---|---|
 | data input | [`data.md`](data.md) | `tumor_tree_pipeline/input_table.py`、`contracts.py`、目前 v4 input bundle | **可用**；input QA PASS |
-| model | [`model.md`](model.md) | `tumor_tree_pipeline/model.py`、`inference/src/model.cpp` | **可用**；目前 working tree 的 Python/C++ tests PASS |
+| model | [`model.md`](model.md) | `tumor_tree_pipeline/model.py`、`inference/src/model.cpp` | **baseline 可執行**；PhyClone xi／error_rate target 尚未同步，現有 tests 不代表 target PASS |
 | inference_algo | [`inference_algo.md`](inference_algo.md) | `inference/src/algorithm.cpp`、`cpp_backend.py` | **可用**；目前 working tree 的 C++ annealed SMC smoke PASS |
 | output | [`output.md`](output.md) | C++ repeat artifacts、workflow summary/inventory | **可產生**；目前只有 fixture smoke，不是 HCC1395 正式結果 |
 | validation | [`validation.md`](validation.md) | 尚無獨立 runner；目前 output 已提供 diagnostics 供未來讀取 | **尚未實作** |
 
 `experiment_workflow.md` 是上述模組外的 agent 編排層，不改寫 model，也不把
 validation 混入 likelihood。
+
+### 1.1 VAF target 與 runtime caveat
+
+文件 target 使用 PhyClone 的 DNA-copy-weighted expected ALT probability，並固定
+error_rate=0.001。此 target 取代 workflow／validation 對舊 q baseline 的規格定位。
+runtime 尚未同步前，必須在 run metadata 標示 vaf_formula、error_rate 與
+vaf_implementation_status=documentation_only。
+
+沒有 deterministic xi prediction、公式數值 oracle、genotype candidate marginalization
+與上述 receipt 前，VAF predictive gate 必須是 BLOCKED；不得以文件中的 xi 當成 C++
+已實作或已通過測試。
 
 ## 2. 已準備的資料
 
@@ -45,6 +61,10 @@ output/tumor_tree_pipeline/input_20260823_old_tagging_v4/
 - 30,490 列，其中 30,006 個 eligible SNV、399 個 CN-zero、85 個 unmapped；
 - `input_qa.json` 為 PASS；
 - inference 不直接讀 BAM、VCF 或 ASCAT 原始檔。
+
+目前 input bundle／config 尚未承載 error_rate=0.001 的 active runtime 設定；這個數值
+只代表 target metadata。啟用 target 前，workflow 必須將公式版本、error rate、CN
+timing model 與 implementation status 寫入 manifest／run receipt。
 
 既有 bundle 的內容可讀，但 `contracts.py` 已更新，舊 manifest 所記錄的 contract
 hash 不再是最新值。因此 agent 執行 pilot 時必須透過 `build_inputs` 從 prepared
@@ -93,8 +113,9 @@ python3 -m tumor_tree_pipeline plan \
   --config tumor_tree_pipeline/configs/pilot.active.json
 ```
 
-Agent 必須記錄 Git SHA、dirty worktree、設定檔、input path、schema、purity、K、seed
-與預計輸出目錄。`plan` 只展開 matrix，不代表實驗成功。
+Agent 必須記錄 Git SHA、dirty worktree、設定檔、input path、schema、purity、K、seed、
+vaf_formula、error_rate、vaf_implementation_status 與預計輸出目錄。`plan` 只展開 matrix，
+不代表實驗成功。
 
 ### B. 建置與 contract tests
 
@@ -123,6 +144,8 @@ Agent 只在以下條件全部成立時標記 smoke 成功：
 - `artifact_inventory.json` 與 manifest 完整；
 - 每個 repeat 有 `smc_complete.json`；
 - diagnostics 的 algorithm、particle semantics、`final_beta=1` 與 tree contract 正確。
+- 若 VAF target 尚未同步，receipt 必須明確標示
+  `vaf_implementation_status=documentation_only`；不得把 smoke 當成 PhyClone xi validation。
 
 2026-08-24 已通過的 commit-locked smoke receipt：
 
@@ -166,6 +189,8 @@ python3 -m tumor_tree_pipeline run \
 Pilot 會先從 active prepared counts 重建 input，再依序跑 `K=4,6,8`。Agent 應檢查：
 
 - 建表 QA 與 schema/hash/purity；
+- VAF formula metadata、error_rate 與 implementation status；若不是
+  `phyclone_xi_v1`／`0.001`，VAF predictive gate 為 BLOCKED；
 - beta 是否到 1；
 - conditional ESS、weighted particle ESS、resampling；
 - particle/ancestor diversity；
@@ -197,8 +222,9 @@ formal config，通過 preflight 才可執行 `run`。
 
 ## 5. Model 與 inference 如何交接
 
-Data builder 交付每個 SNV 一列的 v4 table。Model 使用 REF/ALT read counts、ASCAT
-copy number 與 purity 評分候選 tree state。C++ SMC particle 明確保存：
+Data builder 交付每個 SNV 一列的 v4 table。Target model 應使用 REF/ALT read counts、
+population copy number、tumour content、CCF、genotype candidate 與 error_rate=0.001
+評分候選 tree state。C++ SMC particle 明確保存：
 
 - tree topology；
 - `eta`（clone-local mass）。
@@ -206,6 +232,9 @@ copy number 與 purity 評分候選 tree state。C++ SMC particle 明確保存�
 `phi/CCF` 由 topology 與 eta 推導；SNV clone assignment 與 multiplicity 在 model
 內邊際化，不是 data table 的外部欄位。HP counts 目前只載入並做守恆檢查，尚未
 進入主要 likelihood。
+
+目前這段 target 描述不等於 active runtime 已完成；在 C++／Python 同步前，應將
+現有 q baseline 與 PhyClone xi 分開標記，不能混用同一份 validation receipt。
 
 ## 6. 有效的 inference 參數
 
@@ -219,6 +248,7 @@ copy number 與 purity 評分候選 tree state。C++ SMC particle 明確保存�
 | `conditional_ess_target` | 選擇下一個 beta 的 particle 穩定度目標 |
 | `resample_ess_threshold` | 何時 resample |
 | `min_rejuvenation_sweeps` | 每個 stage 固定執行的 rejuvenation sweeps |
+| `global_topology_moves` | 每個 sweep 額外嘗試幾次全域合法樹 MH；預設 1，用來降低拓樸卡在局部 mode 的風險 |
 | `seed` / repeats | 可重現的獨立 population |
 | `main_purity` | ASCAT purity；primary 為 0.99 |
 | `TUMOR_TREE_INFERENCE_THREADS` | 傳給 C++ 的 thread 設定；single repeat 會啟用 deterministic site scorer 與 topology workspace 平行化，multi-repeat 時避免 nested oversubscription |
@@ -228,9 +258,10 @@ copy number 與 purity 評分候選 tree state。C++ SMC particle 明確保存�
 順序做 reduction，維持 threads=1/2 的 deterministic output contract。worker
 barrier 仍會限制加速幅度，正式資料需依實際 K、particles、stages 與 sweeps 量測。
 舊 config 裡的
-`eta_rw_scale`、`topology_global_probability`、
-`max_rejuvenation_sweeps` 與週期性 `checkpoint_every` 並未控制目前 C++ kernel，
-agent 不得拿它們解釋實驗結果。
+`eta_rw_scale`、`topology_global_probability` 與 `max_rejuvenation_sweeps` 並未控制
+目前 C++ kernel；目前有效的拓樸全域跳轉是 `global_topology_moves`。`checkpoint_every`
+仍是輸出設定，但目前 checkpoint 只在 repeat 完成時保存。Agent 不得拿未生效的舊
+欄位解釋實驗結果。
 
 ## 7. 每個 SMC repeat 的必要輸出
 
