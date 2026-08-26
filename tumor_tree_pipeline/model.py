@@ -22,9 +22,6 @@ import numpy as np
 from .contracts import MODEL_FORBIDDEN_COLUMNS, MODEL_REQUIRED_COLUMNS
 
 
-DEFAULT_ERROR_RATE = 0.005
-
-
 class CanonicalInputError(ValueError):
     """The canonical model table violates its versioned schema contract."""
 
@@ -101,12 +98,11 @@ class CompiledModel:
         total_cn = self.total_cn[:, None]
         multiplicities = self.multiplicities[None, :]
         purity = self.data.purity
-        error = DEFAULT_ERROR_RATE
         denominator = (1.0 - purity) * 2.0 + purity * total_cn
 
         for node_index, phi in enumerate(phi_values):
             cellular_fraction = purity * phi * multiplicities / denominator
-            q_bulk = np.clip(error + (1.0 - 2.0 * error) * cellular_fraction, 1e-12, 1.0 - 1e-12)
+            q_bulk = np.clip(cellular_fraction, 1e-12, 1.0 - 1e-12)
             bulk = (
                 self.binomial_coefficient[:, None]
                 + alt * np.log(q_bulk)
@@ -338,15 +334,12 @@ def expected_alt_probability(
     site: SiteObservation,
     phi: float,
     multiplicity: float,
-    *,
-    error_rate: float = DEFAULT_ERROR_RATE,
 ) -> float:
     """Purity-aware ALT probability for one clone prevalence/multiplicity."""
 
     denominator = (1.0 - site.purity) * 2.0 + site.purity * site.total_cn
     cellular_alt_fraction = site.purity * phi * multiplicity / denominator
-    probability = error_rate + (1.0 - 2.0 * error_rate) * cellular_alt_fraction
-    return min(1.0 - 1e-12, max(1e-12, probability))
+    return min(1.0 - 1e-12, max(1e-12, cellular_alt_fraction))
 
 
 def log_binomial(ref_count: int, alt_count: int, probability: float) -> float:
@@ -356,13 +349,11 @@ def log_binomial(ref_count: int, alt_count: int, probability: float) -> float:
     return coefficient + alt_count * math.log(probability) + ref_count * math.log1p(-probability)
 
 
-def bulk_log_likelihood(
-    site: SiteObservation, phi: float, multiplicity: float, *, error_rate: float = DEFAULT_ERROR_RATE
-) -> float:
+def bulk_log_likelihood(site: SiteObservation, phi: float, multiplicity: float) -> float:
     return log_binomial(
         site.ref_reads,
         site.alt_reads,
-        expected_alt_probability(site, phi, multiplicity, error_rate=error_rate),
+        expected_alt_probability(site, phi, multiplicity),
     )
 
 
@@ -385,8 +376,6 @@ def conditional_hp_log_likelihood(
     phi: float,
     multiplicity: float,
     mutated_side: int,
-    *,
-    error_rate: float = DEFAULT_ERROR_RATE,
 ) -> float:
     """Conditional allocation of already-counted bulk ALT/REF observations.
 
@@ -398,9 +387,9 @@ def conditional_hp_log_likelihood(
     tagged = site.hp1_ref + site.hp1_alt + site.hp2_ref + site.hp2_alt
     if tagged == 0:
         return 0.0
-    q_bulk = expected_alt_probability(site, phi, multiplicity, error_rate=error_rate)
+    q_bulk = expected_alt_probability(site, phi, multiplicity)
     q_mut = q_bulk
-    q_ref = error_rate
+    q_ref = 0.0
     tag_fraction = min(1.0 - 1e-9, max(1e-9, tagged / site.total_reads))
     half_tag = tag_fraction / 2.0
     untagged = 1.0 - tag_fraction
@@ -423,9 +412,7 @@ def conditional_hp_log_likelihood(
     return alt_term + ref_term
 
 
-def _multiplicity_log_components(
-    site: SiteObservation, phi: float, *, error_rate: float = DEFAULT_ERROR_RATE
-) -> list[float]:
+def _multiplicity_log_components(site: SiteObservation, phi: float) -> list[float]:
     """Return Model A multiplicity components for one site and clone fraction.
 
     HP counts are intentionally absent.  They are validated and retained as
@@ -437,13 +424,13 @@ def _multiplicity_log_components(
         return [float("-inf")] * len(site.multiplicities)
     components: list[float] = []
     for multiplicity, prior in zip(site.multiplicities, site.multiplicity_prior):
-        bulk = bulk_log_likelihood(site, phi, multiplicity, error_rate=error_rate)
+        bulk = bulk_log_likelihood(site, phi, multiplicity)
         components.append(math.log(prior) + bulk)
     return components
 
 
 def site_multiplicity_posterior(
-    site: SiteObservation, phi: float, *, error_rate: float = DEFAULT_ERROR_RATE
+    site: SiteObservation, phi: float
 ) -> tuple[float, ...]:
     """Return ``P(m | D, CN, purity, phi)`` for loader-derived candidates.
 
@@ -453,7 +440,7 @@ def site_multiplicity_posterior(
     supplementary data and are intentionally excluded from Model A.
     """
 
-    components = _multiplicity_log_components(site, phi, error_rate=error_rate)
+    components = _multiplicity_log_components(site, phi)
     normalizer = logsumexp(components)
     if not math.isfinite(normalizer):
         return tuple(0.0 for _ in components)
@@ -461,11 +448,11 @@ def site_multiplicity_posterior(
 
 
 def site_log_likelihood(
-    site: SiteObservation, phi: float, *, error_rate: float = DEFAULT_ERROR_RATE
+    site: SiteObservation, phi: float
 ) -> float:
     """Marginalize CN-constrained multiplicity candidates for Model A."""
 
-    components = _multiplicity_log_components(site, phi, error_rate=error_rate)
+    components = _multiplicity_log_components(site, phi)
     return logsumexp(components)
 
 

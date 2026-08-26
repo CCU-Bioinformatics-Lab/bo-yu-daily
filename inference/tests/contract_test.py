@@ -282,6 +282,8 @@ def assert_smc_artifacts(output_dir: Path, *, expected_sites: int = 2) -> dict[s
     )
     config = diagnostics.get("config")
     check(isinstance(config, dict), "diagnostics.config is missing")
+    check(config.get("global_topology_moves") == 1,
+          "C++ diagnostics do not expose the active global topology move setting")
     posterior_by_site: dict[str, float] = {}
     for line in posterior_lines[1:]:
         fields = line.split("\t")
@@ -324,6 +326,11 @@ def assert_smc_artifacts(output_dir: Path, *, expected_sites: int = 2) -> dict[s
           "diagnostics do not record completion at beta=1")
     check("topology_change_rate" in diagnostics,
           "diagnostics do not record topology change rate")
+    check(
+        diagnostics.get("rejuvenation", {}).get("topology_kernel")
+        == "local_conditional_SPR_plus_global_legal_tree_MH",
+        "diagnostics do not identify the PhyClone-inspired topology kernel",
+    )
     check(
         diagnostics.get("state_variables") == ["topology", "eta"],
         "the SMC particle state must be topology/eta",

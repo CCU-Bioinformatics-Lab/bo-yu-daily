@@ -196,6 +196,8 @@ def run_smc_cpp(
         f"{config.resample_ess_threshold:.17g}",
         "--rejuvenation-sweeps",
         str(config.min_rejuvenation_sweeps),
+        "--global-topology-moves",
+        str(config.global_topology_moves),
         "--purity",
         f"{config.ascat_purity:.17g}",
         "--checkpoint-every",

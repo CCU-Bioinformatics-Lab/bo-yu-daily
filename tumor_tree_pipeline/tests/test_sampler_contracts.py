@@ -12,7 +12,6 @@ import numpy as np
 from tumor_tree_pipeline.contracts import MODEL_REQUIRED_COLUMNS
 from tumor_tree_pipeline.model import (
     CanonicalInputError,
-    DEFAULT_ERROR_RATE,
     bulk_log_likelihood,
     compile_model,
     likelihood_matrix,
@@ -202,9 +201,6 @@ class CanonicalModelContracts(unittest.TestCase):
                     rtol=0.0,
                     atol=1e-12,
                 )
-
-    def test_model_a_uses_fixed_error_rate_baseline(self):
-        self.assertEqual(DEFAULT_ERROR_RATE, 0.005)
 
     def test_vectorized_production_likelihood_matches_scalar_contract(self):
         with tempfile.TemporaryDirectory() as directory:

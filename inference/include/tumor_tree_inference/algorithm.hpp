@@ -22,6 +22,7 @@ struct InferenceConfig {
     double conditional_ess_target = 0.8;
     double resample_ess_threshold = 0.5;
     unsigned rejuvenation_sweeps = 3;
+    unsigned global_topology_moves = 1;
     bool resume = false;
 
     void validate() const;

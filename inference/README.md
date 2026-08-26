@@ -24,6 +24,11 @@ topology and eta rejuvenation. The final population is published with equal
 weights. The likelihood uses bulk counts, ASCAT static CN and `rho_ASCAT`; HP
 counts are validated supplementary information and are not a Model A term.
 
+Topology rejuvenation uses a bounded PhyClone-inspired hybrid: local conditional
+subtree prune-regraft plus configurable global legal-tree Metropolis-Hastings
+jumps (`--global-topology-moves`, default 1 per sweep). This is not a claim that
+the backend implements PhyClone's full Particle Gibbs sampler.
+
 ## Build
 
 ```bash
@@ -46,6 +51,7 @@ inference/build/tumor_tree_inference run \
   --seed 20260820 --num-nodes 6 \
   --annealing-stages 64 --particles 1024 \
   --ess-threshold 0.5 --purity 0.99 \
+  --global-topology-moves 1 \
   --checkpoint-every 1 --threads 4 --repeats 4 \
   [--exclude-file holdout.ids]
 ```
