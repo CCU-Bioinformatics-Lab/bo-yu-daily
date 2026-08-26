@@ -1,0 +1,7 @@
+weekly_ppt/
+skills-main.zip
+
+# Keep upstream PhyClone clones as local research checkouts; their histories
+# are recorded in research/phyclone/SOURCES.md rather than as opaque gitlinks.
+/research/phyclone/PhyClone/
+/research/phyclone/PhyClone-Workflow/
