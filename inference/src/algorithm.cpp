@@ -635,7 +635,8 @@ std::string config_json(const InferenceConfig& config) {
            ",\"particles\":" + std::to_string(config.particles) +
            ",\"conditional_ess_target\":" + json_number(config.conditional_ess_target) +
            ",\"resample_ess_threshold\":" + json_number(config.resample_ess_threshold) +
-           ",\"rejuvenation_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + "}";
+           ",\"rejuvenation_sweeps\":" + std::to_string(config.rejuvenation_sweeps) +
+           ",\"global_topology_moves\":" + std::to_string(config.global_topology_moves) + "}";
 }
 
 std::string rng_json(const std::mt19937_64& rng) {
@@ -924,30 +925,53 @@ public:
         auto rejuvenate = [&](Particle& particle, std::uint64_t& eta_proposals,
                               std::uint64_t& eta_accepts, std::uint64_t& topology_proposals,
                               std::uint64_t& topology_accepts) {
-            std::uniform_int_distribution<std::size_t> node_distribution(0, config.num_nodes - 1U);
-            const std::size_t node = node_distribution(rng);
-            const auto support = topology_support_for_node(particle.parents, node);
-            if (!support.empty()) {
-                topology_workspace.prepare(cumulative_phi(particle.parents, particle.eta), particle.eta);
-                std::vector<double> support_scores;
-                std::vector<Particle> support_particles;
-                support_scores.reserve(support.size());
-                support_particles.reserve(support.size());
-                for (const auto& parents : support) {
-                    Particle proposal = particle;
-                    proposal.parents = parents;
-                    proposal.log_likelihood = topology_workspace.score(cumulative_phi(proposal.parents, proposal.eta));
-                    support_scores.push_back(particle_log_target(table, proposal, beta));
-                    support_particles.push_back(std::move(proposal));
+            std::vector<std::size_t> movable_nodes;
+            for (std::size_t candidate = 0; candidate < particle.parents.size(); ++candidate) {
+                if (particle.parents[candidate] != -1) movable_nodes.push_back(candidate);
+            }
+            if (!movable_nodes.empty()) {
+                std::uniform_int_distribution<std::size_t> node_distribution(0, movable_nodes.size() - 1U);
+                const std::size_t node = movable_nodes[node_distribution(rng)];
+                const auto support = topology_support_for_node(particle.parents, node);
+                if (!support.empty()) {
+                    topology_workspace.prepare(cumulative_phi(particle.parents, particle.eta), particle.eta);
+                    std::vector<double> support_scores;
+                    std::vector<Particle> support_particles;
+                    support_scores.reserve(support.size());
+                    support_particles.reserve(support.size());
+                    for (const auto& parents : support) {
+                        Particle proposal = particle;
+                        proposal.parents = parents;
+                        proposal.log_likelihood = topology_workspace.score(cumulative_phi(proposal.parents, proposal.eta));
+                        support_scores.push_back(particle_log_target(table, proposal, beta));
+                        support_particles.push_back(std::move(proposal));
+                    }
+                    const std::size_t selected = sample_log_categorical(support_scores, rng);
+                    ++topology_proposals;
+                    ++counters["topology_proposals"];
+                    if (support_particles[selected].parents != particle.parents) {
+                        ++topology_accepts;
+                        ++counters["topology_accepted"];
+                    }
+                    particle = std::move(support_particles[selected]);
                 }
-                const std::size_t selected = sample_log_categorical(support_scores, rng);
+            }
+
+            for (unsigned move = 0; move < config.global_topology_moves; ++move) {
+                Particle proposal = particle;
+                proposal.parents = sample_tree(config.num_nodes, rng);
+                if (proposal.parents == particle.parents) continue;
+                proposal.log_likelihood = rb_log_likelihood(likelihood_scorer,
+                    cumulative_phi(proposal.parents, proposal.eta), proposal.eta);
+                const double log_acceptance = particle_log_target(table, proposal, beta) -
+                    particle_log_target(table, particle, beta);
                 ++topology_proposals;
                 ++counters["topology_proposals"];
-                if (support_particles[selected].parents != particle.parents) {
+                if (std::log(std::max(1e-300, std::generate_canonical<double, 53>(rng))) < log_acceptance) {
                     ++topology_accepts;
                     ++counters["topology_accepted"];
+                    particle = std::move(proposal);
                 }
-                particle = std::move(support_particles[selected]);
             }
 
             const auto eta_alpha = tssb_mass_prior_alpha(particle.parents);
@@ -1137,7 +1161,7 @@ public:
             ",\"observed_sites\":" + json_u64(table.sites.size()) + ",\"excluded_sites\":" + json_u64(options.exclude_ids.size()) + ",\"posterior_samples\":" + json_u64(retained.size()) +
             ",\"particle_count\":" + std::to_string(config.particles) + ",\"independent_repeat\":" + std::to_string(repeat_index + 1U) + ",\"requested_seed\":" + json_u64(config.seed) +
             ",\"derived_seed\":" + json_u64(derived_seed) + ",\"resumed\":false,\"state_variables\":[\"topology\",\"eta\"],\"rao_blackwellized_variables\":[\"assignment\",\"multiplicity\"],\"config\":" + config_json(reported_config) +
-            ",\"target\":{\"tree_prior\":\"finite_K_TSSB_shaped_working_tree_prior\",\"eta_prior\":\"finite_K_TSSB_shaped_depth_width_Dirichlet_working_prior\",\"likelihood_tempering\":\"product_site_likelihood_to_beta\",\"site_terms\":\"CN_constrained_joint_multiplicity_responsibility_Rao_Blackwellized\"},\"tree_constraint\":\"exactly_one_tumor_founder_under_structural_root\",\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"error_rate\":0.005,\"hp_role\":\"loaded_and_conservation_checked_only; reserved_for_Model_B\",\"multiplicity_role\":\"Rao_Blackwellized_joint_responsibility; not_a_table_column\",\"multiplicity_semantics\":\"weighted_joint_responsibility_marginalized_over_clone\",\"annealing\":{\"beta_schedule\":" + beta_schedule + ",\"final_beta\":" + json_number(beta) + ",\"stages\":" + annealing_stage_json + ",\"conditional_ess_target_fraction\":" + json_number(config.conditional_ess_target) + ",\"weighted_ess_resampling_threshold_fraction\":" + json_number(config.resample_ess_threshold) + "},\"rejuvenation\":{\"min_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"max_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"eta_kernel\":\"prior_shaped_Dirichlet_rejuvenation\",\"topology_kernel\":\"conditional_single_founder_topology_Gibbs\",\"stages\":" + rejuvenation_stage_json + "},\"weighted_particle_ess_fraction\":" + json_number(stages.empty() ? 1.0 : stages.back().weighted_ess / static_cast<double>(config.particles)) +
+            ",\"target\":{\"tree_prior\":\"finite_K_TSSB_shaped_working_tree_prior\",\"eta_prior\":\"finite_K_TSSB_shaped_depth_width_Dirichlet_working_prior\",\"likelihood_tempering\":\"product_site_likelihood_to_beta\",\"site_terms\":\"CN_constrained_joint_multiplicity_responsibility_Rao_Blackwellized\"},\"tree_constraint\":\"exactly_one_tumor_founder_under_structural_root\",\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"hp_role\":\"loaded_and_conservation_checked_only; reserved_for_Model_B\",\"multiplicity_role\":\"Rao_Blackwellized_joint_responsibility; not_a_table_column\",\"multiplicity_semantics\":\"weighted_joint_responsibility_marginalized_over_clone\",\"annealing\":{\"beta_schedule\":" + beta_schedule + ",\"final_beta\":" + json_number(beta) + ",\"stages\":" + annealing_stage_json + ",\"conditional_ess_target_fraction\":" + json_number(config.conditional_ess_target) + ",\"weighted_ess_resampling_threshold_fraction\":" + json_number(config.resample_ess_threshold) + "},\"rejuvenation\":{\"min_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"max_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"eta_kernel\":\"prior_shaped_Dirichlet_rejuvenation\",\"topology_kernel\":\"local_conditional_SPR_plus_global_legal_tree_MH\",\"global_topology_moves_per_sweep\":" + std::to_string(config.global_topology_moves) + ",\"stages\":" + rejuvenation_stage_json + "},\"weighted_particle_ess_fraction\":" + json_number(stages.empty() ? 1.0 : stages.back().weighted_ess / static_cast<double>(config.particles)) +
             ",\"conditional_ess_fraction\":" + json_number(stages.empty() ? 1.0 : stages.back().conditional_ess / static_cast<double>(config.particles)) + ",\"particle_diversity\":" + json_number(particle_diversity) + ",\"ancestor_diversity\":" + json_number(stages.empty() ? 1.0 : stages.back().ancestor_diversity) +
             ",\"resampling_count\":" + json_u64(static_cast<std::uint64_t>(std::count_if(stages.begin(), stages.end(), [](const Stage& stage) { return stage.resampled; }))) +
             ",\"eta_acceptance\":" + json_number(eta_rate) + ",\"topology_acceptance\":" + json_number(topology_rate) + ",\"topology_change_rate\":" + json_number(topology_rate) + ",\"ccf_summary_semantics\":\"particle_weighted_quantiles\",\"topology_summary_semantics\":\"particle_weighted_canonical_edge_support\",\"particle_history_artifact\":\"particle_history.jsonl.gz\",\"posterior_summary_artifact\":\"posterior_summary.tsv.gz\",\"topology_summary_artifact\":\"topology_summary.tsv\",\"multiplicity_posterior_artifact\":\"multiplicity_posterior.tsv.gz\",\"diagnostics_contract\":\"smc_particle_diagnostics_v1\",\"phi_mean\":" + json_double_array(phi_mean) +
@@ -1193,6 +1217,7 @@ void InferenceConfig::validate() const {
     if (particles < 2 || particles > 100000) throw std::runtime_error("particles must be between 2 and 100000");
     if (!(resample_ess_threshold > 0.0 && resample_ess_threshold < conditional_ess_target && conditional_ess_target <= 1.0)) throw std::runtime_error("SMC ESS thresholds must satisfy 0 < ess-threshold < conditional-ess-target <= 1");
     if (rejuvenation_sweeps == 0) throw std::runtime_error("rejuvenation-sweeps must be positive");
+    if (global_topology_moves > 1000) throw std::runtime_error("global-topology-moves is unreasonably large");
 }
 
 AlgorithmPtr make_rao_blackwellized_annealed_smc() { return std::make_unique<RaoBlackwellizedAnnealedSmcContract>(); }

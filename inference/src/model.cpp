@@ -21,7 +21,6 @@
 namespace tumor_tree_inference {
 namespace {
 
-constexpr double kErrorRate = 0.005;
 const std::vector<std::string> kRequiredColumns = {
     "mutation_id", "chrom", "pos", "ref", "alt", "ref_reads", "alt_reads", "total_reads",
     "hp1_1_ref", "hp1_1_alt", "hp2_1_ref", "hp2_1_alt", "major_cn", "minor_cn", "total_cn",
@@ -209,7 +208,7 @@ double expected_alt_probability(const Site& site, double phi, int multiplicity) 
         ? site.purity_cn_denominator
         : (1.0 - site.purity) * 2.0 + site.purity * site.total_cn;
     const double cellular_fraction = site.purity * phi * static_cast<double>(multiplicity) / denominator;
-    return std::clamp(kErrorRate + (1.0 - 2.0 * kErrorRate) * cellular_fraction, 1e-12, 1.0 - 1e-12);
+    return std::clamp(cellular_fraction, 1e-12, 1.0 - 1e-12);
 }
 
 std::vector<double> multiplicity_log_components(const Site& site, double phi) {

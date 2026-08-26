@@ -75,7 +75,7 @@ void print_help() {
               << "Options:\n"
               << "  --seed N --num-nodes N --annealing-stages N --particles N\n"
               << "  --conditional-ess-target FRACTION --ess-threshold FRACTION\n"
-              << "  --rejuvenation-sweeps N\n"
+              << "  --rejuvenation-sweeps N --global-topology-moves N\n"
               << "  --purity RHO --checkpoint-every N --threads N --repeats N\n"
               << "  --exclude-file IDS.txt --resume\n\n"
               << "Each completed repeat writes samples.jsonl.gz, multiplicity_posterior.tsv.gz,\n"
@@ -103,6 +103,7 @@ Cli parse_cli(int argc, char** argv) {
         else if (flag == "--conditional-ess-target") cli.config.conditional_ess_target = parse_double(require_value(index, argc, argv, flag), flag);
         else if (flag == "--ess-threshold") cli.config.resample_ess_threshold = parse_double(require_value(index, argc, argv, flag), flag);
         else if (flag == "--rejuvenation-sweeps") cli.config.rejuvenation_sweeps = parse_unsigned<unsigned>(require_value(index, argc, argv, flag), flag);
+        else if (flag == "--global-topology-moves") cli.config.global_topology_moves = parse_unsigned<unsigned>(require_value(index, argc, argv, flag), flag);
         else if (flag == "--exclude-file") cli.exclude_file = require_value(index, argc, argv, flag);
         else if (flag == "--resume") cli.config.resume = true;
         else usage_error("unknown option: " + flag);

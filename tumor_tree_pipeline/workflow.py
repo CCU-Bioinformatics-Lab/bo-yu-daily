@@ -97,6 +97,7 @@ class ExperimentConfig:
     max_rejuvenation_sweeps: int = 3
     eta_rw_scale: float = 0.10
     topology_global_probability: float = 0.20
+    global_topology_moves: int = 1
     checkpoint_every: int = 1
     holdout_fraction: float = 0.20
     gate_thresholds: GateThresholds = field(default_factory=GateThresholds)
@@ -175,6 +176,7 @@ class ExperimentConfig:
             max_rejuvenation_sweeps=self.max_rejuvenation_sweeps,
             eta_rw_scale=self.eta_rw_scale,
             topology_global_probability=self.topology_global_probability,
+            global_topology_moves=self.global_topology_moves,
             ascat_purity=self.main_purity,
             checkpoint_every=self.checkpoint_every,
         ).validate()
@@ -1040,6 +1042,7 @@ def _run_cell(
                 max_rejuvenation_sweeps=config.max_rejuvenation_sweeps,
                 eta_rw_scale=config.eta_rw_scale,
                 topology_global_probability=config.topology_global_probability,
+                global_topology_moves=config.global_topology_moves,
                 ascat_purity=cell.purity,
                 checkpoint_every=config.checkpoint_every,
             )

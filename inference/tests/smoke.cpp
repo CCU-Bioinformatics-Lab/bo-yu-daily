@@ -72,7 +72,7 @@ double reference_site_log_likelihood(const tumor_tree_inference::Site& site, dou
     for (std::size_t index = 0; index < site.multiplicity_candidates.size(); ++index) {
         const double multiplicity = static_cast<double>(site.multiplicity_candidates[index]);
         const double cellular_fraction = site.purity * phi * multiplicity / denominator;
-        const double probability = std::clamp(0.005 + 0.99 * cellular_fraction, 1e-12, 1.0 - 1e-12);
+        const double probability = std::clamp(0.99 * cellular_fraction, 1e-12, 1.0 - 1e-12);
         components.push_back(
             std::log(site.multiplicity_prior[index]) + log_coefficient +
             static_cast<double>(site.alt_reads) * std::log(probability) +

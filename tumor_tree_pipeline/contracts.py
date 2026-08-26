@@ -98,6 +98,7 @@ class SMCConfig:
     max_rejuvenation_sweeps: int = 3
     eta_rw_scale: float = 0.10
     topology_global_probability: float = 0.20
+    global_topology_moves: int = 1
     ascat_purity: float = 0.99
     checkpoint_every: int = 1
 
@@ -119,6 +120,8 @@ class SMCConfig:
             raise ValueError("eta_rw_scale must be positive")
         if not 0.0 <= self.topology_global_probability <= 1.0:
             raise ValueError("topology_global_probability must be in [0, 1]")
+        if self.global_topology_moves < 0:
+            raise ValueError("global_topology_moves must be non-negative")
         if not 0.0 < self.ascat_purity <= 1.0:
             raise ValueError("ascat_purity must be in (0, 1]")
         if self.checkpoint_every <= 0:

@@ -247,23 +247,39 @@ def _rejuvenate(
 
             child = int(rng.integers(1, config.num_nodes))
             candidate = particle.parents.copy()
-            if rng.random() < config.topology_global_probability:
-                candidate = _random_tree(rng, config.num_nodes)
-            else:
-                candidate[child] = int(rng.integers(0, child))
-            if np.array_equal(candidate, particle.parents):
+            candidate[child] = int(rng.integers(0, child))
+            if not np.array_equal(candidate, particle.parents):
+                candidate_prior = _tree_log_prior(candidate)
+                candidate_ll = _score(compiled, candidate, particle.eta)
+                log_accept = (
+                    beta * (candidate_ll - particle.log_likelihood)
+                    + candidate_prior - particle.log_prior
+                )
                 topology_proposals += 1
-                continue
-            candidate_prior = _tree_log_prior(candidate)
-            candidate_ll = _score(compiled, candidate, particle.eta)
-            log_accept = beta * (candidate_ll - particle.log_likelihood)
-            topology_proposals += 1
-            if math.log(rng.random()) < min(0.0, log_accept):
-                particle.parents = candidate
-                particle.log_likelihood = candidate_ll
-                particle.log_prior = candidate_prior
-                topology_accepted += 1
-                topology_changes += 1
+                if math.log(rng.random()) < min(0.0, log_accept):
+                    particle.parents = candidate
+                    particle.log_likelihood = candidate_ll
+                    particle.log_prior = candidate_prior
+                    topology_accepted += 1
+                    topology_changes += 1
+
+            for _ in range(config.global_topology_moves):
+                candidate = _random_tree(rng, config.num_nodes)
+                if np.array_equal(candidate, particle.parents):
+                    continue
+                candidate_prior = _tree_log_prior(candidate)
+                candidate_ll = _score(compiled, candidate, particle.eta)
+                log_accept = (
+                    beta * (candidate_ll - particle.log_likelihood)
+                    + candidate_prior - particle.log_prior
+                )
+                topology_proposals += 1
+                if math.log(rng.random()) < min(0.0, log_accept):
+                    particle.parents = candidate
+                    particle.log_likelihood = candidate_ll
+                    particle.log_prior = candidate_prior
+                    topology_accepted += 1
+                    topology_changes += 1
 
         eta_rate = eta_accepted / max(1, eta_proposals)
         topology_rate = topology_accepted / max(1, topology_proposals)
@@ -567,7 +583,6 @@ def run_smc(
         "tree_constraint": "exactly_one_tumor_founder_under_structural_root",
         "eta_semantics": "simplex_of_local_clone_masses; phi_is_descendant_sum",
         "purity_role": "ASCAT_purity_in_observation_emission",
-        "error_rate": 0.005,
         "hp_role": "loaded_and_conservation_checked_only; reserved_for_Model_B",
         "multiplicity_role": "Rao_Blackwellized_joint_responsibility; not_a_table_column",
         "config": dataclasses.asdict(config),
