@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-08-26 今日主線</title>
+<link rel="stylesheet" href="assets/slides.css">
+</head>
+<body>
+<div class="wrap">
+<!-- SLIDE:START -->
+<div class="slide-outer">
+  <div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:10px;">
+    <div class="slide-label">今日主線</div>
+    <h2 style="font-size:28px;margin:0;">今天把「模型規格」和「架構說明」都收斂成可核對的版本</h2>
+    <p class="lead" style="font-size:16px;">上午先釐清 PhyClone 的輸入與 VAF 設計；接著整理 repo 的研究生產線與 HTML 報告，最後把「目前已能做什麼」和「還不能宣稱什麼」分開。</p>
+
+    <div style="display:flex;align-items:stretch;gap:8px;background:#f8fafc;border:1px solid #dbe4ef;border-radius:12px;padding:12px 14px;">
+      <div style="flex:1;background:#eaf3ff;border:1px solid #b8d4f5;border-radius:9px;padding:12px 14px;">
+        <div style="font-size:13px;color:#1d4ed8;font-weight:800;">主題 1 · PhyClone 輸入與模型契約</div>
+        <div style="font-size:19px;font-weight:900;color:#0f172a;margin-top:6px;">CNV／SNV → xi target</div>
+        <div style="font-size:13px;color:#475569;margin-top:4px;line-height:1.45;">把 `normal_cn`、reads、purity、error floor 和 CN timing 一起講清楚。</div>
+      </div>
+      <div style="width:24px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#94a3b8;">→</div>
+      <div style="flex:1;background:#effcf6;border:1px solid #b8e4cd;border-radius:9px;padding:12px 14px;">
+        <div style="font-size:13px;color:#15803d;font-weight:800;">主題 2 · 架構報告與可信度</div>
+        <div style="font-size:19px;font-weight:900;color:#0f172a;margin-top:6px;">資料 → 候選答案 → 證據</div>
+        <div style="font-size:13px;color:#475569;margin-top:4px;line-height:1.45;">用白話說模組責任，並把 diagnostic candidate 和 biological truth 分開。</div>
+      </div>
+    </div>
+
+    <div style="font-size:14px;font-weight:800;color:#334155;margin-top:2px;">一條研究生產線的白話版</div>
+    <div style="display:flex;align-items:stretch;gap:0;min-height:118px;">
+      <div class="ap-node" style="flex:1;border-top:4px solid #3b82f6;background:#f5f9ff;padding:11px 12px;"><div class="ap-title" style="color:#1d4ed8;font-size:16px;">① 整理資料</div><div class="ap-sub" style="font-size:13px;">把 reads、CN、purity 做成 SNV 小卡</div><div class="ap-chip" style="margin-top:9px;background:#dbeafe;color:#1e40af;">data input</div></div>
+      <div class="ap-arr"><div class="ap-arr-bar" style="background:#3b82f6;"><div class="ap-arr-head" style="border-left-color:#3b82f6;"></div></div></div>
+      <div class="ap-node" style="flex:1;border-top:4px solid #6366f1;background:#f7f7ff;padding:11px 12px;"><div class="ap-title" style="color:#4338ca;font-size:16px;">② 定義評分</div><div class="ap-sub" style="font-size:13px;">問候選答案能不能解釋 reads</div><div class="ap-chip" style="margin-top:9px;background:#e0e7ff;color:#3730a3;">model</div></div>
+      <div class="ap-arr"><div class="ap-arr-bar" style="background:#6366f1;"><div class="ap-arr-head" style="border-left-color:#6366f1;"></div></div></div>
+      <div class="ap-node" style="flex:1;border-top:4px solid #8b5cf6;background:#fbf8ff;padding:11px 12px;"><div class="ap-title" style="color:#7c3aed;font-size:16px;">③ 搜尋候選</div><div class="ap-sub" style="font-size:13px;">反覆試不同樹和 clone 比例</div><div class="ap-chip" style="margin-top:9px;background:#ede9fe;color:#6d28d9;">SMC</div></div>
+      <div class="ap-arr"><div class="ap-arr-bar" style="background:#8b5cf6;"><div class="ap-arr-head" style="border-left-color:#8b5cf6;"></div></div></div>
+      <div class="ap-node" style="flex:1;border-top:4px solid #f59e0b;background:#fffaf0;padding:11px 12px;"><div class="ap-title" style="color:#a16207;font-size:16px;">④ 整理結果</div><div class="ap-sub" style="font-size:13px;">輸出 topology、CCF、SNV 歸屬</div><div class="ap-chip" style="margin-top:9px;background:#fef3c7;color:#92400e;">candidate output</div></div>
+      <div class="ap-arr"><div class="ap-arr-bar" style="background:#f59e0b;"><div class="ap-arr-head" style="border-left-color:#f59e0b;"></div></div></div>
+      <div class="ap-node" style="flex:1;border-top:4px solid #16a34a;background:#f3fff7;padding:11px 12px;"><div class="ap-title" style="color:#15803d;font-size:16px;">⑤ 檢查證據</div><div class="ap-sub" style="font-size:13px;">確認現在最多能相信到哪裡</div><div class="ap-chip" style="margin-top:9px;background:#dcfce7;color:#166534;">validation / gate</div></div>
+    </div>
+
+    <div class="takeaway" style="font-size:15px;margin-top:2px;"><b>今天的收斂：</b> 文件可以先定義 PhyClone `xi` 和 `error_rate=0.001` 的方向，但目前 C++／Python runtime 仍是舊 q-baseline；SMC 能跑不等於 formal validation 或 biological truth 已通過。</div>
+    <div style="font-size:10px;color:#64748b;">來源：`codex:01a03833-3733-72c0-aa77-5295b8bf8d2a`，UTC 00:08–00:31（台北 08:08–08:31）；詳見 `data/task-summaries.md`。</div>
+  </div>
+</div>
+<!-- SLIDE:END -->
+</div>
+</body>
+</html>
