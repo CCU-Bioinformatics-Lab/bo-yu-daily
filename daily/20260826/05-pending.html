@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>尚未完成與待決事項</title>
+<link rel="stylesheet" href="assets/slides.css">
+</head>
+<body>
+<div class="wrap">
+<!-- SLIDE:START -->
+<div class="slide-outer">
+  <div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:9px;">
+    <div class="slide-label">待決事項</div>
+    <h2 style="font-size:28px;margin:0;">下一步不是再加名詞，而是把文件 target 接到可驗證的 runtime</h2>
+    <p class="lead" style="font-size:15px;">今天已把規格和邊界說清楚；剩下的工作集中在「能不能執行」「能不能重現」「能不能支持更強的生物學結論」三個閘門。</p>
+
+    <table class="ruletable" style="font-size:15px;line-height:1.35;table-layout:fixed;width:100%;">
+      <colgroup><col style="width:20%;"><col style="width:33%;"><col style="width:31%;"><col style="width:16%;"></colgroup>
+      <thead><tr><th>性質</th><th>項目</th><th>目前卡在哪</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>要拍板／實作</td><td>把 `error_rate=0.001`、`normal_cn`、`tumour_content` 與 PhyClone `xi` 接進 C++／Python scoring</td><td>目前仍是 documentation-only；runtime 還在舊 q-baseline</td><td><span class="drop-badge">未完成</span></td></tr>
+        <tr><td>要拍板／實作</td><td>決定 `rho_ASCAT → tumour_content` 是否只是暫時 mapping，或改用正式欄位</td><td>語意相近但不是同一個欄位，不能直接當成已驗證等價</td><td><span style="color:#a16207;font-weight:800;">待決</span></td></tr>
+        <tr class="hl"><td>執行前必做</td><td>補上獨立 validation runner 與 VAF predictive gate</td><td>文件有 MVP scaffold；目前沒有獨立 `validate` CLI</td><td><span class="drop-badge">BLOCKED</span></td></tr>
+        <tr><td>執行前必做</td><td>完成 HCC1395 full pilot、repeat stability 與 holdout evidence</td><td>08/25 只有部分 diagnostic snapshot，formal validation 尚未解鎖</td><td><span style="color:#a16207;font-weight:800;">未完成</span></td></tr>
+        <tr><td>已知但未排</td><td>補 HTML standard validator，並改善手機 SVG／表格 accessibility 細節</td><td>目前只做結構與 JS syntax 檢查；環境缺少 validator 工具</td><td><span style="color:#64748b;font-weight:800;">低優先</span></td></tr>
+      </tbody>
+    </table>
+
+    <div style="display:flex;gap:12px;margin-top:2px;">
+      <div style="flex:1;background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:10px 13px;font-size:13px;line-height:1.4;"><b style="color:#1d4ed8;">可以安全地說：</b><br>v4 data contract 與 annealed SMC backend 有可執行路徑；目前輸出可作 diagnostic candidate。</div>
+      <div style="flex:1;background:#fff1f2;border:1px solid #fecdd3;border-radius:9px;padding:10px 13px;font-size:13px;line-height:1.4;"><b style="color:#be123c;">現在不能說：</b><br>PhyClone xi 已在 runtime 生效、VAF predictive gate 已通過，或某棵樹就是病人的 biological truth。</div>
+    </div>
+    <div class="takeaway warn" style="font-size:14px;"><b>明日接續建議：</b>先做 input contract／runtime scoring 的最小可驗證切片，再補 receipt 和 predictive check；在此之前維持 `BLOCKED`，不要把 target 文件當成 active model。</div>
+    <div style="font-size:10px;color:#64748b;">依據：原文 2579–2649、2655–2770；`model.md`、`output.md`、`validation.md`、`experiment_workflow.md`。此頁保留未完成事項，不代表已執行。</div>
+  </div>
+</div>
+<!-- SLIDE:END -->
+</div>
+</body>
+</html>

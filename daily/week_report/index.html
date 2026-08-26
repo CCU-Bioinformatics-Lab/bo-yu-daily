@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>20260820–20260825｜腫瘤演化樹週報</title>
+  <style>
+    :root{--ink:#172033;--muted:#596579;--line:#dce3ec;--paper:#f7f9fc;--card:#fff;--blue:#2864c7;--teal:#087f73;--amber:#b56b00;--red:#bf3e4e}
+    *{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;line-height:1.65}
+    main{max-width:1120px;margin:auto;padding:34px 20px 54px} header{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:22px}
+    h1,h2,h3,p{margin-top:0} h1{font-size:clamp(1.8rem,4vw,3rem);line-height:1.15;margin-bottom:10px;letter-spacing:-.03em} h2{font-size:1.25rem;margin-bottom:12px} h3{font-size:1rem;margin-bottom:4px}.eyebrow{color:var(--blue);font-size:.75rem;font-weight:800;letter-spacing:.13em}.lead{font-size:1.1rem;max-width:680px;margin-bottom:0}.meta{text-align:right;color:var(--muted);font-size:.82rem;white-space:nowrap}.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:22px;box-shadow:0 8px 24px rgba(27,47,78,.05)}
+    .status-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.status{border-radius:12px;padding:14px 16px;border-top:4px solid var(--blue);background:#f1f6ff}.status.warn{border-top-color:var(--amber);background:#fff8e9}.status.next{border-top-color:var(--teal);background:#edf9f6}.status strong{display:block;font-size:1.05rem}.status span{display:block;color:var(--muted);font-size:.9rem;margin-top:3px}
+    .timeline{width:100%;height:auto;display:block}.timeline text{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;fill:var(--ink)}.timeline .date{font-size:15px;font-weight:800}.timeline .label{font-size:14px}.timeline .line{stroke:#afbdcf;stroke-width:5;stroke-linecap:round}.timeline .arrow{fill:#afbdcf}.timeline .dot{stroke:#fff;stroke-width:5}.timeline .blue{fill:var(--blue)}.timeline .teal{fill:var(--teal)}.timeline .amber{fill:var(--amber)}.timeline .red{fill:var(--red)}.timeline-note{color:var(--muted);font-size:.86rem;margin:8px 0 0}.visual-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.visual-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fbfcfe;min-width:0}.visual-card h3{display:flex;align-items:baseline;justify-content:space-between;gap:10px}.visual-card h3 span{font-size:.74rem;font-weight:700;color:var(--muted)}.visual-card p{font-size:.88rem;color:var(--muted);margin-bottom:10px}.visual-svg{width:100%;height:auto;display:block}.visual-svg text{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;fill:var(--ink);text-anchor:middle}.visual-svg .box{stroke-width:2}.visual-svg .box-label{font-size:14px;font-weight:800}.visual-svg .box-note{font-size:10px;fill:var(--muted)}.visual-svg .edge{stroke:#94a3b8;stroke-width:5;stroke-linecap:round}.visual-svg .arrow{fill:#94a3b8}.visual-svg .step-label{font-size:12px;font-weight:800}.visual-svg .step-note{font-size:10px;fill:var(--muted)}.visual-source{display:inline-block;color:var(--blue);font-size:.78rem;overflow-wrap:anywhere}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.compact{margin:0;padding-left:20px}.compact li{margin:6px 0}.tag{display:inline-block;border-radius:999px;padding:2px 8px;font-size:.72rem;font-weight:800;margin-right:5px}.done{background:#dff3ec;color:#086b5c}.risk{background:#fff0c9;color:#805000}.pending{background:#f8dfe3;color:#8e2939}table{width:100%;border-collapse:collapse;font-size:.86rem}th,td{text-align:left;border-bottom:1px solid var(--line);padding:9px 7px;vertical-align:top}th{color:var(--muted);font-size:.75rem}.small{color:var(--muted);font-size:.82rem}.tree-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.tree-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfcfe;min-width:0}.tree-card h3{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.tree-card h3 span{color:var(--blue);font-size:1.2rem}.tree-card .tree-meta{font-size:.76rem;color:var(--muted);margin-bottom:8px}.tree-wrap{overflow-x:auto}.tree-svg{display:block;width:100%;min-width:520px;height:auto}.tree-svg .edge{stroke:#91a2b8;stroke-width:3;stroke-linecap:round}.tree-svg .arrow{fill:#91a2b8}.tree-svg .node rect{fill:#eef3ff;stroke:#4d72c8;stroke-width:2}.tree-svg .node.active rect{fill:#e5f6ef;stroke:#15956f}.tree-svg .node.zero rect{fill:#f1f3f6;stroke:#aeb8c4}.tree-svg text{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;text-anchor:middle;fill:var(--ink)}.tree-svg .node-label{font-size:11px;font-weight:800}.tree-svg .node-count{font-size:9px;fill:var(--muted)}.tree-caption{font-size:.77rem;color:var(--muted);margin:8px 0 0}.source-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 24px;padding-left:20px;font-size:.84rem}.source-list a,.doc-list a{color:var(--blue);overflow-wrap:anywhere}.doc-list{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0}.doc-list a{display:block;border:1px solid var(--line);border-radius:999px;padding:5px 10px;text-decoration:none;background:#fbfcfe;font-size:.82rem}.foot{border-top:1px solid var(--line);margin-top:26px;padding-top:16px;color:var(--muted);font-size:.8rem}
+    @media(max-width:760px){main{padding:24px 14px 40px}header{display:block}.meta{text-align:left;margin-top:10px}.status-row,.grid,.tree-grid,.visual-grid{grid-template-columns:1fr}.source-list{grid-template-columns:1fr}.panel{padding:17px}.timeline{min-width:700px}.timeline-wrap{overflow-x:auto;margin-right:-4px;padding-bottom:4px}.visual-card{overflow-x:auto}.visual-card .visual-svg{min-width:620px}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <div class="eyebrow">WEEKLY RESEARCH REPORT · 11 個 daily 來源</div>
+      <h1>腫瘤演化樹研究週報</h1>
+      <p class="lead">本週完成研究模組化、資料欄位整理與 SMC pilot；目前已有候選樹輸出，但還不能把它稱為正式高可信度腫瘤演化樹。</p>
+    </div>
+    <div class="meta">20260820–20260825<br>產生於 2026-08-25 14:46（Asia/Taipei）</div>
+  </header>
+
+  <section class="panel" aria-labelledby="status-title">
+    <h2 id="status-title">先看結論</h2>
+    <div class="status-row">
+      <div class="status"><strong>已完成</strong><span>模組文件、資料 schema、C++ backend 與 pilot workflow 已接起來。</span></div>
+      <div class="status warn"><strong>目前限制</strong><span>pilot 有輸出，但候選樹太相似，repeat 對樹邊沒有足夠共識。</span></div>
+      <div class="status next"><strong>下一步</strong><span>增加拓樸探索、補齊執行 receipt，再進 formal validation。</span></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="timeline-title">
+    <h2 id="timeline-title">一眼看懂本週主線</h2>
+    <div class="timeline-wrap">
+      <svg class="timeline" viewBox="0 0 1000 190" role="img" aria-labelledby="timeline-svg-title timeline-svg-desc">
+        <title id="timeline-svg-title">20260820 到 20260825 的腫瘤演化樹研究進度</title>
+        <desc id="timeline-svg-desc">從推理 baseline，經過模組化與資料欄位整理，切換到 SMC，最後完成 pilot 但暫不接受為正式答案。</desc>
+        <line class="line" x1="90" y1="83" x2="910" y2="83"/>
+        <path class="arrow" d="M220 73l18 10-18 10zM408 73l18 10-18 10zM596 73l18 10-18 10zM784 73l18 10-18 10z"/>
+        <circle class="dot blue" cx="90" cy="83" r="16"/><circle class="dot teal" cx="278" cy="83" r="16"/><circle class="dot teal" cx="466" cy="83" r="16"/><circle class="dot amber" cx="654" cy="83" r="16"/><circle class="dot red" cx="842" cy="83" r="16"/>
+        <text class="date" x="90" y="35" text-anchor="middle">08/20</text><text class="label" x="90" y="125" text-anchor="middle">baseline</text><text class="label" x="90" y="148" text-anchor="middle">拓樸探索開始</text>
+        <text class="date" x="278" y="35" text-anchor="middle">08/21</text><text class="label" x="278" y="125" text-anchor="middle">模組化</text><text class="label" x="278" y="148" text-anchor="middle">output 後驗證</text>
+        <text class="date" x="466" y="35" text-anchor="middle">08/22</text><text class="label" x="466" y="125" text-anchor="middle">資料 schema</text><text class="label" x="466" y="148" text-anchor="middle">reads 欄位對齊</text>
+        <text class="date" x="654" y="35" text-anchor="middle">08/23–24</text><text class="label" x="654" y="125" text-anchor="middle">SMC workflow</text><text class="label" x="654" y="148" text-anchor="middle">模型與流程接軌</text>
+        <text class="date" x="842" y="35" text-anchor="middle">08/25</text><text class="label" x="842" y="125" text-anchor="middle">pilot 完成</text><text class="label" x="842" y="148" text-anchor="middle">尚未 formal</text>
+      </svg>
+    </div>
+    <p class="timeline-note">08/20 的 MCMC／compound sampler 是歷史 baseline；08/24 起 daily 紀錄的 active backend 已切換為 Rao–Blackwellized annealed SMC。</p>
+  </section>
+
+  <section class="panel" aria-labelledby="visual-summary-title">
+    <h2 id="visual-summary-title">把本週模組和推理畫出來</h2>
+    <div class="visual-grid">
+      <article class="visual-card">
+        <h3>模組化研究流程 <span>來自 experiment_workflow.html</span></h3>
+        <p>資料先整理，再由 model 與 inference 反覆找候選樹，最後才交給 output 與 validation。</p>
+        <svg class="visual-svg" viewBox="0 0 1000 190" role="img" aria-labelledby="weekly-module-title weekly-module-desc">
+          <title id="weekly-module-title">從原始資料到驗證的模組化研究流程</title>
+          <desc id="weekly-module-desc">原始來源、固定格式資料、模型、SMC 推理與輸出驗證依序連線。</desc>
+          <defs><marker id="weekly-module-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path class="arrow" d="M0 0L10 5L0 10Z"/></marker></defs>
+          <path class="edge" d="M180 82H242" marker-end="url(#weekly-module-arrow)"/><path class="edge" d="M380 82H442" marker-end="url(#weekly-module-arrow)"/><path class="edge" d="M580 82H642" marker-end="url(#weekly-module-arrow)"/><path class="edge" d="M780 82H842" marker-end="url(#weekly-module-arrow)"/>
+          <rect class="box" x="30" y="38" width="150" height="88" rx="16" fill="#eaf1ff" stroke="#9bb7ff"/><rect class="box" x="242" y="38" width="138" height="88" rx="16" fill="#e5f7f2" stroke="#8dd6c7"/><rect class="box" x="442" y="38" width="138" height="88" rx="16" fill="#fff4df" stroke="#f1c979"/><rect class="box" x="642" y="38" width="138" height="88" rx="16" fill="#f1ecff" stroke="#c6b5f4"/><rect class="box" x="842" y="38" width="128" height="88" rx="16" fill="#e5f7f2" stroke="#8dd6c7"/>
+          <circle cx="105" cy="78" r="19" fill="#2563eb"/><path d="M95 78h20M105 68v20" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M278 63v38M262 82h32" stroke="#087f73" stroke-width="5" stroke-linecap="round"/><path d="M478 103V61M478 82h32M510 82l20-17M510 82l20 17" stroke="#b45309" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="711" cy="82" r="25" fill="none" stroke="#6d45b8" stroke-width="5"/><path d="M711 61v21l14 10" stroke="#6d45b8" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M870 103l18-20 14 12 22-30" stroke="#087f73" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <text class="box-label" x="105" y="151">原始來源</text><text class="box-label" x="311" y="151">固定格式</text><text class="box-label" x="511" y="151">model</text><text class="box-label" x="711" y="151">inference</text><text class="box-label" x="906" y="151">output / validation</text>
+        </svg>
+        <a class="visual-source" href="../20260823/experiment_workflow.html">來源：daily/20260823/experiment_workflow.html</a>
+      </article>
+
+      <article class="visual-card">
+        <h3>SMC 怎麼逐步找答案 <span>流程摘要</span></h3>
+        <p>候選答案先從簡單開始，再逐步加入資料壓力；留下的不是一棵樹，而是一群候選。</p>
+        <svg class="visual-svg" viewBox="0 0 620 300" role="img" aria-labelledby="weekly-smc-title weekly-smc-desc">
+          <title id="weekly-smc-title">SMC 六步推理流程</title>
+          <desc id="weekly-smc-desc">候選群、提高資料權重、重新評分、重採樣、拓樸探索，最後整理候選 posterior。</desc>
+          <defs><marker id="weekly-smc-arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path class="arrow" d="M0 0L9 4.5L0 9Z"/></marker></defs>
+          <path class="edge" d="M190 55H218" marker-end="url(#weekly-smc-arrow)"/><path class="edge" d="M402 55H430" marker-end="url(#weekly-smc-arrow)"/><path class="edge" d="M522 88V122" marker-end="url(#weekly-smc-arrow)"/><path class="edge" d="M430 205H402" marker-end="url(#weekly-smc-arrow)"/><path class="edge" d="M218 205H190" marker-end="url(#weekly-smc-arrow)"/><path class="edge" d="M98 172V150" marker-end="url(#weekly-smc-arrow)"/>
+          <g><rect class="box" x="18" y="22" width="172" height="66" rx="13" fill="#eaf1ff" stroke="#9bb7ff"/><circle cx="48" cy="55" r="10" fill="#2563eb"/><circle cx="76" cy="42" r="10" fill="#087f73"/><circle cx="103" cy="63" r="10" fill="#b56b00"/><text class="step-label" x="145" y="51">01 候選群</text><text class="step-note" x="145" y="68">從 prior 出發</text></g>
+          <g><rect class="box" x="218" y="22" width="184" height="66" rx="13" fill="#e5f7f2" stroke="#8dd6c7"/><path d="M242 66h115" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round"/><path d="M242 66h66" stroke="#2563eb" stroke-width="6" stroke-linecap="round"/><circle cx="308" cy="66" r="9" fill="#2563eb"/><text class="step-label" x="354" y="51">02 提高 β</text><text class="step-note" x="354" y="68">加入資料壓力</text></g>
+          <g><rect class="box" x="430" y="22" width="172" height="66" rx="13" fill="#fff4df" stroke="#f1c979"/><circle cx="459" cy="55" r="8" fill="#2563eb"/><circle cx="495" cy="55" r="13" fill="#087f73"/><circle cx="541" cy="55" r="19" fill="#b56b00"/><text class="step-label" x="564" y="51">03 評分</text><text class="step-note" x="564" y="68">比較 reads</text></g>
+          <g><rect class="box" x="430" y="122" width="172" height="66" rx="13" fill="#f1ecff" stroke="#c6b5f4"/><circle cx="462" cy="144" r="8" fill="#087f73"/><circle cx="462" cy="168" r="8" fill="#b56b00"/><circle cx="520" cy="144" r="8" fill="#2563eb"/><circle cx="520" cy="168" r="8" fill="#64748b"/><path d="M474 144h32M474 168h32" stroke="#94a3b8" stroke-width="3"/><text class="step-label" x="566" y="151">04 重採樣</text><text class="step-note" x="566" y="168">淘汰重複答案</text></g>
+          <g><rect class="box" x="218" y="172" width="184" height="66" rx="13" fill="#e5f7f2" stroke="#8dd6c7"/><path d="M250 218v-30M250 203h34M284 203l23-16M284 203l23 16" stroke="#087f73" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="250" cy="188" r="7" fill="#64748b"/><circle cx="307" cy="187" r="7" fill="#087f73"/><circle cx="307" cy="219" r="7" fill="#4ade80"/><text class="step-label" x="351" y="202">05 探索樹形</text><text class="step-note" x="351" y="219">移動比例與分支</text></g>
+          <g><rect class="box" x="18" y="172" width="172" height="66" rx="13" fill="#edf9f6" stroke="#8dd6c7"/><path d="M42 218h112" stroke="#15803d" stroke-width="7" stroke-linecap="round"/><circle cx="154" cy="218" r="10" fill="#15803d"/><text class="step-label" x="105" y="197">06 β = 1</text><text class="step-note" x="105" y="216">整理 posterior</text></g>
+        </svg>
+        <a class="visual-source" href="../20260823/inference_algo.html">來源：daily/20260823/inference_algo.html</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel grid" aria-labelledby="work-title">
+    <div>
+      <h2 id="work-title">本週完成了什麼</h2>
+      <ul class="compact">
+        <li><span class="tag done">完成</span>把 data input、model、inference、output、validation 拆成可替換模組。</li>
+        <li><span class="tag done">完成</span>把資料流程固定成 raw data → 中間表 → model input bundle。</li>
+        <li><span class="tag done">完成</span>重新命名 reads 欄位，並同步 Python builder、C++ loader、tests 與文件。</li>
+        <li><span class="tag done">完成</span>切換到可平行化的 annealed SMC，執行 K=4/6/8 pilot。</li>
+        <li><span class="tag done">完成</span>保存 model、inference、workflow、validation 的 HTML 視覺化紀錄。</li>
+      </ul>
+    </div>
+    <div>
+      <h2>現在卡在哪裡</h2>
+      <ul class="compact">
+        <li><span class="tag risk">風險</span>流程本身跑完並產生候選樹，不是 runtime crash。</li>
+        <li><span class="tag risk">風險</span>候選多樣性與 ESS 偏低，表示保留下來的答案太相似。</li>
+        <li><span class="tag pending">未通過</span>跨 repeat 的樹邊支持不穩，formal gate 尚未評估。</li>
+        <li><span class="tag pending">未完成</span>目前不能發布某一棵 tree 為 high-confidence biological answer。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="diagnostic-title">
+    <h2 id="diagnostic-title">最新 pilot 的診斷快照</h2>
+    <p class="small">以下數字來自 20260825 daily 的 evidence map；它們用來說明探索品質，不是生物學信心分數。</p>
+    <table>
+      <thead><tr><th>K</th><th>CCF stability</th><th>候選多樣性</th><th>ESS</th><th>解讀</th></tr></thead>
+      <tbody>
+        <tr><td>K=4</td><td>0.989</td><td>0.0039</td><td>0.302</td><td>CCF 較穩，但答案過度集中。</td></tr>
+        <tr><td>K=6</td><td>0.839</td><td>0.0039</td><td>0.158</td><td>有效資訊量更少，樹邊沒有共識。</td></tr>
+        <tr><td>K=8</td><td>0.821</td><td>0.0156</td><td>0.229</td><td>多樣性略高，仍不足以進 formal。</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel" aria-labelledby="sampled-tree-title">
+    <h2 id="sampled-tree-title">隨機抽出的三棵實際候選樹</h2>
+    <p class="small">從每個 K 的 4 個 repeat 隨機抽 1 個 `representative_tree.json`。節點連線是檔案中的 `selected_edges`；節點下方是該代表樹的 SNV MAP assignment 數。這不是 CCF 圖，也不是正式可信度判定。</p>
+    <div class="tree-grid">
+      <article class="tree-card">
+        <h3><span>K=4</span>repeat_02</h3>
+        <p class="tree-meta">highest-posterior-weight particle · 4 clones</p>
+        <div class="tree-wrap">
+          <svg class="tree-svg" viewBox="0 0 560 150" role="img" aria-labelledby="k4-tree-title k4-tree-desc">
+            <title id="k4-tree-title">K=4 隨機候選樹</title><desc id="k4-tree-desc">tumor root 依序連到 clone 1、2、3、4，為單一路徑。</desc>
+            <defs><marker id="tree-arrow-k4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0L8 4L0 8Z"/></marker></defs>
+            <line class="edge" x1="72" y1="70" x2="151" y2="70" marker-end="url(#tree-arrow-k4)"/><line class="edge" x1="182" y1="70" x2="261" y2="70" marker-end="url(#tree-arrow-k4)"/><line class="edge" x1="292" y1="70" x2="371" y2="70" marker-end="url(#tree-arrow-k4)"/><line class="edge" x1="402" y1="70" x2="481" y2="70" marker-end="url(#tree-arrow-k4)"/>
+            <g class="node" transform="translate(8 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">tumor</text><text class="node-label" x="32" y="36">root</text></g>
+            <g class="node zero" transform="translate(118 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_1</text><text class="node-count" x="32" y="38">MAP SNV: 0</text></g>
+            <g class="node active" transform="translate(228 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_2</text><text class="node-count" x="32" y="38">18,990</text></g>
+            <g class="node active" transform="translate(338 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_3</text><text class="node-count" x="32" y="38">10,895</text></g>
+            <g class="node active" transform="translate(448 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_4</text><text class="node-count" x="32" y="38">121</text></g>
+          </svg>
+        </div>
+        <p class="tree-caption"><a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K4_seed960115502/none/repeat_02/representative_tree.json">查看原始 tree JSON</a></p>
+      </article>
+
+      <article class="tree-card">
+        <h3><span>K=6</span>repeat_03</h3>
+        <p class="tree-meta">highest-posterior-weight particle · 6 clones</p>
+        <div class="tree-wrap">
+          <svg class="tree-svg" viewBox="0 0 760 150" role="img" aria-labelledby="k6-tree-title k6-tree-desc">
+            <title id="k6-tree-title">K=6 隨機候選樹</title><desc id="k6-tree-desc">tumor root 依序連到 clone 1、2、3、4、6、5，為單一路徑。</desc>
+            <defs><marker id="tree-arrow-k6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0L8 4L0 8Z"/></marker></defs>
+            <line class="edge" x1="72" y1="70" x2="151" y2="70" marker-end="url(#tree-arrow-k6)"/><line class="edge" x1="182" y1="70" x2="261" y2="70" marker-end="url(#tree-arrow-k6)"/><line class="edge" x1="292" y1="70" x2="371" y2="70" marker-end="url(#tree-arrow-k6)"/><line class="edge" x1="402" y1="70" x2="481" y2="70" marker-end="url(#tree-arrow-k6)"/><line class="edge" x1="512" y1="70" x2="591" y2="70" marker-end="url(#tree-arrow-k6)"/><line class="edge" x1="622" y1="70" x2="701" y2="70" marker-end="url(#tree-arrow-k6)"/>
+            <g class="node" transform="translate(8 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">tumor</text><text class="node-label" x="32" y="36">root</text></g>
+            <g class="node zero" transform="translate(118 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_1</text><text class="node-count" x="32" y="38">MAP SNV: 0</text></g>
+            <g class="node active" transform="translate(228 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_2</text><text class="node-count" x="32" y="38">18,433</text></g>
+            <g class="node active" transform="translate(338 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_3</text><text class="node-count" x="32" y="38">11,467</text></g>
+            <g class="node zero" transform="translate(448 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_4</text><text class="node-count" x="32" y="38">MAP SNV: 0</text></g>
+            <g class="node active" transform="translate(558 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_6</text><text class="node-count" x="32" y="38">106</text></g>
+            <g class="node zero" transform="translate(668 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_5</text><text class="node-count" x="32" y="38">MAP SNV: 0</text></g>
+          </svg>
+        </div>
+        <p class="tree-caption"><a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K6_seed1919528150/none/repeat_03/representative_tree.json">查看原始 tree JSON</a></p>
+      </article>
+
+      <article class="tree-card">
+        <h3><span>K=8</span>repeat_03</h3>
+        <p class="tree-meta">highest-posterior-weight particle · 8 clones</p>
+        <div class="tree-wrap">
+          <svg class="tree-svg" viewBox="0 0 980 150" role="img" aria-labelledby="k8-tree-title k8-tree-desc">
+            <title id="k8-tree-title">K=8 隨機候選樹</title><desc id="k8-tree-desc">tumor root 依序連到 clone 1、8、6、2、5、7、4、3，為單一路徑。</desc>
+            <defs><marker id="tree-arrow-k8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0L8 4L0 8Z"/></marker></defs>
+            <line class="edge" x1="72" y1="70" x2="151" y2="70" marker-end="url(#tree-arrow-k8)"/><line class="edge" x1="182" y1="70" x2="261" y2="70" marker-end="url(#tree-arrow-k8)"/><line class="edge" x1="292" y1="70" x2="371" y2="70" marker-end="url(#tree-arrow-k8)"/><line class="edge" x1="402" y1="70" x2="481" y2="70" marker-end="url(#tree-arrow-k8)"/><line class="edge" x1="512" y1="70" x2="591" y2="70" marker-end="url(#tree-arrow-k8)"/><line class="edge" x1="622" y1="70" x2="701" y2="70" marker-end="url(#tree-arrow-k8)"/><line class="edge" x1="732" y1="70" x2="811" y2="70" marker-end="url(#tree-arrow-k8)"/><line class="edge" x1="842" y1="70" x2="921" y2="70" marker-end="url(#tree-arrow-k8)"/>
+            <g class="node" transform="translate(8 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">tumor</text><text class="node-label" x="32" y="36">root</text></g>
+            <g class="node zero" transform="translate(118 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_1</text><text class="node-count" x="32" y="38">MAP SNV: 0</text></g>
+            <g class="node active" transform="translate(228 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_8</text><text class="node-count" x="32" y="38">MAP SNV: 0</text></g>
+            <g class="node active" transform="translate(338 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_6</text><text class="node-count" x="32" y="38">19,465</text></g>
+            <g class="node active" transform="translate(448 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_2</text><text class="node-count" x="32" y="38">10,436</text></g>
+            <g class="node active" transform="translate(558 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_5</text><text class="node-count" x="32" y="38">63</text></g>
+            <g class="node active" transform="translate(668 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_7</text><text class="node-count" x="32" y="38">42</text></g>
+            <g class="node zero" transform="translate(778 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_4</text><text class="node-count" x="32" y="38">MAP SNV: 0</text></g>
+            <g class="node zero" transform="translate(888 45)"><rect width="64" height="50" rx="10"/><text class="node-label" x="32" y="22">clone_3</text><text class="node-count" x="32" y="38">MAP SNV: 0</text></g>
+          </svg>
+        </div>
+        <p class="tree-caption"><a href="../../output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824/runs/pilot_20260824T103554Z_7f715611ea9c_rho0p99_K8_seed1203086123/none/repeat_03/representative_tree.json">查看原始 tree JSON</a></p>
+      </article>
+    </div>
+    <p class="small">這次隨機抽到的三棵代表樹都呈現單一路徑；這不等於 posterior 中沒有分支，而是代表粒子與 repeat 穩定性仍不足，不能用單棵 representative tree 取代完整 topology posterior。</p>
+  </section>
+
+  <section class="panel grid" aria-labelledby="next-title">
+    <div>
+      <h2 id="next-title">下一個可執行順序</h2>
+      <ol class="compact">
+        <li>先讓 SMC 保留更多不同的樹形答案。</li>
+        <li>把 thread 數、clean Git SHA 與 run receipt 補完整。</li>
+        <li>先通過 v4 synthetic recovery gate。</li>
+        <li>重新跑 formal validation，再決定能否發布代表樹。</li>
+      </ol>
+    </div>
+    <div>
+      <h2>研究文件主線</h2>
+      <ul class="doc-list">
+        <li><a href="../../arch.md">arch.md</a></li><li><a href="../../data.md">data.md</a></li><li><a href="../../model.md">model.md</a></li><li><a href="../../inference_algo.md">inference_algo.md</a></li><li><a href="../../output.md">output.md</a></li><li><a href="../../validation.md">validation.md</a></li><li><a href="../../experiment_workflow.md">experiment_workflow.md</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="sources-title">
+    <h2 id="sources-title">本週掃描的 daily 來源（11 個）</h2>
+    <ul class="source-list">
+      <li><a href="../20260820/index.html">20260820/index.html</a></li>
+      <li><a href="../20260821/index.html">20260821/index.html</a></li>
+      <li><a href="../20260822/index.html">20260822/index.html</a></li>
+      <li><a href="../20260823/index.html">20260823/index.html</a></li>
+      <li><a href="../20260823/experiment_workflow.html">20260823/experiment_workflow.html</a></li>
+      <li><a href="../20260823/inference_algo.html">20260823/inference_algo.html</a></li>
+      <li><a href="../20260824/index.html">20260824/index.html</a></li>
+      <li><a href="../20260824/model.html">20260824/model.html</a></li>
+      <li><a href="../20260824/validation.html">20260824/validation.html</a></li>
+      <li><a href="../20260825/index.html">20260825/index.html</a></li>
+      <li><a href="../20260825/full_8thread_pilot_explainer.spec.json">20260825/full_8thread_pilot_explainer.spec.json</a></li>
+    </ul>
+    <p class="small">週報先以 daily HTML 快速掌握進度，再以 README 的文件順序抽查研究主張。daily 內容若與正式文件或 receipt 不一致，應以後者為準並標示待確認。</p>
+  </section>
+
+  <p class="foot">這是截至 2026-08-25 14:46（Asia/Taipei）的靜態快照。已檢查 HTML 基本結構、inline SVG 與本頁相對連結；本頁不宣稱持續即時更新，也不把 pilot 輸出升格為正式生物學真值。</p>
+</main>
+</body>
+</html>

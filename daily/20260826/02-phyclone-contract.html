@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhyClone 輸入與模型契約</title>
+<link rel="stylesheet" href="assets/slides.css">
+</head>
+<body>
+<div class="wrap">
+<!-- SLIDE:START -->
+<div class="slide-outer">
+  <div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:8px;">
+    <div class="slide-label">PhyClone 輸入與模型契約</div>
+    <h2 style="font-size:28px;margin:0;">一筆 SNV 不是只有 VAF：它要帶著 reads、CN 和正常基線進模型</h2>
+    <p class="lead" style="font-size:15px;">今天把 PhyClone 的 CNV 輸入、`normal_cn` 定義與文件版 `xi` likelihood 串成一條可核對的資料路徑；這是規格定案，不是 runtime 已切換。</p>
+
+    <div style="display:flex;gap:16px;flex:1;min-height:0;">
+      <div style="flex:1.12;min-width:0;border:1px solid #cbd5e1;border-radius:11px;padding:12px 14px;background:#fbfdff;">
+        <div style="font-size:17px;font-weight:900;color:#1d4ed8;margin-bottom:6px;">輸入模型的一列資料</div>
+        <table class="ruletable" style="font-size:13px;line-height:1.2;width:100%;">
+          <thead><tr><th>欄位</th><th>示意值</th><th>白話意義</th></tr></thead>
+          <tbody>
+            <tr><td><code>mutation_id</code></td><td><code>chr7:140453136:C&gt;T</code></td><td>哪個 SNV</td></tr>
+            <tr><td><code>ref / alt_counts</code></td><td><b>90 / 10</b></td><td>reads 看到 C／T 的次數</td></tr>
+            <tr><td><code>major / minor_cn</code></td><td><b>3 / 1</b></td><td>腫瘤 segment 的 CN 分布</td></tr>
+            <tr class="hl"><td><code>normal_cn</code></td><td><b>2</b></td><td>正常組織該段的總 CN</td></tr>
+            <tr><td><code>tumour_content</code></td><td><b>0.99</b></td><td>樣本中腫瘤細胞比例</td></tr>
+            <tr><td><code>error_rate</code></td><td><b>0.001</b></td><td>文件預留的錯誤下限</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:12px;color:#475569;margin-top:7px;line-height:1.35;"><b>觀察到的 VAF：</b>10 ÷ (90 + 10) = 0.10。這是 reads 的摘要，不是另外塞進去的真實答案。</div>
+      </div>
+
+      <div style="flex:0.88;min-width:0;display:flex;flex-direction:column;gap:7px;">
+        <div style="font-size:17px;font-weight:900;color:#7c3aed;">model 會怎麼用這張小卡？</div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1;">
+          <div class="info-card blue" style="padding:10px 12px;"><div class="card-title" style="font-size:14px;">① 先算腫瘤 CN</div><span style="font-size:13px;">3 + 1 = <b>4</b>；不能只看「是不是變異」。</span></div>
+          <div class="info-card yellow" style="padding:10px 12px;"><div class="card-title" style="font-size:14px;">② 保留多種可能</div><span style="font-size:13px;">SNV 可能在 CN 改變前或後發生，ALT 也可能佔 1、2、3 份拷貝。</span></div>
+          <div class="info-card blue" style="padding:10px 12px;"><div class="card-title" style="font-size:14px;">③ 預測每條 read 的機會</div><span style="font-size:13px;">文件版 `xi` 把正常細胞、未帶變異的腫瘤細胞、帶變異的腫瘤細胞分開加權。</span></div>
+          <div class="info-card green" style="padding:10px 12px;"><div class="card-title" style="font-size:14px;">④ 和真實 reads 比較</div><span style="font-size:13px;">用 Binomial 問：「若每條 read 都有這個機會，看到 10 條 ALT 合不合理？」</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="takeaway" style="font-size:14px;"><b>狀態邊界：</b>今天定下的是文件 target：PhyClone `xi`、CN timing candidate marginalization、`error_rate=0.001`。`rho_ASCAT` 只是暫時對應 tumour content；C++／Python 尚未接上新公式，舊 q 只作歷史 baseline。</div>
+    <div style="font-size:10px;color:#64748b;">代表證據：原文 9–353、621–1026、1667–2011、2218–2562；UTC 00:08–00:14。相關檔案：`model.md`、`data.md`、`research/phyclone/`。</div>
+  </div>
+</div>
+<!-- SLIDE:END -->
+</div>
+</body>
+</html>
