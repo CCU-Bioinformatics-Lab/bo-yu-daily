@@ -1,8 +1,10 @@
 # Inference algorithm：Rao–Blackwellized annealed SMC
 
-本文件只描述目前真的會執行的推理後端。它和 [`model.md`](model.md) 分開：
-`model.md` 定義 posterior target 與觀測 likelihood；本文件定義如何從這個
-target 找到腫瘤演化樹、clone mass 與 CCF。
+更新日期：2026-08-25
+
+本文件描述目前真的會執行的推理後端，並記錄其尚未同步的 PhyClone `xi` target。
+它和 [`model.md`](model.md) 分開：`model.md` 定義 posterior target 與觀測
+likelihood；本文件定義如何從這個 target 找到腫瘤演化樹、clone mass 與 CCF。
 
 ## 1. 目前固定設定
 
@@ -11,9 +13,16 @@ algorithm_id: rao_blackwellized_annealed_smc
 backend: C++17
 input: validated hcc1395_tumor_tree_input/v4 canonical table
 primary_purity: rho_ASCAT = 0.99
+expected_vaf_model: phyclone_compatible_genotype_aware_xi
+error_rate: 0.001
+implementation_status: documentation_target_only_cpp_not_synchronized
 state: topology + eta
 parallel_unit: independent SMC repeat / particle
 ```
+
+本輪只更新文件規格；C++、Python、tests 與 config 尚未同步。以下 `xi`、
+`error_rate=0.001` 與 genotype candidate marginalization 是 target/spec，不可宣稱
+目前 runtime 已執行。
 
 `T` 是固定 K 個 clone 的樹拓樸；`eta` 是每個 clone 的 local mass。由樹把
 descendant mass 加總後得到 `phi`，也就是每個 clone 的 CCF。`K=6` 是主分析，
@@ -24,8 +33,9 @@ descendant mass 加總後得到 `phi`，也就是每個 clone 的 CCF。`K=6` �
 - 合法的單一 tumor founder tree topology；
 - 一個正值且總和為 1 的 `eta` simplex。
 
-SNV assignment 與 multiplicity 不另外塞進 particle state。它們在每個 site 的
-likelihood 中以 Rao–Blackwellization 邊際化，並在輸出時累積 posterior responsibility。
+SNV assignment 與 genotype candidate（包含 multiplicity）不另外塞進 particle state。
+它們在每個 site 的 candidate-marginalized likelihood 中以 Rao–Blackwellization
+邊際化，並在輸出時累積 posterior responsibility。
 因此 model input 不需要 multiplicity 欄位，模型仍會產生
 `multiplicity_posterior.tsv.gz`。
 
@@ -78,18 +88,61 @@ beta: 0 ──逐步增加資料評分力量──▶ beta: 1
 
 這些步驟是 SMC 的 particle rejuvenation kernel，不是另一個獨立的推理後端。
 
-### 3.3 Rao–Blackwellization
+### 3.3 PhyClone-inspired 拓樸探索設定
 
-對每個 SNV，模型同時評估所有 clone mass 與 CN 允許的 multiplicity 候選。這些
-看不見的 assignment / multiplicity 不會被硬抽成單一答案，而是直接把可能性加總；
-最後輸出每個 SNV 的 assignment summary 和 multiplicity posterior。
+本 repo 沒有直接複製 PhyClone 的 Particle Gibbs、forest construction 或 mutation
+ordering；目前後端仍是 annealed SMC。吸收的是它對「拓樸容易卡在單一 mode」的實際
+處理方式：每個 rejuvenation sweep 同時使用兩種合法樹提案。
+
+- **local conditional SPR**：剪下某個非 founder clone 的整個子樹，依目前 target
+  在可行 parent 中重新接回；這保留固定 K 與單一 tumor founder。
+- **global legal-tree MH**：另外隨機產生一棵合法 fixed-K tree，以完整 posterior
+  target 做 Metropolis–Hastings 接受判斷，讓 particle 有機會跨越局部拓樸 mode。
+
+目前 C++ 預設每個 sweep 做 `global_topology_moves=1`，可用 CLI
+`--global-topology-moves N` 調整。這是改善拓樸探索的可替換設定，不代表已經得到
+PhyClone 的完整 Particle Gibbs 演算法，也不會自動讓低 ESS 變成通過。SNV assignment
+與 multiplicity 仍維持 Rao–Blackwellization，不新增 data schema 欄位。
+
+### 3.4 Rao–Blackwellization
+
+對每個 SNV，target/spec 同時評估所有 clone mass 與 CN 允許的 genotype candidates。
+令 `CCF_i=phi_z(i)`、`t=rho_ASCAT` 暫作 tumour-content mapping，三個 population
+weights 為：
+
+```text
+w_N = 1-t
+w_R = t*(1-CCF_i)
+w_V = t*CCF_i
+```
+
+candidate `g` 具有 `c_N/c_R/c_V` 與 `mu_N/mu_R/mu_V`，其 expected VAF 為：
+
+```text
+xi_i(g) =
+  [w_N*c_N*mu_N + w_R*c_R*mu_R + w_V*c_V*mu_V]
+  / [w_N*c_N + w_R*c_R + w_V*c_V]
+```
+
+`mu_g=clamp(a_g/c_g, error_rate, 1-error_rate)`，target/spec 固定
+`error_rate=0.001`，且：
+
+```text
+ALT_i ~ Binomial(total_reads_i, xi_i(g))
+P(D_i | C_i, phi_i) =
+  sum_g P_G,i(g | C_i) * Binomial(ALT_i | total_reads_i, xi_i(g))
+```
+
+這些看不見的 assignment / genotype candidates 不會被硬抽成單一答案，而是直接把
+可能性加總；最後輸出每個 SNV 的 assignment 與 genotype/multiplicity posterior。
 
 ## 4. 輸入介面
 
 後端只接受已通過 QA 的 `likelihood_input.tsv.gz`，不直接讀 BAM、VCF 或 ASCAT
 原始輸出。主要欄位由 [`data.md`](data.md) 定義：bulk ref/alt reads、ASCAT
 major/minor/total CN、`rho_ASCAT`、HP supplementary counts，以及 eligibility
-欄位。
+欄位。`error_rate=0.001` 是 target/spec 的 model-side fixed parameter，本輪不新增
+canonical column；現有 backend 尚未同步。
 
 PS 不會成為 particle state 或 topology constraint；它只在上游協助形成 HP counts，
 並保留在 provenance / grouped holdout metadata。
@@ -143,13 +196,21 @@ likelihood。
 - black-box CLI schema、HP supplementary invariance、thread policy、independent
   repeat seed、fail-closed output tests。
 
+上述測試尚未證明 target/spec 的 `xi` 已由 runtime 實作；在 C++/Python 同步前，
+需另加 genotype-candidate、`mu` clipping、`xi` 數值與 candidate-prior
+marginalization 的 contract tests。
+
 目前 `--resume` 只允許讀取已完成且 artifact 完整的 immutable repeat；尚未宣稱能
 從中途 checkpoint 接續計算。正式 HCC1395 全量 run 仍須先通過 smoke、pilot、
 formal gates，未通過時只能稱為 diagnostic candidate output。
 
 ## 9. 與 PhyloWGS 的關係
 
-本後端採用相同的大方向：CN-aware latent multiplicity 不由外部表格指定，而是在
-clone prevalence、copy number 與 read-count likelihood 中被自動評估並邊際化。它
-不是完整複製原始 PhyloWGS 的所有 CNV event、timing 或 CNV cellular prevalence
-輸入；目前本 repo 仍只使用 canonical table 中明確存在的 ASCAT static CN 與 purity。
+本文件 target/spec 採用相同的大方向：CN-aware genotype candidates 不由外部表格
+指定，而是在 clone prevalence、copy number、`error_rate` 與 read-count likelihood
+中被自動評估並邊際化。拓樸
+探索則採用受限的 local SPR + global legal-tree MH，這是從 PhyClone 的拓樸 mode
+探索得到的實作借鑑；它不是完整複製 PhyClone 的 Particle Gibbs、pre-clustering、
+outlier/loss model 或 auxiliary ordering。資料仍只使用 canonical table 中明確存在
+的 ASCAT static CN 與 purity；C++ runtime 尚未同步本文件的 PhyClone-compatible
+`xi` emission。

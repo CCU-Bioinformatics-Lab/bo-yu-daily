@@ -1,8 +1,12 @@
 # Tumor-tree Validation Module Handoff
 
-更新日期：2026-08-24  
+更新日期：2026-08-25
 狀態：MVP 規格 / Codex handoff  
 適用架構：`data input → model ↔ inference_algo → output`，其中 `validation` 為 cross-cutting read-only module
+
+VAF target specification：PhyClone `xi` observation model，`error_rate=0.001`。本次
+只更新 validation 文件要求；目前 Python／C++／config 尚未同步，故本設定與公式在
+runtime 尚未生效，不得把本文件當成已通過的 implementation receipt。
 
 ---
 
@@ -145,7 +149,16 @@ sample_id
 ref_reads
 alt_reads
 total_reads
+major_cn
+minor_cn
+total_cn
+normal_cn
+tumour_content
 ```
+
+`normal_cn`、`tumour_content` 與 CN timing 是 PhyClone `xi` target 所需的
+observation context；目前 v4 canonical table 尚未提供全部欄位。因此在 runtime
+同步前，這個 predictive gate 必須保持 `BLOCKED`，不能用 legacy q baseline 代替。
 
 其中：
 
@@ -208,11 +221,14 @@ tree
 clone_assignment
 ```
 
-如果 output/model 已能提供 expected VAF，再提供：
+如果 output/model 已能提供 PhyClone `xi` expected ALT probability，再提供：
 
 ```text
-predicted_vaf[mutation_id, sample_id]
+predicted_xi[mutation_id, sample_id]
 ```
+
+若沿用 `predicted_vaf` 作相容 alias，必須同時標註它實際來自
+`phyclone_xi_v1`，不能把 observed VAF 當成 prediction。
 
 或提供一個可由 validation 呼叫的純函式：
 
@@ -267,6 +283,24 @@ input_provenance
 
 這些 metadata 由 `experiment_workflow` 管理；validation 只讀取。
 
+### F. VAF model metadata and prediction interface
+
+當 VAF predictive check 被啟用時，runtime 必須提供下列 metadata；validation 不得從
+舊的 `q` 公式自行重建另一套 likelihood：
+
+```text
+vaf_formula = phyclone_xi_v1
+error_rate = 0.001
+error_rate_status = configured | not_configured
+vaf_implementation_status = synced | documentation_only
+cn_timing_model = explicit
+```
+
+每個 particle／mutation／sample 必須能取得 deterministic `predicted_xi`，或由不改變
+model state 的 deterministic prediction API 計算。若 runtime 仍只提供舊 baseline
+`q_repo`、沒有 `error_rate`，或無法回報公式 metadata，VAF check 必須輸出
+`NOT_APPLICABLE`／`BLOCKED`，不能輸出 `PASS`。
+
 ---
 
 # 4.2 Research / benchmark sources
@@ -288,6 +322,43 @@ Bioinformatics, 2025.
 來源：
 
 - https://academic.oup.com/bioinformatics/article/41/7/btaf344/8161563
+
+### 目標 VAF observation contract
+
+PhyClone 的 target emission 以 DNA-copy-weighted population mixture 定義 expected
+ALT probability。令 `e=error_rate=0.001`：
+
+```text
+w_N = 1 - t
+w_R = t * (1 - CCF)
+w_V = t * CCF
+
+mu_g = clamp(mutant_copies_g / total_copies_g, e, 1-e)
+
+xi = (w_N*c_N*mu_N + w_R*c_R*mu_R + w_V*c_V*mu_V)
+     / (w_N*c_N + w_R*c_R + w_V*c_V)
+
+ALT_reads ~ Binomial(total_reads, xi)
+```
+
+其中 `t` 是 tumour content、`CCF` 是帶 mutation 的 tumour-cell fraction、`c_*`
+是各 population 的 total copy number，`mu_*` 是該 genotype 產生 ALT read 的機率。
+若 genotype candidate 不確定，應依 candidate prior 邊際化：
+
+```text
+P(reads | CCF) = sum_g P(g) * P(reads | xi_g)
+```
+
+因此 `q_repo = rho_ASCAT * phi * multiplicity /
+((1-rho_ASCAT)*2 + rho_ASCAT*total_cn)` 不再是本 validation 的 VAF oracle；它
+只能作為歷史 baseline 的比較欄位。這個 target 仍不是所有真實腫瘤的 ground truth，
+尤其不能忽略 CN timing、subclonal CNV、normal genotype、mapping bias 或
+overdispersion。
+
+**Implementation caveat：** 本節是文件 target，不代表目前 active Python／C++ 已
+套用 `phyclone_xi_v1` 或 `error_rate=0.001`。在 runtime、unit oracle、prediction
+receipt 與 predictive gate 完成前，任何使用舊 q 的 artifact 都必須標示
+`vaf_formula_status=documentation_only`，不得升級為 PhyClone VAF validation PASS。
 
 ---
 
@@ -996,23 +1067,26 @@ $$
 
 ## 11.2 Posterior predictive mean VAF
 
-如果每個 particle 能由 model 計算：
+target runtime 應由 PhyClone xi 計算每個 particle 的 expected ALT probability：
 
 $$
-\mu_{is}^{(p)}
+\xi_{is}^{(p)}
 =
-E[VAF_{is}\mid X^{(p)}]
+E[ALT\ probability_{is}\mid X^{(p)},\ phyclone\_xi\_v1,\ e=0.001]
 $$
 
 則：
 
 $$
-\hat \mu_{is}
+\hat \xi_{is}
 =
 \sum_p
 \tilde w_p
-\mu_{is}^{(p)}
+\xi_{is}^{(p)}
 $$
+
+若輸出仍稱為 predicted_vaf，其值也必須明確標記為由 xi 產生，而不是把 observed
+VAF 直接當成 prediction。
 
 ---
 
@@ -1021,7 +1095,7 @@ $$
 $$
 r_{is}
 =
-y_{is}-\hat\mu_{is}
+y_{is}-\hat\xi_{is}
 $$
 
 輸出：
@@ -1042,8 +1116,11 @@ mutation_id
 sample_id
 observed_vaf
 predicted_vaf
+predicted_xi
 residual
 depth
+vaf_formula
+error_rate
 ```
 
 ---
@@ -1249,6 +1326,10 @@ alt_reads
 total_reads
 ```
 
+normal_cn、tumour_content 與 CN timing 是 PhyClone xi 的 observation context；
+若 canonical artifact 尚未提供這些欄位，不能把 legacy q_repo 的結果宣稱為
+phyclone_xi_v1 prediction。
+
 ---
 
 ## 15.2 `smc_steps`
@@ -1275,7 +1356,10 @@ particle_id
 normalized_weight
 tree
 clone_assignment
-predicted_vaf?          optional
+predicted_xi?           optional
+predicted_vaf?          optional alias; must identify xi source
+vaf_formula?            required when prediction exists
+error_rate?             required when prediction exists
 ```
 
 如果 `predicted_vaf` 不儲存：
@@ -1483,25 +1567,29 @@ AD-F1 < 1
 
 ## Step 5 — 實作 basic predictive check
 
-如果目前 model 已暴露 expected VAF，再加入：
+只有在 runtime 已同步 phyclone_xi_v1 與 error_rate=0.001，並能提供 deterministic
+prediction API／receipt 時，才加入：
 
 ```text
 observed VAF
-predicted VAF
+predicted xi
 residual
+vaf_formula = phyclone_xi_v1
+error_rate = 0.001
 ```
 
-如果目前沒有乾淨 prediction API：
+如果目前沒有上述 API、公式 metadata 或 error-rate receipt：
 
 **不要為了 validation 強改 model。**
 
 先輸出：
 
 ```text
-predictive = NOT_APPLICABLE
+predictive = BLOCKED
+vaf_formula_status = DOCUMENTATION_ONLY
 ```
 
-把 deterministic prediction API 留給下一個 PR。
+把 runtime migration、formula oracle 與 deterministic prediction API 留給後續 PR。
 
 ---
 
@@ -1522,6 +1610,11 @@ predictive = NOT_APPLICABLE
 - [ ] 不產生 overall confidence score。
 - [ ] 所有 validation artifact 帶 `run_id` 與 schema version。
 - [ ] toy tests 能驗證 weighted posterior 與 AD-F1 邏輯。
+- [ ] runtime 明確回報 vaf_formula=phyclone_xi_v1 與 error_rate=0.001。
+- [ ] 有獨立數值 oracle test 覆蓋 normal／reference／variant population 的 copy-number
+      weighted xi，並覆蓋 genotype candidate marginalization。
+- [ ] 在上述 runtime sync 與 oracle test 完成前，VAF predictive gate 保持
+      BLOCKED／NOT_APPLICABLE，不得標記 PASS。
 
 ---
 
