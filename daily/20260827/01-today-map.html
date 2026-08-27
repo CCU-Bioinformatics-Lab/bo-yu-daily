@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-08-27 今日主線</title>
+<!-- Single-page preview only; build.py inlines the CSS into deck.html.
+     assets/ is a symlink to the skill's assets dir, created by create_folder.sh
+     and repaired by serve_preview.py. Linking straight to ~/.claude climbs
+     outside the preview server's root and 404s — keep it relative like this. -->
+<link rel="stylesheet" href="assets/slides.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+<!-- SLIDE:START  ←★ 彙整 builder 只會抓這兩個標記之間的內容；標記務必保留 -->
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:10px;">
+  <div class="slide-label">今日主線</div>
+  <h2 style="font-size:28px;margin:0;">把複雜研究收斂成可理解、可核對的工作物</h2>
+  <p class="lead" style="font-size:16px;">今天的工作沿著同一條線前進：先定義模組與圖稿語言，再建立可核驗的 bioinformatics 搜尋流程，最後把 Model A、assets 與研究 provenance 收斂清楚。</p>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1;min-height:0;">
+    <div class="info-card blue" style="display:flex;flex-direction:column;"><div class="card-title">模組解說</div><div style="font-size:21px;font-weight:900;color:#1d4ed8;margin:10px 0 6px;">module.md</div><div style="font-size:13px;line-height:1.4;">五個模組的 contract、敘事順序與 IGV-like 配圖規格。</div><div class="ap-chip" style="margin-top:auto;background:#dbeafe;color:#1e40af;">T1／T5</div></div>
+    <div class="info-card green" style="display:flex;flex-direction:column;"><div class="card-title">證據檢索</div><div style="font-size:21px;font-weight:900;color:#15803d;margin:10px 0 6px;">6-stage skill</div><div style="font-size:13px;line-height:1.4;">current repo、lab、historical evidence 分層，要求平行 subagent。</div><div class="ap-chip" style="margin-top:auto;background:#dcfce7;color:#166534;">T2／T3</div></div>
+    <div class="info-card yellow" style="display:flex;flex-direction:column;"><div class="card-title">Model A</div><div style="font-size:21px;font-weight:900;color:#a16207;margin:10px 0 6px;">baseline boundary</div><div style="font-size:13px;line-height:1.4;">移除 Model B／HP likelihood 雜訊，釐清 phi、CCF、eta 與 multiplicity。</div><div class="ap-chip" style="margin-top:auto;background:#fef3c7;color:#92400e;">T6–T8</div></div>
+    <div class="info-card blue" style="display:flex;flex-direction:column;"><div class="card-title">素材與治理</div><div style="font-size:21px;font-weight:900;color:#1d4ed8;margin:10px 0 6px;">23 raster assets</div><div style="font-size:13px;line-height:1.4;">完成 F0–F15 缺口盤點，並保留 scoped docs commit 與週報壓縮結果。</div><div class="ap-chip" style="margin-top:auto;background:#dbeafe;color:#1e40af;">T4／T9／T10</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+    <div style="background:#f8fafc;border:1px solid #dbe4ef;border-radius:8px;padding:9px;text-align:center;"><b style="font-size:22px;">29</b><br><span style="font-size:12px;color:#64748b;">rollout entries</span></div>
+    <div style="background:#f8fafc;border:1px solid #dbe4ef;border-radius:8px;padding:9px;text-align:center;"><b style="font-size:22px;">2</b><br><span style="font-size:12px;color:#64748b;">root sessions</span></div>
+    <div style="background:#f8fafc;border:1px solid #dbe4ef;border-radius:8px;padding:9px;text-align:center;"><b style="font-size:22px;">10</b><br><span style="font-size:12px;color:#64748b;">去重後 task candidates</span></div>
+  </div>
+  <div class="takeaway" style="font-size:14px;"><b>今日收斂：</b>目前交付的重點是「規則與證據說清楚」；圖稿、正式 validation 與後續 runtime 對齊仍是下一階段，不把規格文件誤當成已完成實作。</div>
+</div></div>
+<!-- SLIDE:END -->
+</div>
+<script>
+  // 單頁預覽縮放（彙整後由 deck.js 接管）
+  function scaleSlide() {
+    const outer = document.querySelector('.slide-outer');
+    const inner = outer && outer.querySelector('.slide');
+    if (!inner) return;
+    const scale = outer.offsetWidth / 1280;
+    inner.style.transform = 'scale(' + scale + ')';
+  }
+  scaleSlide();
+  window.addEventListener('resize', scaleSlide);
+
+  // mermaid 會用 getBoundingClientRect 量標籤來決定節點框大小，會吃到 .slide 的
+  // transform: scale()。渲染期間先拿掉縮放（見 slides.css 的 .mermaid-measuring），
+  // 否則節點框會照縮放比例做小、文字爆框被裁掉。deck.js 也用同一套做法。
+  mermaid.initialize({ startOnLoad: false, theme: 'base', flowchart: { curve: 'basis' }, themeVariables: { fontSize: '13px' } });
+  document.body.classList.add('mermaid-measuring');
+  mermaid.run().finally(() => {
+    document.body.classList.remove('mermaid-measuring');
+    scaleSlide();
+  });
+</script>
+</body>
+</html>
