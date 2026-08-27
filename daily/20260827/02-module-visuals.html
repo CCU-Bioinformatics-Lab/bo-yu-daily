@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模組解說與視覺規格</title>
+<!-- Single-page preview only; build.py inlines the CSS into deck.html.
+     assets/ is a symlink to the skill's assets dir, created by create_folder.sh
+     and repaired by serve_preview.py. Linking straight to ~/.claude climbs
+     outside the preview server's root and 404s — keep it relative like this. -->
+<link rel="stylesheet" href="assets/slides.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+<!-- SLIDE:START  ←★ 彙整 builder 只會抓這兩個標記之間的內容；標記務必保留 -->
+<div class="slide-outer"><div class="slide" style="padding:26px 40px 16px;display:flex;flex-direction:column;gap:8px;">
+  <div class="slide-label">模組解說</div>
+  <h2 style="font-size:27px;margin:0;">五個模組先用同一種語言講清楚</h2>
+  <p class="lead" style="font-size:15px;">`module.md` 將每個模組固定成「拿到什麼 → 做什麼 → 交出去什麼」，並把需要畫圖的概念拆成可交給 HTML／圖稿製作的元素。</p>
+  <div class="ap-lane" style="background:#f7faff;border:1px solid #c5d8f8;height:270px;flex:none;">
+    <div class="ap-lane-lbl" style="color:#2563eb;">研究資料流 <span style="font-weight:400;font-size:10px;color:#93c5fd;text-transform:none;letter-spacing:0;">contract-first explanation</span></div>
+    <div style="display:flex;align-items:stretch;gap:0;flex:1;">
+      <div class="ap-node" style="border-top:3px solid #3b82f6;"><div class="ap-title" style="color:#1d4ed8;"><div class="ap-badge" style="background:#3b82f6;color:#fff;">1</div>data input</div><div class="ap-sub">BAM／VCF／ASCAT 先整理成 SNV evidence row</div><div class="ap-chip" style="background:#dbeafe;color:#1e40af;">reads · SNV · CN</div></div>
+      <div class="ap-arr"><div class="ap-arr-bar" style="background:#6366f1;"><div class="ap-arr-head" style="border-left:11px solid #6366f1;"></div></div><div class="ap-arr-lbl">canonical row</div></div>
+      <div class="ap-node" style="border-top:3px solid #6366f1;"><div class="ap-title" style="color:#4338ca;"><div class="ap-badge" style="background:#6366f1;color:#fff;">2</div>model</div><div class="ap-sub">用 features 評分 candidate state；不直接讀 raw files</div><div class="ap-chip" style="background:#e0e7ff;color:#3730a3;">likelihood</div></div>
+      <div class="ap-arr"><div class="ap-arr-bar" style="background:#8b5cf6;"><div class="ap-arr-head" style="border-left:11px solid #8b5cf6;"></div></div><div class="ap-arr-lbl">candidate state</div></div>
+      <div class="ap-node" style="border-top:3px solid #8b5cf6;"><div class="ap-title" style="color:#7c3aed;"><div class="ap-badge" style="background:#8b5cf6;color:#fff;">3</div>inference</div><div class="ap-sub">在 model 定義的空間中探索 topology、eta 與 assignment</div><div class="ap-chip" style="background:#ede9fe;color:#6d28d9;">SMC／posterior</div></div>
+      <div class="ap-arr"><div class="ap-arr-bar" style="background:#f59e0b;"><div class="ap-arr-head" style="border-left:11px solid #f59e0b;"></div></div><div class="ap-arr-lbl">output</div></div>
+      <div class="ap-node" style="border-top:3px solid #16a34a;"><div class="ap-title" style="color:#15803d;"><div class="ap-badge" style="background:#16a34a;color:#fff;">4</div>output</div><div class="ap-sub">整理 topology、CCF／phi、SNV assignment 與 posterior</div><div class="ap-chip" style="background:#dcfce7;color:#166534;">candidate answer</div></div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:12px;flex:1;min-height:0;">
+    <div class="info-card blue" style="padding:10px 13px;"><div class="card-title">IGV-like 主圖應表達的轉換</div><table class="ruletable" style="font-size:12px;margin-top:6px;"><thead><tr><th>畫面</th><th>必要元素</th></tr></thead><tbody><tr><td>reads／SNV</td><td>座標、read rows、REF/ALT、SNV marker、REF/ALT counts</td></tr><tr><td>CN projection</td><td>ASCAT segment、major/minor/total CN、SNV 對應與 exclusion</td></tr><tr><td>candidate output</td><td>tree topology、eta→phi、CCF、assignment uncertainty</td></tr></tbody></table></div>
+    <div class="info-card yellow" style="padding:10px 13px;"><div class="card-title">不能混淆的邊界</div><ul style="font-size:13px;margin-top:6px;"><li>raw BAM／VCF／ASCAT 不直接送入 C++ sampler。</li><li>示意圖不能冒充真實 IGV 或 biological truth。</li><li>current runtime、target/spec、future evidence 要分色標示。</li></ul></div>
+  </div>
+  <div class="takeaway" style="font-size:13px;"><b>交付：</b>完成 `module.md` 第一版與 16 張 F0–F15 配圖規格；目前是解說藍圖，圖稿仍待依優先級製作。</div>
+</div></div>
+<!-- SLIDE:END -->
+</div>
+<script>
+  // 單頁預覽縮放（彙整後由 deck.js 接管）
+  function scaleSlide() {
+    const outer = document.querySelector('.slide-outer');
+    const inner = outer && outer.querySelector('.slide');
+    if (!inner) return;
+    const scale = outer.offsetWidth / 1280;
+    inner.style.transform = 'scale(' + scale + ')';
+  }
+  scaleSlide();
+  window.addEventListener('resize', scaleSlide);
+
+  // mermaid 會用 getBoundingClientRect 量標籤來決定節點框大小，會吃到 .slide 的
+  // transform: scale()。渲染期間先拿掉縮放（見 slides.css 的 .mermaid-measuring），
+  // 否則節點框會照縮放比例做小、文字爆框被裁掉。deck.js 也用同一套做法。
+  mermaid.initialize({ startOnLoad: false, theme: 'base', flowchart: { curve: 'basis' }, themeVariables: { fontSize: '13px' } });
+  document.body.classList.add('mermaid-measuring');
+  mermaid.run().finally(() => {
+    document.body.classList.remove('mermaid-measuring');
+    scaleSlide();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "report_kind": "daily",
+  "report_date": "2026-08-27",
+  "manifest": "session-manifest.json",
+  "pages": [
+    {
+      "page": "01-today-map.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a041ed-abdc-7d42-8db6-95312c766d22"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a04249-3f99-76d3-bc9b-00453b64c3b3"
+        }
+      ]
+    },
+    {
+      "page": "02-module-visuals.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a041ed-abdc-7d42-8db6-95312c766d22"
+        }
+      ]
+    },
+    {
+      "page": "03-bioinfo-skill.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a041ed-abdc-7d42-8db6-95312c766d22"
+        }
+      ]
+    },
+    {
+      "page": "04-model-baseline.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a04249-3f99-76d3-bc9b-00453b64c3b3"
+        }
+      ]
+    },
+    {
+      "page": "05-assets-audit.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a04249-3f99-76d3-bc9b-00453b64c3b3"
+        }
+      ]
+    },
+    {
+      "page": "06-governance.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a04249-3f99-76d3-bc9b-00453b64c3b3"
+        }
+      ]
+    },
+    {
+      "page": "07-pending.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a04249-3f99-76d3-bc9b-00453b64c3b3"
+        }
+      ]
+    }
+  ]
+}
