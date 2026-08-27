@@ -12,7 +12,6 @@ model_name: tumor_evolutionary_tree_construction
 sample: HCC1395
 implementation: tumor_tree_pipeline
 primary_model: phyclone_compatible_genotype_aware_expected_vaf
-experimental_extension: hp_long_read_likelihood
 formal_status: diagnostic_only_until_model_and_inference_gates_pass
 documentation_status: target_spec_only_cpp_not_synchronized
 error_rate: 0.001
@@ -29,14 +28,14 @@ links:
 
 本文件本輪改以 PhyClone-compatible、genotype-aware expected VAF 作為 primary likelihood 的 target/spec。對每個 SNV，模型應由 bulk REF/ALT、ASCAT major/minor/total CN、暫以 `rho_ASCAT` 對應的 tumour content `t`、clone 的 CCF/`phi`，以及 genotype candidate（包含 CN timing 與 mutated-copy multiplicity）計算 DNA-copy-weighted expected ALT probability `xi`，再評估 allele-count likelihood。`error_rate=0.001` 是本 target/spec 的模型參數。
 
-HP1-1/HP2-1 counts 仍保留在 canonical data 與 audit 中，但暫時不進入正式 primary topology likelihood；它們會在後續的 Model B 作為 long-read likelihood 擴充。multiplicity 與其他 genotype candidate 不由外部工具提供，而是在 target/spec 中以 candidate prior marginalization 處理。**本輪只修改文件；C++、Python、tests 與 config 尚未同步，因此下文的 `xi` 規格不可宣稱現有 runtime 已實作。**
+HP1-1/HP2-1 counts 仍保留在 canonical data 與 audit 中，但不進入 active primary likelihood。multiplicity 與其他 genotype candidate 不由外部工具提供，而是在 target/spec 中以 candidate prior marginalization 處理。**本輪只修改文件；C++、Python、tests 與 config 尚未同步，因此下文的 `xi` 規格不可宣稱現有 runtime 已實作。**
 
 七條核心邊界：
 
 1. bulk counts只在 allele-count likelihood 使用一次。
 2. target/spec 的 genotype candidate support 與 CN working prior 由 ASCAT major/minor/total CN 定義，不是 canonical table 欄位；candidate prior 會在 genotype-aware emission 中邊際化。現有 C++ loader 尚未同步此規格。
 3. `rho_ASCAT=0.99` 是固定的 purity input，只在 emission 中使用，並在 manifest 中留存 provenance。
-4. Model A 是正式 primary baseline：HP counts 不進入 primary topology likelihood。HP counts、PS block 與 LongPhase-S tag provenance 仍保留供 QC、Model B、grouped holdout 與結果解讀。
+4. Model A 是正式 primary baseline：HP counts 不進入 active primary likelihood，僅保留在 input/audit 中供資料檢查。
 5. tumor tree 必須只有一個 tumor founder：structural root 只能有一個直接 tumor child，所有其他 clone 都是該 founder 的 descendants；founder 的 `phi` 為 1。
 6. `eta` 只保存 finite-K clone 的 local mass；`phi` 由樹上的 descendant sum 推導。normal contamination 只由 purity 處理。
 7. target/spec 的 primary emission 使用 `ALT_i ~ Binomial(total_reads_i, xi_i)`；是否升級 Beta-Binomial 由 prior/posterior predictive checks 決定。`error_rate=0.001` 透過 genotype 的 `mu` 定義進入 `xi`。
@@ -72,16 +71,6 @@ eta | T ~ Dirichlet(alpha(T))
 
 這些常數是目前 finite-K implementation 的 working prior，不是從 HCC1395 資料估計出的生物常數；必須透過 prior predictive tree-depth、branch-count 與 clone-mass 檢查，並在 sensitivity analysis 中記錄其影響。
 
-Model B 才會加入 HP/long-read likelihood：
-
-```text
-P_B(T, z, eta | D, H, C, rho_ASCAT)
-  proportional to P_A(T, z, eta | D, C, rho_ASCAT)
-                 * product_i P_HP(H_i | D_i, z_i, phi_z(i), C_i, PS_i)
-```
-
-Model B 必須先定義 mutated-side latent state、HP tag 的分類錯誤/未標記機率，以及 PS block 內的 orientation 或 read-level linkage；在這些項目與 predictive checks 完成前，`P_HP` 不得併入 Model A 的正式 topology posterior。
-
 | 符號 | 定義 |
 |---|---|
 | `T` | rooted parent-child clone tree |
@@ -89,7 +78,6 @@ Model B 必須先定義 mutated-side latent state、HP tag 的分類錯誤/未�
 | `eta_v` | clone `v` 的 local／exclusive tumor mass；全體 clone `eta` 為 simplex |
 | `phi_v` | clone `v` 與 descendants 的 cumulative prevalence／CCF |
 | `D_i` | bulk REF/ALT counts |
-| `H_i` | HP1-1/HP2-1 supplementary counts；保留供 Model B，不是 Model A 的 primary likelihood input |
 | `C_i` | `major_cn`, `minor_cn`, `total_cn` context |
 | `M_i` | mutated-copy multiplicity；由模型在每個 SNV 的 emission 中自動評估的 latent state |
 | `G_i` | SNV `i` 的 genotype candidate set；包含 CN timing、各 population CN 與 mutated-copy state |
@@ -193,27 +181,8 @@ VAF 可能由不同的 CCF、CN timing 或 multiplicity 組合產生，不能在
 反推出 CCF。
 
 `rho_ASCAT` 在本 target/spec 暫作 `t` 的對應值，但 ASCAT purity 與 PhyClone
-tumour content 的語意仍需在實作與資料驗證階段確認。HP counts 目前不在 Model A
-中，因此不會把尚未驗證的 long-read heuristic 混入 CCF posterior。LongPhase-S
-DNA fraction `0.958936` 只留在歷史 provenance。
-
-### 2.3 HP observation（Model B，暫不屬於 primary likelihood）
-
-LongPhase-S 的 `HP:Z:1-1` 與 `HP:Z:2-1` 是 somatic ALT-supporting read tags，可提供 long-read haplotype evidence，但它們不是獨立於 ALT call 的新一批 reads。Model B 必須明確描述 tagged-read 的產生與錯誤機率，才能讓 HP counts 正確改變 posterior。
-
-目前 active C++ primary scorer 不包含 HP heuristic，也不會把 tagged fraction 或 HP1/HP2 side 假設乘進 Model A。HP counts 只做 schema／conservation validation；若要讓 HP 改變 posterior，必須另行完成 Model B 的 generative definition、tag/error model 與 predictive validation。
-
-不能把 bulk counts 與其子集合 HP counts 當成兩批獨立 reads 重複相乘。等價記帳可寫成六類互斥 categories：
-
-```text
-HP1-1_REF, HP1-1_ALT,
-HP2-1_REF, HP2-1_ALT,
-untagged_REF, untagged_ALT
-```
-
-PS block 先讓同一 phase block 內的 `HP1-1`／`HP2-1` labels 維持一致；跨不同 PS block 的 HP label 不假設具有全球一致方向。PS 不直接決定 mutation side、不建立 downstream 的 PS-wide orientation variable，也不形成 clone 或 edge。
-
-Model B 的最低驗證要求是：保留 read/PS provenance、明確處理未標記與 ambiguous tags、檢查同一 PS block 的 label consistency，並比較加入 HP 前後的 grouped holdout、posterior predictive coverage、assignment stability 與 edge support。若 HP 只改善訓練 likelihood、卻沒有改善 holdout 或造成 topology 過度集中，不能宣稱它提供有效 long-read 增益。
+tumour content 的語意仍需在實作與資料驗證階段確認。HP counts 不屬於 active
+primary likelihood。LongPhase-S DNA fraction `0.958936` 只留在歷史 provenance。
 
 ## 3. CN-constrained genotype candidate marginalization
 
@@ -291,8 +260,7 @@ P(G_i=g | D_i, C_i, phi_z(i), rho_ASCAT, error_rate)
 SMC 不需要把每個 `g` 另放成一個高維 particle state；target/spec 應在每個
 particle 的 tree／clone state 中解析邊際化，並將 conditional responsibility 累積
 成 genotype／multiplicity posterior。bulk counts 在 Model A 的 bulk emission 中
-使用一次，observed VAF 也不被覆寫。HP counts 若在 Model B 啟用，必須使用條件式
-或 read-level joint likelihood，不能未經證明地再獨立乘上一個 HP likelihood。
+使用一次，observed VAF 也不被覆寫。HP counts 不進入本模型的 primary likelihood。
 
 ### 3.2 Genotype 與 multiplicity posterior output
 
@@ -347,7 +315,7 @@ Loader必須 fail closed：
 | 項目 | 角色 |
 |---|---|
 | bulk REF/ALT | allele-count likelihood |
-| HP1-1/HP2-1 counts | supplementary long-read evidence；Model B、QC 與 holdout 使用，暫不屬於 Model A primary likelihood |
+| HP1-1/HP2-1 counts | supplementary evidence；不屬於 active primary likelihood |
 | major/minor/total CN | `xi` 的 DNA-copy denominator context，也是 target/spec 建立 genotype candidate support 的來源 |
 | CN-constrained genotype candidates | target/spec 內部建立的 marginalization support／初始 weights，不是 table input；runtime 尚未同步 |
 | multiplicity posterior | 由每個 retained clone/tree state 的 emission responsibility 累積後輸出的 `multiplicity_posterior.tsv.gz` |
@@ -381,7 +349,7 @@ backend abstraction 見 [`inference_algo.md`](inference_algo.md)。
 3. major/minor CN不能轉稱HP1/HP2 CN；retained-allele orientation仍未識別。
 4. static-CN model 尚未建模 CNV cellular prevalence、CNV event ordering、CNV node placement 或 segment graph。
 5. single bulk sample對部分tree topology不可辨識；topology recovery應單獨報告。
-6. HP1-1/HP2-1是 read-level somatic evidence，不是 clone label或lineage truth；Model B 尚未通過 generative 與 predictive validation。
+6. HP1-1/HP2-1 是 supplementary read-level evidence，不是 clone label 或 lineage truth。
 7. 固定 Binomial 是 baseline assumption；若 predictive checks 顯示 overdispersion，必須另立 Beta-Binomial model。
 
 ## 8. 歷史結果與不相容介面
@@ -400,7 +368,6 @@ backend abstraction 見 [`inference_algo.md`](inference_algo.md)。
 2. `eta` independence-MH 補上正確的 forward/reverse proposal-density correction，或改成已證明正確的 update。
 3. 以新版 canonical schema 重建 input bundle，並確認 loader 不讀 legacy table。
 4. Model A 完成 prior predictive、posterior predictive、multi-chain convergence 與 holdout checks。
-5. HP Model B 若要進入 primary likelihood，另完成 mutated-side、tag error、PS/read linkage 與增益驗證；在此之前 HP 只作 supplementary evidence。
 
 ## 9. 維護規則
 
