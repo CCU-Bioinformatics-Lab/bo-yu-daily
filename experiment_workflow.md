@@ -10,17 +10,17 @@ fail-closed 的實驗流程。正式推理 backend 是 C++17
 data input → model ↔ inference_algo → output → validation
 ```
 
-本 workflow 的目標 VAF observation model 是 PhyClone xi v1，並固定文件設定
-error_rate=0.001。這是本次文件同步的 target spec；Python、C++、tests 與 config
-尚未修改，故目前 runtime 仍未套用此公式。任何 smoke、pilot 或 formal receipt 在
-VAF contract sync 前，都不能宣稱已驗證 PhyClone xi。
+本 workflow 的 VAF observation model 是 PhyClone xi v1，並固定 model-side
+`error_rate=0.001`。C++/Python emission 與數值 contract tests 已同步套用此公式；
+完整 posterior predictive、convergence 與 formal gates 仍需獨立通過，不能由 smoke
+test 單獨取代。
 
 ## 1. 目前模組實作
 
 | 模組 | 規格文件 | 目前實作或資料 | 2026-08-24 狀態 |
 |---|---|---|---|
 | data input | [`data.md`](data.md) | `tumor_tree_pipeline/input_table.py`、`contracts.py`、目前 v4 input bundle | **可用**；input QA PASS |
-| model | [`model.md`](model.md) | `tumor_tree_pipeline/model.py`、`inference/src/model.cpp` | **baseline 可執行**；PhyClone xi／error_rate target 尚未同步，現有 tests 不代表 target PASS |
+| model | [`model.md`](model.md) | `tumor_tree_pipeline/model.py`、`inference/src/model.cpp` | **PhyClone xi v1 emission 可執行**；完整 posterior／predictive gates 仍待驗證 |
 | inference_algo | [`inference_algo.md`](inference_algo.md) | `inference/src/algorithm.cpp`、`cpp_backend.py` | **可用**；目前 working tree 的 C++ annealed SMC smoke PASS |
 | output | [`output.md`](output.md) | C++ repeat artifacts、workflow summary/inventory | **可產生**；目前只有 fixture smoke，不是 HCC1395 正式結果 |
 | validation | [`validation.md`](validation.md) | 尚無獨立 runner；目前 output 已提供 diagnostics 供未來讀取 | **尚未實作** |
@@ -32,12 +32,12 @@ validation 混入 likelihood。
 
 文件 target 使用 PhyClone 的 DNA-copy-weighted expected ALT probability，並固定
 error_rate=0.001。此 target 取代 workflow／validation 對舊 q baseline 的規格定位。
-runtime 尚未同步前，必須在 run metadata 標示 vaf_formula、error_rate 與
-vaf_implementation_status=documentation_only。
+每次 run metadata 必須標示 vaf_formula、error_rate、normal_cn_assumption、CN timing
+model 與 `vaf_implementation_status=synced`。
 
-沒有 deterministic xi prediction、公式數值 oracle、genotype candidate marginalization
-與上述 receipt 前，VAF predictive gate 必須是 BLOCKED；不得以文件中的 xi 當成 C++
-已實作或已通過測試。
+若缺少 deterministic xi prediction、公式數值 oracle、genotype candidate marginalization
+或上述 receipt，VAF predictive gate 必須是 BLOCKED；目前 smoke/contract 已涵蓋前述
+runtime contract，但仍不能把它等同於正式資料的 predictive PASS。
 
 ## 2. 已準備的資料
 
@@ -62,9 +62,9 @@ output/tumor_tree_pipeline/input_20260823_old_tagging_v4/
 - `input_qa.json` 為 PASS；
 - inference 不直接讀 BAM、VCF 或 ASCAT 原始檔。
 
-目前 input bundle／config 尚未承載 error_rate=0.001 的 active runtime 設定；這個數值
-只代表 target metadata。啟用 target 前，workflow 必須將公式版本、error rate、CN
-timing model 與 implementation status 寫入 manifest／run receipt。
+目前 input bundle 不承載 `error_rate=0.001` 欄位；它是 runtime 的固定 model-side
+設定。workflow 必須將公式版本、error rate、正常 CN 假設、CN timing model 與
+implementation status 寫入 manifest／run receipt。
 
 既有 bundle 的內容可讀，但 `contracts.py` 已更新，舊 manifest 所記錄的 contract
 hash 不再是最新值。因此 agent 執行 pilot 時必須透過 `build_inputs` 從 prepared
@@ -144,8 +144,8 @@ Agent 只在以下條件全部成立時標記 smoke 成功：
 - `artifact_inventory.json` 與 manifest 完整；
 - 每個 repeat 有 `smc_complete.json`；
 - diagnostics 的 algorithm、particle semantics、`final_beta=1` 與 tree contract 正確。
-- 若 VAF target 尚未同步，receipt 必須明確標示
-  `vaf_implementation_status=documentation_only`；不得把 smoke 當成 PhyClone xi validation。
+- 若 run 沒有帶出 VAF metadata，receipt 必須標示
+  `vaf_implementation_status=documentation_only`；即使 runtime 已同步，也不得把 smoke 當成正式 PhyClone xi validation。
 
 2026-08-24 已通過的 commit-locked smoke receipt：
 
@@ -227,10 +227,11 @@ population copy number、tumour content、CCF、genotype candidate 與 error_rat
 評分候選 tree state。C++ SMC particle 明確保存：
 
 - tree topology；
-- `eta`（clone-local mass）。
+- clone-specific local fraction（$\eta_v$）。
 
-`phi/CCF` 由 topology 與 eta 推導；SNV clone assignment 與 multiplicity 在 model
-內邊際化，不是 data table 的外部欄位。HP counts 目前只載入並做守恆檢查，尚未
+$\phi_v$/CCF 由 tree topology `T` 與 clone-specific local fractions（$\eta_v$）推導，
+並保持為該 clone 加上 descendants 的累積細胞比例；SNV clone assignment 與
+multiplicity 在 model 內邊際化，不是 data table 的外部欄位。HP counts 目前只載入並做守恆檢查，尚未
 進入主要 likelihood。
 
 目前這段 target 描述不等於 active runtime 已完成；在 C++／Python 同步前，應將

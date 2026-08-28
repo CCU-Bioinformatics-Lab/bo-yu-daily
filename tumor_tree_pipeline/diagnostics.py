@@ -101,7 +101,12 @@ def strict_holdout_predictive_metrics(
     C++ sampler.
     """
 
-    from .model import ModelData, compile_model, expected_alt_probability, load_model_table
+    from .model import (
+        ModelData,
+        compile_model,
+        expected_alt_probability_for_candidate,
+        load_model_table,
+    )
 
     if not samples or not holdout_ids:
         raise DiagnosticError("strict holdout scoring requires posterior samples and holdout IDs")
@@ -143,12 +148,14 @@ def strict_holdout_predictive_metrics(
         weights: list[float] = []
         for phi, clone_weights in zip(phi_draws, weight_draws):
             for clone_phi, clone_weight in zip(phi, clone_weights):
-                for multiplicity, multiplicity_weight in zip(
-                    site.multiplicities, site.multiplicity_prior
-                ):
-                    values.append(expected_alt_probability(site, float(clone_phi), multiplicity))
+                for candidate in site.genotype_candidates:
+                    values.append(
+                        expected_alt_probability_for_candidate(
+                            site, float(clone_phi), candidate
+                        )
+                    )
                     weights.append(
-                        float(clone_weight * multiplicity_weight / len(phi_draws))
+                        float(clone_weight * candidate.prior / len(phi_draws))
                     )
         order = np.argsort(values)
         ordered_values = np.asarray(values, dtype=float)[order]

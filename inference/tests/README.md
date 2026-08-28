@@ -20,12 +20,15 @@ inference_binary run \
 The `run` subcommand, `--output`, and `--rho-ascat` are accepted as friendly
 aliases for `--outdir` and `--purity`. The canonical table must use
 `hcc1395_tumor_tree_input/v4` and include all four HP count fields. The loader
-builds multiplicity candidates from major/minor CN; no multiplicity column is
-read.
+builds CN/timing genotype candidates from major/minor/total CN and does not
+read a multiplicity column. The active emission computes copy-number-weighted
+`xi` with normal CN `2.0` and error rate `0.001`, then marginalizes the
+candidates.
 
 The tests verify that changing only supplementary HP allocation does not
 change the Model A likelihood or multiplicity posterior, that every particle
-has one tumor founder, that `phi` is the descendant sum of `eta`, and that
+has one tumor founder, that $\phi_v$/CCF retains its cumulative meaning as
+the descendant sum of $\eta_v$, and that
 beta reaches one with valid ESS/resampling/rejuvenation diagnostics. They also
 protect the active optimized backend's existing artifact semantics, exact
 `threads=1`/`threads=2` output equivalence, deterministic seed/repeat

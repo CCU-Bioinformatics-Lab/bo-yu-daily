@@ -7,6 +7,22 @@
 
 namespace tumor_tree_inference {
 
+struct GenotypeCandidate {
+    // Candidate-level copy-number context used by the PhyClone/PyClone-VI
+    // expected-ALT calculation.  The normal CN is fixed at diploid (2) by
+    // the current v4 input contract; reference/variant CN differ for the
+    // mutation-before/after-CN candidates.
+    int multiplicity = 0;
+    double normal_cn = 0.0;
+    double reference_cn = 0.0;
+    double variant_cn = 0.0;
+    double normal_alt_probability = 0.0;
+    double reference_alt_probability = 0.0;
+    double variant_alt_probability = 0.0;
+    double prior = 0.0;
+    double log_prior = 0.0;
+};
+
 struct Site {
     std::string mutation_id;
     std::string chrom;
@@ -28,10 +44,10 @@ struct Site {
     // are derived from the canonical counts/CN at load time and are not
     // additional model inputs.
     double log_binomial_coefficient = 0.0;
-    double purity_cn_denominator = 0.0;
+    std::vector<GenotypeCandidate> genotype_candidates;
+    // Candidate-aligned views retained for the existing multiplicity output
+    // and public smoke seam.  They are not canonical input columns.
     std::vector<double> log_multiplicity_prior;
-    // Internal CN-constrained candidate support and initial weights.  These
-    // are derived by the loader and never read from the canonical table.
     std::vector<int> multiplicity_candidates;
     std::vector<double> multiplicity_prior;
 };

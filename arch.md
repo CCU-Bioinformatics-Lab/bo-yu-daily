@@ -11,7 +11,7 @@
 | `data input` | [`data.md`](data.md) | 定義資料來源、provenance，以及交給 model 的資料介面 |
 | `model` | [`model.md`](model.md) | 定義研究要解的 model、posterior 與參數語意 |
 | `inference_algo` | [`inference_algo.md`](inference_algo.md) | 定義如何根據 model 進行參數推理；目前是 SMC，之後可替換其他方法 |
-| `output` | [`output.md`](output.md) | 定義如何解讀推理結果，例如 topology、CCF 與 SNV assignment |
+| `output` | [`output.md`](output.md) | 定義如何解讀推理結果，例如 topology、clone-specific local fraction ($\eta_v$)、CCF（$\phi_v$：clone 加上 descendants 的 cumulative tumor-cell fraction）與 SNV assignment |
 | `validation` | [`validation.md`](validation.md) | 只讀取 output 與相關 artifacts，檢查結果可靠性、bulk compatibility 與 claim ceiling |
 
 ## 文件之間的關係

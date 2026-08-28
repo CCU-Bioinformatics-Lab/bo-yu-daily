@@ -8,7 +8,6 @@
 #include <cmath>
 #include <fstream>
 #include <limits>
-#include <map>
 #include <numeric>
 #include <sstream>
 #include <stdexcept>
@@ -120,20 +119,18 @@ double parse_number(const std::string& raw, const std::string& label, const std:
     return parsed;
 }
 
-struct MultiplicityDistribution {
-    std::vector<int> candidates;
-    std::vector<double> prior;
-};
+constexpr double kNormalCopyNumber = 2.0;
+constexpr double kPhyCloneErrorRate = 1e-3;
 
-MultiplicityDistribution derive_multiplicity_distribution(
-    const double major_cn, const double minor_cn, const std::string& id) {
+std::vector<GenotypeCandidate> derive_genotype_candidates(
+    const double major_cn, const double minor_cn, const double total_cn, const std::string& id) {
     const auto integral_cn = [&](const double value, const char* label) -> int {
         if (!std::isfinite(value) || value < 0.0 || value > static_cast<double>(INT_MAX)) {
-            throw std::runtime_error("row " + id + " has invalid " + label + " for multiplicity derivation");
+            throw std::runtime_error("row " + id + " has invalid " + label + " for genotype candidate derivation");
         }
         const double rounded = std::round(value);
         if (value != rounded) {
-            throw std::runtime_error("row " + id + " requires integer " + label + " for multiplicity derivation");
+            throw std::runtime_error("row " + id + " requires integer " + label + " for genotype candidate derivation");
         }
         return static_cast<int>(rounded);
     };
@@ -141,38 +138,49 @@ MultiplicityDistribution derive_multiplicity_distribution(
     const int major = integral_cn(major_cn, "major_cn");
     const int minor = integral_cn(minor_cn, "minor_cn");
     if (major <= 0 || major < minor) {
-        throw std::runtime_error("row " + id + " has invalid major/minor CN for multiplicity derivation");
+        throw std::runtime_error("row " + id + " has invalid major/minor CN for genotype derivation");
+    }
+    const int total = integral_cn(total_cn, "total_cn");
+    if (total != major + minor || total <= 0) {
+        throw std::runtime_error("row " + id + " has inconsistent total CN for genotype derivation");
     }
 
-    const std::vector<int> sides = minor > 0 ? std::vector<int>{major, minor} : std::vector<int>{major};
-    const double side_mass = 1.0 / static_cast<double>(sides.size());
-    std::map<int, double> weights;
-    for (const int side_cn : sides) {
-        const double within_side_mass = side_mass / static_cast<double>(side_cn);
-        for (int multiplicity = 1; multiplicity <= side_cn; ++multiplicity) {
-            weights[multiplicity] += within_side_mass;
-        }
+    // This follows PyClone-VI's candidate construction: x=1..major_cn are
+    // mutation-before-CN candidates, and a separate m=1 candidate represents
+    // mutation-after-CN when the locus is not diploid.
+    std::vector<GenotypeCandidate> candidates;
+    candidates.reserve(static_cast<std::size_t>(major) + (total != static_cast<int>(kNormalCopyNumber) ? 1U : 0U));
+    for (int multiplicity = 1; multiplicity <= major; ++multiplicity) {
+        candidates.push_back({multiplicity,
+                              kNormalCopyNumber,
+                              kNormalCopyNumber,
+                              static_cast<double>(total),
+                              kPhyCloneErrorRate,
+                              kPhyCloneErrorRate,
+                              std::min(1.0 - kPhyCloneErrorRate,
+                                       static_cast<double>(multiplicity) / static_cast<double>(total)),
+                              0.0,
+                              0.0});
+    }
+    if (total != static_cast<int>(kNormalCopyNumber)) {
+        candidates.push_back({1,
+                              kNormalCopyNumber,
+                              static_cast<double>(total),
+                              static_cast<double>(total),
+                              kPhyCloneErrorRate,
+                              kPhyCloneErrorRate,
+                              std::min(1.0 - kPhyCloneErrorRate, 1.0 / static_cast<double>(total)),
+                              0.0,
+                              0.0});
     }
 
-    const double total = std::accumulate(
-        weights.begin(), weights.end(), 0.0,
-        [](const double sum, const auto& entry) { return sum + entry.second; });
-    if (!std::isfinite(total) || !(total > 0.0)) {
-        throw std::runtime_error("row " + id + " failed to derive a valid multiplicity prior");
+    if (candidates.empty()) throw std::runtime_error("row " + id + " has no valid genotype candidates");
+    const double prior = 1.0 / static_cast<double>(candidates.size());
+    for (GenotypeCandidate& candidate : candidates) {
+        candidate.prior = prior;
+        candidate.log_prior = std::log(prior);
     }
-
-    MultiplicityDistribution result;
-    result.candidates.reserve(weights.size());
-    result.prior.reserve(weights.size());
-    for (const auto& [multiplicity, weight] : weights) {
-        result.candidates.push_back(multiplicity);
-        result.prior.push_back(weight / total);
-    }
-    const double normalized = std::accumulate(result.prior.begin(), result.prior.end(), 0.0);
-    if (!std::isfinite(normalized) || std::abs(normalized - 1.0) > 1e-12) {
-        throw std::runtime_error("row " + id + " failed multiplicity-prior normalization");
-    }
-    return result;
+    return candidates;
 }
 
 std::size_t column_index(const std::vector<std::string>& header, const std::string& name) {
@@ -196,36 +204,38 @@ double log_binomial(const Site& site, double probability) {
            static_cast<double>(site.ref_reads) * std::log1p(-probability);
 }
 
-double log_multiplicity_prior(const Site& site, std::size_t index) {
-    if (site.log_multiplicity_prior.size() == site.multiplicity_prior.size()) {
-        return site.log_multiplicity_prior[index];
+double expected_alt_probability(const Site& site, double phi, const GenotypeCandidate& candidate) {
+    // PyClone-VI's three populations are normal cells, tumour cells without
+    // the mutation, and tumour cells carrying the mutation.  Copy-number
+    // weighting is applied before averaging their ALT probabilities.
+    const double normal_weight = 1.0 - site.purity;
+    const double reference_weight = site.purity * (1.0 - phi);
+    const double variant_weight = site.purity * phi;
+    const double denominator = normal_weight * candidate.normal_cn +
+        reference_weight * candidate.reference_cn + variant_weight * candidate.variant_cn;
+    const double numerator = normal_weight * candidate.normal_cn * candidate.normal_alt_probability +
+        reference_weight * candidate.reference_cn * candidate.reference_alt_probability +
+        variant_weight * candidate.variant_cn * candidate.variant_alt_probability;
+    if (!(denominator > 0.0) || !std::isfinite(denominator) || !std::isfinite(numerator)) {
+        return std::numeric_limits<double>::quiet_NaN();
     }
-    return std::log(site.multiplicity_prior[index]);
-}
-
-double expected_alt_probability(const Site& site, double phi, int multiplicity) {
-    const double denominator = site.purity_cn_denominator > 0.0
-        ? site.purity_cn_denominator
-        : (1.0 - site.purity) * 2.0 + site.purity * site.total_cn;
-    const double cellular_fraction = site.purity * phi * static_cast<double>(multiplicity) / denominator;
-    return std::clamp(cellular_fraction, 1e-12, 1.0 - 1e-12);
+    return std::clamp(numerator / denominator, 1e-12, 1.0 - 1e-12);
 }
 
 std::vector<double> multiplicity_log_components(const Site& site, double phi) {
     if (!(phi >= 0.0 && phi <= 1.0) || !std::isfinite(phi)) {
-        return std::vector<double>(site.multiplicity_candidates.size(), -std::numeric_limits<double>::infinity());
+        return std::vector<double>(site.genotype_candidates.size(), -std::numeric_limits<double>::infinity());
     }
     std::vector<double> components;
-    components.reserve(site.multiplicity_candidates.size());
-    for (std::size_t i = 0; i < site.multiplicity_candidates.size(); ++i) {
-        const int multiplicity = site.multiplicity_candidates[i];
-        const double q_bulk = expected_alt_probability(site, phi, multiplicity);
+    components.reserve(site.genotype_candidates.size());
+    for (const GenotypeCandidate& candidate : site.genotype_candidates) {
+        const double q_bulk = expected_alt_probability(site, phi, candidate);
         const double bulk = log_binomial(site, q_bulk);
         // Model A deliberately uses the bulk count once.  HP counts are
         // loaded and conservation-checked above, but their tagged reads are
         // derived from the same ALT evidence and require a separate Model B
         // generative/error model before they can affect the primary target.
-        components.push_back(log_multiplicity_prior(site, i) + bulk);
+        components.push_back(candidate.log_prior + bulk);
     }
     return components;
 }
@@ -253,20 +263,20 @@ std::vector<double> site_multiplicity_posterior(const Site& site, double phi) {
 }
 
 double site_log_likelihood(const Site& site, double phi) {
-    if (!(phi >= 0.0 && phi <= 1.0) || !std::isfinite(phi) || site.multiplicity_candidates.empty()) {
+    if (!(phi >= 0.0 && phi <= 1.0) || !std::isfinite(phi) || site.genotype_candidates.empty()) {
         return -std::numeric_limits<double>::infinity();
     }
     double top = -std::numeric_limits<double>::infinity();
-    for (std::size_t i = 0; i < site.multiplicity_candidates.size(); ++i) {
-        const double q_bulk = expected_alt_probability(site, phi, site.multiplicity_candidates[i]);
-        const double component = log_multiplicity_prior(site, i) + log_binomial(site, q_bulk);
+    for (const GenotypeCandidate& candidate : site.genotype_candidates) {
+        const double q_bulk = expected_alt_probability(site, phi, candidate);
+        const double component = candidate.log_prior + log_binomial(site, q_bulk);
         top = std::max(top, component);
     }
     if (!std::isfinite(top)) return top;
     double scaled_sum = 0.0;
-    for (std::size_t i = 0; i < site.multiplicity_candidates.size(); ++i) {
-        const double q_bulk = expected_alt_probability(site, phi, site.multiplicity_candidates[i]);
-        const double component = log_multiplicity_prior(site, i) + log_binomial(site, q_bulk);
+    for (const GenotypeCandidate& candidate : site.genotype_candidates) {
+        const double q_bulk = expected_alt_probability(site, phi, candidate);
+        const double component = candidate.log_prior + log_binomial(site, q_bulk);
         scaled_sum += std::exp(component - top);
     }
     if (!(scaled_sum > 0.0) || !std::isfinite(scaled_sum)) return -std::numeric_limits<double>::infinity();
@@ -333,13 +343,15 @@ CanonicalTable load_canonical_table(const std::filesystem::path& path,
         site.purity = parse_number(field("rho_ASCAT"), "rho_ASCAT", id);
         if (!(site.purity > 0.0 && site.purity <= 1.0) || std::abs(site.purity - requested_purity) > 1e-9) throw std::runtime_error("row " + id + " rho_ASCAT disagrees with requested purity");
         site.log_binomial_coefficient = log_binomial_coefficient(site.ref_reads, site.alt_reads);
-        site.purity_cn_denominator = (1.0 - site.purity) * 2.0 + site.purity * site.total_cn;
-        if (!(site.purity_cn_denominator > 0.0) || !std::isfinite(site.purity_cn_denominator)) throw std::runtime_error("row " + id + " has invalid purity/CN denominator");
-        auto multiplicity = derive_multiplicity_distribution(site.major_cn, site.minor_cn, id);
-        site.multiplicity_candidates = std::move(multiplicity.candidates);
-        site.multiplicity_prior = std::move(multiplicity.prior);
-        site.log_multiplicity_prior.reserve(site.multiplicity_prior.size());
-        for (const double prior : site.multiplicity_prior) site.log_multiplicity_prior.push_back(std::log(prior));
+        site.genotype_candidates = derive_genotype_candidates(site.major_cn, site.minor_cn, site.total_cn, id);
+        site.multiplicity_candidates.reserve(site.genotype_candidates.size());
+        site.multiplicity_prior.reserve(site.genotype_candidates.size());
+        site.log_multiplicity_prior.reserve(site.genotype_candidates.size());
+        for (const GenotypeCandidate& candidate : site.genotype_candidates) {
+            site.multiplicity_candidates.push_back(candidate.multiplicity);
+            site.multiplicity_prior.push_back(candidate.prior);
+            site.log_multiplicity_prior.push_back(candidate.log_prior);
+        }
         if (static_cast<double>(site.multiplicity_candidates.back()) > site.major_cn + 1e-9) throw std::runtime_error("row " + id + " derived multiplicity exceeds major_cn");
         if (!excluded.count(id)) table.sites.push_back(std::move(site));
     }

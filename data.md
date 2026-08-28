@@ -63,10 +63,11 @@ hcc1395_tumor_tree_input/v4
 rho_ASCAT = 0.99
 ~~~
 
-### 文件 target/spec：PhyClone-compatible expected VAF
+### Active model：PhyClone-compatible expected VAF
 
-本輪只修改文件，canonical table 欄位與 C++/Python/tests/config 均未同步。以下
-是 future model target/spec，不要宣稱現有 runtime 已使用這個 emission。
+canonical table 欄位維持不變；C++/Python/tests 已同步最小版 emission。以下
+定義是 active model 的資料邊界，完整 clone-specific CNV event history 仍是
+future scope。
 
 模型端暫以 `t = rho_ASCAT` 對應 tumour content，並以每個 clone 的
 `CCF = phi` 定義三個 population weights：
@@ -217,7 +218,7 @@ model_status
 | model_include | builder eligibility gate | 是否允許進 sampler |
 | model_status | builder eligibility gate | eligible 或 exclusion reason |
 
-對 C++ Site 而言，identity 欄位會保留用於追蹤；Model A target/spec 的 primary observation 是 bulk counts、ASCAT CN、purity 與 genotype candidate marginalization。HP counts 仍由 loader 讀取並做 conservation／schema 檢查，但目前不進入 Model A likelihood。genotype candidate 應在 model side 由 CN context 建立，包含 `c_N/c_R/c_V`、`mu_N/mu_R/mu_V`、CN timing 與 multiplicity，再以 `xi` 和 `P_G` 邊際化；這些不是 canonical table 欄位，也沒有外部 genotype 工具或檔案輸入。**本輪 C++/Python 尚未同步，這段是 target/spec，不是現有 loader 行為的宣告。**
+對 C++ Site 而言，identity 欄位會保留用於追蹤；Model A 的 primary observation 是 bulk counts、ASCAT CN、purity 與 genotype candidate marginalization。HP counts 仍由 loader 讀取並做 conservation／schema 檢查，但目前不進入 Model A likelihood。genotype candidate 在 model side 由 CN context 建立，包含 `c_N/c_R/c_V`、`mu_N/mu_R/mu_V`、CN timing 與 multiplicity，再以 `xi` 和 `P_G` 邊際化；這些不是 canonical table 欄位，也沒有外部 genotype 工具或檔案輸入。**C++/Python 已同步這個最小 active emission；完整 clone-specific CNV event history 仍是後續範圍。**
 
 ---
 
@@ -275,7 +276,7 @@ total_reads = ref_reads + alt_reads
 
 上游可能另有 bulk_vaf、vcf_af、vcf_dp、vcf_ad_ref、vcf_ad_alt 等摘要欄位，但它們不是 canonical active columns。
 
-目前 target/spec 不是先計算一個獨立 VAF parameter 再交給模型；model likelihood 直接使用 REF/ALT counts，並在 `t`、CCF/`phi`、CN、genotype candidate、`error_rate=0.001` 與 `xi` 的共同條件下計算 observation probability。`alt_reads/total_reads` 只在 holdout predictive coverage 中作為觀察摘要，不是獨立的 VAF 參數。模型公式請見 model.md。現有 runtime 尚未同步此 target/spec。
+目前 active model 不是先計算一個獨立 VAF parameter 再交給模型；likelihood 直接使用 REF/ALT counts，並在 `t`、CCF/`phi`、CN、genotype candidate、`error_rate=0.001` 與 `xi` 的共同條件下計算 observation probability。`alt_reads/total_reads` 只在 holdout predictive coverage 中作為觀察摘要，不是獨立的 VAF 參數。模型公式請見 model.md；C++/Python runtime 已同步最小版 emission。
 
 ### 5.2 HP counts
 
@@ -427,9 +428,9 @@ SNV site universe
            input_qa.json    manifest.json
                         │
                         ▼
-             target/spec 由 CN
+             model 由 CN
              建立 genotype candidates
-             （runtime 尚未同步）
+             （C++/Python 已同步）
                         │
                         ▼
                  model likelihood
@@ -463,8 +464,9 @@ purity:
   rho_ASCAT=0.99
 
 loader 內部：
-  由 major=3、minor=1 建立 m=1,2,3 的 CN candidate support
-  並以 CN prior 開始，在 likelihood 中計算 posterior responsibility
+  由 major=3、minor=1、total=4 建立三個 mutation-before-CN
+  candidates 與一個 mutation-after-CN candidate
+  並以候選 prior 開始，在 likelihood 中計算 posterior responsibility
 
 eligibility:
   model_include=yes
@@ -501,7 +503,7 @@ PS block 本身不是：
 - C++ Site field。
 - downstream likelihood column。
 - clone-assignment prior。
-- eta 或 phi parameter。
+- clone-specific local fraction $\eta_v$ 或 $\phi$/CCF parameter。
 - topology edge constraint。
 - clone label。
 
@@ -591,7 +593,7 @@ rho_ASCAT 是固定的 global purity input：
 rho_ASCAT 不等於：
 
 ~~~text
-eta
+eta_v (clone-specific local fraction)
 phi
 某一個 clone 的 CCF
 某一條 topology edge 的 support
@@ -610,7 +612,7 @@ phi
 ~~~text
 major_cn + minor_cn + total_cn
         ↓
-target/spec 建立 genotype candidate G_i
+model 建立 genotype candidate G_i
         ↓
 三 population weights + c_N/c_R/c_V + mu_N/mu_R/mu_V
         ↓
@@ -621,28 +623,26 @@ candidate prior marginalization + Binomial emission
 genotype/multiplicity posterior output
 ~~~
 
-target/spec 規則：
+目前 runtime 規則：
 
-1. 建立所有符合 CN context 與 CN timing 的 genotype candidate `g`。
-2. 每個 `g` 記錄 `c_N/c_R/c_V`、ALT-copy counts `a_N/a_R/a_V` 與 `mu`。
-3. 使用 `mu_g=clamp(a_g/c_g, 0.001, 0.999)` 計算 DNA-copy-weighted `xi(g)`。
-4. 使用 `P_G,i(g | C_i)` 做 prior-weighted marginalization，prior 必須正規化。
+1. 建立 mutation-before-CN candidates，mutated-copy count 為 `1..major_cn`。
+2. 若 `total_cn != 2`，再加入 mutation-after-CN、mutated-copy count 為 `1` 的 candidate。
+3. 每個 `g` 記錄 `c_N/c_R/c_V`、ALT-copy counts `a_N/a_R/a_V` 與 `mu`。
+4. 使用 copy-number-weighted `xi(g)`，再使用 uniform `P_G,i(g | C_i)` 做 prior-weighted marginalization。
 
 例如：
 
 ~~~text
 major_cn=3, minor_cn=1
 
-major side:
-  m=1,2,3 各 1/6
+mutation-before-CN candidates:
+  m=1,2,3; reference_cn=2, variant_cn=4
 
-minor side:
-  m=1 為 1/2
+mutation-after-CN candidate:
+  m=1; reference_cn=4, variant_cn=4
 
-combined:
-  m=1: 2/3
-  m=2: 1/6
-  m=3: 1/6
+all four genotype candidates:
+  prior=1/4 each; output rows with the same m are aggregated
 ~~~
 
 ### 9.2 Posterior 的產生
@@ -658,11 +658,14 @@ P(G_i=g | D_i, C_i, rho_ASCAT, phi_z(i), error_rate)
 這個 posterior 會累積到 inference output：
 
 ~~~text
-genotype_posterior.tsv.gz
-mutation_id  genotype_candidate  multiplicity  prior  posterior_mean
+multiplicity_posterior.tsv.gz
+mutation_id  multiplicity  prior  posterior_mean
 ~~~
 
-`posterior_mean` 是 retained draws 的平均 responsibility；它不是外部工具輸入，也不會回寫 canonical table。觀測 `alt_reads / total_reads` 仍保持原始值。這個 output layout 與 `xi` emission 都是 target/spec；本輪未修改 runtime artifact schema。
+`posterior_mean` 是 retained draws 的平均 responsibility；同一 multiplicity 的不同
+CN-timing candidates 會先聚合。它不是外部工具輸入，也不會回寫 canonical table。
+觀測 `alt_reads / total_reads` 仍保持原始值。這個 output layout 與 `xi` emission
+已同步到 runtime，artifact schema 維持四欄。
 
 ### 9.3 不用來建立 CN prior 的資料
 
@@ -679,7 +682,7 @@ PS block
 
 但這些 observation 會在後續 likelihood 中更新 genotype/multiplicity posterior；它們不會先形成一個外部 multiplicity table，再被 likelihood 重複使用。
 
-CN/genotype prior 是候選狀態的初始權重，不是最終 posterior；genotype candidate 不需要作為獨立的 particle state，因為 target/spec 要在每個 likelihood evaluation 中解析邊際化。**現有 C++ loader、Python builder 與 artifact schema 尚未因本輪文件修改而同步。** 詳細定義見 model.md。
+CN/genotype prior 是候選狀態的初始權重，不是最終 posterior；genotype candidate 不需要作為獨立的候選腫瘤演化樹 state，因為 active model 在每個 likelihood evaluation 中解析邊際化。**現有 C++ loader、Python builder 與 artifact schema 已同步最小版 `xi` emission。** 詳細定義見 model.md。
 
 ---
 
@@ -724,8 +727,8 @@ eligible row 必須通過：
 - site-CNV projection 可用。
 - CN arithmetic 正確。
 - purity 一致。
-- target/spec 的 genotype candidate set 能由 major/minor/total CN 建立且有限、唯一。
-- target/spec 的 `P_G,i(g | C_i)` 非負、總和為 1，且 candidate 的 mutated-copy state 不超過可用 CN；runtime 尚未同步此檢查。
+- active runtime 的 genotype candidate set 能由 major/minor/total CN 建立且有限、唯一。
+- active runtime 的 `P_G,i(g | C_i)` 非負、總和為 1，且 candidate 的 mutated-copy state 不超過可用 CN；C++/Python tests 已同步保護。
 - eligible row 的 total_cn 大於零。
 
 ### 10.2 Chain-specific holdout
@@ -905,7 +908,7 @@ HP label / count construction
 HP counts in canonical table
 ~~~
 
-PS 不直接進 C++ Site、clone prior、eta、phi 或 topology edge。
+PS 不直接進 C++ Site、clone prior、$\eta_v$（clone-specific local fraction）、$\phi$/CCF 或 topology edge。
 
 ---
 
@@ -934,7 +937,7 @@ PS 不直接進 C++ Site、clone prior、eta、phi 或 topology edge。
 
 - [ ] primary table 使用 rho_ASCAT=0.99。
 - [ ] purity source 可追溯，table 與 source 一致。
-- [ ] target/spec 只由 major/minor/total CN 建立 genotype candidate support 與權重。
+- [ ] active runtime 只由 major/minor/total CN 建立 genotype candidate support 與權重。
 - [ ] `P_G,i(g | C_i)` 非負且總和為 1；candidate 的 `xi` 可正規化。
 - [ ] mutated-copy state 不超過可用 CN；eligible row 的 total_cn 大於零。
 - [ ] `error_rate=0.001` 已記錄為 model-side target parameter；本輪未加入 canonical column。
@@ -995,7 +998,7 @@ bulk REF/ALT counts
 + ASCAT major/minor/total CN
 + ASCAT purity rho_ASCAT
 + PhyClone-compatible genotype candidates / `xi` / posterior
-  （target/spec 由 model side 建立，不是 table 欄位；runtime 尚未同步）
+  （由 model side 建立，不是 table 欄位；C++/Python runtime 已同步）
 + site eligibility metadata
 ~~~
 

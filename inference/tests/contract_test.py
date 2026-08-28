@@ -335,6 +335,22 @@ def assert_smc_artifacts(output_dir: Path, *, expected_sites: int = 2) -> dict[s
         diagnostics.get("state_variables") == ["topology", "eta"],
         "the SMC particle state must be topology/eta",
     )
+    check(
+        diagnostics.get("vaf_formula") == "phyclone_xi_v1",
+        "diagnostics do not identify the active PhyClone-VI expected-VAF formula",
+    )
+    check(
+        diagnostics.get("vaf_implementation_status") == "synced",
+        "diagnostics do not identify the synchronized VAF implementation",
+    )
+    check(diagnostics.get("error_rate") == 0.001, "diagnostics do not record error_rate=0.001")
+    check(diagnostics.get("error_rate_status") == "configured", "diagnostics do not identify configured error_rate")
+    check(diagnostics.get("normal_cn_assumption") == 2.0, "diagnostics do not record normal_cn=2")
+    check(diagnostics.get("cn_timing_model") == "explicit", "diagnostics do not identify explicit CN timing")
+    check(
+        diagnostics.get("cn_timing_model_detail") == "major_cn_pre_or_post_candidate",
+        "diagnostics do not identify the CN timing candidates",
+    )
     check(config.get("ascat_purity") == 0.99, "diagnostics did not record rho_ASCAT=0.99")
     phi_mean = diagnostics.get("phi_mean")
     check(
