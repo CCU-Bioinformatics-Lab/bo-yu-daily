@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-08-28 實作與驗證</title>
+<link rel="stylesheet" href="assets/slides.css">
+</head>
+<body><div class="wrap">
+<!-- SLIDE:START -->
+<div class="slide-outer"><div class="slide" style="padding:28px 42px 18px;display:flex;flex-direction:column;gap:9px;">
+  <div class="slide-label">程式交付與驗證</div>
+  <h2 style="margin:0;">C++／Python 已同步；測試通過，但 validation gate 還沒關</h2>
+  <p class="lead" style="font-size:15px;">實作把同一套 copy-number-aware emission 放進 C++ SMC backend 與 Python workflow，並在 diagnostics 留下可追溯的 formula／status metadata。</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:0;">
+    <div class="info-card blue"><div class="card-title">實作落點</div><table class="ruletable"><tr><th>層</th><th>內容</th></tr><tr><td>C++ model</td><td>genotype candidates、expected ALT probability、likelihood 與 multiplicity posterior。</td></tr><tr><td>Python model</td><td>同步 candidate derivation、<code>xi</code> 與 diagnostics helper。</td></tr><tr><td>algorithm／output</td><td>state 仍是 topology + <code>eta</code>；assignment／multiplicity 為 Rao–Blackwellized variables。</td></tr><tr><td>metadata</td><td><code>vaf_formula=phyclone_xi_v1</code>、<code>vaf_implementation_status=synced</code>。</td></tr></table></div>
+    <div class="info-card green"><div class="card-title">已量測的證據</div><table class="ruletable"><tr><th>檢查</th><th>結果</th></tr><tr><td>C++ debug smoke</td><td><b>PASS</b></td></tr><tr><td>C++ black-box contract</td><td><b>PASS</b></td></tr><tr><td>Release build／smoke／contract</td><td><b>PASS</b></td></tr><tr><td>Python workflow tests</td><td><b>48/48 PASS</b></td></tr><tr><td><code>git diff --check</code></td><td><b>PASS</b></td></tr></table></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div style="background:#f6ffed;border:1px solid #52c41a;border-radius:8px;padding:10px;"><b>Provenance</b><br><span style="font-size:14px;line-height:1.45;">`4138d59 feat: synchronize copy-number-aware tumor-tree model`，30 個 tracked files、2,801 insertions／705 deletions；目前 branch 比 origin/main ahead 1，尚未 push。</span></div>
+    <div style="background:#fffbe6;border:1px solid #faad14;border-radius:8px;padding:10px;"><b>Gate boundary</b><br><span style="font-size:14px;line-height:1.45;">測試證明程式路徑可跑與契約未破壞；尚不能代替 per-SNV predicted <code>xi</code> artifact、held-out predictive check 與正式閾值判定。</span></div>
+  </div>
+  <div class="takeaway" style="font-size:14px;"><b>交付狀態：</b>implementation synced、smoke／contract／unit evidence 通過；formal predictive validation = pending。</div>
+</div></div>
+<!-- SLIDE:END -->
+</div></body></html>

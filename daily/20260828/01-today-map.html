@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-08-28 今日主線</title>
+<link rel="stylesheet" href="assets/slides.css">
+</head>
+<body><div class="wrap">
+<!-- SLIDE:START -->
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:10px;">
+  <div class="slide-label">今日主線</div>
+  <h2 style="font-size:28px;margin:0;">把腫瘤演化 Model 收斂成可解釋、可驗證的實作</h2>
+  <p class="lead" style="font-size:16px;">今天的工作從文件語言出發，經過 <code>eta</code>／CCF 語意與文獻定位，最後落到 copy-number-aware 的 <code>xi</code> emission 和可核對的 code delivery。</p>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:9px;flex:1;min-height:0;">
+    <div class="info-card blue" style="display:flex;flex-direction:column;"><div class="card-title">文件</div><div style="font-size:19px;font-weight:900;margin:10px 0 6px;">Model purpose</div><div style="font-size:13px;line-height:1.4;">把完整數學敘述收斂到目前需要的模組邊界。</div><div class="ap-chip" style="margin-top:auto;">T1／T8</div></div>
+    <div class="info-card green" style="display:flex;flex-direction:column;"><div class="card-title">術語</div><div style="font-size:19px;font-weight:900;margin:10px 0 6px;">eta_v ≠ CCF</div><div style="font-size:13px;line-height:1.4;">local clone fraction 與含後代的 phi 分開。</div><div class="ap-chip" style="margin-top:auto;">T2／T3</div></div>
+    <div class="info-card yellow" style="display:flex;flex-direction:column;"><div class="card-title">狀態</div><div style="font-size:19px;font-weight:900;margin:10px 0 6px;">T + eta → phi</div><div style="font-size:13px;line-height:1.4;">候選樹像一張可能答案卡，phi 由樹關係計算。</div><div class="ap-chip" style="margin-top:auto;">T4</div></div>
+    <div class="info-card red" style="display:flex;flex-direction:column;"><div class="card-title">Emission</div><div style="font-size:19px;font-weight:900;margin:10px 0 6px;">PhyClone/PyClone-VI xi</div><div style="font-size:13px;line-height:1.4;">把 purity、CN、timing、multiplicity 放進 read-count likelihood。</div><div class="ap-chip" style="margin-top:auto;">T5–T7</div></div>
+    <div class="info-card blue" style="display:flex;flex-direction:column;"><div class="card-title">交付</div><div style="font-size:19px;font-weight:900;margin:10px 0 6px;">48/48 PASS</div><div style="font-size:13px;line-height:1.4;">C++／Python 測試通過；正式 predictive gate 仍待補。</div><div class="ap-chip" style="margin-top:auto;">T7–T9</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+    <div style="background:#f8fafc;border:1px solid #dbe4ef;border-radius:8px;padding:8px;text-align:center;"><b style="font-size:22px;">31</b><br><span style="font-size:12px;color:#64748b;">rollout entries</span></div>
+    <div style="background:#f8fafc;border:1px solid #dbe4ef;border-radius:8px;padding:8px;text-align:center;"><b style="font-size:22px;">3</b><br><span style="font-size:12px;color:#64748b;">root sessions</span></div>
+    <div style="background:#f8fafc;border:1px solid #dbe4ef;border-radius:8px;padding:8px;text-align:center;"><b style="font-size:22px;">9</b><br><span style="font-size:12px;color:#64748b;">去重後實質任務</span></div>
+  </div>
+  <div class="takeaway" style="font-size:14px;"><b>今日收斂：</b>模型的「生物學規則、數學 emission、推論 state、測試證據」已分層；不把已通過 smoke／contract tests 說成正式 predictive validation。</div>
+</div></div>
+<!-- SLIDE:END -->
+</div></body></html>
