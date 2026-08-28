@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-08-28 xi 與 multiplicity</title>
+<link rel="stylesheet" href="assets/slides.css">
+</head>
+<body><div class="wrap">
+<!-- SLIDE:START -->
+<div class="slide-outer"><div class="slide" style="padding:28px 42px 18px;display:flex;flex-direction:column;gap:9px;">
+  <div class="slide-label">CNV-aware emission</div>
+  <h2 style="margin:0;">把 VAF 視為 emission 的結果：<code>xi</code> 不是直接換算器</h2>
+  <p class="lead" style="font-size:15px;">今天確定採用 PhyClone／PyClone-VI-style 的 expected ALT probability，讓 purity、copy number、突變時序與 multiplicity 一起影響 read-count likelihood。</p>
+  <div style="display:grid;grid-template-columns:1.04fr .96fr;gap:13px;flex:1;min-height:0;">
+    <div style="border:2px solid #d4380d;border-radius:10px;padding:15px;background:#fffaf9;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:17px;font-weight:900;color:#820014;">核心計算鏈</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+        <div class="info-card blue"><div class="card-title">purity <code>t</code></div><div style="font-size:20px;font-weight:900;">p_N=1−t</div><div style="font-size:12px;">normal cells</div></div>
+        <div class="info-card yellow"><div class="card-title">CCF <code>f</code></div><div style="font-size:20px;font-weight:900;">p_R=t(1−f)</div><div style="font-size:12px;">reference tumor</div></div>
+        <div class="info-card green"><div class="card-title">variant mass</div><div style="font-size:20px;font-weight:900;">p_V=tf</div><div style="font-size:12px;">variant tumor</div></div>
+      </div>
+      <div style="text-align:center;font-size:20px;font-weight:900;color:#820014;padding:8px;border-top:1px dashed #e6a5a5;border-bottom:1px dashed #e6a5a5;"><code>xi_g(f)</code> = genotype candidate 的 expected ALT fraction</div>
+      <div style="font-size:14px;line-height:1.45;">對每個 genotype／timing candidate 計算 <code>xi</code>，再對候選 candidate marginalize，最後用 Binomial read-count likelihood 比較觀察到的 REF／ALT reads。</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div class="info-card red"><div class="card-title">已定案的 state 邊界</div><div style="font-size:14px;line-height:1.45;">multiplicity <code>m</code> 不成為 persistent candidate-tree state；它留在 likelihood 裡做 marginalization，並產生每個 SNV 的 posterior responsibility。</div></div>
+      <div class="info-card blue"><div class="card-title">CNV timing</div><div style="font-size:14px;line-height:1.45;">candidate 分開 mutation-before-CNV 與 mutation-after-CNV；不再把所有 VAF 偏差都壓成單一 multiplicity。</div></div>
+      <div class="info-card yellow"><div class="card-title">生物學邊界</div><div style="font-size:14px;line-height:1.45;">CCF／<code>phi</code> 定義保留。疑似 mutation-loss 的 site 先當 outlier；精確判斷規則還沒有實作。</div></div>
+    </div>
+  </div>
+  <div class="takeaway" style="font-size:14px;"><b>重要區分：</b>PyClone-VI 不是把 observed VAF 直接轉成 CCF；<code>xi</code> 是在候選 clone fraction、purity、CN 與 genotype 下預測 ALT fraction 的 emission。</div>
+</div></div>
+<!-- SLIDE:END -->
+</div></body></html>
