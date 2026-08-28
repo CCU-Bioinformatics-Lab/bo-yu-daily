@@ -49,5 +49,31 @@ _Avoid_: purity, observed VAF
 **SNV-to-clone assignment**：一顆 SNV 對 candidate clone 的模型支持關係，通常保留不確定性；它不是直接觀察到的 lineage proof。
 _Avoid_: confirmed lineage
 
-**multiplicity**：在 copy-number context 下由 model 考慮的 mutated-copy candidate；它不是 canonical input，也不是 ASCAT 直接量測值。
+**multiplicity**：在 copy-number context 下，帶有某個 SNV 的 mutated-copy 數量候選；它不是 total copy number、CCF、canonical input，也不是 ASCAT 直接量測值。它可以在模型中作為固定輸入、latent state，或在 allele-count emission 中被邊際化；它本身不等於 tree topology。
 _Avoid_: ASCAT multiplicity
+
+## Statistical model terms
+
+**Observation**：一顆 SNV 實際觀察到的 REF/ALT read counts，以及該 SNV 的 copy-number 與 purity context。
+
+**Likelihood**：在一個指定的 tree、clone-specific local fraction、clone assignment 與 multiplicity 解釋下，觀察到目前 read counts 的機率。
+
+**Prior**：在尚未使用目前 SNV read counts 前，對 tree、clone-specific local fraction、assignment 或 multiplicity 的機率／權重假設。
+
+**Posterior**：將 observation 的 likelihood 與 prior 結合後，對候選 tree、clone-specific local fraction 及其 latent interpretation 更新出的不確定性分布。
+
+**Tree topology**：candidate tumor clones 之間的 rooted parent-child ancestry 關係。
+
+**clone-specific local fraction ($\eta_v$)**：只屬於某個 clone、且不包含 descendants 的 tumor-cell fraction；所有 clone-specific local fractions 為正並加總為 1。
+
+本 repo 使用 $\eta_v$ 這個命名有 PhyloSub／PhyloWGS 的先例，但這是 project notation，不是所有 tumor-tree model 的 universal symbol。
+
+**Cumulative tumor-cell fraction (`phi`／CCF)**：某 clone 的 clone-specific local fraction 加上所有 descendants 的 clone-specific local fractions 總和；每個 $\phi_v$ 都由 tree topology `T` 與 clone-specific local fraction vector $\eta$ 推導，不是獨立觀察值。
+
+**Clone assignment (`z`)**：把一顆 SNV 對應到某個 candidate clone 的 latent state。
+
+**Multiplicity prior (`pi_i(m)`)**：由第 `i` 顆 SNV 的 major/minor CN 建立、且在該 SNV candidate support 上正規化的 multiplicity 初始權重。
+
+**Working prior**：為了 finite-K inference 而指定的可檢驗先驗；它是模型假設，不是從 HCC1395 直接量測出的 biological truth。
+
+**Rao–Blackwellized marginalization**：不把 assignment 或 multiplicity 當作 particle 維度，而是在 likelihood 中對它們的可能值加權求和，並從 conditional responsibility 產生 posterior summary。

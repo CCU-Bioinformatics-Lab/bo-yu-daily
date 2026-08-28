@@ -1,12 +1,12 @@
 # Tumor-tree Validation Module Handoff
 
-更新日期：2026-08-25
+更新日期：2026-08-28
 狀態：MVP 規格 / Codex handoff  
 適用架構：`data input → model ↔ inference_algo → output`，其中 `validation` 為 cross-cutting read-only module
 
-VAF target specification：PhyClone `xi` observation model，`error_rate=0.001`。本次
-只更新 validation 文件要求；目前 Python／C++／config 尚未同步，故本設定與公式在
-runtime 尚未生效，不得把本文件當成已通過的 implementation receipt。
+VAF target specification：PhyClone `xi` observation model，`error_rate=0.001`。目前
+Python／C++ emission 已同步；但 validation 仍需檢查 deterministic prediction output、
+正式資料 predictive check 與其他 gates，不能把公式同步誤當成 validation PASS。
 
 ---
 
@@ -156,9 +156,11 @@ normal_cn
 tumour_content
 ```
 
-`normal_cn`、`tumour_content` 與 CN timing 是 PhyClone `xi` target 所需的
-observation context；目前 v4 canonical table 尚未提供全部欄位。因此在 runtime
-同步前，這個 predictive gate 必須保持 `BLOCKED`，不能用 legacy q baseline 代替。
+`normal_cn`、`tumour_content` 與 CN timing 是 PhyClone `xi` 所需的 observation
+context；目前 v4 canonical table 不新增這些欄位，而 runtime 使用固定 normal CN=2、
+`rho_ASCAT` 作 tumour-content mapping，以及 major-CN pre/post candidates。因此在
+缺少 deterministic per-site `predicted_xi` output 或正式 predictive receipt 時，這個
+gate 仍保持 `BLOCKED`，不能用 legacy q baseline 代替。
 
 其中：
 
@@ -355,10 +357,10 @@ P(reads | CCF) = sum_g P(g) * P(reads | xi_g)
 尤其不能忽略 CN timing、subclonal CNV、normal genotype、mapping bias 或
 overdispersion。
 
-**Implementation caveat：** 本節是文件 target，不代表目前 active Python／C++ 已
-套用 `phyclone_xi_v1` 或 `error_rate=0.001`。在 runtime、unit oracle、prediction
-receipt 與 predictive gate 完成前，任何使用舊 q 的 artifact 都必須標示
-`vaf_formula_status=documentation_only`，不得升級為 PhyClone VAF validation PASS。
+**Implementation caveat：** C++/Python active emission 已套用 `phyclone_xi_v1` 與
+`error_rate=0.001`，並由 unit/contract tests 保護；但目前 artifact 尚未逐 site 輸出
+deterministic `predicted_xi`，所以 predictive gate 仍不能直接標為 PASS。任何使用舊 q
+的歷史 artifact 都必須標示 `vaf_formula_status=documentation_only`。
 
 ---
 
@@ -1859,7 +1861,7 @@ predictive_residuals.tsv (optional)
 目前 output 只驗證三類結果：
 
 1. `normal cells → tumor_root → clone` 的 rooted topology。
-2. `eta` 與 `phi` 所表示的 clone mass / CCF。
+2. clone-specific local fraction ($\eta_v$) 與 CCF ($\phi_v$)。
 3. 每個 eligible SNV 的 clone assignment 及其不確定性。
 
 樹圖的語意固定為：
@@ -1880,8 +1882,9 @@ tumor_root
 - `tumor_root` 是所有 tumor clones 的共同祖先，不承載普通 SNV assignment。
 - `clone_1` 等 artifact node 可在展示層映射成 `C1`、`C2`；validation 必須保留
   兩者的 mapping，並以 label-invariant topology 比較結果。
-- `eta` 是 local / exclusive clone mass；`phi` 是該 clone 加上 descendants 的
-  cumulative cancer-cell fraction。
+- clone-specific local fraction ($\eta_v$) 是只分配給 clone $v$ 本身、排除
+  descendants 的 tumor-cell fraction；CCF ($\phi_v$) 是該 clone 加上 descendants
+  的 cumulative tumor-cell fraction。
 
 目前最高可使用的名稱是：
 
@@ -1932,7 +1935,7 @@ counts 已進入 likelihood；它們可以支持 model fit 或 bulk compatibilit
 `external_orthogonal`。
 
 PS phase block 只可用於 phase provenance、局部 QC 與 grouped holdout。PS 不直接
-決定 clone assignment、eta、phi、topology 或 ancestry edge；HP counts 目前也
+決定 clone assignment、$\eta_v$、$\phi_v$、topology 或 ancestry edge；HP counts 目前也
 只是 supplementary evidence，不是 Model A primary likelihood。沒有 joint
 single-cell SNV+CN matrix 時，不宣稱 single-cell SNV lineage validation。
 
@@ -1946,7 +1949,7 @@ single-cell SNV+CN matrix 時，不宣稱 single-cell SNV lineage validation。
 | canonical table 是否正確 | Gate 1 | observed-data contract |
 | SMC particle population 是否健康 | Gate 2 | inference reliability |
 | topology 是否為合法 rooted tree | Gate 3 | structural validity |
-| eta / phi 是否滿足 CCF constraints | Gate 4 | numerical consistency |
+| $\eta_v$ / $\phi_v$ 是否滿足 CCF constraints | Gate 4 | numerical consistency |
 | SNV assignment 是否完整且相容 | Gate 5 | assignment support |
 | bulk counts 是否被 posterior predictive 解釋 | Gate 6 | model fit / holdout fit |
 | ASCAT purity、CN、LOH、ploidy 是否相容 | Gate 7 | bulk compatibility |
@@ -2090,7 +2093,7 @@ run completeness / provenance
           ↓
 canonical input → SMC adequacy
           ↓
-tree structure → eta / phi → SNV assignment
+tree structure → clone-specific local fraction / CCF → SNV assignment
           ↓
 repeat / K / purity stability
           ↓

@@ -63,18 +63,39 @@ void gzip_copy(const std::filesystem::path& input_path, const std::filesystem::p
 }  // namespace
 
 double reference_site_log_likelihood(const tumor_tree_inference::Site& site, double phi) {
-    const double denominator = (1.0 - site.purity) * 2.0 + site.purity * site.total_cn;
     const double log_coefficient =
         std::lgamma(static_cast<double>(site.ref_reads + site.alt_reads) + 1.0) -
         std::lgamma(static_cast<double>(site.ref_reads) + 1.0) -
         std::lgamma(static_cast<double>(site.alt_reads) + 1.0);
+    struct Candidate {
+        int multiplicity;
+        double reference_cn;
+        double variant_cn;
+    };
+    const int major_cn = static_cast<int>(std::round(site.major_cn));
+    std::vector<Candidate> candidates;
+    for (int multiplicity = 1; multiplicity <= major_cn; ++multiplicity) {
+        candidates.push_back({multiplicity, 2.0, site.total_cn});
+    }
+    if (std::abs(site.total_cn - 2.0) > 1e-12) {
+        candidates.push_back({1, site.total_cn, site.total_cn});
+    }
+    const double candidate_prior = 1.0 / static_cast<double>(candidates.size());
     std::vector<double> components;
-    for (std::size_t index = 0; index < site.multiplicity_candidates.size(); ++index) {
-        const double multiplicity = static_cast<double>(site.multiplicity_candidates[index]);
-        const double cellular_fraction = site.purity * phi * multiplicity / denominator;
-        const double probability = std::clamp(0.99 * cellular_fraction, 1e-12, 1.0 - 1e-12);
+    for (const Candidate& candidate : candidates) {
+        const double normal_weight = 1.0 - site.purity;
+        const double reference_weight = site.purity * (1.0 - phi);
+        const double variant_weight = site.purity * phi;
+        const double denominator = normal_weight * 2.0 + reference_weight * candidate.reference_cn +
+            variant_weight * candidate.variant_cn;
+        const double variant_mu = std::min(1.0 - 1e-3,
+                                           static_cast<double>(candidate.multiplicity) / candidate.variant_cn);
+        const double probability = std::clamp(
+            (normal_weight * 2.0 * 1e-3 + reference_weight * candidate.reference_cn * 1e-3 +
+             variant_weight * candidate.variant_cn * variant_mu) / denominator,
+            1e-12, 1.0 - 1e-12);
         components.push_back(
-            std::log(site.multiplicity_prior[index]) + log_coefficient +
+            std::log(candidate_prior) + log_coefficient +
             static_cast<double>(site.alt_reads) * std::log(probability) +
             static_cast<double>(site.ref_reads) * std::log1p(-probability));
     }
@@ -101,13 +122,26 @@ int main() {
     const auto loaded = tti::load_canonical_table(input, 0.99, {});
     const auto loaded_hp_changed = tti::load_canonical_table(hp_changed_input, 0.99, {});
     assert(loaded.sites.size() == 3);
-    assert((loaded.sites[0].multiplicity_candidates == std::vector<int>{1, 2}));
-    assert(std::abs(loaded.sites[0].multiplicity_prior[0] - 0.75) < 1e-12);
-    assert(std::abs(loaded.sites[0].multiplicity_prior[1] - 0.25) < 1e-12);
-    assert((loaded.sites[2].multiplicity_candidates == std::vector<int>{1, 2, 3}));
-    assert(std::abs(loaded.sites[2].multiplicity_prior[0] - (2.0 / 3.0)) < 1e-12);
-    assert(std::abs(loaded.sites[2].multiplicity_prior[1] - (1.0 / 6.0)) < 1e-12);
-    assert(std::abs(loaded.sites[2].multiplicity_prior[2] - (1.0 / 6.0)) < 1e-12);
+    assert((loaded.sites[0].multiplicity_candidates == std::vector<int>{1, 2, 1}));
+    assert(loaded.sites[0].genotype_candidates.size() == 3);
+    for (const auto& candidate : loaded.sites[0].genotype_candidates) {
+        assert(std::abs(candidate.prior - (1.0 / 3.0)) < 1e-12);
+        assert(candidate.normal_cn == 2.0);
+        assert(candidate.normal_alt_probability == 1e-3);
+        assert(candidate.reference_alt_probability == 1e-3);
+    }
+    assert(loaded.sites[0].genotype_candidates[0].reference_cn == 2.0);
+    assert(loaded.sites[0].genotype_candidates[0].variant_cn == 3.0);
+    assert(loaded.sites[0].genotype_candidates[0].variant_alt_probability == 1.0 / 3.0);
+    assert(loaded.sites[0].genotype_candidates[2].multiplicity == 1);
+    assert(loaded.sites[0].genotype_candidates[2].reference_cn == 3.0);
+    assert(loaded.sites[0].genotype_candidates[2].variant_cn == 3.0);
+    assert(loaded.sites[0].genotype_candidates[2].variant_alt_probability == 1.0 / 3.0);
+    assert((loaded.sites[2].multiplicity_candidates == std::vector<int>{1, 2, 3, 1}));
+    assert(loaded.sites[2].genotype_candidates.size() == 4);
+    for (const double prior : loaded.sites[2].multiplicity_prior) {
+        assert(std::abs(prior - 0.25) < 1e-12);
+    }
     const auto multiplicity_posterior = tti::site_multiplicity_posterior(loaded.sites[2], 0.5);
     assert(multiplicity_posterior.size() == loaded.sites[2].multiplicity_candidates.size());
     double posterior_sum = 0.0;
@@ -173,6 +207,13 @@ int main() {
         const std::string multiplicity_table = read_gzip(directory / "multiplicity_posterior.tsv.gz");
         assert(multiplicity_table.find("mutation_id\tmultiplicity\tprior\tposterior_mean") == 0);
         assert(multiplicity_table.find("chr1:10:A>G\t") != std::string::npos);
+        std::istringstream multiplicity_lines(multiplicity_table);
+        std::string multiplicity_line;
+        std::size_t first_site_rows = 0;
+        while (std::getline(multiplicity_lines, multiplicity_line)) {
+            if (multiplicity_line.rfind("chr1:10:A>G\t", 0) == 0) ++first_site_rows;
+        }
+        assert(first_site_rows == 2);
         const std::string posterior_summary = read_gzip(directory / "posterior_summary.tsv.gz");
         assert(posterior_summary.find("clone\tccf_median\tccf_q025\tccf_q975\tphi_median\tphi_q025\tphi_q975") == 0);
         const std::string topology_summary = read_text(directory / "topology_summary.tsv");
@@ -216,6 +257,12 @@ int main() {
     assert(diagnostic_text.str().find("conditional_ess") != std::string::npos);
     assert(diagnostic_text.str().find("weighted_ess") != std::string::npos);
     assert(diagnostic_text.str().find("rejuvenation") != std::string::npos);
+    assert(diagnostic_text.str().find("\"vaf_formula\":\"phyclone_xi_v1\"") != std::string::npos);
+    assert(diagnostic_text.str().find("\"vaf_implementation_status\":\"synced\"") != std::string::npos);
+    assert(diagnostic_text.str().find("\"error_rate\":0.001") != std::string::npos);
+    assert(diagnostic_text.str().find("\"error_rate_status\":\"configured\"") != std::string::npos);
+    assert(diagnostic_text.str().find("\"normal_cn_assumption\":2") != std::string::npos);
+    assert(diagnostic_text.str().find("\"cn_timing_model\":\"explicit\"") != std::string::npos);
     assert(diagnostic_text.str().find("multiplicity_posterior.tsv.gz") != std::string::npos);
     assert(diagnostic_text.str().find("particle_weighted_quantiles") != std::string::npos);
     assert(diagnostic_text.str().find("mcmc") == std::string::npos);

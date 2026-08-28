@@ -13,7 +13,9 @@ from tumor_tree_pipeline.contracts import MODEL_REQUIRED_COLUMNS
 from tumor_tree_pipeline.model import (
     CanonicalInputError,
     bulk_log_likelihood,
+    bulk_log_likelihood_for_candidate,
     compile_model,
+    expected_alt_probability_for_candidate,
     likelihood_matrix,
     load_model_table,
     logsumexp,
@@ -117,7 +119,7 @@ class CanonicalModelContracts(unittest.TestCase):
             with self.assertRaisesRegex(CanonicalInputError, "forbidden legacy columns"):
                 load_model_table(old_multiplicity, 0.99)
 
-    def test_loader_derives_cn_only_multiplicity_prior_before_likelihood(self):
+    def test_loader_derives_cn_timing_candidates_before_likelihood(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "canonical.tsv.gz"
             row = canonical_row()
@@ -134,24 +136,54 @@ class CanonicalModelContracts(unittest.TestCase):
             write_table(path, [row], fields=list(MODEL_REQUIRED_COLUMNS) + ["ps"])
             data = load_model_table(path, 0.99)
             site = data.sites[0]
-            self.assertEqual(site.multiplicities, (1.0, 2.0, 3.0))
-            self.assertAlmostEqual(site.multiplicity_prior[0], 2.0 / 3.0)
-            self.assertAlmostEqual(site.multiplicity_prior[1], 1.0 / 6.0)
-            self.assertAlmostEqual(site.multiplicity_prior[2], 1.0 / 6.0)
+            self.assertEqual(site.multiplicities, (1.0, 2.0, 3.0, 1.0))
+            self.assertEqual(site.multiplicity_prior, (0.25, 0.25, 0.25, 0.25))
             phi = 0.43
             posterior = site_multiplicity_posterior(site, phi)
             self.assertAlmostEqual(sum(posterior), 1.0, places=12)
             self.assertTrue(all(0.0 <= value <= 1.0 for value in posterior))
             expected = logsumexp(
                 [
-                    math.log(probability) + bulk_log_likelihood(site, phi, multiplicity)
-                    for multiplicity, probability in zip(
-                        site.multiplicities, site.multiplicity_prior
-                    )
+                    math.log(candidate.prior)
+                    + bulk_log_likelihood_for_candidate(site, phi, candidate)
+                    for candidate in site.genotype_candidates
                 ]
             )
             self.assertAlmostEqual(site_log_likelihood(site, phi), expected, places=10)
             self.assertFalse(hasattr(site, "ps"))
+
+    def test_phyclone_vaf_uses_copy_weighted_pre_and_post_cn_candidates(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "canonical.tsv.gz"
+            row = canonical_row(purity=0.8)
+            write_table(path, [row])
+            site = load_model_table(path, 0.8).sites[0]
+            pre_cn = site.genotype_candidates[0]
+            post_cn = site.genotype_candidates[-1]
+            self.assertEqual((pre_cn.reference_cn, pre_cn.variant_cn), (2.0, 4.0))
+            self.assertEqual((post_cn.reference_cn, post_cn.variant_cn), (4.0, 4.0))
+            phi = 0.5
+            pre_expected = (
+                0.2 * 2.0 * 0.001
+                + 0.4 * 2.0 * 0.001
+                + 0.4 * 4.0 * 0.25
+            ) / (0.2 * 2.0 + 0.4 * 2.0 + 0.4 * 4.0)
+            post_expected = (
+                0.2 * 2.0 * 0.001
+                + 0.4 * 4.0 * 0.001
+                + 0.4 * 4.0 * 0.25
+            ) / (0.2 * 2.0 + 0.4 * 4.0 + 0.4 * 4.0)
+            self.assertAlmostEqual(
+                expected_alt_probability_for_candidate(site, phi, pre_cn),
+                pre_expected,
+                places=12,
+            )
+            self.assertAlmostEqual(
+                expected_alt_probability_for_candidate(site, phi, post_cn),
+                post_expected,
+                places=12,
+            )
+            self.assertNotAlmostEqual(pre_expected, post_expected, places=8)
 
     def test_model_a_ignores_hp_counts_after_schema_validation(self):
         """HP counts remain parsed/conserved but are not Model A evidence.

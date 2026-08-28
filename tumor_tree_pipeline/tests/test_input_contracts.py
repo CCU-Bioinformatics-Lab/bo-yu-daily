@@ -52,13 +52,11 @@ class InputContractTests(unittest.TestCase):
 
     def test_cn_only_hierarchical_prior_has_equal_side_mass(self):
         candidates, prior = derive_cn_multiplicity_prior(3.0, 1.0)
-        self.assertEqual(candidates, (1.0, 2.0, 3.0))
-        self.assertAlmostEqual(prior[0], 2.0 / 3.0)
-        self.assertAlmostEqual(prior[1], 1.0 / 6.0)
-        self.assertAlmostEqual(prior[2], 1.0 / 6.0)
+        self.assertEqual(candidates, (1.0, 2.0, 3.0, 1.0))
+        self.assertEqual(prior, (0.25, 0.25, 0.25, 0.25))
         self.assertEqual(
             derive_cn_multiplicity_prior(3.0, 0.0)[1],
-            (1 / 3, 1 / 3, 1 / 3),
+            (0.25, 0.25, 0.25, 0.25),
         )
 
     def test_fixture_build_is_20_rows_with_16_eligible_and_no_multiplicity_columns(self):
@@ -86,10 +84,8 @@ class InputContractTests(unittest.TestCase):
             for row in rows:
                 if row["major_cn"] == "3" and row["minor_cn"] == "1":
                     candidates, prior = derive_cn_multiplicity_prior(3.0, 1.0)
-                    self.assertEqual(candidates, (1.0, 2.0, 3.0))
-                    self.assertAlmostEqual(prior[0], 2 / 3, places=10)
-                    self.assertAlmostEqual(prior[1], 1 / 6, places=10)
-                    self.assertAlmostEqual(prior[2], 1 / 6, places=10)
+                    self.assertEqual(candidates, (1.0, 2.0, 3.0, 1.0))
+                    self.assertEqual(prior, (0.25, 0.25, 0.25, 0.25))
                     break
             else:
                 self.fail("fixture lacks the major=3/minor=1 contract case")
@@ -103,10 +99,13 @@ class InputContractTests(unittest.TestCase):
                 for site in model.sites
                 if site.major_cn == 3.0 and site.minor_cn == 1.0
             )
-            self.assertEqual(site.multiplicities, (1.0, 2.0, 3.0))
-            self.assertAlmostEqual(site.multiplicity_prior[0], 2 / 3)
-            self.assertAlmostEqual(site.multiplicity_prior[1], 1 / 6)
-            self.assertAlmostEqual(site.multiplicity_prior[2], 1 / 6)
+            self.assertEqual(site.multiplicities, (1.0, 2.0, 3.0, 1.0))
+            self.assertEqual(site.multiplicity_prior, (0.25, 0.25, 0.25, 0.25))
+            self.assertEqual(len(site.genotype_candidates), 4)
+            self.assertEqual(site.genotype_candidates[0].reference_cn, 2.0)
+            self.assertEqual(site.genotype_candidates[0].variant_cn, 4.0)
+            self.assertEqual(site.genotype_candidates[-1].reference_cn, 4.0)
+            self.assertEqual(site.genotype_candidates[-1].variant_cn, 4.0)
 
     def test_python_loader_rejects_legacy_multiplicity_columns(self):
         with tempfile.TemporaryDirectory() as temporary:

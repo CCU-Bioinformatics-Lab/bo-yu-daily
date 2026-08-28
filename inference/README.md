@@ -14,14 +14,20 @@ CanonicalTable loader → AlgorithmRegistry → rao_blackwellized_annealed_smc
 ```
 
 The particle state is `(topology, eta)`: a legal tree with one tumor founder
-and a positive local-mass simplex. `phi`/CCF is derived from descendant sums.
+and a positive simplex of clone-specific local fractions, with each component
+denoted $\eta_v$. $\phi_v$/CCF is the cumulative fraction for each clone
+including its descendants, derived from tree topology and the descendant sums
+of $\eta_v$.
 SNV assignment and multiplicity are integrated inside the site likelihood and
 reported as posterior responsibilities; they are not external table fields.
 
 At each annealing stage the backend increases `beta`, checks conditional and
 weighted particle ESS, applies systematic resampling when required, then runs
 topology and eta rejuvenation. The final population is published with equal
-weights. The likelihood uses bulk counts, ASCAT static CN and `rho_ASCAT`; HP
+weights. The likelihood uses bulk counts, ASCAT static CN and `rho_ASCAT` with
+the active `phyclone_xi_v1` copy-number-weighted emission. The current
+model-side assumptions are normal copy number `2.0` and sequencing error rate
+`0.001`; CN/timing candidates are marginalized inside the site likelihood. HP
 counts are validated supplementary information and are not a Model A term.
 
 Topology rejuvenation uses a bounded PhyClone-inspired hybrid: local conditional
@@ -82,7 +88,7 @@ major_cn minor_cn total_cn rho_ASCAT model_include model_status
 
 Only `model_include=yes` and `model_status=eligible` rows enter the model.
 Counts, depth, ASCAT purity and CN consistency are validated. The loader
-builds CN-constrained multiplicity support from major/minor CN; old
+builds CN/timing genotype candidates from major/minor CN; old
 `multiplicity_candidates`, `multiplicity_prior`, `multiplicity_posteriors` and
 `tumor_dna_fraction` columns are rejected. PS is upstream phase provenance,
 not a direct likelihood column.

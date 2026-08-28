@@ -23,11 +23,15 @@ The complete cross-module workflow is in
 
 ## Input → particle state → output
 
+Here **clone-specific local fraction** ($\eta_v$) is the per-clone tumor-cell
+fraction excluding descendants; CCF ($\phi_v$) is the clone plus descendants'
+cumulative tumor-cell fraction.
+
 ```text
 canonical likelihood_input.tsv.gz
         │  bulk reads + ASCAT CN + rho_ASCAT
         ▼
-SMC particles: legal topology + eta
+SMC particles: legal topology + eta_v
         │  beta schedule, ESS, resampling, rejuvenation
         ▼
 samples + CCF/phi + topology + assignment + multiplicity posterior
@@ -35,17 +39,18 @@ samples + CCF/phi + topology + assignment + multiplicity posterior
 
 Model A uses bulk counts, ASCAT CN, fixed `rho_ASCAT=0.99`, and multiplicity
 support built inside the C++ loader. HP counts remain supplementary and are
-not a primary likelihood term. `phi` is derived from descendant sums and the
-structural tumor root has frequency one.
+not a primary likelihood term. Each $\phi_v$ is derived from tree topology and
+the descendant sums of $\eta_v$; the structural tumor root has frequency one.
 
 ## Invariants
 
 - Purity is the ASCAT output `rho_ASCAT = 0.99`; there is no
   `tumor_dna_fraction` interface.
 - `multiplicity_candidates` and `multiplicity_prior` are not canonical table
-  fields; the loader creates their internal support from major/minor CN.
+  fields; the loader creates internal CN/timing genotype candidates from
+  major/minor/total CN and marginalizes them through `phyclone_xi_v1`.
 - The active backend is `rao_blackwellized_annealed_smc`; its particle state is
-  topology and eta, while assignment and multiplicity are marginalized and
+  topology and $\eta$, while assignment and multiplicity are marginalized and
   summarized after inference.
 - PS is upstream phase provenance for HP counts. It is not a clone label,
   topology edge, or direct Model A likelihood feature.

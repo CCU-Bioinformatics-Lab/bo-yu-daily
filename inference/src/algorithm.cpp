@@ -840,16 +840,22 @@ std::string multiplicity_posterior_tsv(
         if (posterior_sums[site_index].size() != site.multiplicity_candidates.size()) {
             throw std::runtime_error("multiplicity posterior candidate dimensions do not match site");
         }
+        std::map<int, std::pair<double, double>> aggregated;
         for (std::size_t candidate = 0; candidate < site.multiplicity_candidates.size(); ++candidate) {
             const double posterior = posterior_sums[site_index][candidate] /
                 static_cast<double>(posterior_draws);
             if (!std::isfinite(posterior) || posterior < 0.0) {
                 throw std::runtime_error("multiplicity posterior contains an invalid value");
             }
+            const int multiplicity = site.multiplicity_candidates[candidate];
+            aggregated[multiplicity].first += site.multiplicity_prior[candidate];
+            aggregated[multiplicity].second += posterior;
+        }
+        for (const auto& [multiplicity, values] : aggregated) {
             output << site.mutation_id << '\t'
-                   << site.multiplicity_candidates[candidate] << '\t'
-                   << site.multiplicity_prior[candidate] << '\t'
-                   << posterior << '\n';
+                   << multiplicity << '\t'
+                   << values.first << '\t'
+                   << values.second << '\n';
         }
     }
     return output.str();
@@ -1161,7 +1167,7 @@ public:
             ",\"observed_sites\":" + json_u64(table.sites.size()) + ",\"excluded_sites\":" + json_u64(options.exclude_ids.size()) + ",\"posterior_samples\":" + json_u64(retained.size()) +
             ",\"particle_count\":" + std::to_string(config.particles) + ",\"independent_repeat\":" + std::to_string(repeat_index + 1U) + ",\"requested_seed\":" + json_u64(config.seed) +
             ",\"derived_seed\":" + json_u64(derived_seed) + ",\"resumed\":false,\"state_variables\":[\"topology\",\"eta\"],\"rao_blackwellized_variables\":[\"assignment\",\"multiplicity\"],\"config\":" + config_json(reported_config) +
-            ",\"target\":{\"tree_prior\":\"finite_K_TSSB_shaped_working_tree_prior\",\"eta_prior\":\"finite_K_TSSB_shaped_depth_width_Dirichlet_working_prior\",\"likelihood_tempering\":\"product_site_likelihood_to_beta\",\"site_terms\":\"CN_constrained_joint_multiplicity_responsibility_Rao_Blackwellized\"},\"tree_constraint\":\"exactly_one_tumor_founder_under_structural_root\",\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"hp_role\":\"loaded_and_conservation_checked_only; reserved_for_Model_B\",\"multiplicity_role\":\"Rao_Blackwellized_joint_responsibility; not_a_table_column\",\"multiplicity_semantics\":\"weighted_joint_responsibility_marginalized_over_clone\",\"annealing\":{\"beta_schedule\":" + beta_schedule + ",\"final_beta\":" + json_number(beta) + ",\"stages\":" + annealing_stage_json + ",\"conditional_ess_target_fraction\":" + json_number(config.conditional_ess_target) + ",\"weighted_ess_resampling_threshold_fraction\":" + json_number(config.resample_ess_threshold) + "},\"rejuvenation\":{\"min_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"max_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"eta_kernel\":\"prior_shaped_Dirichlet_rejuvenation\",\"topology_kernel\":\"local_conditional_SPR_plus_global_legal_tree_MH\",\"global_topology_moves_per_sweep\":" + std::to_string(config.global_topology_moves) + ",\"stages\":" + rejuvenation_stage_json + "},\"weighted_particle_ess_fraction\":" + json_number(stages.empty() ? 1.0 : stages.back().weighted_ess / static_cast<double>(config.particles)) +
+            ",\"target\":{\"tree_prior\":\"finite_K_TSSB_shaped_working_tree_prior\",\"eta_prior\":\"finite_K_TSSB_shaped_depth_width_Dirichlet_working_prior\",\"likelihood_tempering\":\"product_site_likelihood_to_beta\",\"site_terms\":\"phyclone_xi_v1_CN_timing_joint_multiplicity_responsibility_Rao_Blackwellized\"},\"vaf_formula\":\"phyclone_xi_v1\",\"vaf_implementation_status\":\"synced\",\"error_rate\":" + json_number(1e-3) + ",\"error_rate_status\":\"configured\",\"normal_cn_assumption\":" + json_number(2.0) + ",\"cn_timing_model\":\"explicit\",\"cn_timing_model_detail\":\"major_cn_pre_or_post_candidate\",\"tree_constraint\":\"exactly_one_tumor_founder_under_structural_root\",\"eta_semantics\":\"simplex_of_local_clone_masses; phi_is_descendant_sum\",\"purity_role\":\"ASCAT_purity_in_observation_emission\",\"hp_role\":\"loaded_and_conservation_checked_only; reserved_for_Model_B\",\"multiplicity_role\":\"Rao_Blackwellized_joint_responsibility; not_a_table_column\",\"multiplicity_semantics\":\"weighted_joint_responsibility_marginalized_over_clone\",\"annealing\":{\"beta_schedule\":" + beta_schedule + ",\"final_beta\":" + json_number(beta) + ",\"stages\":" + annealing_stage_json + ",\"conditional_ess_target_fraction\":" + json_number(config.conditional_ess_target) + ",\"weighted_ess_resampling_threshold_fraction\":" + json_number(config.resample_ess_threshold) + "},\"rejuvenation\":{\"min_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"max_sweeps\":" + std::to_string(config.rejuvenation_sweeps) + ",\"eta_kernel\":\"prior_shaped_Dirichlet_rejuvenation\",\"topology_kernel\":\"local_conditional_SPR_plus_global_legal_tree_MH\",\"global_topology_moves_per_sweep\":" + std::to_string(config.global_topology_moves) + ",\"stages\":" + rejuvenation_stage_json + "},\"weighted_particle_ess_fraction\":" + json_number(stages.empty() ? 1.0 : stages.back().weighted_ess / static_cast<double>(config.particles)) +
             ",\"conditional_ess_fraction\":" + json_number(stages.empty() ? 1.0 : stages.back().conditional_ess / static_cast<double>(config.particles)) + ",\"particle_diversity\":" + json_number(particle_diversity) + ",\"ancestor_diversity\":" + json_number(stages.empty() ? 1.0 : stages.back().ancestor_diversity) +
             ",\"resampling_count\":" + json_u64(static_cast<std::uint64_t>(std::count_if(stages.begin(), stages.end(), [](const Stage& stage) { return stage.resampled; }))) +
             ",\"eta_acceptance\":" + json_number(eta_rate) + ",\"topology_acceptance\":" + json_number(topology_rate) + ",\"topology_change_rate\":" + json_number(topology_rate) + ",\"ccf_summary_semantics\":\"particle_weighted_quantiles\",\"topology_summary_semantics\":\"particle_weighted_canonical_edge_support\",\"particle_history_artifact\":\"particle_history.jsonl.gz\",\"posterior_summary_artifact\":\"posterior_summary.tsv.gz\",\"topology_summary_artifact\":\"topology_summary.tsv\",\"multiplicity_posterior_artifact\":\"multiplicity_posterior.tsv.gz\",\"diagnostics_contract\":\"smc_particle_diagnostics_v1\",\"phi_mean\":" + json_double_array(phi_mean) +

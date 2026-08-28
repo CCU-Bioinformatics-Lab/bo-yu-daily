@@ -22,7 +22,12 @@ from typing import Any, Iterable, Mapping
 import numpy as np
 
 from .contracts import INFERENCE_ALGORITHM_ID, SMC_SAMPLE_KIND, SMCConfig
-from .model import ModelData, bulk_log_likelihood, compile_model, load_model_table
+from .model import (
+    ModelData,
+    bulk_log_likelihood_for_candidate,
+    compile_model,
+    load_model_table,
+)
 from .provenance import sha256_file
 
 
@@ -354,13 +359,13 @@ def _responsibilities(
         for site_index, site in enumerate(data.sites):
             components: list[tuple[int, int, float]] = []
             for node, clone_phi in enumerate(phi):
-                for multiplicity, prior in zip(site.multiplicities, site.multiplicity_prior):
+                for candidate in site.genotype_candidates:
                     value = (
                         math.log(float(particle.eta[node]))
-                        + math.log(float(prior))
-                        + bulk_log_likelihood(site, float(clone_phi), float(multiplicity))
+                        + math.log(float(candidate.prior))
+                        + bulk_log_likelihood_for_candidate(site, float(clone_phi), candidate)
                     )
-                    components.append((node, multiplicity_index[multiplicity], value))
+                    components.append((node, multiplicity_index[candidate.multiplicity], value))
             normalizer = _logsumexp(np.asarray([item[2] for item in components], dtype=float))
             for node, multiplicity_index_value, value in components:
                 responsibility = math.exp(value - normalizer) / len(particles)
@@ -411,10 +416,15 @@ def _multiplicity_tsv(data: ModelData, posterior: np.ndarray) -> str:
     supports = tuple(sorted({m for site in data.sites for m in site.multiplicities}))
     lines = ["mutation_id\tmultiplicity\tprior\tposterior_mean"]
     for site_index, site in enumerate(data.sites):
-        for multiplicity, prior in zip(site.multiplicities, site.multiplicity_prior):
+        prior_by_m: dict[float, float] = {}
+        for candidate in site.genotype_candidates:
+            prior_by_m[candidate.multiplicity] = (
+                prior_by_m.get(candidate.multiplicity, 0.0) + candidate.prior
+            )
+        for multiplicity in sorted(prior_by_m):
             index = supports.index(multiplicity)
             lines.append(
-                f"{site.mutation_id}\t{multiplicity:.17g}\t{prior:.17g}\t{posterior[site_index, index]:.17g}"
+                f"{site.mutation_id}\t{multiplicity:.17g}\t{prior_by_m[multiplicity]:.17g}\t{posterior[site_index, index]:.17g}"
             )
     return "\n".join(lines) + "\n"
 
@@ -578,8 +588,15 @@ def run_smc(
             "tree_prior": "finite_K_single_founder_uniform_parent_prior",
             "eta_prior": "Dirichlet_alpha_one",
             "tempering": "likelihood_only_beta_0_to_1",
-            "site_terms": "bulk_only_CN_constrained_multiplicity_marginalized",
+            "site_terms": "phyclone_xi_v1_CN_timing_joint_multiplicity_marginalized",
         },
+        "vaf_formula": "phyclone_xi_v1",
+        "vaf_implementation_status": "synced",
+        "error_rate": 1e-3,
+        "error_rate_status": "configured",
+        "normal_cn_assumption": 2.0,
+        "cn_timing_model": "explicit",
+        "cn_timing_model_detail": "major_cn_pre_or_post_candidate",
         "tree_constraint": "exactly_one_tumor_founder_under_structural_root",
         "eta_semantics": "simplex_of_local_clone_masses; phi_is_descendant_sum",
         "purity_role": "ASCAT_purity_in_observation_emission",

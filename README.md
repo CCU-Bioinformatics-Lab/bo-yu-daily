@@ -6,7 +6,7 @@
 - [data.md](data.md)：canonical data/provenance
 - [model.md](model.md)：model specification（posterior、likelihood、prior 與 latent quantities）
 - [inference_algo.md](inference_algo.md)：目前 Rao–Blackwellized annealed SMC 的推理流程、PhyClone-inspired local SPR/global tree moves、particle state、ESS/resampling、rejuvenation 與 backend input/output contract
-- [output.md](output.md)：模型輸出解讀；集中說明 clone topology、由 `phi` 表示的 CCF，以及每個 SNV 被分配到哪個 clone，並提供三-clone ASCII 示意圖
+- [output.md](output.md)：模型輸出解讀；集中說明 clone topology、clone-specific local fraction ($\eta_v$)，以及由 $\phi_v$ 表示的 CCF（clone 加上 descendants 的 cumulative tumor-cell fraction），並提供三-clone ASCII 示意圖
 - [validation.md](validation.md)：output 後的獨立、read-only validation；整合 SMC adequacy、PhyClone `xi`／VAF predictive check、topology/CCF/SNV assignment、bulk CN/LOH compatibility、optional CNV/driver evidence 與 claim ceiling
 - [experiment_workflow.md](experiment_workflow.md)：整合 `arch.md` 核心模塊的實驗執行、QA、`error_rate=0.001` 與 PhyClone `xi` 公式同步 gate、分階段 gate 與錯誤追蹤紀錄流程
 - [tumor_tree_pipeline/](tumor_tree_pipeline/)：正式、可版本控制的建表、Python workflow 與 gate wrapper
