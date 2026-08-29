@@ -21,8 +21,7 @@ inference：探索候選腫瘤演化樹
 output：候選腫瘤演化樹 samples、CCF/phi、snv assignment、multiplicity summary
 ```
 
-BAM、VCF、ASCAT 是上游資料來源。runtime 不把 raw BAM、raw VCF 或 ASCAT 原始
-segment 直接交給 C++ sampler；`data input` 先建立 canonical SNV-level table。
+BAM、VCF、ASCAT 是上游資料來源，`data input` 先建立 canonical SNV-level table。
 
 ## 1. Data input
 
@@ -105,3 +104,138 @@ posterior ∝ prior × likelihood
 - [inference_algo.md](inference_algo.md)：目前 SMC implementation、annealing 與 output。
 - [output.md](output.md)：topology、CCF 與 SNV assignment 的結果語意。
 - [validation.md](validation.md)：posterior output 後的獨立 validation。
+
+<!-- spec-paged-html:visual-feedback:start -->
+## HTML 視覺化回饋
+
+此區塊記錄 [`module_format.html`](module_format.html) 使用的 SVG 與文字來源；重新生成時只更新本區塊。
+
+### slide-1-full-arch（new）
+![完整研究架構](assets/svg_version/full_arch.svg)
+
+- HTML：[`module_format.html#slide-1`](module_format.html#slide-1)
+- SVG：`assets/svg_version/full_arch.svg`
+- 對應來源：`## 研究模組主線`
+- 涵蓋文字：raw data → BAM / VCF / ASCAT → data input → model → inference → output。
+- 備註：本回饋只對應上述主線；SVG 原圖的其他標籤不新增本文件敘事。
+
+### slide-1-bam-source（new）
+![BAM](assets/svg_version/bam.svg)
+
+- HTML：[`module_format.html#slide-1`](module_format.html#slide-1)
+- SVG：`assets/svg_version/bam.svg`
+- 對應來源：`## 1. Data input` → `### 從哪裡取得資料`
+- 涵蓋文字：BAM 提供 REF/ALT read counts。
+
+### slide-1-vcf-source（new）
+![VCF](assets/svg_version/vcf.svg)
+
+- HTML：[`module_format.html#slide-1`](module_format.html#slide-1)
+- SVG：`assets/svg_version/vcf.svg`
+- 對應來源：`## 1. Data input` → `### 從哪裡取得資料`
+- 涵蓋文字：VCF 提供 SNV identity：`mutation_id、chrom、pos、ref、alt`。
+
+### slide-1-ascat-source（new）
+![ASCAT copy number](assets/svg_version/cnv_data.svg)
+
+- HTML：[`module_format.html#slide-1`](module_format.html#slide-1)
+- SVG：`assets/svg_version/cnv_data.svg`
+- 對應來源：`## 1. Data input` → `### 從哪裡取得資料`
+- 涵蓋文字：ASCAT 提供 tumor purity `rho_ASCAT`、site-level copy number 與 CN/LOH context。
+
+### slide-2-bam-read-counts（new）
+![BAM](assets/svg_version/bam.svg)
+
+- HTML：[`module_format.html#slide-2`](module_format.html#slide-2)
+- SVG：`assets/svg_version/bam.svg`
+- 對應來源：`## 1. Data input` → `### 從哪裡取得資料`
+- 涵蓋文字：BAM 的 REF/ALT read counts。
+
+### slide-2-vcf-identity（new）
+![VCF](assets/svg_version/vcf.svg)
+
+- HTML：[`module_format.html#slide-2`](module_format.html#slide-2)
+- SVG：`assets/svg_version/vcf.svg`
+- 對應來源：`## 1. Data input` → `### 從哪裡取得資料`
+- 涵蓋文字：VCF 的 SNV identity：`mutation_id、chrom、pos、ref、alt`。
+
+### slide-2-ascat-cn（new）
+![ASCAT copy number](assets/svg_version/cnv_data.svg)
+
+- HTML：[`module_format.html#slide-2`](module_format.html#slide-2)
+- SVG：`assets/svg_version/cnv_data.svg`
+- 對應來源：`## 1. Data input` → `### 從哪裡取得資料`
+- 涵蓋文字：ASCAT 的 `rho_ASCAT`、`major_cn/minor_cn/total_cn` 與 CN/LOH context。
+
+### slide-2-cnv-context（new）
+![Copy number context](assets/svg_version/cnv_region_reads.svg)
+
+- HTML：[`module_format.html#slide-2`](module_format.html#slide-2)
+- SVG：`assets/svg_version/cnv_region_reads.svg`
+- 對應來源：`## 1. Data input` → `### raw data轉換model基本輸入資料`
+- 涵蓋文字：SNV 所在位置的 CN context：`major_cn、minor_cn、total_cn`。
+
+### slide-2-purity（new）
+![tumor purity](assets/svg_version/purity.svg)
+
+- HTML：[`module_format.html#slide-2`](module_format.html#slide-2)
+- SVG：`assets/svg_version/purity.svg`
+- 對應來源：`## 1. Data input` → `### raw data轉換model基本輸入資料`
+- 涵蓋文字：固定的 sample-level tumor purity `rho_ASCAT`；目前主分析為 `0.99`。
+
+### slide-3-chromosome-identity（new）
+![SNV identity](assets/svg_version/chromosome.svg)
+
+- HTML：[`module_format.html#slide-3`](module_format.html#slide-3)
+- SVG：`assets/svg_version/chromosome.svg`
+- 對應來源：`## 1. Data input` → `### raw data轉換model基本輸入資料`
+- 涵蓋文字：Identity 欄位 `mutation_id、chrom、pos、ref、alt` 用於表示哪一顆 SNV。
+
+### slide-3-cnv-read-context（new）
+![Copy number and read context](assets/svg_version/cnv_region_reads.svg)
+
+- HTML：[`module_format.html#slide-3`](module_format.html#slide-3)
+- SVG：`assets/svg_version/cnv_region_reads.svg`
+- 對應來源：`## 1. Data input` → `### raw data轉換model基本輸入資料`
+- 涵蓋文字：Read counts 是 `ref_reads、alt_reads、total_reads`；copy number 是 `major_cn、minor_cn、total_cn`。
+
+### slide-4-branch-tree（new）
+![候選腫瘤演化樹](assets/svg_version/branch_tree.svg)
+
+- HTML：[`module_format.html#slide-4`](module_format.html#slide-4)
+- SVG：`assets/svg_version/branch_tree.svg`
+- 對應來源：`## 2. Model` 的候選腫瘤演化樹
+- 涵蓋文字：Root、Clone A、Clone B 與 Clone C 的候選樹例子。
+
+### slide-4-parent-descendant（new）
+![parent descendant](assets/svg_version/parent_descendant.svg)
+
+- HTML：[`module_format.html#slide-4`](module_format.html#slide-4)
+- SVG：`assets/svg_version/parent_descendant.svg`
+- 對應來源：`## 2. Model` 的假設 1
+- 涵蓋文字：祖先 clone 原則上會被後代 clone 繼承。
+
+### slide-6-ccf-phi（new）
+![CCF phi](assets/svg_version/CCF.svg)
+
+- HTML：[`module_format.html#slide-6`](module_format.html#slide-6)
+- SVG：`assets/svg_version/CCF.svg`
+- 對應來源：`## 2. Model` → `### model輸出參數`
+- 涵蓋文字：CCF／`phi` 是某 clone 加上 descendants 的累積比例。
+
+### slide-6-snv-assignment（new）
+![SNV clone assignment](assets/svg_version/snv_to_clone_assignment.svg)
+
+- HTML：[`module_format.html#slide-6`](module_format.html#slide-6)
+- SVG：`assets/svg_version/snv_to_clone_assignment.svg`
+- 對應來源：`## 2. Model` → `### model輸出參數`
+- 涵蓋文字：Clone assignment `z` 表示一顆 SNV 比較支持哪個 clone。
+
+### slide-6-multiplicity（new）
+![multiplicity](assets/svg_version/multiplicity.svg)
+
+- HTML：[`module_format.html#slide-6`](module_format.html#slide-6)
+- SVG：`assets/svg_version/multiplicity.svg`
+- 對應來源：`## 研究模組主線` 與 `## 2. Model`
+- 涵蓋文字：output 包含 multiplicity summary；model 連同模型內部建立的 multiplicity 計算候選 tree 的分數。
+<!-- spec-paged-html:visual-feedback:end -->
