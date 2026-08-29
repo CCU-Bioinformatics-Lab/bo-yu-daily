@@ -1,0 +1,18 @@
+{
+  "component_id": "clone-tree",
+  "claim": "A candidate clone topology has one founder and parent-descendant relations.",
+  "canvas": {"width": 1200, "height": 460, "background": "#ffffff"},
+  "quantities": [{"id":"clone-count","count_group":"clone-node","expected":4,"label_element":"k-label"}],
+  "elements": [
+    {"id":"edge-1","type":"path","d":"M600 128V176M600 176L400 246M600 176L800 246M400 294V342","stroke":"#17233a","stroke_width":5,"meaning":"parent-descendant clone relations"},
+    {"id":"node-c1","type":"image","asset":"clone_node.PNG","x":560,"y":40,"width":80,"height":88,"meaning":"founder clone C1","count_group":"clone-node"},
+    {"id":"node-c2","type":"image","asset":"clone_node.PNG","x":360,"y":205,"width":80,"height":88,"meaning":"descendant clone C2","count_group":"clone-node"},
+    {"id":"node-c3","type":"image","asset":"clone_node.PNG","x":760,"y":205,"width":80,"height":88,"meaning":"descendant clone C3","count_group":"clone-node"},
+    {"id":"node-c4","type":"image","asset":"clone_node.PNG","x":360,"y":330,"width":80,"height":88,"meaning":"descendant clone C4","count_group":"clone-node"},
+    {"id":"c1-label","type":"text","x":665,"y":92,"font_size":24,"font_weight":700,"meaning":"clone identity","value":"C1"},
+    {"id":"c2-label","type":"text","x":465,"y":257,"font_size":24,"font_weight":700,"meaning":"clone identity","value":"C2"},
+    {"id":"c3-label","type":"text","x":865,"y":257,"font_size":24,"font_weight":700,"meaning":"clone identity","value":"C3"},
+    {"id":"c4-label","type":"text","x":465,"y":382,"font_size":24,"font_weight":700,"meaning":"clone identity","value":"C4"},
+    {"id":"k-label","type":"text","x":100,"y":80,"font_size":20,"font_weight":700,"meaning":"derived number of displayed clone nodes","value_from_quantity":"clone-count","template":"K={count:.0f}"}
+  ]
+}

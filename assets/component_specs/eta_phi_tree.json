@@ -1,0 +1,30 @@
+{
+  "component_id": "eta-phi-tree",
+  "claim": "Eta is clone-local fraction and phi is the clone plus descendants cumulative CCF.",
+  "canvas": {"width": 1200, "height": 460, "background": "#ffffff"},
+  "quantities": [
+    {"id":"eta-c1","value":0.15,"label_element":"eta-c1-label"},
+    {"id":"phi-c1","value":1.0,"label_element":"phi-c1-label"},
+    {"id":"eta-c2","value":0.60,"label_element":"eta-c2-label"},
+    {"id":"phi-c2","value":0.60,"label_element":"phi-c2-label"},
+    {"id":"eta-c3","value":0.25,"label_element":"eta-c3-label"},
+    {"id":"phi-c3","value":0.25,"label_element":"phi-c3-label"}
+  ],
+  "elements": [
+    {"id":"edges","type":"path","d":"M390 145V195M390 195L245 285M390 195L535 285","stroke":"#17233a","stroke_width":5,"meaning":"descendant relation used to derive phi"},
+    {"id":"node-c1","type":"image","asset":"clone_node.PNG","x":350,"y":55,"width":80,"height":90,"meaning":"founder clone C1"},
+    {"id":"node-c2","type":"image","asset":"clone_node.PNG","x":205,"y":245,"width":80,"height":90,"meaning":"descendant clone C2"},
+    {"id":"node-c3","type":"image","asset":"clone_node.PNG","x":495,"y":245,"width":80,"height":90,"meaning":"descendant clone C3"},
+    {"id":"c1-id","type":"text","x":455,"y":85,"font_size":22,"font_weight":700,"meaning":"clone identity","value":"C1"},
+    {"id":"eta-c1-label","type":"text","x":455,"y":125,"font_size":19,"meaning":"derived local fraction for C1","value_from_quantity":"eta-c1","template":"η={value:.2f}"},
+    {"id":"phi-c1-label","type":"text","x":455,"y":160,"font_size":19,"meaning":"derived cumulative CCF for C1","value_from_quantity":"phi-c1","template":"φ={value:.2f}"},
+    {"id":"c2-id","type":"text","x":95,"y":280,"font_size":22,"font_weight":700,"meaning":"clone identity","value":"C2"},
+    {"id":"eta-c2-label","type":"text","x":95,"y":320,"font_size":19,"meaning":"derived local fraction for C2","value_from_quantity":"eta-c2","template":"η={value:.2f}"},
+    {"id":"phi-c2-label","type":"text","x":95,"y":355,"font_size":19,"meaning":"derived cumulative CCF for C2","value_from_quantity":"phi-c2","template":"φ={value:.2f}"},
+    {"id":"c3-id","type":"text","x":600,"y":280,"font_size":22,"font_weight":700,"meaning":"clone identity","value":"C3"},
+    {"id":"eta-c3-label","type":"text","x":600,"y":320,"font_size":19,"meaning":"derived local fraction for C3","value_from_quantity":"eta-c3","template":"η={value:.2f}"},
+    {"id":"phi-c3-label","type":"text","x":600,"y":355,"font_size":19,"meaning":"derived cumulative CCF for C3","value_from_quantity":"phi-c3","template":"φ={value:.2f}"},
+    {"id":"formula","type":"text","x":900,"y":220,"font_size":25,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"phi definition","value":"φv = ηv + descendants"},
+    {"id":"eta-total","type":"text","x":900,"y":265,"font_size":21,"anchor":"middle","meaning":"local fractions sum to one","value":"Ση = 1"}
+  ]
+}

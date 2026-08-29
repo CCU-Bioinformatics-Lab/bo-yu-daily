@@ -1,0 +1,12 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "locus-panel",
+  "claim": "One SNV occupies one aligned genomic coordinate in a local locus.",
+  "element_count": 10,
+  "quantities": {},
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

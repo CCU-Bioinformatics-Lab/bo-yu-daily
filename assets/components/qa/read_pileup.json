@@ -1,0 +1,19 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "read-pileup",
+  "claim": "Observed BAM reads align at one SNV and provide REF and ALT counts.",
+  "element_count": 13,
+  "quantities": {
+    "alt-count": {
+      "numerator": 2,
+      "denominator": 5,
+      "complement": 3,
+      "value": 0.4
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

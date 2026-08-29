@@ -1,0 +1,28 @@
+{
+  "component_id": "source-to-input",
+  "claim": "BAM, VCF, and ASCAT supply distinct fields that merge into one canonical SNV row.",
+  "canvas": {"width": 1200, "height": 500, "background": "#ffffff"},
+  "elements": [
+    {"id":"bam-icon","type":"image","asset":"bam.PNG","x":80,"y":65,"width":100,"height":90,"meaning":"BAM source"},
+    {"id":"vcf-icon","type":"image","asset":"vcf.PNG","x":80,"y":205,"width":100,"height":90,"meaning":"VCF source"},
+    {"id":"ascat-icon","type":"image","asset":"cnv_data.PNG","x":80,"y":345,"width":100,"height":90,"meaning":"ASCAT source"},
+    {"id":"bam-name","type":"text","x":215,"y":105,"font_size":23,"font_weight":700,"meaning":"source identity","value":"BAM"},
+    {"id":"vcf-name","type":"text","x":215,"y":245,"font_size":23,"font_weight":700,"meaning":"source identity","value":"VCF"},
+    {"id":"ascat-name","type":"text","x":215,"y":385,"font_size":23,"font_weight":700,"meaning":"source identity","value":"ASCAT"},
+    {"id":"bam-fields","type":"rect","x":340,"y":65,"width":310,"height":55,"rx":12,"fill":"#f2f6fc","stroke":"#c8d5e6","stroke_width":2,"meaning":"BAM field group"},
+    {"id":"vcf-fields","type":"rect","x":340,"y":205,"width":310,"height":55,"rx":12,"fill":"#f2f6fc","stroke":"#c8d5e6","stroke_width":2,"meaning":"VCF field group"},
+    {"id":"ascat-fields","type":"rect","x":340,"y":345,"width":310,"height":55,"rx":12,"fill":"#f2f6fc","stroke":"#c8d5e6","stroke_width":2,"meaning":"ASCAT field group"},
+    {"id":"bam-field-label","type":"text","x":495,"y":100,"font_size":18,"anchor":"middle","meaning":"BAM supplied fields","value":"REF / ALT / total reads"},
+    {"id":"vcf-field-label","type":"text","x":495,"y":240,"font_size":18,"anchor":"middle","meaning":"VCF supplied fields","value":"mutation ID · chr · pos · REF/ALT"},
+    {"id":"ascat-field-label","type":"text","x":495,"y":380,"font_size":18,"anchor":"middle","meaning":"ASCAT supplied fields","value":"major/minor/total CN · rho"},
+    {"id":"arrow-bam","type":"path","d":"M650 93H765M765 93L740 78M765 93L740 108","stroke":"#17233a","stroke_width":4,"meaning":"BAM fields merge into canonical row"},
+    {"id":"arrow-vcf","type":"path","d":"M650 233H765M765 233L740 218M765 233L740 248","stroke":"#17233a","stroke_width":4,"meaning":"VCF fields merge into canonical row"},
+    {"id":"arrow-ascat","type":"path","d":"M650 373H765M765 373L740 358M765 373L740 388","stroke":"#17233a","stroke_width":4,"meaning":"ASCAT fields merge into canonical row"},
+    {"id":"row-box","type":"rect","x":780,"y":80,"width":340,"height":340,"rx":18,"fill":"#fbfcff","stroke":"#6d28d9","stroke_width":3,"meaning":"one canonical SNV row"},
+    {"id":"row-title","type":"text","x":950,"y":130,"font_size":24,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"canonical input identity","value":"canonical SNV row"},
+    {"id":"row-id","type":"text","x":950,"y":195,"font_size":16,"anchor":"middle","meaning":"identity fields","value":"ID · chr · pos · REF/ALT"},
+    {"id":"row-reads","type":"text","x":950,"y":250,"font_size":16,"anchor":"middle","meaning":"read count fields","value":"ref_reads · alt_reads · total_reads"},
+    {"id":"row-cn","type":"text","x":950,"y":305,"font_size":16,"anchor":"middle","meaning":"copy-number fields","value":"major_cn · minor_cn · total_cn"},
+    {"id":"row-rho","type":"text","x":950,"y":360,"font_size":16,"anchor":"middle","meaning":"fixed sample purity field","value":"rho_ASCAT"}
+  ]
+}

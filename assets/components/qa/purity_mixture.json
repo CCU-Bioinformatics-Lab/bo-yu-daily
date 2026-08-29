@@ -1,0 +1,16 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "purity-mixture",
+  "claim": "Fixed ASCAT tumor purity is 0.99 and is distinct from clone prevalence.",
+  "element_count": 8,
+  "quantities": {
+    "rho": {
+      "value": 0.99
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

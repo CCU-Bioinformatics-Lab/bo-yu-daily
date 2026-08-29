@@ -1,0 +1,13 @@
+{
+  "component_id": "snv-assignment",
+  "claim": "A MAP posterior summary assigns one SNV to one clone.",
+  "canvas": {"width": 1200, "height": 390, "background": "#ffffff"},
+  "elements": [
+    {"id":"snv","type":"image","asset":"snv_marker_head.PNG","x":160,"y":145,"width":80,"height":75,"meaning":"one SNV token"},
+    {"id":"snv-id","type":"text","x":200,"y":275,"font_size":23,"font_weight":700,"anchor":"middle","meaning":"SNV identity","value":"SNV-x"},
+    {"id":"assignment-line","type":"path","d":"M270 183H830M830 183L800 163M830 183L800 203","stroke":"#17233a","stroke_width":5,"meaning":"MAP clone-assignment relation"},
+    {"id":"map-label","type":"text","x":550,"y":145,"font_size":20,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"hard posterior summary label","value":"MAP z = C2"},
+    {"id":"clone","type":"image","asset":"clone_node.PNG","x":850,"y":135,"width":85,"height":95,"meaning":"assigned clone C2"},
+    {"id":"clone-id","type":"text","x":970,"y":190,"font_size":25,"font_weight":700,"meaning":"clone identity","value":"C2"}
+  ]
+}

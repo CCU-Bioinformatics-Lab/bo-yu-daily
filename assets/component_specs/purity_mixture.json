@@ -1,0 +1,16 @@
+{
+  "component_id": "purity-mixture",
+  "claim": "Fixed ASCAT tumor purity is 0.99 and is distinct from clone prevalence.",
+  "canvas": {"width": 1200, "height": 420, "background": "#ffffff"},
+  "quantities": [{"id":"rho","value":0.99,"label_element":"rho-label","length_contracts":[{"element":"tumor-bar","scale":600,"factor":"value"},{"element":"normal-bar","scale":600,"factor":"complement"}]}],
+  "elements": [
+    {"id":"tumor-key","type":"image","asset":"tumor_cell.PNG","x":75,"y":95,"width":110,"height":105,"meaning":"tumor cell category key","count_group":"tumor-key","count_mode":"categorical-key"},
+    {"id":"normal-key","type":"image","asset":"normal_cell.PNG","x":75,"y":240,"width":110,"height":105,"meaning":"normal cell category key","count_group":"normal-key","count_mode":"categorical-key"},
+    {"id":"tumor-name","type":"text","x":205,"y":150,"font_size":21,"font_weight":700,"fill":"#d9554c","meaning":"tumor category label","value":"tumor"},
+    {"id":"normal-name","type":"text","x":205,"y":295,"font_size":21,"font_weight":700,"fill":"#2587a8","meaning":"normal category label","value":"normal"},
+    {"id":"bar-outline","type":"rect","x":400,"y":145,"width":600,"height":54,"rx":27,"fill":"#ffffff","stroke":"#17233a","stroke_width":3,"meaning":"100 percent purity scale"},
+    {"id":"tumor-bar","type":"rect","x":403,"y":148,"width":594,"height":48,"rx":24,"fill":"#f2665a","meaning":"99 percent tumor proportion"},
+    {"id":"normal-bar","type":"rect","x":997,"y":148,"width":6,"height":48,"rx":3,"fill":"#45a8c8","meaning":"1 percent normal proportion"},
+    {"id":"rho-label","type":"text","x":700,"y":270,"font_size":28,"font_weight":700,"anchor":"middle","meaning":"derived fixed ASCAT tumor purity","value_from_quantity":"rho","template":"rho_ASCAT = {value:.2f} = {percent:.0f}%"}
+  ]
+}

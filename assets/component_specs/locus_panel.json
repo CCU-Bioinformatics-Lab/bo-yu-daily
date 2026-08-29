@@ -1,0 +1,17 @@
+{
+  "component_id": "locus-panel",
+  "claim": "One SNV occupies one aligned genomic coordinate in a local locus.",
+  "canvas": {"width": 1200, "height": 420, "background": "#ffffff"},
+  "elements": [
+    {"id":"track","type":"path","d":"M130 210H1070","stroke":"#17233a","stroke_width":5,"meaning":"local genomic coordinate axis"},
+    {"id":"tick-left","type":"path","d":"M330 185V235","stroke":"#17233a","stroke_width":4,"meaning":"coordinate tick"},
+    {"id":"tick-snv","type":"path","d":"M600 175V245","stroke":"#6d28d9","stroke_width":5,"meaning":"SNV coordinate tick"},
+    {"id":"tick-right","type":"path","d":"M870 185V235","stroke":"#17233a","stroke_width":4,"meaning":"coordinate tick"},
+    {"id":"marker","type":"image","asset":"snv_marker_head.PNG","x":568,"y":108,"width":64,"height":62,"meaning":"SNV position marker"},
+    {"id":"chrom","type":"text","x":130,"y":95,"font_size":24,"font_weight":700,"meaning":"chromosome label","value":"chr17"},
+    {"id":"variant","type":"text","x":600,"y":75,"font_size":22,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"example SNV identity","value":"G→A"},
+    {"id":"coord-left","type":"text","x":330,"y":300,"font_size":18,"anchor":"middle","meaning":"example genomic coordinate","value":"7,577,480"},
+    {"id":"coord-snv","type":"text","x":600,"y":300,"font_size":18,"anchor":"middle","meaning":"example SNV genomic coordinate","value":"7,577,500"},
+    {"id":"coord-right","type":"text","x":870,"y":300,"font_size":18,"anchor":"middle","meaning":"example genomic coordinate","value":"7,577,520"}
+  ]
+}

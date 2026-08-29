@@ -1,0 +1,17 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "clone-tree",
+  "claim": "A candidate clone topology has one founder and parent-descendant relations.",
+  "element_count": 10,
+  "quantities": {
+    "clone-count": {
+      "count": 4,
+      "value": 4.0
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}
