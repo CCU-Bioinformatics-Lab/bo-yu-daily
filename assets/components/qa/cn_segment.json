@@ -1,0 +1,19 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "cn-segment",
+  "claim": "One ASCAT segment supplies major and minor copy-number context at the SNV.",
+  "element_count": 9,
+  "quantities": {
+    "cn-summary": {
+      "numerator": 3,
+      "denominator": 4,
+      "complement": 1,
+      "value": 0.75
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

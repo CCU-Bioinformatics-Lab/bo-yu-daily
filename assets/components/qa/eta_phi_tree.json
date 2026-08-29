@@ -1,0 +1,31 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "eta-phi-tree",
+  "claim": "Eta is clone-local fraction and phi is the clone plus descendants cumulative CCF.",
+  "element_count": 15,
+  "quantities": {
+    "eta-c1": {
+      "value": 0.15
+    },
+    "phi-c1": {
+      "value": 1.0
+    },
+    "eta-c2": {
+      "value": 0.6
+    },
+    "phi-c2": {
+      "value": 0.6
+    },
+    "eta-c3": {
+      "value": 0.25
+    },
+    "phi-c3": {
+      "value": 0.25
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

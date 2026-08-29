@@ -1,0 +1,12 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "model-inference-loop",
+  "claim": "The xi likelihood evaluates canonical input while annealed SMC explores topology and eta, producing diagnostic summaries.",
+  "element_count": 17,
+  "quantities": {},
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

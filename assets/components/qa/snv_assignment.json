@@ -1,0 +1,12 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "snv-assignment",
+  "claim": "A MAP posterior summary assigns one SNV to one clone.",
+  "element_count": 6,
+  "quantities": {},
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

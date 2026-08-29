@@ -1,0 +1,24 @@
+{
+  "component_id": "model-inference-loop",
+  "claim": "The xi likelihood evaluates canonical input while annealed SMC explores topology and eta, producing diagnostic summaries.",
+  "canvas": {"width": 1200, "height": 500, "background": "#ffffff"},
+  "elements": [
+    {"id":"input-box","type":"rect","x":60,"y":120,"width":260,"height":120,"rx":18,"fill":"#f2f6fc","stroke":"#c8d5e6","stroke_width":3,"meaning":"validated canonical input"},
+    {"id":"likelihood-box","type":"rect","x":470,"y":120,"width":260,"height":120,"rx":18,"fill":"#fbfcff","stroke":"#6d28d9","stroke_width":3,"meaning":"xi genotype-marginalised likelihood"},
+    {"id":"smc-box","type":"rect","x":880,"y":120,"width":260,"height":120,"rx":18,"fill":"#eefcf5","stroke":"#4ca96c","stroke_width":3,"meaning":"annealed SMC inference"},
+    {"id":"output-box","type":"rect","x":820,"y":335,"width":320,"height":105,"rx":18,"fill":"#fff8ec","stroke":"#e3a044","stroke_width":3,"meaning":"diagnostic posterior summaries"},
+    {"id":"input-label","type":"text","x":190,"y":177,"font_size":23,"font_weight":700,"anchor":"middle","meaning":"input stage label","value":"canonical SNV row"},
+    {"id":"input-fields","type":"text","x":190,"y":210,"font_size":17,"anchor":"middle","meaning":"input field summary","value":"counts · CN · rho_ASCAT"},
+    {"id":"likelihood-label","type":"text","x":600,"y":172,"font_size":25,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"likelihood stage label","value":"xi likelihood"},
+    {"id":"likelihood-fields","type":"text","x":600,"y":207,"font_size":17,"anchor":"middle","meaning":"candidate marginalisation summary","value":"CN · purity · genotype"},
+    {"id":"smc-label","type":"text","x":1010,"y":172,"font_size":24,"font_weight":700,"anchor":"middle","fill":"#218241","meaning":"inference stage label","value":"annealed SMC"},
+    {"id":"smc-fields","type":"text","x":1010,"y":207,"font_size":17,"anchor":"middle","meaning":"particle state summary","value":"topology T · eta"},
+    {"id":"output-label","type":"text","x":980,"y":377,"font_size":21,"font_weight":700,"anchor":"middle","fill":"#a46014","meaning":"output category label","value":"diagnostic summaries"},
+    {"id":"output-fields","type":"text","x":980,"y":412,"font_size":17,"anchor":"middle","meaning":"posterior outputs","value":"phi · topology · z · multiplicity"},
+    {"id":"input-arrow","type":"path","d":"M320 180H470M470 180L442 163M470 180L442 197","stroke":"#17233a","stroke_width":5,"meaning":"canonical input enters likelihood"},
+    {"id":"smc-arrow","type":"path","d":"M730 180H880M880 180L852 163M880 180L852 197","stroke":"#17233a","stroke_width":5,"meaning":"likelihood guides annealed SMC"},
+    {"id":"output-arrow","type":"path","d":"M1010 240V335M1010 335L993 307M1010 335L1027 307","stroke":"#17233a","stroke_width":5,"meaning":"SMC produces posterior summaries"},
+    {"id":"feedback-loop","type":"path","d":"M930 255V290H600V240M600 240L583 268M600 240L617 268","stroke":"#6d28d9","stroke_width":4,"meaning":"candidate particle state is evaluated by likelihood"},
+    {"id":"feedback-label","type":"text","x":765,"y":318,"font_size":18,"anchor":"middle","fill":"#6d28d9","meaning":"candidate evaluation loop label","value":"candidate state / weight"}
+  ]
+}
