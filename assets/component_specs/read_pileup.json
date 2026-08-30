@@ -1,9 +1,26 @@
 {
   "component_id": "read-pileup",
-  "claim": "Observed BAM reads align at one SNV and provide REF and ALT counts.",
+  "claim": "Observed BAM reads align at one SNV, whose illustrative ref and alt bases provide REF, ALT, and total read counts.",
+  "semantic_contract": {
+    "position": "The illustrative ref/alt label sits above the coordinate ruler; each base glyph remains centered on its read at the shared SNV locus.",
+    "color": "Base identity uses the conventional hue families A=green, C=blue, G=orange, T=red. Dark foreground glyphs improve contrast against the neutral gray base tile; color does not encode REF or ALT status.",
+    "count": "Five read rows encode REF=3 and ALT=2; the count panel derives REF reads, ALT reads, and total reads = REF + ALT from the same read groups.",
+    "terminology_boundary": "G/A are illustrative ref/alt bases that identify the example pileup only; they are not source-data values."
+  },
+  "base_palette": {
+    "A": "#00441B",
+    "C": "#003380",
+    "G": "#682600",
+    "T": "#800000"
+  },
+  "asset_map": [
+    {"role":"read backbone","path":"assets/raw_png/read_backbone.PNG","transform":"repeated unchanged"},
+    {"role":"base identity glyph tiles","path":"assets/raw_png/{A,C,G,T}_base.PNG","transform":"re-rendered with the declared high-contrast foreground palette"}
+  ],
   "canvas": {"width": 1200, "height": 460, "background": "#ffffff"},
-  "quantities": [{"id":"alt-count","numerator_group":"alt-read","denominator_groups":["ref-read","alt-read"],"expected":0.4,"label_element":"counts"}],
+  "quantities": [{"id":"alt-count","numerator_group":"alt-read","denominator_groups":["ref-read","alt-read"],"expected":0.4,"label_element":"total-reads-label"}],
   "elements": [
+    {"id":"ref-alt-example","type":"text","x":600,"y":35,"font_size":22,"font_weight":800,"anchor":"middle","meaning":"illustrative reference and alternate base pair for the pileup","value":"ref = G · alt = A"},
     {"id":"ruler","type":"path","d":"M100 70H820","stroke":"#17233a","stroke_width":4,"meaning":"local coordinate ruler"},
     {"id":"locus-guide","type":"path","d":"M600 82V390","stroke":"#6d28d9","stroke_width":4,"meaning":"shared SNV x coordinate"},
     {"id":"read-1","type":"image","asset":"read_backbone.PNG","x":100,"y":105,"width":720,"height":58,"meaning":"one REF-supporting observed read","count_group":"ref-read"},
@@ -16,6 +33,9 @@
     {"id":"base-4","type":"image","asset":"A_base.PNG","x":570,"y":289,"width":60,"height":76,"meaning":"ALT base at the SNV"},
     {"id":"read-5","type":"image","asset":"read_backbone.PNG","x":100,"y":365,"width":720,"height":58,"meaning":"one REF-supporting observed read","count_group":"ref-read"},
     {"id":"base-5","type":"image","asset":"G_base.PNG","x":570,"y":354,"width":60,"height":76,"meaning":"REF base at the SNV"},
-    {"id":"counts","type":"text","x":860,"y":230,"font_size":20,"font_weight":700,"meaning":"derived REF ALT and total read counts","value_from_quantity":"alt-count","template":"REF={complement:.0f}  ALT={numerator:.0f}  total={denominator:.0f}"}
+    {"id":"read-counts-title","type":"text","x":860,"y":145,"font_size":24,"font_weight":800,"meaning":"read-count summary heading","value":"Read counts"},
+    {"id":"ref-reads-label","type":"text","x":860,"y":190,"font_size":22,"font_weight":700,"meaning":"derived REF-supporting read count","value_from_quantity":"alt-count","template":"REF reads = {complement:.0f}"},
+    {"id":"alt-reads-label","type":"text","x":860,"y":230,"font_size":22,"font_weight":700,"meaning":"derived ALT-supporting read count","value_from_quantity":"alt-count","template":"ALT reads = {numerator:.0f}"},
+    {"id":"total-reads-label","type":"text","x":860,"y":275,"font_size":24,"font_weight":800,"meaning":"derived total read count as REF plus ALT reads","value_from_quantity":"alt-count","template":"total reads = {complement:.0f} + {numerator:.0f} = {denominator:.0f}"}
   ]
 }
