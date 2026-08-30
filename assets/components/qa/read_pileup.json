@@ -1,8 +1,8 @@
 {
   "status": "machine-validated / awaiting-human-visual-approval",
   "component_id": "read-pileup",
-  "claim": "Observed BAM reads align at one SNV and provide REF and ALT counts.",
-  "element_count": 13,
+  "claim": "Observed BAM reads align at one SNV, whose illustrative ref and alt bases provide REF, ALT, and total read counts.",
+  "element_count": 17,
   "quantities": {
     "alt-count": {
       "numerator": 2,
@@ -12,7 +12,24 @@
     }
   },
   "allowed_overlaps": [],
-  "external_references": 0,
+  "external_references": 3,
+  "reference_status": "IGV and JBrowse color conventions informed hue families only; no external artwork was copied.",
+  "references": [
+    "https://igv.org/doc/desktop/UserGuide/tracks/sequence/",
+    "https://github.com/igvteam/igv/blob/main/src/main/resources/preferences.tab",
+    "https://www.jbrow.se/docs/faq.html"
+  ],
+  "asset_gate": {
+    "coverage": "100%",
+    "assets": [
+      "assets/raw_png/read_backbone.PNG",
+      "assets/raw_png/A_base.PNG",
+      "assets/raw_png/C_base.PNG",
+      "assets/raw_png/G_base.PNG",
+      "assets/raw_png/T_base.PNG"
+    ]
+  },
+  "visual_review": "Only the concise illustrative ref = G · alt = A label remains above the pileup; the original read-row positions and lower Identity field card are restored.",
   "warnings": [
     "Text bounds are approximate; inspect a rendered preview."
   ]

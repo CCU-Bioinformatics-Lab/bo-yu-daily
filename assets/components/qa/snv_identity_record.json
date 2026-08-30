@@ -1,0 +1,35 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "snv-identity-record",
+  "claim": "One canonical record identifies an SNV by its pipeline mutation_id, reference coordinate, and REF-to-ALT allele substitution.",
+  "element_count": 20,
+  "quantities": {},
+  "allowed_overlaps": [
+    [
+      "substitution-arrow",
+      "ref-cell"
+    ],
+    [
+      "substitution-arrow",
+      "alt-cell"
+    ]
+  ],
+  "external_references": 3,
+  "reference_status": "VCF, GDC, and IGV informed field order and visual grammar only; no external artwork was copied.",
+  "references": [
+    "https://samtools.github.io/hts-specs/VCFv4.5.pdf",
+    "https://docs.gdc.cancer.gov/Data/File_Formats/VCF_Format/",
+    "https://igvteam.github.io/igv-reports/examples/example_vcf.html"
+  ],
+  "asset_gate": {
+    "coverage": "100%",
+    "atomic_assets": [
+      "assets/raw_png/chromosome.PNG",
+      "renderer-native rect, text, and line primitives"
+    ]
+  },
+  "visual_review": "The component is reduced to its five-field record card. The title, subtitle, and bottom relation line are intentionally absent; only the REF-to-ALT arrow crosses the cell boundary.",
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

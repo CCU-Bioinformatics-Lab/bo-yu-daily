@@ -5,3 +5,4 @@ skills-main.zip
 # are recorded in research/phyclone/SOURCES.md rather than as opaque gitlinks.
 /research/phyclone/PhyClone/
 /research/phyclone/PhyClone-Workflow/
+.render-check/

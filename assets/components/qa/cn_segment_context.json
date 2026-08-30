@@ -1,0 +1,71 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "cn-segment-context",
+  "claim": "The SNV lies inside one ASCAT segment that supplies major_cn and minor_cn, with total_cn equal to their sum.",
+  "element_count": 17,
+  "quantities": {
+    "major-count": {
+      "count": 3,
+      "value": 3.0
+    },
+    "minor-count": {
+      "count": 1,
+      "value": 1.0
+    },
+    "total-count": {
+      "numerator": 3,
+      "denominator": 4,
+      "complement": 1,
+      "value": 0.75
+    }
+  },
+  "allowed_overlaps": [
+    [
+      "locus-line",
+      "snv-marker"
+    ],
+    [
+      "snv-guide",
+      "snv-marker"
+    ],
+    [
+      "copy-locus-guide",
+      "major-1"
+    ],
+    [
+      "copy-locus-guide",
+      "major-2"
+    ],
+    [
+      "copy-locus-guide",
+      "major-3"
+    ],
+    [
+      "copy-locus-guide",
+      "minor-1"
+    ]
+  ],
+  "external_references": 4,
+  "reference_status": "Visual grammar only; no external artwork was copied.",
+  "asset_gate": {
+    "coverage": "100%",
+    "atomic_assets": [
+      "assets/raw_png/major-copy_bar.PNG",
+      "assets/raw_png/minor-copy_bar.PNG",
+      "assets/raw_png/snv_marker_head.PNG",
+      "renderer-native semantic lines"
+    ],
+    "rejected_assets": [
+      "assets/raw_png/cn_segment_boundary.PNG: baked example/text, not an atomic primitive"
+    ]
+  },
+  "target_previews": [
+    "assets/components/previews/cn_segment_context.png",
+    "assets/components/previews/cn_segment_context-slide.png",
+    "assets/components/previews/cn_segment_context-phone.png"
+  ],
+  "visual_review": "Purple SNV guide visibly intersects all three cyan bars and the one lime bar; the numeric count is conveyed by repeated bars, not length.",
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

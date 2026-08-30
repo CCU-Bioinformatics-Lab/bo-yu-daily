@@ -1,0 +1,67 @@
+{
+  "component_id": "snv-identity-record",
+  "claim": "One canonical record identifies an SNV by its pipeline mutation_id, reference coordinate, and REF-to-ALT allele substitution.",
+  "semantic_contract": {
+    "position": "The five ordered cells follow the canonical identity record from mutation_id through chrom, pos, ref, and alt.",
+    "color": "Neutral navy identifies record and coordinate metadata; orange G and green A are redundant example base cues. Labels, not color, define REF and ALT roles.",
+    "count": "Each categorical identity field appears exactly once; no repeated mark encodes a quantity.",
+    "relation": "chrom plus pos specifies the reference location, and the arrow joins the single-nucleotide example ref G to alt A.",
+    "terminology_boundary": "mutation_id is a pipeline record identifier, not claimed globally unique. chr1 and 123,456,789 are an illustrative source-style chromosome and 1-based position. G-to-A is illustrative only, and no read count, genotype, haplotype, copy number, or multiplicity is implied."
+  },
+  "reference_evidence": [
+    {
+      "source": "VCF specification v4.5, fixed fields",
+      "url": "https://samtools.github.io/hts-specs/VCFv4.5.pdf",
+      "use": "Field ordering and position-oriented record grammar; visual grammar only."
+    },
+    {
+      "source": "NCI GDC VCF format",
+      "url": "https://docs.gdc.cancer.gov/Data/File_Formats/VCF_Format/",
+      "use": "CHROM, POS, REF, and ALT meanings."
+    },
+    {
+      "source": "IGV Reports Variant Inspector example",
+      "url": "https://igvteam.github.io/igv-reports/examples/example_vcf.html",
+      "use": "Compact field-header and prominent-value visual grammar; no artwork reused."
+    }
+  ],
+  "asset_map": [
+    {
+      "role": "reference chromosome visual key",
+      "path": "assets/raw_png/chromosome.PNG",
+      "source_size": "677x97",
+      "transform": "scaled with preserved aspect ratio inside the chrom field"
+    },
+    {
+      "role": "record cells, headings, and substitution arrow",
+      "path": "renderer-native rect, text, and line primitives",
+      "transform": "semantic metadata layout"
+    }
+  ],
+  "target_previews": ["1200x260", "570x124", "320x69"],
+  "canvas": {"width": 1200, "height": 260, "background": "#ffffff"},
+  "minimum_gap": 8,
+  "allowed_overlaps": [["substitution-arrow", "ref-cell"], ["substitution-arrow", "alt-cell"]],
+  "elements": [
+    {"id":"record-card","type":"rect","x":60,"y":35,"width":1080,"height":190,"rx":18,"fill":"#fbfcff","stroke":"#c8d5e6","stroke_width":3,"meaning":"one canonical SNV identity record"},
+    {"id":"mutation-cell","type":"rect","x":80,"y":60,"width":250,"height":140,"rx":14,"fill":"#edf3ff","stroke":"#bbcbef","stroke_width":2,"meaning":"mutation identifier field cell"},
+    {"id":"chrom-cell","type":"rect","x":350,"y":60,"width":180,"height":140,"rx":14,"fill":"#f2f6fc","stroke":"#c8d5e6","stroke_width":2,"meaning":"reference chromosome field cell"},
+    {"id":"pos-cell","type":"rect","x":550,"y":60,"width":180,"height":140,"rx":14,"fill":"#f2f6fc","stroke":"#c8d5e6","stroke_width":2,"meaning":"reference position field cell"},
+    {"id":"ref-cell","type":"rect","x":750,"y":60,"width":150,"height":140,"rx":14,"fill":"#fff4ed","stroke":"#d66b20","stroke_width":2,"meaning":"reference allele field cell"},
+    {"id":"alt-cell","type":"rect","x":970,"y":60,"width":150,"height":140,"rx":14,"fill":"#effaf0","stroke":"#2f8a45","stroke_width":2,"meaning":"alternate allele field cell"},
+    {"id":"mutation-label","type":"text","x":205,"y":98,"font_size":18,"font_weight":800,"anchor":"middle","fill":"#24499f","meaning":"mutation_id field label","value":"mutation_id"},
+    {"id":"mutation-value","type":"text","x":205,"y":152,"font_size":30,"font_weight":800,"anchor":"middle","meaning":"illustrative pipeline record identifier","value":"1"},
+    {"id":"chrom-label","type":"text","x":440,"y":98,"font_size":18,"font_weight":800,"anchor":"middle","fill":"#24499f","meaning":"chrom field label","value":"chrom"},
+    {"id":"chrom-ideogram","type":"image","asset":"chromosome.PNG","x":355,"y":118,"width":170,"height":24,"meaning":"reference chromosome ideogram with a locus marker"},
+    {"id":"chrom-caption","type":"text","x":440,"y":176,"font_size":20,"font_weight":800,"anchor":"middle","meaning":"illustrative reference chromosome identifier","value":"chr1"},
+    {"id":"pos-label","type":"text","x":640,"y":98,"font_size":18,"font_weight":800,"anchor":"middle","fill":"#24499f","meaning":"pos field label","value":"pos"},
+    {"id":"pos-value","type":"text","x":640,"y":152,"font_size":20,"font_weight":700,"anchor":"middle","meaning":"illustrative one-based reference position","value":"123,456,789"},
+    {"id":"ref-label","type":"text","x":825,"y":98,"font_size":18,"font_weight":800,"anchor":"middle","fill":"#9a3d00","meaning":"ref field label","value":"ref"},
+    {"id":"ref-value","type":"text","x":825,"y":158,"font_size":42,"font_weight":800,"anchor":"middle","fill":"#682600","meaning":"illustrative reference base G","value":"G"},
+    {"id":"alt-label","type":"text","x":1045,"y":98,"font_size":18,"font_weight":800,"anchor":"middle","fill":"#12652a","meaning":"alt field label","value":"alt"},
+    {"id":"alt-value","type":"text","x":1045,"y":158,"font_size":42,"font_weight":800,"anchor":"middle","fill":"#00441B","meaning":"illustrative alternate base A","value":"A"},
+    {"id":"substitution-arrow","type":"line","x1":910,"y1":130,"x2":960,"y2":130,"stroke":"#6d28d9","stroke_width":5,"meaning":"illustrative REF-to-ALT substitution relation"},
+    {"id":"arrow-head-top","type":"line","x1":960,"y1":130,"x2":945,"y2":117,"stroke":"#6d28d9","stroke_width":5,"meaning":"substitution arrow head"},
+    {"id":"arrow-head-bottom","type":"line","x1":960,"y1":130,"x2":945,"y2":143,"stroke":"#6d28d9","stroke_width":5,"meaning":"substitution arrow head"}
+  ]
+}
