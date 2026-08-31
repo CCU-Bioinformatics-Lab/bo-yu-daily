@@ -203,4 +203,15 @@ posterior ∝ prior × likelihood
 - SVG：inline SVG；`assets/components/snv_assignment.svg`
 - 對應來源：`## 2. Model` → `### model輸出參數`
 - 涵蓋文字：Clone assignment `z` 表示一顆 SNV 比較支持哪個 clone。
+
+### slide-7-inference-module（new）
+
+![Inference 探索、評估與候選結果](assets/png_to_svg/inference_module.svg)
+
+- HTML：[`module_format.html#slide-7`](module_format.html#slide-7)
+- 保留強度：`anchored`
+- 視覺槽位：`inference-module-overview`（1／1）
+- SVG：inline SVG；`assets/png_to_svg/inference_module.svg`
+- 對應來源：`## 3. inference` → `### 目的`
+- 涵蓋文字：inference 探索不同腫瘤演化樹拓樸與 clone 比例，反覆評估候選狀態，並保留具有 posterior 支持的候選結果。
 <!-- spec-paged-html:visual-feedback:end -->
