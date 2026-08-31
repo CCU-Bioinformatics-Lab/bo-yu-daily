@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-08-31 待決事項</title>
+<link rel="stylesheet" href="assets/slides.css">
+</head>
+<body><div class="wrap">
+<!-- SLIDE:START -->
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:10px;">
+  <div class="slide-label">待決事項</div>
+  <h2 style="font-size:30px;margin:0;">基線已保存；正式驗證、工作樹收斂與 push 還沒關</h2>
+  <p class="lead" style="font-size:15px;">這頁只列今天原文中明確留下的決策與執行卡點，區分「要不要做」和「已知但尚未排入工作」。</p>
+  <table class="ruletable" style="font-size:15px;flex:1;">
+    <thead><tr><th style="width:19%;">性質</th><th style="width:32%;">項目</th><th>狀態卡在哪</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>要拍板的決定</td><td>assignment schema／founder restriction 文件—實作落差</td><td>唯讀查核已指出差異，但還沒決定要改文件、補 backend，或另立已知限制。</td></tr>
+      <tr class="hl"><td>部署／執行前必做</td><td>slide 7 final revision 與 `inference_module.svg` wrapper</td><td>`ae8f794` 只保存前一批基線；目前 `module_format.*`、generator 與 wrapper 仍在工作樹，尚未另行 commit。</td></tr>
+      <tr><td>部署／執行前必做</td><td>推送已保存的 branch</td><td>HEAD=`ae8f794`，commit `docs: expand module format inference visuals` 已完成，但今天沒有執行 `git push`。</td></tr>
+      <tr class="hl"><td>已知但未排</td><td>一般 runtime 的逐 SNV `predicted_xi` artifact</td><td>比較方法已定義，grouped holdout 可執行；一般 runtime 尚未輸出 deterministic per-SNV prediction，所以正式 predictive gate 仍 blocked。</td></tr>
+      <tr><td>已知但未排</td><td>未追蹤的 `assets/raw_png/inference_module.png`</td><td>SVG wrapper 已內嵌像素；原始 PNG 仍保留在工作樹，需決定是否納入 provenance、忽略或移出。</td></tr>
+    </tbody>
+  </table>
+  <div class="takeaway warn" style="font-size:14px;"><b>明日接續順序：</b>先決定 schema／founder 落差的處理方式，再整理 final slide 7 變更與未追蹤 PNG，最後才判斷 commit／push 與 predictive gate 的排程。</div>
+</div></div>
+<!-- SLIDE:END -->
+</div></body></html>
+

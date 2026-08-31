@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "report_kind": "daily",
+  "report_date": "2026-08-31",
+  "selected_tool": "all",
+  "source_mode": "scan",
+  "sessions": [
+    {
+      "source": "codex",
+      "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T13-58-00-01a05665-64ca-7c51-bbcc-f37e3f9dfa68.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:01:40.260Z",
+      "ended_at": "2026-08-31T06:36:07.464Z",
+      "turn_count": 33
+    },
+    {
+      "source": "codex",
+      "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-02-12-01a05669-3c3a-77e3-8913-b256035f1bf7.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:02:14.962Z",
+      "ended_at": "2026-08-31T06:07:33.030Z",
+      "turn_count": 5
+    },
+    {
+      "source": "codex",
+      "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-02-19-01a05669-5791-7a93-8b2c-1fdf15fee6db.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:02:21.565Z",
+      "ended_at": "2026-08-31T06:07:53.331Z",
+      "turn_count": 6
+    },
+    {
+      "source": "codex",
+      "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-02-19-01a05669-57ca-7a60-90df-e1b65c5376f6.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:02:22.032Z",
+      "ended_at": "2026-08-31T06:12:01.069Z",
+      "turn_count": 4
+    },
+    {
+      "source": "codex",
+      "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-24-07-01a0567d-4e3a-7732-9c36-0cc2965647b2.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:24:11.090Z",
+      "ended_at": "2026-08-31T06:28:03.679Z",
+      "turn_count": 5
+    },
+    {
+      "source": "codex",
+      "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-24-07-01a0567d-4e95-7f61-8878-24c229697cfe.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:24:11.404Z",
+      "ended_at": "2026-08-31T06:27:18.791Z",
+      "turn_count": 3
+    },
+    {
+      "source": "codex",
+      "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-24-08-01a0567d-4f57-7b11-b71a-f024abc0ddb4.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:24:17.867Z",
+      "ended_at": "2026-08-31T06:32:59.916Z",
+      "turn_count": 6
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-40-33-01a0568c-5867-7d82-88f2-ca84d29ae2f2.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:40:39.731Z",
+      "ended_at": "2026-08-31T07:33:58.721Z",
+      "turn_count": 34
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-51-34-01a05696-6e12-7e82-937d-5db3ac0d3695.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:51:37.479Z",
+      "ended_at": "2026-08-31T06:55:20.641Z",
+      "turn_count": 7
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-51-34-01a05696-6e5e-7af0-81d1-55c935065b28.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:51:38.036Z",
+      "ended_at": "2026-08-31T06:53:51.116Z",
+      "turn_count": 4
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-58-08-01a0569c-7332-7322-9072-05ac8bfcb7f5.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:58:11.665Z",
+      "ended_at": "2026-08-31T07:00:13.902Z",
+      "turn_count": 4
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T14-58-08-01a0569c-72df-75e2-91de-620487dd7d8b.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T06:58:11.763Z",
+      "ended_at": "2026-08-31T07:00:13.852Z",
+      "turn_count": 5
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-02-01-01a0569f-ff26-7e52-a67a-138ad5b6d112.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:02:03.601Z",
+      "ended_at": "2026-08-31T07:02:58.822Z",
+      "turn_count": 4
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-02-01-01a0569f-ff5e-76e2-b6a6-0f98dd6c0317.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:02:04.551Z",
+      "ended_at": "2026-08-31T07:03:20.521Z",
+      "turn_count": 4
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-21-16-01a056b1-a16f-7363-86a2-3d62c19bf954.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:21:16.925Z",
+      "ended_at": "2026-08-31T07:24:40.514Z",
+      "turn_count": 6
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-21-17-01a056b1-a1d2-7fe0-90c2-71f3d6b8eaf4.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:21:17.030Z",
+      "ended_at": "2026-08-31T07:24:41.926Z",
+      "turn_count": 5
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-35-56-01a056bf-0c8d-7321-98eb-d02e51cc1c8d.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:38:56.175Z",
+      "ended_at": "2026-08-31T08:00:56.995Z",
+      "turn_count": 20
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-44-00-01a056c6-6e5b-76a3-a6b6-2bae107bda32.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:44:00.106Z",
+      "ended_at": "2026-08-31T07:44:39.875Z",
+      "turn_count": 7
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-44-04-01a056c6-7eb2-72b0-a523-94a97856e5fb.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:44:04.287Z",
+      "ended_at": "2026-08-31T07:45:18.813Z",
+      "turn_count": 7
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-44-07-01a056c6-8d30-79c2-af43-5b15cdc4fb22.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:44:07.999Z",
+      "ended_at": "2026-08-31T07:45:14.600Z",
+      "turn_count": 7
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-51-44-01a056cd-8557-7f00-8d95-22aa4947e76f.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:51:44.742Z",
+      "ended_at": "2026-08-31T07:53:05.769Z",
+      "turn_count": 9
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-51-48-01a056cd-9338-77e0-94c3-eb15d3c0b296.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:51:48.293Z",
+      "ended_at": "2026-08-31T07:53:49.990Z",
+      "turn_count": 9
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T15-52-19-01a056ce-0d5e-7652-94ab-e44ce977c6d9.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T07:52:19.565Z",
+      "ended_at": "2026-08-31T07:53:14.319Z",
+      "turn_count": 5
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-01-14-01a056d6-3891-7003-9913-1b19612b655b.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:01:37.063Z",
+      "ended_at": "2026-08-31T13:19:30.895Z",
+      "turn_count": 64
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-02-02-01a056d6-f0f8-7231-9af4-f6cedf14aaa5.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:02:02.119Z",
+      "ended_at": "2026-08-31T08:32:57.655Z",
+      "turn_count": 8
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-02-02-01a056d6-f168-7c72-b06f-cbd30a50eda6.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:02:02.251Z",
+      "ended_at": "2026-08-31T08:32:55.781Z",
+      "turn_count": 9
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-11-23-01a056df-8245-7ee3-8ed4-6491646c2c81.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:11:23.608Z",
+      "ended_at": "2026-08-31T08:32:56.956Z",
+      "turn_count": 11
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-11-23-01a056df-82c5-7fb2-ba92-24d0d6f7df6c.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:11:23.743Z",
+      "ended_at": "2026-08-31T08:32:56.134Z",
+      "turn_count": 8
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-26-42-01a056ed-8917-7283-a28a-65e0cb38bb5b.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:26:42.853Z",
+      "ended_at": "2026-08-31T08:32:55.986Z",
+      "turn_count": 11
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-26-42-01a056ed-8982-77c0-b1fe-f733ce1ec1d1.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:26:42.965Z",
+      "ended_at": "2026-08-31T08:32:55.844Z",
+      "turn_count": 10
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-33-18-01a056f3-9227-7510-b43e-2f345b3c4c59.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:33:18.389Z",
+      "ended_at": "2026-08-31T13:03:51.547Z",
+      "turn_count": 16
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-33-18-01a056f3-927a-7853-87a4-da665584624a.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:33:18.478Z",
+      "ended_at": "2026-08-31T13:03:25.582Z",
+      "turn_count": 24
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T16-33-18-01a056f3-9308-7f41-b81a-f65feb04a491.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T08:33:18.631Z",
+      "ended_at": "2026-08-31T13:03:23.876Z",
+      "turn_count": 27
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T21-16-14-01a057f6-9c5a-7d33-9655-c52467aed690.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T13:16:14.825Z",
+      "ended_at": "2026-08-31T13:19:20.232Z",
+      "turn_count": 8
+    },
+    {
+      "source": "codex",
+      "session_id": "01a056d6-3891-7003-9913-1b19612b655b",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T21-16-14-01a057f6-9d06-7d00-bf9b-df3ac5066146.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T13:16:15.014Z",
+      "ended_at": "2026-08-31T13:17:41.593Z",
+      "turn_count": 7
+    },
+    {
+      "source": "codex",
+      "session_id": "01a057fc-aab1-7232-80e4-9a8e9d380c48",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T21-22-51-01a057fc-aab1-7232-80e4-9a8e9d380c48.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T13:23:50.061Z",
+      "ended_at": "2026-08-31T13:38:32.710Z",
+      "turn_count": 8
+    },
+    {
+      "source": "codex",
+      "session_id": "01a0580e-0810-7490-87dc-80f2c8beed43",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T21-41-49-01a0580e-0810-7490-87dc-80f2c8beed43.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T13:42:32.712Z",
+      "ended_at": "2026-08-31T14:10:45.431Z",
+      "turn_count": 27
+    },
+    {
+      "source": "codex",
+      "session_id": "01a05829-4e7a-7541-a03d-933d2ed27e34",
+      "source_file": "/home/boyu114/.codex/sessions/2026/08/31/rollout-2026-08-31T22-11-37-01a05829-4e7a-7541-a03d-933d2ed27e34.jsonl",
+      "cwd": "/bip8_disk/boyu114/main_work",
+      "started_at": "2026-08-31T14:11:47.000Z",
+      "ended_at": "2026-08-31T14:13:06.291Z",
+      "turn_count": 4
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "report_kind": "daily",
+  "report_date": "2026-08-31",
+  "manifest": "session-manifest.json",
+  "pages": [
+    {
+      "page": "01-today-map.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a056d6-3891-7003-9913-1b19612b655b"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a0580e-0810-7490-87dc-80f2c8beed43"
+        }
+      ]
+    },
+    {
+      "page": "02-inference-contract.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d"
+        }
+      ]
+    },
+    {
+      "page": "03-reusable-visuals.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a0568c-5867-7d82-88f2-ca84d29ae2f2"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a056d6-3891-7003-9913-1b19612b655b"
+        }
+      ]
+    },
+    {
+      "page": "04-module-format-delivery.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a0580e-0810-7490-87dc-80f2c8beed43"
+        }
+      ]
+    },
+    {
+      "page": "05-pending.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05665-64ca-7c51-bbcc-f37e3f9dfa68"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a056bf-0c8d-7321-98eb-d02e51cc1c8d"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a0580e-0810-7490-87dc-80f2c8beed43"
+        }
+      ]
+    }
+  ]
+}
