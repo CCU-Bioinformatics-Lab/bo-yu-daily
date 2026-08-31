@@ -207,31 +207,6 @@ def output_parameter_slots() -> str:
     return f'<div class="slot-grid" aria-label="四個 model output parameter 視覺槽位">{"".join(cards)}</div>'
 
 
-def inference_demo() -> str:
-    """Render a self-contained, no-SVG teaching interaction for inference."""
-    return '''<style>
-.inference-demo{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(390px,1.05fr);gap:20px;margin:22px 0}.inference-controls,.tree-demo{border:1px solid var(--line);border-radius:18px;background:#fff;padding:22px;box-shadow:0 10px 24px rgba(23,35,58,.07)}.demo-kicker{margin:0 0 4px;color:#24499f;font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.inference-controls h3{margin:0 0 6px;font-size:21px;line-height:1.25}.demo-copy,.formula-note{color:var(--muted);font-size:14px}.demo-control{display:flex;justify-content:space-between;margin-top:22px;font-weight:850}.demo-control output{color:var(--accent);font-variant-numeric:tabular-nums}.inference-controls input{width:100%;margin:8px 0 0;accent-color:var(--accent)}.simplex-status{margin:14px 0 0;padding:8px 10px;border-radius:9px;background:#edf3ff;color:#24499f;font-size:14px;font-weight:800}.vaf-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:15px}.vaf-card{padding:13px;border:1px solid var(--line);border-radius:12px;background:#fbfcff}.vaf-card b,.vaf-card output,.vaf-card small{display:block}.vaf-card output{margin:2px 0;font-size:27px;font-weight:900;color:var(--accent);font-variant-numeric:tabular-nums}.vaf-card small{color:var(--muted)}.formula-note{margin:15px 0 0}.tree-demo{position:relative;min-height:440px;overflow:hidden;background:radial-gradient(circle at 50% 5%,#fff 0,#eef4ff 78%)}.tree-caption{position:relative;z-index:2;display:flex;justify-content:space-between;gap:8px;color:#24499f;font-size:13px}.tree-caption span{color:var(--muted)}.tree-node{position:absolute;z-index:2;display:grid;place-content:center;border-radius:50%;text-align:center;color:#fff;font-weight:900;box-shadow:0 10px 22px rgba(23,35,58,.18);transition:width .25s ease,height .25s ease}.tree-node span{line-height:1.1}.tree-node small{margin-top:4px;font-size:12px;font-weight:700}.tree-node.normal{top:70px;left:50%;translate:-50% 0;width:98px;height:98px;background:#536277}.tree-node.clone-a,.tree-node.clone-b{bottom:68px;translate:-50% 0}.tree-node.clone-a{left:23%;width:120px;height:120px;background:#e96b17}.tree-node.clone-b{left:77%;width:134px;height:134px;background:#199a68}.tree-edge{position:absolute;z-index:1;height:3px;border-radius:999px;background:linear-gradient(90deg,#7588ad,#315fd4);transform-origin:0 50%;transition:left .25s ease,top .25s ease,width .25s ease,transform .25s ease}.topology-warning{position:absolute;z-index:2;right:16px;bottom:12px;left:16px;margin:0;padding:9px 11px;border:1px solid #f1c770;border-radius:9px;background:#fff8e8;color:#78500b;font-size:12px;line-height:1.4}@media(max-width:760px){.inference-demo{grid-template-columns:1fr}.tree-demo{min-height:400px}.tree-node.clone-a{left:22%}.tree-node.clone-b{left:78%}.tree-caption{display:block}.tree-caption span{display:block;margin-top:2px}}
-</style><div class="inference-demo" aria-label="A 與 B local fraction 的互動式 VAF 預測">
-  <div class="inference-controls">
-    <p class="demo-kicker">兩個 direct-leaf clones 的 local-fraction simplex</p>
-    <h3>調整 Clone A／B 的腫瘤內 local fraction</h3>
-    <p class="demo-copy">A、B 合計固定為 100% 的 tumor-cell mass。此教學圖中兩者皆為葉節點，所以 <code>φ = η</code>。</p>
-    <label class="demo-control" for="inference-a-slider"><span>Clone A <code>η<sub>A</sub></code></span><output id="inference-a-value">40.0%</output></label><input id="inference-a-slider" type="range" min="0" max="100" value="40">
-    <label class="demo-control" for="inference-b-slider"><span>Clone B <code>η<sub>B</sub></code></span><output id="inference-b-value">60.0%</output></label><input id="inference-b-slider" type="range" min="0" max="100" value="60">
-    <p class="simplex-status" id="inference-simplex-status" aria-live="polite">η<sub>A</sub> + η<sub>B</sub> = 100.0%</p>
-    <div class="vaf-cards"><div class="vaf-card"><b>Clone A predicted VAF</b><output id="inference-a-vaf">19.9%</output><small id="inference-a-phi">φ<sub>A</sub> = 40.0%</small></div><div class="vaf-card"><b>Clone B predicted VAF</b><output id="inference-b-vaf">29.7%</output><small id="inference-b-phi">φ<sub>B</sub> = 60.0%</small></div></div>
-    <p class="formula-note">顯示的是 runtime <code>xi</code> 的 diploid teaching case：<code>rho=0.99</code>、<code>c<sub>N</sub>=c<sub>R</sub>=c<sub>V</sub>=2</code>、一個 ALT copy、<code>error_rate=0.001</code>；因此 <code>xi = 0.001 + 0.499 × 0.99 × φ</code>。</p>
-  </div>
-  <div class="tree-demo" id="inference-tree" aria-label="教學簡化的 Normal root 與 Clone A、Clone B children">
-    <div class="tree-caption"><b>教學簡化 topology</b><span>Normal root → A, B</span></div>
-    <div class="tree-edge" id="inference-edge-a" aria-hidden="true"></div><div class="tree-edge" id="inference-edge-b" aria-hidden="true"></div>
-    <div class="tree-node normal" id="inference-normal-node"><span>Normal</span><small>root</small></div>
-    <div class="tree-node clone-a" id="inference-a-node"><span>Clone A</span><small>η 40.0%</small></div>
-    <div class="tree-node clone-b" id="inference-b-node"><span>Clone B</span><small>η 60.0%</small></div>
-    <p class="topology-warning">圖形依你的指定呈現 Normal 同時連到 A、B；它是教學簡化，並非 active backend「structural root 僅一個 tumor-founder child」的合法 topology。</p>
-  </div>
-</div>'''
-
 
 slides = [
     ("研究模組主線", "研究模組主線由既有架構圖呈現",
@@ -264,9 +239,10 @@ slides = [
      "slide-6-parameter-slots", [], [],
      "四個獨立 model output parameter 視覺槽位。",
      "<dl><dt>Tree topology <code>T</code></dt><dd>哪些 clone 是 parent／descendant？</dd><dt>local fraction <code>η_v</code></dt><dd>每個 clone 自己獨有、且不包含 descendants 的 tumor-cell fraction。</dd><dt>CCF／<code>phi</code></dt><dd>某 clone 加上 descendants 的累積比例。</dd><dt>Clone assignment <code>z</code></dt><dd>一顆 SNV 比較支持哪個 clone。</dd></dl>"),
-    ("Inference", "拖動 local fraction，直接看 runtime teaching-case 的預測 VAF",
-     "inference 會探索 topology 與 clone-specific local fraction。以下互動元件只示範兩個 direct-leaf clone 的 fraction／VAF 關係，不是一次正式推論結果。",
-     "slide-7-interactive-demo", [], [], "互動式 inference VAF teaching case。", inference_demo()),
+    ("Inference", "inference 探索、評估與保留候選腫瘤演化狀態",
+     "",
+     "slide-7-inference-module", [], ["assets/png_to_svg/inference_module.svg"],
+     "inference 探索、評估與保留候選腫瘤演化狀態的示意圖。", ""),
 ]
 
 
@@ -300,42 +276,5 @@ html = f'''<!doctype html>
 <main class="viewport">{''.join(sections)}</main><nav class="nav" aria-label="投影片導覽"><button id="prev" type="button">← Previous</button><div class="dots" aria-hidden="true">{''.join('<span class="dot' + (' active' if i == 0 else '') + '"></span>' for i in range(len(slides)))}</div><span id="page" aria-live="polite">1 / {len(slides)}</span><button id="next" type="button">Next →</button></nav></div>
 <script>(()=>{{const s=[...document.querySelectorAll('.slide')],d=[...document.querySelectorAll('.dot')],p=document.querySelector('#prev'),n=document.querySelector('#next'),c=document.querySelector('#page');let i=0;function show(x){{i=Math.max(0,Math.min(s.length-1,x));s.forEach((e,j)=>e.classList.toggle('active',i===j));d.forEach((e,j)=>e.classList.toggle('active',i===j));p.disabled=i===0;n.disabled=i===s.length-1;c.textContent=`${{i+1}} / ${{s.length}}`;history.replaceState(null,'',`#${{s[i].id}}`)}}function hash(){{const x=s.findIndex(e=>`#${{e.id}}`===location.hash);show(x<0?0:x)}}p.onclick=()=>show(i-1);n.onclick=()=>show(i+1);addEventListener('keydown',e=>{{if(e.key==='ArrowLeft')show(i-1);if(e.key==='ArrowRight')show(i+1);if(e.key==='Home')show(0);if(e.key==='End')show(s.length-1)}});addEventListener('hashchange',hash);hash()}})();</script></body></html>'''
 
-html = html.replace("</body></html>", '''<script>
-(()=>{
-  const a=document.querySelector('#inference-a-slider'), b=document.querySelector('#inference-b-slider');
-  if(!a || !b) return;
-  const tree=document.querySelector('#inference-tree'), root=document.querySelector('#inference-normal-node');
-  const nodes={a:document.querySelector('#inference-a-node'),b:document.querySelector('#inference-b-node')};
-  const edges={a:document.querySelector('#inference-edge-a'),b:document.querySelector('#inference-edge-b')};
-  const pct=value=>`${value.toFixed(1)}%`;
-  const xi=phi=>0.001+0.499*0.99*phi;
-  const connect=(parent,child,edge)=>{
-    const box=tree.getBoundingClientRect(), p=parent.getBoundingClientRect(), c=child.getBoundingClientRect();
-    const px=p.left-box.left+p.width/2, py=p.top-box.top+p.height/2, cx=c.left-box.left+c.width/2, cy=c.top-box.top+c.height/2;
-    const dx=cx-px, dy=cy-py, distance=Math.hypot(dx,dy), ux=dx/distance, uy=dy/distance;
-    const parentRadius=p.width/2, childRadius=c.width/2;
-    edge.style.left=`${px+ux*parentRadius}px`; edge.style.top=`${py+uy*parentRadius}px`;
-    edge.style.width=`${Math.max(0,distance-parentRadius-childRadius)}px`;
-    edge.style.transform=`rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)`;
-  };
-  const draw=()=>{connect(root,nodes.a,edges.a);connect(root,nodes.b,edges.b)};
-  const settle=()=>{let frames=0; const tick=()=>{draw();if(frames++<20)requestAnimationFrame(tick)};tick()};
-  const update=source=>{
-    const av=source===b?100-Number(b.value):Number(a.value), bv=100-av;
-    a.value=av; b.value=bv;
-    [['a',av],['b',bv]].forEach(([id,value])=>{
-      document.querySelector(`#inference-${id}-value`).textContent=pct(value);
-      document.querySelector(`#inference-${id}-vaf`).textContent=pct(xi(value/100)*100);
-      document.querySelector(`#inference-${id}-phi`).innerHTML=`φ<sub>${id.toUpperCase()}</sub> = ${pct(value)}`;
-      nodes[id].querySelector('small').textContent=`η ${pct(value)}`;
-      const size=94+value*.62; nodes[id].style.width=`${size}px`; nodes[id].style.height=`${size}px`;
-    });
-    document.querySelector('#inference-simplex-status').innerHTML=`η<sub>A</sub> + η<sub>B</sub> = ${pct(av+bv)}`;
-    settle();
-  };
-  a.addEventListener('input',()=>update(a)); b.addEventListener('input',()=>update(b));
-  new ResizeObserver(draw).observe(tree); addEventListener('resize',draw); update(a);
-})();
-</script></body></html>''')
 OUT.write_text(html, encoding="utf-8")
 print(f"wrote {OUT.relative_to(ROOT)} with {len(slides)} slides")
