@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "report_kind": "daily",
+  "report_date": "2026-08-30",
+  "manifest": "session-manifest.json",
+  "pages": [
+    {
+      "page": "01-today-map.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a0515a-7a3b-7403-940c-8a254abc920c"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a0516b-9927-79c1-8da0-bf4151a4fe49"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a051e2-2e08-7df0-95e4-d1efbabeba25"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a052d9-4596-7aa1-8787-e02862a23f46"
+        }
+      ]
+    },
+    {
+      "page": "02-visual-contract.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05181-2a87-7882-8542-5fdd2197470d"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a051b0-9f93-7b12-bfb9-eb543f93b8cd"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a051bc-5ac7-7491-abb2-6b33a7b35d43"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a051e2-2e08-7df0-95e4-d1efbabeba25"
+        }
+      ]
+    },
+    {
+      "page": "03-canonical-snv-components.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a051e2-2e08-7df0-95e4-d1efbabeba25"
+        }
+      ]
+    },
+    {
+      "page": "04-open-items.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05165-facc-7293-af76-8c4d193655f2"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a052d9-4596-7aa1-8787-e02862a23f46"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a051e2-2e08-7df0-95e4-d1efbabeba25"
+        }
+      ]
+    }
+  ]
+}
