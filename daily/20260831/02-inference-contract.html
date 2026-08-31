@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-08-31 Inference contract</title>
+<link rel="stylesheet" href="assets/slides.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body><div class="wrap">
+<!-- SLIDE:START -->
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:10px;">
+  <div class="slide-label">Inference contract</div>
+  <h2 style="font-size:30px;margin:0;">inference 是比較候選狀態，不是動態加入新腫瘤假設</h2>
+  <p class="lead" style="font-size:15px;">今天把一句容易誤導的描述拆回實際責任：model 規定可試的規則，inference 在固定 <code>K</code> 下探索，validation 再檢查證據能支持到哪裡。</p>
+  <div class="mermaid" style="width:100%;margin:0;flex:1;min-height:0;">
+%%{init: {"flowchart": {"htmlLabels": true, "curve": "basis"}, "themeVariables": {"fontSize": "18px"}}}%%
+flowchart LR
+    M["Model rules<br/>fixed K · topology T · local η<br/>prior / likelihood"] --> I["Inference<br/>探索與重加權<br/>particle: T + η"]
+    I --> O["Output<br/>候選樹 · η / φ<br/>assignment · diagnostics"]
+    O --> V["Validation<br/>predictive check<br/>claim ceiling"]
+    classDef rules fill:#e6f4ff,stroke:#1677ff,color:#003a8c;
+    classDef infer fill:#f6ffed,stroke:#389e0d,color:#135200;
+    classDef output fill:#fffbe6,stroke:#d48806,color:#874d00;
+    classDef validate fill:#fff1f0,stroke:#d4380d,color:#820014;
+    class M rules; class I infer; class O output; class V validate;
+  </div>
+  <table class="ruletable" style="font-size:14px;">
+    <thead><tr><th style="width:18%;">層</th><th>直接負責</th><th>今天排除的誤讀</th></tr></thead>
+    <tbody>
+      <tr><td><b>model</b></td><td>定義候選規則、prior／likelihood 與結構限制。</td><td>不是 inference 臨時新增的假設集合。</td></tr>
+      <tr class="hl"><td><b>inference</b></td><td>持續嘗試不同 tumor-tree topology 與 clone-local fraction，保留候選。</td><td>不是自行「把外部資料證據加入模型」。</td></tr>
+      <tr><td><b>validation</b></td><td>檢查 predictive coverage、log score、MAE 與 claim ceiling。</td><td>不是把一棵示意樹宣稱成唯一真樹。</td></tr>
+    </tbody>
+  </table>
+  <div class="takeaway" style="font-size:14px;"><b>白話版本：</b>按照 model 規定的規則，反覆試不同的樹和 clone 比例，留下多個候選答案；資料能否支持它，交給 validation 判斷。</div>
+</div></div>
+<!-- SLIDE:END -->
+</div>
+<script>
+mermaid.initialize({startOnLoad:false,theme:'base',flowchart:{curve:'basis'},themeVariables:{fontSize:'13px'}});
+document.body.classList.add('mermaid-measuring');
+mermaid.run().finally(()=>document.body.classList.remove('mermaid-measuring'));
+</script>
+</body></html>
+
