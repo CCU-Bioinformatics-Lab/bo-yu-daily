@@ -1,11 +1,11 @@
 # HCC1395 腫瘤演化樹 module
 
-更新日期：2026-08-28；狀態：本文件只保留模組邊界與資料流；likelihood、先驗與後驗說明暫時移除。
+更新日期：2026-08-31；狀態：本文件整理研究模組的邊界、資料流與 inference 目的；完整 model 與 inference 規格以參考文件為準。
 
 > [!IMPORTANT]
 > 這是為了目前研究架構下的html視覺化文字說明參考，避免產生混淆。
-> 本文件目前只描述 data input、model模組，以及這兩個模組的輸入輸出。
-> 其他先保留，待後續更新
+> 本文件摘要 data input、model、inference 的模組邊界與輸入輸出，供模組規格與 HTML 視覺化對照使用。
+> 完整的 likelihood、prior、posterior 與推理實作細節，請以參考文件為準。
 
 ## 研究模組主線架構
 
@@ -84,12 +84,15 @@ posterior ∝ prior × likelihood
 | Clone assignment `z` | 一顆 SNV 比較支持哪個 clone？ |
 
 ## 3. inference
-目的:
-輸入:
-輸出:
-要放的圖片:
 
-## 6. 參考文件
+### 目的
+
+`inference` 按照 model 定義的 posterior、likelihood、prior 與結構限制，持續探索不同的腫瘤演化樹拓樸與各 clone 的比例，反覆評估哪些參數組合最能解釋目前的 sequencing data，並保留多個具有 posterior 支持的候選腫瘤演化樹結果。
+
+
+
+
+## 4. 參考文件
 
 - [data.md](data.md)：canonical data contract 與 target/spec boundary。
 - [model.md](model.md)：模型語意、target posterior 與限制。
@@ -126,16 +129,16 @@ posterior ∝ prior × likelihood
 
 ### slide-3-canonical-fields（updated）
 
-![Identity](assets/components/snv_identity_record.svg)
+![Identity](assets/components/snv_identity_igv_reads.svg)
 
 ![Read counts](assets/components/read_pileup.svg)
 
 - HTML：[`module_format.html#slide-3`](module_format.html#slide-3)
 - 保留強度：`anchored`
 - 視覺槽位：`canonical-fields`（1／1）
-- SVG：inline SVG；組裝基礎 `assets/components/snv_identity_record.svg`、`assets/components/read_pileup.svg`、`assets/components/cn_segment_context.svg`、`assets/components/purity_mixture.svg`
+- SVG：inline SVG；組裝基礎 `assets/components/snv_identity_igv_reads.svg`、`assets/components/read_pileup.svg`、`assets/components/cn_segment_context.svg`、`assets/components/purity_mixture.svg`
 - 對應來源：`## 1. Data input` → `### raw data轉換model基本輸入資料`
-- 涵蓋文字：Identity 元件以已核准示例 `mutation_id = 1`、`chr1:123,456,789`、`G → A` 表達 `mutation_id, chrom, pos, ref, alt`；read pileup 上方也以 `ref = G · alt = A` 標示該示例鹼基。圖中同時表達 read counts、`rho_ASCAT` 與 copy number；CN 圖以已核准的示例 `major_cn = 3`、`minor_cn = 1` 表達重複 copy，並標示 `total_cn = 4`，不是由本文件推得的資料值。
+- 涵蓋文字：Identity 元件以已核准示例 `mutation_id = 1`、`chr1:123,456,789`、`G → A` 表達 `mutation_id, chrom, pos, ref, alt`，並以 IGV-style reads 呈現共享基因座與示意 read pileup；read pileup 上方也以 `ref = G · alt = A` 標示該示例鹼基。圖中同時表達 read counts、`rho_ASCAT` 與 copy number；CN 圖以已核准的示例 `major_cn = 3`、`minor_cn = 1` 表達重複 copy，並標示 `total_cn = 4`，不是由本文件推得的資料值。
 
 ### slide-4-candidate-tree（updated）
 

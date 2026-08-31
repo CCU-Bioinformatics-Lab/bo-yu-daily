@@ -1,0 +1,17 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "fixed-k6-clone-tree",
+  "claim": "A reusable, topology-only schematic of a six-clone tumor tree for the fixed K=6 model setting.",
+  "element_count": 15,
+  "quantities": {
+    "clone-count": {
+      "count": 6,
+      "value": 6.0
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}
