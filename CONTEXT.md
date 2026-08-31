@@ -14,6 +14,7 @@
 - **external orthogonal evidence**：沒有被目前 likelihood 使用、可獨立支持同一 claim 的外部證據。
 - **claim ceiling**：目前 evidence 允許使用的最高研究敘述，不能超過證據強度。
 - **candidate branching topology**：模型與驗證支持的候選分支樹；不是唯一真實腫瘤歷史，也不是 single-cell lineage truth。
+- **candidate tumor-evolution hypothesis**：在固定 model assumptions 下，由 tree topology `T` 與 clone-specific local fraction `eta` 組成的一個候選 latent state；inference 比較這些候選狀態，不會在同一次推理中自行修改 model assumptions。
 - **optional evidence layer**：CNV event-to-node、driver annotation、single-cell lineage 等非目前核心 output 的補充證據。
 
 ## Architecture decisions

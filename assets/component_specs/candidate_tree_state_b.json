@@ -1,0 +1,46 @@
+{
+  "component_id": "candidate-tree-state-b",
+  "claim": "Candidate B combines a chain-like clone topology with a different clone-specific local-fraction allocation that sums to one.",
+  "canvas": {"width": 240, "height": 260, "background": "#ffffff"},
+  "semantic_contract": {
+    "unique_claim": "A candidate state is one rooted topology T paired with clone-local fractions η; η belongs to each clone and excludes descendants.",
+    "visual_encoding": "Dark blue lines encode parent-descendant topology; orange clone nodes identify clones; purple η labels encode the local fraction values.",
+    "quantitative_claims": "η(C1)=0.40, η(C2)=0.30, η(C3)=0.20, η(C4)=0.10 and Ση=1.00. Values are illustrative candidate-state values, not observed data.",
+    "topology_rule": "C1 is the parent of C2, C2 of C3, and C3 of C4. Edge length is schematic and has no time or fraction scale.",
+    "overlap_policy": "Edges intentionally meet clone-node marks as structural connections; no text/image overlap is intentional."
+  },
+  "asset_inventory": [
+    {
+      "path": "raw_png/clone_node_transparent.png",
+      "role": "reused clone node mark",
+      "dimensions": "83×93 PNG, transparent background, visible bounds 66×71 at +7,+9",
+      "reuse": "four times with preserved aspect ratio"
+    }
+  ],
+  "source_visuals": ["components/clone_tree.svg", "components/eta_phi_tree.svg"],
+  "quantities": [
+    {"id":"eta-c1","value":0.40,"label_element":"eta-c1-label"},
+    {"id":"eta-c2","value":0.30,"label_element":"eta-c2-label"},
+    {"id":"eta-c3","value":0.20,"label_element":"eta-c3-label"},
+    {"id":"eta-c4","value":0.10,"label_element":"eta-c4-label"},
+    {"id":"eta-total","value":1,"expected":1,"label_element":"eta-total-label","tolerance":1e-9}
+  ],
+  "elements": [
+    {"id":"edges","type":"path","d":"M120 48V68M120 108V128M120 168V188","stroke":"#17233a","stroke_width":3,"meaning":"candidate B parent-descendant chain topology"},
+    {"id":"node-c1","type":"image","asset":"raw_png/clone_node_transparent.png","x":102,"y":8,"width":36,"height":40,"meaning":"candidate B founder clone C1"},
+    {"id":"node-c2","type":"image","asset":"raw_png/clone_node_transparent.png","x":102,"y":68,"width":36,"height":40,"meaning":"candidate B descendant clone C2"},
+    {"id":"node-c3","type":"image","asset":"raw_png/clone_node_transparent.png","x":102,"y":128,"width":36,"height":40,"meaning":"candidate B descendant clone C3"},
+    {"id":"node-c4","type":"image","asset":"raw_png/clone_node_transparent.png","x":102,"y":188,"width":36,"height":40,"meaning":"candidate B descendant clone C4"},
+    {"id":"c1-label","type":"text","x":147,"y":20,"font_size":9,"font_weight":700,"meaning":"candidate B founder identity","value":"C1"},
+    {"id":"eta-c1-label","type":"text","x":147,"y":40,"font_size":9,"fill":"#6d28d9","meaning":"candidate B local fraction for C1","value_from_quantity":"eta-c1","template":"η={value:.2f}"},
+    {"id":"c2-label","type":"text","x":147,"y":80,"font_size":9,"font_weight":700,"meaning":"candidate B clone identity C2","value":"C2"},
+    {"id":"eta-c2-label","type":"text","x":147,"y":100,"font_size":9,"fill":"#6d28d9","meaning":"candidate B local fraction for C2","value_from_quantity":"eta-c2","template":"η={value:.2f}"},
+    {"id":"c3-label","type":"text","x":147,"y":140,"font_size":9,"font_weight":700,"meaning":"candidate B clone identity C3","value":"C3"},
+    {"id":"eta-c3-label","type":"text","x":147,"y":160,"font_size":9,"fill":"#6d28d9","meaning":"candidate B local fraction for C3","value_from_quantity":"eta-c3","template":"η={value:.2f}"},
+    {"id":"c4-label","type":"text","x":147,"y":200,"font_size":9,"font_weight":700,"meaning":"candidate B clone identity C4","value":"C4"},
+    {"id":"eta-c4-label","type":"text","x":147,"y":220,"font_size":9,"fill":"#6d28d9","meaning":"candidate B local fraction for C4","value_from_quantity":"eta-c4","template":"η={value:.2f}"},
+    {"id":"eta-total-label","type":"text","x":120,"y":248,"font_size":10,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"candidate B local fractions sum","value_from_quantity":"eta-total","template":"Ση = {value:.2f}"}
+  ],
+  "allowed_overlaps": [],
+  "minimum_gap": 8
+}

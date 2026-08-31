@@ -1,0 +1,60 @@
+{
+  "component_id": "fixed-k6-clone-tree",
+  "claim": "A reusable, topology-only schematic of a six-clone tumor tree for the fixed K=6 model setting.",
+  "canvas": {"width": 320, "height": 300, "background": "#f2f6fc"},
+  "semantic_contract": {
+    "unique_claim": "K=6 fixes the number of clone nodes for a run; this component shows only one legal rooted topology and does not encode local fractions or posterior support.",
+    "reading_order": "Read the K=6 title, then the rooted topology from C1 through C6, then the topology-only note.",
+    "visual_encoding": "Dark blue lines encode parent-descendant relations. Orange circular marks identify clone nodes. Node count encodes K=6; equal node size is categorical and does not encode fraction. The light-blue canvas matches the model-rules panel so the reusable nested SVG has no white block.",
+    "quantitative_claims": "Exactly six clone-node marks are displayed, so K=6. The tree has one tumor founder C1, three direct descendants C2-C4, and two second-level descendants C5-C6. No η or φ values are asserted.",
+    "topology_rule": "C1 is the single founder; C1 parents C2, C3, and C4; C2 parents C5; C4 parents C6. Edge length is schematic and has no time or fraction scale. The C3 label is placed below its node, between tree levels, to keep it clear of the central branch.",
+    "overlap_policy": "Tree edges intentionally meet clone-node marks as structural connections. Clone labels sit outside the visible orange marks."
+  },
+  "asset_inventory": [
+    {
+      "path": "raw_png/clone_node_transparent.png",
+      "role": "repeated atomic clone-node mark",
+      "dimensions": "83×93 PNG, transparent background, visible orange glyph retained",
+      "reuse": "six times with preserved aspect ratio; node size is categorical only"
+    }
+  ],
+  "external_visual_references": [
+    {
+      "citation": "El-Kebir et al., PASTRI: tumor phylogeny inference using tree-constrained importance sampling, Fig. 1a-c",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5870673/",
+      "use": "Reference-only grammar for separating fixed clone count k from a rooted clone tree; original artwork is not copied."
+    },
+    {
+      "citation": "Manica et al., Inferring clonal composition from multiple tumor biopsies, Fig. 1a-b",
+      "url": "https://www.nature.com/articles/s41540-020-00147-5",
+      "use": "Reference-only grammar for a finite clone tree with short clone labels; original artwork and values are not copied."
+    },
+    {
+      "citation": "Miura et al., Scientific Reports, Fig. 1a-b",
+      "url": "https://www.nature.com/articles/s41598-020-59006-2",
+      "use": "Reference-only grammar for readable multi-clone tree spacing; original artwork is not copied."
+    }
+  ],
+  "quantities": [
+    {"id":"clone-count","count_group":"clone-node","expected":6,"label_element":"k-label"}
+  ],
+  "elements": [
+    {"id":"title","type":"text","x":160,"y":25,"font_size":18,"font_weight":700,"anchor":"middle","fill":"#17233a","meaning":"standalone component title","value":"fixed K=6 clone tree"},
+    {"id":"edges","type":"path","d":"M160 81L96 105M160 81V105M160 81L224 105M96 141L128 180M224 141L192 180","stroke":"#17233a","stroke_width":3,"meaning":"parent-descendant relations in the six-clone topology"},
+    {"id":"node-c1","type":"image","asset":"raw_png/clone_node_transparent.png","x":144,"y":45,"width":32,"height":36,"meaning":"founder clone C1","count_group":"clone-node"},
+    {"id":"node-c2","type":"image","asset":"raw_png/clone_node_transparent.png","x":80,"y":105,"width":32,"height":36,"meaning":"descendant clone C2","count_group":"clone-node"},
+    {"id":"node-c3","type":"image","asset":"raw_png/clone_node_transparent.png","x":144,"y":105,"width":32,"height":36,"meaning":"descendant clone C3","count_group":"clone-node"},
+    {"id":"node-c4","type":"image","asset":"raw_png/clone_node_transparent.png","x":208,"y":105,"width":32,"height":36,"meaning":"descendant clone C4","count_group":"clone-node"},
+    {"id":"node-c5","type":"image","asset":"raw_png/clone_node_transparent.png","x":112,"y":180,"width":32,"height":36,"meaning":"second-level descendant clone C5","count_group":"clone-node"},
+    {"id":"node-c6","type":"image","asset":"raw_png/clone_node_transparent.png","x":176,"y":180,"width":32,"height":36,"meaning":"second-level descendant clone C6","count_group":"clone-node"},
+    {"id":"c1-label","type":"text","x":188,"y":67,"font_size":12,"font_weight":700,"fill":"#17233a","meaning":"founder clone identity","value":"C1"},
+    {"id":"c2-label","type":"text","x":57,"y":128,"font_size":12,"font_weight":700,"anchor":"end","fill":"#17233a","meaning":"clone identity","value":"C2"},
+    {"id":"c3-label","type":"text","x":160,"y":162,"font_size":12,"font_weight":700,"anchor":"middle","fill":"#17233a","meaning":"clone identity placed below the central clone mark and clear of the branch line","value":"C3"},
+    {"id":"c4-label","type":"text","x":250,"y":128,"font_size":12,"font_weight":700,"fill":"#17233a","meaning":"clone identity","value":"C4"},
+    {"id":"c5-label","type":"text","x":100,"y":203,"font_size":12,"font_weight":700,"anchor":"end","fill":"#17233a","meaning":"clone identity","value":"C5"},
+    {"id":"c6-label","type":"text","x":220,"y":203,"font_size":12,"font_weight":700,"fill":"#17233a","meaning":"clone identity","value":"C6"},
+    {"id":"k-label","type":"text","x":160,"y":238,"font_size":14,"font_weight":700,"anchor":"middle","fill":"#17233a","meaning":"derived number of displayed clone nodes","value_from_quantity":"clone-count","template":"K={count:.0f} clone nodes · topology only"}
+  ],
+  "allowed_overlaps": [],
+  "minimum_gap": 8
+}

@@ -1,0 +1,28 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "candidate-tree-state-c",
+  "claim": "Candidate C combines a branched clone topology with the descendant branch on the opposite side and a third local-fraction allocation that sums to one.",
+  "element_count": 14,
+  "quantities": {
+    "eta-c1": {
+      "value": 0.25
+    },
+    "eta-c2": {
+      "value": 0.15
+    },
+    "eta-c3": {
+      "value": 0.45
+    },
+    "eta-c4": {
+      "value": 0.15
+    },
+    "eta-total": {
+      "value": 1.0
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

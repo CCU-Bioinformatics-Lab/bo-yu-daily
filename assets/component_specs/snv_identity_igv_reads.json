@@ -1,0 +1,53 @@
+{
+  "component_id": "snv-identity-igv-reads",
+  "claim": "An IGV-style read stack locates one illustrative canonical SNV record at a shared genomic coordinate; only the focal base distinguishes REF from ALT support.",
+  "semantic_contract": {
+    "position": "All alignment blocks share a local chr1 coordinate ruler. The vertical purple guide is the illustrative one-based SNV position, 123,456,789; every allele tile is centered on that guide.",
+    "color": "Neutral gray marks aligned read blocks. Orange G and green A identify the illustrative REF and ALT base calls at the focal locus only; colors do not encode clone, strand, haplotype, quality, or read count.",
+    "count": "Five rows are a quantitative illustrative pileup: REF reads = 3, ALT reads = 2, total reads = 3 + 2 = 5, and illustrative ALT fraction = 2 / 5 = 40%. The vertical stacking is only non-overlap packing.",
+    "terminology_boundary": "This is an explanatory mockup, not a BAM rendering: read starts/ends, row order, color intensity, and the five displayed reads must not be interpreted as a measured coverage or mapping-quality display."
+  },
+  "asset_map": [],
+  "canvas": {"width": 1200, "height": 560, "background": "#ffffff"},
+  "minimum_gap": 8,
+  "quantities": [
+    {"id": "alt-fraction", "numerator_group": "alt-read", "denominator_groups": ["ref-read", "alt-read"], "expected": 0.4, "label_element": "read-summary", "template": "REF = {complement:.0f}  ·  ALT = {numerator:.0f}  ·  total = {denominator:.0f}  ·  ALT fraction = {percent:.0f}%"}
+  ],
+  "allowed_overlaps": [["snv-guide", "read-1"], ["snv-guide", "read-2"], ["snv-guide", "read-3"], ["snv-guide", "read-4"], ["snv-guide", "read-5"], ["tick-snv", "coord-snv"], ["coord-snv", "snv-guide"], ["snv-guide", "base-1-label"], ["snv-guide", "base-2-label"], ["snv-guide", "base-3-label"], ["snv-guide", "base-4-label"], ["snv-guide", "base-5-label"]],
+  "elements": [
+    {"id": "heading", "type": "text", "x": 60, "y": 50, "font_size": 27, "font_weight": 800, "meaning": "component heading", "value": "一顆 SNV 的 IGV-style reads"},
+    {"id": "record-label", "type": "text", "x": 60, "y": 84, "font_size": 18, "font_weight": 700, "fill": "#475569", "meaning": "illustrative canonical SNV identity", "value": "mutation_id = 1   ·   chr1:123,456,789   ·   REF G → ALT A"},
+    {"id": "ruler-title", "type": "text", "x": 85, "y": 135, "font_size": 16, "font_weight": 700, "fill": "#475569", "meaning": "reference coordinate system label", "value": "chr1 coordinate"},
+    {"id": "ruler", "type": "line", "x1": 150, "y1": 165, "x2": 860, "y2": 165, "stroke": "#334155", "stroke_width": 3, "meaning": "local genomic coordinate ruler"},
+    {"id": "tick-left", "type": "line", "x1": 300, "y1": 153, "x2": 300, "y2": 177, "stroke": "#334155", "stroke_width": 3, "meaning": "left flanking coordinate tick"},
+    {"id": "tick-snv", "type": "line", "x1": 560, "y1": 145, "x2": 560, "y2": 185, "stroke": "#6d28d9", "stroke_width": 4, "meaning": "focal SNV coordinate tick"},
+    {"id": "tick-right", "type": "line", "x1": 820, "y1": 153, "x2": 820, "y2": 177, "stroke": "#334155", "stroke_width": 3, "meaning": "right flanking coordinate tick"},
+    {"id": "coord-left", "type": "text", "x": 300, "y": 205, "font_size": 16, "anchor": "middle", "meaning": "left coordinate label", "value": "123,456,787"},
+    {"id": "coord-snv", "type": "text", "x": 560, "y": 205, "font_size": 16, "font_weight": 800, "anchor": "middle", "fill": "#6d28d9", "meaning": "focal one-based SNV position label", "value": "123,456,789"},
+    {"id": "coord-right", "type": "text", "x": 820, "y": 205, "font_size": 16, "anchor": "middle", "meaning": "right coordinate label", "value": "123,456,791"},
+    {"id": "snv-guide", "type": "line", "x1": 560, "y1": 218, "x2": 560, "y2": 488, "stroke": "#a78bfa", "stroke_width": 3, "meaning": "shared focal SNV genomic x coordinate"},
+    {"id": "read-1", "type": "rect", "x": 175, "y": 235, "width": 580, "height": 30, "rx": 6, "fill": "#d9e0e8", "stroke": "#94a3b8", "stroke_width": 1, "meaning": "one REF-supporting aligned read block", "count_group": "ref-read"},
+    {"id": "base-1", "type": "rect", "x": 544, "y": 236, "width": 32, "height": 28, "rx": 4, "fill": "#fff4ed", "stroke": "#d66b20", "stroke_width": 2, "meaning": "REF G base call tile at focal SNV"},
+    {"id": "base-1-label", "type": "text", "x": 560, "y": 258, "font_size": 21, "font_weight": 800, "anchor": "middle", "fill": "#682600", "meaning": "REF G base call at focal SNV", "value": "G"},
+    {"id": "read-2", "type": "rect", "x": 230, "y": 285, "width": 505, "height": 30, "rx": 6, "fill": "#d9e0e8", "stroke": "#94a3b8", "stroke_width": 1, "meaning": "one ALT-supporting aligned read block", "count_group": "alt-read"},
+    {"id": "base-2", "type": "rect", "x": 544, "y": 286, "width": 32, "height": 28, "rx": 4, "fill": "#effaf0", "stroke": "#2f8a45", "stroke_width": 2, "meaning": "ALT A base call tile at focal SNV"},
+    {"id": "base-2-label", "type": "text", "x": 560, "y": 308, "font_size": 21, "font_weight": 800, "anchor": "middle", "fill": "#00441b", "meaning": "ALT A base call at focal SNV", "value": "A"},
+    {"id": "read-3", "type": "rect", "x": 145, "y": 335, "width": 645, "height": 30, "rx": 6, "fill": "#d9e0e8", "stroke": "#94a3b8", "stroke_width": 1, "meaning": "one REF-supporting aligned read block", "count_group": "ref-read"},
+    {"id": "base-3", "type": "rect", "x": 544, "y": 336, "width": 32, "height": 28, "rx": 4, "fill": "#fff4ed", "stroke": "#d66b20", "stroke_width": 2, "meaning": "REF G base call tile at focal SNV"},
+    {"id": "base-3-label", "type": "text", "x": 560, "y": 358, "font_size": 21, "font_weight": 800, "anchor": "middle", "fill": "#682600", "meaning": "REF G base call at focal SNV", "value": "G"},
+    {"id": "read-4", "type": "rect", "x": 270, "y": 385, "width": 530, "height": 30, "rx": 6, "fill": "#d9e0e8", "stroke": "#94a3b8", "stroke_width": 1, "meaning": "one ALT-supporting aligned read block", "count_group": "alt-read"},
+    {"id": "base-4", "type": "rect", "x": 544, "y": 386, "width": 32, "height": 28, "rx": 4, "fill": "#effaf0", "stroke": "#2f8a45", "stroke_width": 2, "meaning": "ALT A base call tile at focal SNV"},
+    {"id": "base-4-label", "type": "text", "x": 560, "y": 408, "font_size": 21, "font_weight": 800, "anchor": "middle", "fill": "#00441b", "meaning": "ALT A base call at focal SNV", "value": "A"},
+    {"id": "read-5", "type": "rect", "x": 190, "y": 435, "width": 620, "height": 30, "rx": 6, "fill": "#d9e0e8", "stroke": "#94a3b8", "stroke_width": 1, "meaning": "one REF-supporting aligned read block", "count_group": "ref-read"},
+    {"id": "base-5", "type": "rect", "x": 544, "y": 436, "width": 32, "height": 28, "rx": 4, "fill": "#fff4ed", "stroke": "#d66b20", "stroke_width": 2, "meaning": "REF G base call tile at focal SNV"},
+    {"id": "base-5-label", "type": "text", "x": 560, "y": 458, "font_size": 21, "font_weight": 800, "anchor": "middle", "fill": "#682600", "meaning": "REF G base call at focal SNV", "value": "G"},
+    {"id": "reads-label", "type": "text", "x": 70, "y": 285, "font_size": 16, "font_weight": 700, "fill": "#475569", "meaning": "aligned reads section label", "value": "aligned reads"},
+    {"id": "summary-card", "type": "rect", "x": 900, "y": 235, "width": 250, "height": 215, "rx": 16, "fill": "#f8fafc", "stroke": "#cbd5e1", "stroke_width": 2, "meaning": "illustrative pileup count summary panel"},
+    {"id": "summary-title", "type": "text", "x": 925, "y": 280, "font_size": 21, "font_weight": 800, "meaning": "count summary heading", "value": "illustrative pileup"},
+    {"id": "read-summary", "type": "text", "x": 925, "y": 315, "font_size": 17, "font_weight": 700, "meaning": "derived illustrative REF supporting read count", "value_from_quantity": "alt-fraction", "template": "REF reads = {complement:.0f}"},
+    {"id": "alt-summary", "type": "text", "x": 925, "y": 345, "font_size": 17, "font_weight": 700, "meaning": "derived illustrative ALT supporting read count", "value_from_quantity": "alt-fraction", "template": "ALT reads = {numerator:.0f}"},
+    {"id": "total-summary", "type": "text", "x": 925, "y": 375, "font_size": 17, "font_weight": 700, "meaning": "derived illustrative total read count", "value_from_quantity": "alt-fraction", "template": "total reads = {denominator:.0f}"},
+    {"id": "fraction-summary", "type": "text", "x": 925, "y": 405, "font_size": 17, "font_weight": 800, "fill": "#6d28d9", "meaning": "derived illustrative ALT fraction", "value_from_quantity": "alt-fraction", "template": "ALT fraction = {percent:.0f}%"},
+    {"id": "summary-boundary", "type": "text", "x": 925, "y": 432, "font_size": 13, "fill": "#64748b", "meaning": "mockup boundary note", "value": "Illustrative, not coverage."}
+  ]
+}

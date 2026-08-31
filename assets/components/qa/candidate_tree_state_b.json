@@ -1,0 +1,28 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "candidate-tree-state-b",
+  "claim": "Candidate B combines a chain-like clone topology with a different clone-specific local-fraction allocation that sums to one.",
+  "element_count": 14,
+  "quantities": {
+    "eta-c1": {
+      "value": 0.4
+    },
+    "eta-c2": {
+      "value": 0.3
+    },
+    "eta-c3": {
+      "value": 0.2
+    },
+    "eta-c4": {
+      "value": 0.1
+    },
+    "eta-total": {
+      "value": 1.0
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

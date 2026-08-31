@@ -1,0 +1,28 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "candidate-tree-state-a",
+  "claim": "Candidate A combines a branched clone topology with clone-specific local fractions that sum to one.",
+  "element_count": 14,
+  "quantities": {
+    "eta-c1": {
+      "value": 0.5
+    },
+    "eta-c2": {
+      "value": 0.2
+    },
+    "eta-c3": {
+      "value": 0.2
+    },
+    "eta-c4": {
+      "value": 0.1
+    },
+    "eta-total": {
+      "value": 1.0
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

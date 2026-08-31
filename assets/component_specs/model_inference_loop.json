@@ -1,24 +1,567 @@
 {
   "component_id": "model-inference-loop",
-  "claim": "The xi likelihood evaluates canonical input while annealed SMC explores topology and eta, producing diagnostic summaries.",
-  "canvas": {"width": 1200, "height": 500, "background": "#ffffff"},
+  "claim": "For a fixed clone count K (default K=6), inference explores tumor-tree topologies and K-dimensional clone-specific local fractions, repeatedly compares candidate fit, and displays one illustrative candidate state.",
+  "canvas": {
+    "width": 1200,
+    "height": 837,
+    "background": "#ffffff"
+  },
+  "semantic_contract": {
+    "unique_claim": "Inference conditions on a fixed clone count K (default K=6) and searches a finite population of candidate states defined by topology T_K and K-dimensional clone-specific local fraction η₁:K; the bottom panel displays one illustrative candidate state and does not claim a unique posterior result.",
+    "reading_order": "Read left to right: fixed K model rule → candidate states with different T_K and η₁:K patterns → SMC repeat-search loop → one illustrative candidate-state visual.",
+    "visual_encoding": "Dark blue arrows show state flow. Purple marks the model-guided comparison and feedback loop. Green marks repeated SMC exploration and reweighting. Orange frames the illustrative candidate-state visual.",
+    "quantitative_claims": "K=6 is the default and primary run dimension; K=4 and K=8 are sensitivity runs. The model-rule K=6 schematic is a simple six-node clone tree and does not encode fractions. A separate illustrative K=3 state uses η=(0.50,0.30,0.20), where Ση=1.00; its three bar lengths are linearly scaled to the largest displayed value 0.50. The embedded candidate SVGs show illustrative four-node local-fraction vectors A=(0.50,0.20,0.20,0.10), B=(0.40,0.30,0.20,0.10), and C=(0.25,0.15,0.45,0.15), each with Ση=1.00; all numbers are candidate-state examples, not observed or posterior estimates.",
+    "topology_rule": "For a selected fixed K, each candidate tree T_K is a rooted tumor-founder hypothesis; the cards embed schematic four-node topology-plus-local-fraction SVGs with different parent-child arrangements.",
+    "state_rule": "K is a fixed per-run model dimension, not a particle variable. Conditional on K, the persistent particle state is T_K + η₁:K. φ/CCF is derived from T_K and η₁:K; genotype, multiplicity, and ξ remain model-side marginalized quantities and are intentionally absent.",
+    "overlap_policy": "Tree edges intentionally meet clone-node marks as structural connections. The reusable K=6 tree component manages its own node labels inside its transparent canvas."
+  },
+  "asset_inventory": [
+    {
+      "path": "raw_png/clone_node_transparent.png",
+      "role": "atomic clone node mark used in schematic candidate trees",
+      "dimensions": "83×93 PNG, transparent background, visible bounds 66×71 at +7,+9",
+      "reuse": "repeated with preserved aspect ratio"
+    },
+    {
+      "path": "raw_png/clone_node_transparent.png",
+      "role": "atomic clone-node mark used six times in the fixed-K model-rule tree",
+      "dimensions": "83×93 PNG, transparent padding preserved",
+      "reuse": "repeated six times; the displayed count is explicitly labelled K=6 and does not encode any fraction"
+    },
+    {
+      "path": "components/fixed_k6_clone_tree.svg",
+      "role": "standalone reusable fixed K=6 topology-only clone tree for the model-rule stage",
+      "dimensions": "320×300 SVG, model-rules light-blue canvas, six labelled clone nodes",
+      "reuse": "embedded as a self-contained image with preserved aspect ratio; no local-fraction values or posterior support are encoded"
+    },
+    {
+      "path": "components/eta_phi_tree.svg",
+      "role": "clone-local fraction η visual used in the model-rule stage",
+      "dimensions": "1200×460 SVG, viewBox 0 0 1200 460, white background",
+      "reuse": "embedded as a self-contained image with preserved aspect ratio; φ content remains part of the source component"
+    },
+    {
+      "path": "components/candidate_tree_state_a.svg",
+      "role": "combined candidate A topology T₁ and clone-local fraction η visual",
+      "dimensions": "240×260 SVG, compact candidate-state viewBox, white background",
+      "reuse": "embedded in candidate A card with preserved aspect ratio"
+    },
+    {
+      "path": "components/candidate_tree_state_b.svg",
+      "role": "combined candidate B topology T₂ and clone-local fraction η visual",
+      "dimensions": "240×260 SVG, compact candidate-state viewBox, white background",
+      "reuse": "embedded in candidate B card with preserved aspect ratio"
+    },
+    {
+      "path": "components/candidate_tree_state_c.svg",
+      "role": "combined candidate C topology T₃ and clone-local fraction η visual",
+      "dimensions": "240×260 SVG, compact candidate-state viewBox, white background",
+      "reuse": "embedded in candidate C card and the single illustrative bottom-panel visual with preserved aspect ratio"
+    }
+  ],
+  "external_visual_references": [
+    {
+      "citation": "El-Kebir et al., PASTRI: tumor phylogeny inference using tree-constrained importance sampling, Fig. 1a-c",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5870673/",
+      "use": "Reference-only grammar for explicitly separating a fixed k-clone tree from its simplex-constrained mixture vector; original artwork and matrices are not copied."
+    },
+    {
+      "citation": "El-Kebir et al., AncesTree: Reconstruction of clonal trees and tumor composition, Fig. 1B/D/E",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4542783/",
+      "use": "Reference-only grammar for pairing a finite clone tree with a distinct composition view; multi-sample usage values and artwork are not copied."
+    },
+    {
+      "citation": "Manica et al., Inferring clonal composition from multiple tumor biopsies, Fig. 1a-b",
+      "url": "https://www.nature.com/articles/s41540-020-00147-5",
+      "use": "Reference-only grammar for making the finite clone count visually explicit beside the tree; biopsy-composition values and artwork are not copied."
+    },
+    {
+      "citation": "Dinh, Darling & Matsen, Online Bayesian Phylogenetic Inference, Systematic Biology, Fig. 1",
+      "url": "https://academic.oup.com/sysbio/article/67/3/503/4735261",
+      "use": "Reference-only grammar for a particle population of candidate trees passing through resampling and move/weight stages; original artwork, labels, and layout are not copied."
+    },
+    {
+      "citation": "Ahn & Vikalo, Joint haplotype assembly and genotype calling via sequential Monte Carlo algorithm, BMC Bioinformatics, Fig. 1",
+      "url": "https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-015-0651-8",
+      "use": "Reference-only grammar for proposing multiple alternatives and retaining weighted candidates; original haplotype-specific artwork is not copied."
+    },
+    {
+      "citation": "Suruzhon et al., Enhancing Ligand and Protein Sampling Using Sequential Monte Carlo, ACS JCTC, Fig. 1",
+      "url": "https://pubs.acs.org/doi/10.1021/acs.jctc.1c01198",
+      "use": "Reference-only grammar for sampling → reweighting → resampling loops; the ligand/walker artwork and labels are not copied."
+    }
+  ],
   "elements": [
-    {"id":"input-box","type":"rect","x":60,"y":120,"width":260,"height":120,"rx":18,"fill":"#f2f6fc","stroke":"#c8d5e6","stroke_width":3,"meaning":"validated canonical input"},
-    {"id":"likelihood-box","type":"rect","x":470,"y":120,"width":260,"height":120,"rx":18,"fill":"#fbfcff","stroke":"#6d28d9","stroke_width":3,"meaning":"xi genotype-marginalised likelihood"},
-    {"id":"smc-box","type":"rect","x":880,"y":120,"width":260,"height":120,"rx":18,"fill":"#eefcf5","stroke":"#4ca96c","stroke_width":3,"meaning":"annealed SMC inference"},
-    {"id":"output-box","type":"rect","x":820,"y":335,"width":320,"height":105,"rx":18,"fill":"#fff8ec","stroke":"#e3a044","stroke_width":3,"meaning":"diagnostic posterior summaries"},
-    {"id":"input-label","type":"text","x":190,"y":177,"font_size":23,"font_weight":700,"anchor":"middle","meaning":"input stage label","value":"canonical SNV row"},
-    {"id":"input-fields","type":"text","x":190,"y":210,"font_size":17,"anchor":"middle","meaning":"input field summary","value":"counts · CN · rho_ASCAT"},
-    {"id":"likelihood-label","type":"text","x":600,"y":172,"font_size":25,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"likelihood stage label","value":"xi likelihood"},
-    {"id":"likelihood-fields","type":"text","x":600,"y":207,"font_size":17,"anchor":"middle","meaning":"candidate marginalisation summary","value":"CN · purity · genotype"},
-    {"id":"smc-label","type":"text","x":1010,"y":172,"font_size":24,"font_weight":700,"anchor":"middle","fill":"#218241","meaning":"inference stage label","value":"annealed SMC"},
-    {"id":"smc-fields","type":"text","x":1010,"y":207,"font_size":17,"anchor":"middle","meaning":"particle state summary","value":"topology T · eta"},
-    {"id":"output-label","type":"text","x":980,"y":377,"font_size":21,"font_weight":700,"anchor":"middle","fill":"#a46014","meaning":"output category label","value":"diagnostic summaries"},
-    {"id":"output-fields","type":"text","x":980,"y":412,"font_size":17,"anchor":"middle","meaning":"posterior outputs","value":"phi · topology · z · multiplicity"},
-    {"id":"input-arrow","type":"path","d":"M320 180H470M470 180L442 163M470 180L442 197","stroke":"#17233a","stroke_width":5,"meaning":"canonical input enters likelihood"},
-    {"id":"smc-arrow","type":"path","d":"M730 180H880M880 180L852 163M880 180L852 197","stroke":"#17233a","stroke_width":5,"meaning":"likelihood guides annealed SMC"},
-    {"id":"output-arrow","type":"path","d":"M1010 240V335M1010 335L993 307M1010 335L1027 307","stroke":"#17233a","stroke_width":5,"meaning":"SMC produces posterior summaries"},
-    {"id":"feedback-loop","type":"path","d":"M930 255V290H600V240M600 240L583 268M600 240L617 268","stroke":"#6d28d9","stroke_width":4,"meaning":"candidate particle state is evaluated by likelihood"},
-    {"id":"feedback-label","type":"text","x":765,"y":318,"font_size":18,"anchor":"middle","fill":"#6d28d9","meaning":"candidate evaluation loop label","value":"candidate state / weight"}
-  ]
+    {
+      "id": "title",
+      "type": "text",
+      "x": 600,
+      "y": 42,
+      "font_size": 28,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#17233a",
+      "meaning": "component title",
+      "value": "inference: explore, compare, retain"
+    },
+    {
+      "id": "subtitle",
+      "type": "text",
+      "x": 600,
+      "y": 74,
+      "font_size": 15,
+      "anchor": "middle",
+      "fill": "#52627a",
+      "meaning": "scope subtitle",
+      "value": "fixed-K search over topology T_K and local fractions η₁:K"
+    },
+    {
+      "id": "rules-box",
+      "type": "rect",
+      "x": 35,
+      "y": 105,
+      "width": 210,
+      "height": 510,
+      "rx": 18,
+      "fill": "#f2f6fc",
+      "stroke": "#c8d5e6",
+      "stroke_width": 3,
+      "meaning": "model-rule stage container for fixed-K topology and local-fraction rules"
+    },
+    {
+      "id": "rules-label",
+      "type": "text",
+      "x": 140,
+      "y": 128,
+      "font_size": 22,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#17233a",
+      "meaning": "model-rule stage label",
+      "value": "model rules"
+    },
+    {
+      "id": "rules-fixed-k-label",
+      "type": "text",
+      "x": 140,
+      "y": 162,
+      "font_size": 13,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#17233a",
+      "meaning": "fixed per-run clone-count model dimension",
+      "value": "fixed clone count K"
+    },
+    {
+      "id": "rules-k-setting",
+      "type": "text",
+      "x": 140,
+      "y": 188,
+      "font_size": 10,
+      "anchor": "middle",
+      "fill": "#52627a",
+      "meaning": "default and sensitivity K settings",
+      "value": "default K=6 · sensitivity K=4/8"
+    },
+    {
+      "id": "rules-k6-tree-image",
+      "type": "image",
+      "x": 47,
+      "y": 202,
+      "width": 186,
+      "height": 174,
+      "asset": "components/fixed_k6_clone_tree.svg",
+      "meaning": "reusable standalone fixed K=6 topology-only clone tree; the embedded component carries six clone nodes and its own labels"
+    },
+    {
+      "id": "rules-t-example-label",
+      "type": "text",
+      "x": 140,
+      "y": 408,
+      "font_size": 14,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#17233a",
+      "meaning": "separate illustrative three-clone tree-topology example",
+      "value": "T example: K=3"
+    },
+    {
+      "id": "rules-t3-edges",
+      "type": "path",
+      "d": "M140 432L103 455M140 432L177 455",
+      "stroke": "#17233a",
+      "stroke_width": 2.5,
+      "meaning": "parent-descendant edges for the illustrative K=3 topology"
+    },
+    {
+      "id": "rules-t3-node-1",
+      "type": "image",
+      "x": 126,
+      "y": 424,
+      "width": 28,
+      "height": 31,
+      "asset": "raw_png/clone_node_transparent.png",
+      "meaning": "illustrative K=3 topology clone C1"
+    },
+    {
+      "id": "rules-t3-node-2",
+      "type": "image",
+      "x": 89,
+      "y": 461,
+      "width": 28,
+      "height": 31,
+      "asset": "raw_png/clone_node_transparent.png",
+      "meaning": "illustrative K=3 topology clone C2"
+    },
+    {
+      "id": "rules-t3-node-3",
+      "type": "image",
+      "x": 163,
+      "y": 461,
+      "width": 28,
+      "height": 31,
+      "asset": "raw_png/clone_node_transparent.png",
+      "meaning": "illustrative K=3 topology clone C3"
+    },
+    {
+      "id": "rules-local-fraction-label",
+      "type": "text",
+      "x": 140,
+      "y": 515,
+      "font_size": 14,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#6d28d9",
+      "meaning": "separate illustrative K=3 clone-specific local fraction vector",
+      "value": "local fraction η₁:₃"
+    },
+    {
+      "id": "rules-eta-c1",
+      "type": "rect",
+      "x": 75,
+      "y": 526,
+      "width": 100,
+      "height": 8,
+      "fill": "#6d28d9",
+      "meaning": "illustrative K=3 local fraction η1=0.50; bar length is linear relative to the maximum displayed value 0.50"
+    },
+    {
+      "id": "rules-eta-values",
+      "type": "text",
+      "x": 183,
+      "y": 534,
+      "font_size": 11,
+      "fill": "#6d28d9",
+      "meaning": "displayed value η1=0.50",
+      "value": "C1 0.50"
+    },
+    {
+      "id": "rules-eta-c2",
+      "type": "rect",
+      "x": 75,
+      "y": 552,
+      "width": 60,
+      "height": 8,
+      "fill": "#6d28d9",
+      "meaning": "illustrative K=3 local fraction η2=0.30; bar length is linear relative to the maximum displayed value 0.50"
+    },
+    {
+      "id": "rules-eta-value-2",
+      "type": "text",
+      "x": 143,
+      "y": 560,
+      "font_size": 11,
+      "fill": "#6d28d9",
+      "meaning": "displayed value η2=0.20",
+      "value": "C2 0.30"
+    },
+    {
+      "id": "rules-eta-c3",
+      "type": "rect",
+      "x": 75,
+      "y": 578,
+      "width": 40,
+      "height": 8,
+      "fill": "#6d28d9",
+      "meaning": "illustrative K=3 local fraction η3=0.20; bar length is linear relative to the maximum displayed value 0.50"
+    },
+    {
+      "id": "rules-eta-value-3",
+      "type": "text",
+      "x": 123,
+      "y": 586,
+      "font_size": 11,
+      "fill": "#6d28d9",
+      "meaning": "displayed value η3=0.20",
+      "value": "C3 0.20"
+    },
+    {
+      "id": "rules-eta-sum",
+      "type": "text",
+      "x": 140,
+      "y": 608,
+      "font_size": 11,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#6d28d9",
+      "meaning": "three displayed local fractions sum to one",
+      "value": "Ση₁:₃ = 1.00"
+    },
+    {
+      "id": "candidate-panel",
+      "type": "rect",
+      "x": 285,
+      "y": 95,
+      "width": 535,
+      "height": 280,
+      "rx": 18,
+      "fill": "#fbfcff",
+      "stroke": "#c8d5e6",
+      "stroke_width": 3,
+      "meaning": "candidate state comparison container"
+    },
+    {
+      "id": "candidate-label",
+      "type": "text",
+      "x": 552.5,
+      "y": 132,
+      "font_size": 22,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#17233a",
+      "meaning": "candidate state stage label",
+      "value": "candidate states"
+    },
+    {
+      "id": "candidate-detail",
+      "type": "text",
+      "x": 552.5,
+      "y": 163,
+      "font_size": 14,
+      "anchor": "middle",
+      "fill": "#52627a",
+      "meaning": "candidate state dimensions",
+      "value": "schematic alternatives · fixed K per run"
+    },
+    {
+      "id": "candidate-a-card",
+      "type": "rect",
+      "x": 305,
+      "y": 176,
+      "width": 150,
+      "height": 184,
+      "rx": 14,
+      "fill": "#ffffff",
+      "stroke": "#c8d5e6",
+      "stroke_width": 2,
+      "meaning": "candidate topology and fraction hypothesis A"
+    },
+    {
+      "id": "candidate-a-label",
+      "type": "text",
+      "x": 380,
+      "y": 190,
+      "font_size": 12,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#17233a",
+      "meaning": "candidate A label",
+      "value": "A · topology T₁"
+    },
+    {
+      "id": "candidate-a-visual",
+      "type": "image",
+      "x": 312,
+      "y": 201,
+      "width": 136,
+      "height": 154,
+      "asset": "components/candidate_tree_state_a.svg",
+      "meaning": "candidate A combined topology T₁ and clone-local fraction η visual"
+    },
+    {
+      "id": "candidate-b-card",
+      "type": "rect",
+      "x": 480,
+      "y": 176,
+      "width": 150,
+      "height": 184,
+      "rx": 14,
+      "fill": "#ffffff",
+      "stroke": "#c8d5e6",
+      "stroke_width": 2,
+      "meaning": "candidate topology and fraction hypothesis B"
+    },
+    {
+      "id": "candidate-b-label",
+      "type": "text",
+      "x": 555,
+      "y": 190,
+      "font_size": 12,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#17233a",
+      "meaning": "candidate B label",
+      "value": "B · topology T₂"
+    },
+    {
+      "id": "candidate-b-visual",
+      "type": "image",
+      "x": 487,
+      "y": 201,
+      "width": 136,
+      "height": 154,
+      "asset": "components/candidate_tree_state_b.svg",
+      "meaning": "candidate B combined topology T₂ and clone-local fraction η visual"
+    },
+    {
+      "id": "candidate-c-card",
+      "type": "rect",
+      "x": 655,
+      "y": 176,
+      "width": 150,
+      "height": 184,
+      "rx": 14,
+      "fill": "#ffffff",
+      "stroke": "#c8d5e6",
+      "stroke_width": 2,
+      "meaning": "candidate topology and fraction hypothesis C"
+    },
+    {
+      "id": "candidate-c-label",
+      "type": "text",
+      "x": 730,
+      "y": 190,
+      "font_size": 12,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#17233a",
+      "meaning": "candidate C label",
+      "value": "C · topology T₃"
+    },
+    {
+      "id": "candidate-c-visual",
+      "type": "image",
+      "x": 662,
+      "y": 201,
+      "width": 136,
+      "height": 154,
+      "asset": "components/candidate_tree_state_c.svg",
+      "meaning": "candidate C combined topology T₃ and clone-local fraction η visual"
+    },
+    {
+      "id": "smc-box",
+      "type": "rect",
+      "x": 850,
+      "y": 105,
+      "width": 315,
+      "height": 270,
+      "rx": 18,
+      "fill": "#eefcf5",
+      "stroke": "#4ca96c",
+      "stroke_width": 3,
+      "meaning": "repeated SMC exploration container"
+    },
+    {
+      "id": "smc-label",
+      "type": "text",
+      "x": 1007.5,
+      "y": 140,
+      "font_size": 22,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#218241",
+      "meaning": "SMC stage label",
+      "value": "SMC"
+    },
+    {
+      "id": "smc-loop",
+      "type": "path",
+      "d": "M920 255C900 225 915 190 955 180C1005 167 1075 185 1095 225M1095 225L1073 215M1095 225L1078 238M1095 225C1110 260 1090 302 1045 315C995 330 935 313 920 275M920 275L919 298M920 275L941 284",
+      "stroke": "#4ca96c",
+      "stroke_width": 4,
+      "meaning": "repeated proposal and reweighting loop"
+    },
+    {
+      "id": "rules-to-candidates",
+      "type": "path",
+      "d": "M245 245H285M285 245L273 237M285 245L273 253",
+      "stroke": "#17233a",
+      "stroke_width": 5,
+      "meaning": "model rules guide candidate construction"
+    },
+    {
+      "id": "candidates-to-smc",
+      "type": "path",
+      "d": "M820 245H850M850 245L838 237M850 245L838 253",
+      "stroke": "#17233a",
+      "stroke_width": 5,
+      "meaning": "candidate states enter repeated SMC search"
+    },
+    {
+      "id": "smc-to-retained",
+      "type": "path",
+      "d": "M1007 375V630M1007 630L995 611M1007 630L1019 611",
+      "stroke": "#17233a",
+      "stroke_width": 5,
+      "meaning": "SMC flow reaches the illustrative candidate display"
+    },
+    {
+      "id": "feedback-loop",
+      "type": "path",
+      "d": "M900 375V398H555V375M555 375L545 391M555 375L565 391",
+      "stroke": "#6d28d9",
+      "stroke_width": 4,
+      "meaning": "candidate states are proposed and evaluated again"
+    },
+    {
+      "id": "feedback-label",
+      "type": "text",
+      "x": 730,
+      "y": 418,
+      "font_size": 12,
+      "anchor": "middle",
+      "fill": "#6d28d9",
+      "meaning": "repeated candidate evaluation label",
+      "value": "repeat with new T / η"
+    },
+    {
+      "id": "illustrative-candidate-panel",
+      "type": "rect",
+      "x": 35,
+      "y": 630,
+      "width": 1130,
+      "height": 200,
+      "rx": 18,
+      "fill": "#fff8ec",
+      "stroke": "#e3a044",
+      "stroke_width": 3,
+      "meaning": "container for one illustrative candidate state"
+    },
+    {
+      "id": "illustrative-candidate-label",
+      "type": "text",
+      "x": 600,
+      "y": 652,
+      "font_size": 18,
+      "font_weight": 700,
+      "anchor": "middle",
+      "fill": "#a46014",
+      "meaning": "name of the bottom illustrative candidate-state panel",
+      "value": "illustrative candidate state"
+    },
+    {
+      "id": "illustrative-t3-visual",
+      "type": "image",
+      "x": 526,
+      "y": 665,
+      "width": 148,
+      "height": 160,
+      "asset": "components/candidate_tree_state_c.svg",
+      "meaning": "one illustrative candidate state with topology T₃ and clone-local fraction η"
+    }
+  ],
+  "allowed_overlaps": [
+    ["rules-local-fraction-label", "rules-eta-values"]
+  ],
+  "minimum_gap": 8
 }

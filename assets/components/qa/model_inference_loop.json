@@ -1,10 +1,15 @@
 {
   "status": "machine-validated / awaiting-human-visual-approval",
   "component_id": "model-inference-loop",
-  "claim": "The xi likelihood evaluates canonical input while annealed SMC explores topology and eta, producing diagnostic summaries.",
-  "element_count": 17,
+  "claim": "For a fixed clone count K (default K=6), inference explores tumor-tree topologies and K-dimensional clone-specific local fractions, repeatedly compares candidate fit, and displays one illustrative candidate state.",
+  "element_count": 43,
   "quantities": {},
-  "allowed_overlaps": [],
+  "allowed_overlaps": [
+    [
+      "rules-local-fraction-label",
+      "rules-eta-values"
+    ]
+  ],
   "external_references": 0,
   "warnings": [
     "Text bounds are approximate; inspect a rendered preview."

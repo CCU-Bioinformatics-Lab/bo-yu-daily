@@ -1,0 +1,68 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "snv-identity-igv-reads",
+  "claim": "An IGV-style read stack locates one illustrative canonical SNV record at a shared genomic coordinate; only the focal base distinguishes REF from ALT support.",
+  "element_count": 34,
+  "quantities": {
+    "alt-fraction": {
+      "numerator": 2,
+      "denominator": 5,
+      "complement": 3,
+      "value": 0.4
+    }
+  },
+  "allowed_overlaps": [
+    [
+      "snv-guide",
+      "read-1"
+    ],
+    [
+      "snv-guide",
+      "read-2"
+    ],
+    [
+      "snv-guide",
+      "read-3"
+    ],
+    [
+      "snv-guide",
+      "read-4"
+    ],
+    [
+      "snv-guide",
+      "read-5"
+    ],
+    [
+      "tick-snv",
+      "coord-snv"
+    ],
+    [
+      "coord-snv",
+      "snv-guide"
+    ],
+    [
+      "snv-guide",
+      "base-1-label"
+    ],
+    [
+      "snv-guide",
+      "base-2-label"
+    ],
+    [
+      "snv-guide",
+      "base-3-label"
+    ],
+    [
+      "snv-guide",
+      "base-4-label"
+    ],
+    [
+      "snv-guide",
+      "base-5-label"
+    ]
+  ],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}
