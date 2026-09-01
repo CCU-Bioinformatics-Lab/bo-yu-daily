@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-09-01 SVG asset curation</title>
+<link rel="stylesheet" href="assets/slides.css">
+</head>
+<body><div class="wrap">
+<!-- SLIDE:START -->
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:9px;">
+  <div class="slide-label">可重用 SVG 素材治理</div>
+  <h2 style="font-size:30px;margin:0;">術語先對到既有素材，再新增最小的 K=3、read 與 composite 元件</h2>
+  <p class="lead" style="font-size:15px;">今天的素材決策以「先查庫、再組合」為原則；新圖都有 exact path、preview 或 QA，沒有把外部論文圖直接描摹進 repo。</p>
+  <div style="display:grid;grid-template-columns:1.35fr .65fr;gap:16px;flex:1;min-height:0;">
+    <div style="min-width:0;">
+      <table class="ruletable" style="font-size:12.5px;table-layout:fixed;width:100%;"><colgroup><col style="width:22%;"><col style="width:49%;"><col style="width:29%;"></colgroup><thead><tr><th>術語</th><th>採用素材（repo-relative）</th><th>今天的決定</th></tr></thead><tbody>
+        <tr class="hl"><td>candidate tree <code>T</code></td><td><code>assets/components/fixed_k3_clone_tree.svg</code></td><td>K=3、topology-only</td></tr>
+        <tr><td>clone fraction <code>η</code></td><td><code>assets/components/eta_phi_tree.svg</code></td><td>只保留 η／φ 示意</td></tr>
+        <tr><td>assignment <code>z</code></td><td><code>assets/components/snv_assignment.svg</code></td><td>單一採用素材</td></tr>
+        <tr><td>multiplicity</td><td><code>assets/png_to_svg/multiplicity.svg</code></td><td>實際不在 components/</td></tr>
+        <tr><td>canonical input</td><td><code>assets/png_to_svg/canonical_snv_row.svg</code></td><td>代表一列 SNV</td></tr>
+        <tr><td>ALT／REF reads</td><td><code>assets/components/read_pileup.svg</code></td><td>slide-4 恢復 IGV-style</td></tr>
+        <tr><td>purity／CN</td><td><code>assets/components/purity_mixture.svg</code><br><code>assets/components/cn_segment_context.svg</code></td><td>共同進入 ξ</td></tr>
+      </tbody></table>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:0;">
+      <div class="info-card green" style="padding:11px 13px;font-size:13px;line-height:1.4;"><div class="card-title">新增／收斂的元件</div><code>fixed_k3_clone_tree.svg</code>：<code>C1→C2/C3</code>，畫布 <code>320×190</code>。<br><code>ref_read.svg</code>／<code>alt_read.svg</code>：藍 REF <code>G</code>、綠 ALT <code>A</code>，焦點鹼基置中。</div>
+      <div class="info-card blue" style="padding:11px 13px;font-size:13px;line-height:1.4;"><div class="card-title">組合交付</div><code>assets/components/model_process_composite.svg</code> 依 <code>model_process.svg</code> 六段骨架組合 78 個具穩定 ID／<code>data-meaning</code> 元素，並留下 spec、QA、preview。</div>
+      <div class="info-card yellow" style="padding:11px 13px;font-size:13px;line-height:1.4;"><div class="card-title">使用邊界</div>多數素材有 baked-in 白底或示例數值；外部 Figure（PhyloWGS、COMPASS、B-SCITE 等）只作視覺語法 reference，不是可直接重用的 repo asset。</div>
+    </div>
+  </div>
+  <div class="takeaway" style="font-size:14px;"><b>成果：</b>術語與素材的 mapping 已回寫 <code>module_format.md</code>；目前「素材存在」與「素材已被 slide 使用」分開記錄，避免把 standalone read 元件誤當成 slide-4 的最終圖。</div>
+</div></div>
+<!-- SLIDE:END -->
+</div></body></html>

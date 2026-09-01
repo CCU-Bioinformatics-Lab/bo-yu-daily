@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "report_kind": "daily",
+  "report_date": "2026-09-01",
+  "manifest": "session-manifest.json",
+  "pages": [
+    {
+      "page": "01-today-map.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05c01-e93b-7d12-8ff9-64360f629776"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a05c05-498d-7433-a67a-369433f74722"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a05c2b-4347-7093-8980-4ee10e06dfb1"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a05d21-0c2d-7bb3-b1e9-c2a8f2675a98"
+        }
+      ]
+    },
+    {
+      "page": "02-model-inference-contract.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05c05-498d-7433-a67a-369433f74722"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a05c2b-4347-7093-8980-4ee10e06dfb1"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a05d21-0c2d-7bb3-b1e9-c2a8f2675a98"
+        }
+      ]
+    },
+    {
+      "page": "03-asset-curation.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05c05-498d-7433-a67a-369433f74722"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a05c2b-4347-7093-8980-4ee10e06dfb1"
+        }
+      ]
+    },
+    {
+      "page": "04-module-format-delivery.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05c2b-4347-7093-8980-4ee10e06dfb1"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a05d21-0c2d-7bb3-b1e9-c2a8f2675a98"
+        }
+      ]
+    },
+    {
+      "page": "05-pending.html",
+      "sessions": [
+        {
+          "source": "codex",
+          "session_id": "01a05c05-498d-7433-a67a-369433f74722"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a05c2b-4347-7093-8980-4ee10e06dfb1"
+        },
+        {
+          "source": "codex",
+          "session_id": "01a05d21-0c2d-7bb3-b1e9-c2a8f2675a98"
+        }
+      ]
+    }
+  ]
+}
