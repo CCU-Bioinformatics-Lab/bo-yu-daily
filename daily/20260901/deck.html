@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>進度報告</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+/* 進度報告投影片 — 共用樣式（每頁 HTML 與彙整 deck 都用這份） */
+:root { --br:#1677ff; --old:#d4380d; --new:#389e0d; --warn:#d48806; }
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Segoe UI", "Noto Sans TC", Roboto, sans-serif;
+  margin: 0; padding: 40px 32px; background: #f5f6f8; color: #1f2329; line-height: 1.65;
+}
+.wrap { max-width: 1040px; margin: 0 auto; }
+h1 { font-size: 26px; margin: 0 0 4px; }
+.sub { color: #6b7280; margin-bottom: 32px; }
+
+/* ---- 共用語意樣式（slide 與舊 block 都能用） ---- */
+.lead { color: #444; margin: 0 0 14px; font-size: 15px; }
+.lead b.old { color: var(--old); }
+.lead b.new { color: var(--new); }
+.mermaid { display: flex; justify-content: center; margin: 8px 0; }
+.takeaway {
+  margin-top: 14px; padding: 10px 14px; border-radius: 6px; font-size: 13.5px;
+  background: #f6ffed; border-left: 4px solid var(--new); color: #135200;
+}
+.takeaway b { color: #237804; }
+.takeaway.warn { background:#fffbe6; border-left-color:var(--warn); color:#613400; }
+.takeaway.warn b { color:#ad6800; }
+.ruletable { border-collapse: collapse; width: 100%; font-size: 13px; margin-top: 4px; }
+.ruletable th, .ruletable td { border: 1px solid #e5e7eb; padding: 7px 10px; text-align: left; vertical-align: top; }
+.ruletable th { background: #fafafa; }
+.ruletable tr.drop td { background: #fff1f0; color: #820014; text-decoration: line-through; text-decoration-color:#d4380d80; }
+.ruletable tr.drop td:first-child { text-decoration: none; }
+.ruletable tr.hl td { background: #fffbe6; }
+.keep { color: var(--new); font-weight: 600; }
+.drop-badge { color:#fff; background:var(--old); font-size:11px; font-weight:700; padding:1px 8px; border-radius:99px; }
+.smrn-badge { color:#fff; background:var(--new); font-size:11px; font-weight:700; padding:1px 8px; border-radius:99px; }
+.old-c { color: var(--old); font-weight: 600; }
+.new-c { color: var(--new); font-weight: 600; }
+code { background: #f0f1f3; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+.num { display: none; }
+
+/* 區塊分隔虛線（用於同一張投影片內分上下區段） */
+.divider { border: none; border-top: 1px dashed #d1d5db; margin: 4px 0; }
+
+/* 簡易排版工具 */
+.row  { display:flex; align-items:center; gap:8px; }        /* 水平排列、垂直置中 */
+.cols { display:flex; align-items:flex-start; gap:20px; }   /* 左右欄，頂端對齊 */
+.col  { flex:1; min-width:0; }                              /* 等寬欄位 */
+
+/* ---- 固定 16:9 投影片容器（PPTX 預設 1280×720） ---- */
+.slide-outer {
+  width: 100%;
+  max-width: 1040px;
+  aspect-ratio: 16 / 9;
+  margin: 0 auto 32px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.12);
+  background: #fff;
+  container-type: inline-size;
+}
+.slide {
+  position: absolute;
+  width: 1280px;
+  height: 720px;
+  top: 0; left: 0;
+  /* CSS 縮放為主（container query，不依賴 JS）；scaleSlide() 之後會用 inline style 覆寫同樣的值，
+     這是為了在不支援 container query 的環境下當備援，兩者不衝突。 */
+  transform: scale(calc(100cqw / 1280px));
+  transform-origin: top left;
+  background: #fff;
+  padding: 52px 60px 40px;
+  font-size: 15px;
+}
+/* 標準 padding class：預設統一用這個，多數投影片頁（標題＋內文，密度中等）都套用，
+   盡量不要在頁面內另外 inline 寫死 padding 數值——同一份 deck 裡每頁各自 inline 一個
+   相近但不同的 px 值，是標題位置「看起來每頁都對不齊」的常見成因。
+   若該頁版型真的有需要（例如版型 3 的滿版 mermaid、封面頁），也可以自訂 inline padding
+   覆寫，但仍以統一為原則，並在該頁註明自訂理由。 */
+.slide.pad-std { padding: 28px 44px 18px; }
+/* mermaid 渲染期間必須把 .slide 的縮放拿掉。mermaid 是把標籤塞進 DOM 後用
+   getBoundingClientRect 量尺寸來決定節點框大小；.slide 上有 transform: scale(k) 時
+   量到的是 k 倍後的值，節點框就會差 k 倍（deck 預設 1040/1280 = 0.8125），
+   字實際畫出來比框大 23%，文字被裁掉 —— 也就是「跑版」。
+   量測期間同時 visibility:hidden，避免使用者看到 1280px 未縮放的畫面閃一下。 */
+body.mermaid-measuring .slide { transform: none !important; visibility: hidden; }
+
+.slide h2 { font-size: 22px; margin: 0 0 10px; display: flex; align-items: center; gap: 10px; }
+/* 左上角小標題（章節 label，同章節頁面共用相同文字） */
+.slide-label {
+  position: absolute;
+  top: 14px; left: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---- 舊版 .block 支援（向下相容，新頁面不使用） ---- */
+.block {
+  background: #fff; border-radius: 14px; padding: 24px 28px; margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.block h2 { font-size: 20px; margin: 0 0 6px; display: flex; align-items: center; gap: 12px; }
+
+/* ---- 內容封面（agenda，可選） ---- */
+.cover { text-align: center; padding: 64px 28px; }
+.cover .kicker { color: var(--br); font-weight: 700; letter-spacing: 2px; font-size: 14px; }
+.cover h2 { display: block; font-size: 34px; margin: 14px 0 10px; line-height: 1.3; }
+.cover .desc { color: #6b7280; font-size: 16px; }
+.cover .meta { margin-top: 28px; color: #8a8f98; font-size: 14px; }
+.cover .agenda { display: inline-flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; justify-content: center; }
+.cover .agenda span {
+  background: #eef2ff; color: #3344aa; border-radius: 99px; padding: 8px 18px; font-size: 14px; font-weight: 600;
+}
+
+/* ---- 投影片模式（slide mode） ---- */
+body.slides { padding: 0; background: #111; overflow: hidden; }
+body.slides .wrap > h1,
+body.slides .wrap > .sub { display: none; }
+
+/* 舊 .block 在 slide mode 下的行為 */
+body.slides .block { display: none; }
+body.slides .block.active { display: block; animation: fade .25s ease; }
+
+/* 新 .slide-outer 在 slide mode 下：全螢幕置中 */
+body.slides .slide-outer {
+  display: none;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #111;
+}
+body.slides .slide-outer.active {
+  display: block;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  max-width: none;
+  aspect-ratio: unset;
+  z-index: 10;
+  overflow: hidden;
+}
+/* slide 的 transform/position 由 JS 設定 */
+body.slides .slide-outer.active .slide {
+  box-shadow: 0 4px 32px rgba(0,0,0,.4);
+}
+
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---- 導覽列 ---- */
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; display: none;
+  align-items: center; justify-content: center; gap: 18px;
+  padding: 12px; background: rgba(0,0,0,.55); backdrop-filter: blur(6px);
+  z-index: 50; transition: transform .2s ease;
+}
+body.slides .nav { display: flex; }
+body.slides .nav.nav-collapsed { transform: translateY(100%); }
+
+/* ---- 收合導覽列按鈕 ---- */
+.nav-toggle {
+  display: none;
+  position: fixed; bottom: 8px; right: 12px; z-index: 60;
+  border: none; background: rgba(255,255,255,.18); color: #fff;
+  font-size: 13px; width: 28px; height: 28px; border-radius: 50%;
+  cursor: pointer; backdrop-filter: blur(4px); transition: background .2s;
+  align-items: center; justify-content: center; line-height: 1;
+}
+body.slides .nav-toggle { display: flex; }
+.nav-toggle:hover { background: rgba(255,255,255,.35); }
+.nav button {
+  border: none; background: var(--br); color: #fff; font-size: 15px; font-weight: 600;
+  padding: 8px 20px; border-radius: 8px; cursor: pointer; transition: opacity .2s;
+}
+.nav button:disabled { opacity: .35; cursor: default; }
+.nav .dots { display: flex; gap: 9px; }
+.nav .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.3); cursor: pointer; transition: all .2s; }
+.nav .dot.on { background: #fff; transform: scale(1.3); }
+.nav .count { font-size: 13px; color: rgba(255,255,255,.7); min-width: 42px; text-align: center; }
+.modetoggle {
+  position: fixed; top: 16px; right: 16px; z-index: 60;
+  border: 1px solid #d0d5dd; background: #fff; color: #344054; font-size: 13px; font-weight: 600;
+  padding: 6px 14px; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.modetoggle:hover { border-color: var(--br); color: var(--br); }
+
+/* ════════════════════════════════════════════════════
+   版型元件（Layout Components）
+   以下 class 可在任意 .slide 內直接使用，不需 inline style
+   ════════════════════════════════════════════════════ */
+
+/* ---- 資訊卡片（左側色帶）---- */
+/* 用法：<div class="info-card red"><div class="card-title">標題</div>內文</div> */
+.info-card {
+  border-left: 4px solid; padding: 10px 12px; border-radius: 0 4px 4px 0;
+  font-size: 13px; line-height: 1.6;
+}
+.info-card .card-title { font-weight: 700; margin-bottom: 4px; }
+.info-card.red   { background:#fff1f0; border-color:#ff4d4f; color:#5c1a1a; }
+.info-card.red   .card-title { color:#820014; }
+.info-card.green { background:#f6ffed; border-color:#52c41a; color:#1a4d1a; }
+.info-card.green .card-title { color:#135200; }
+.info-card.blue  { background:#e6f4ff; border-color:#1677ff; color:#0b3d91; }
+.info-card.blue  .card-title { color:#003a8c; }
+.info-card.yellow{ background:#fffbe6; border-color:#faad14; color:#613400; }
+.info-card.yellow .card-title { color:#ad6800; }
+
+/* ---- 垂直虛線分隔（兩欄之間） ---- */
+/* 用法：<div class="vdivider"></div>（放在 .cols 或 display:flex 容器中） */
+.vdivider {
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, #d1d5db 0, #d1d5db 6px, transparent 6px, transparent 12px);
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+/* ---- Pipeline 流程圖（.ap-* 系列）---- */
+/* 適用：Write Path / Read Path 雙 lane 流程圖 */
+/* Lane 容器 */
+.ap-lane {
+  border-radius: 14px; padding: 14px 18px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.ap-lane-lbl {
+  font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+}
+.ap-lane-lbl::after {
+  content: ''; flex: 1; height: 1px; border-radius: 1px;
+  background: currentColor; opacity: .25;
+}
+/* 節點（白色卡片，上邊框決定色彩） */
+.ap-node {
+  background: #fff; border-radius: 10px; flex: 1; min-width: 0;
+  padding: 12px 13px 11px; display: flex; flex-direction: column;
+  gap: 7px; box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+.ap-badge {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; flex-shrink: 0;
+}
+.ap-title {
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 7px; margin-bottom: 1px;
+}
+.ap-sub  { font-size: 9.5px; color: #6b7280; line-height: 1.5; }
+.ap-chip {
+  display: inline-block; font-size: 9px; font-weight: 600;
+  padding: 2px 8px; border-radius: 10px; margin-top: 2px;
+}
+/* 讀取條（模擬 reads bar）*/
+.ap-rb   { height: 5px; border-radius: 3px; margin: 2px 0; }
+/* 程式碼 badge */
+.ap-code {
+  font-size: 9px; font-weight: 700;
+  padding: 2.5px 7px; border-radius: 5px;
+}
+/* 箭頭連接器 */
+.ap-arr {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  width: 46px; flex-shrink: 0; gap: 3px;
+}
+.ap-arr-bar {
+  position: relative; width: 100%; height: 3.5px; border-radius: 2px;
+}
+.ap-arr-head {
+  position: absolute; right: -10px; top: -6px;
+  border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+  /* border-left 顏色與 .ap-arr-bar 背景色一致，inline style 設定 */
+}
+.ap-arr-lbl { font-size: 8.5px; color: #9ca3af; text-align: center; line-height: 1.3; }
+
+/* ---- 改前/改後 Label ---- */
+/* 用法：<div class="before-label">改前</div> / <div class="after-label">改後</div> */
+.before-label {
+  font-size: 12px; font-weight: 700; color: #820014;
+  white-space: nowrap; min-width: 56px;
+}
+.after-label {
+  font-size: 12px; font-weight: 700; color: #135200;
+  white-space: nowrap; min-width: 56px;
+}
+
+</style>
+</head>
+<body>
+<button class="modetoggle" id="copyImgBtn" style="right:490px;" title="複製當前頁成圖片（快捷鍵 c）；非安全連線則改下載 PNG">⧉ 複製本頁</button>
+<button class="modetoggle" id="exportPortableBtn" style="right:330px;">⇓ 匯出可攜版 HTML</button>
+<button class="modetoggle" id="exportBtn" style="right:170px;">↓ 匯出 PPTX</button>
+<button class="modetoggle" id="modeBtn">▶ 投影片模式</button>
+<div class="wrap">
+  <h1>進度報告</h1>
+  <div class="sub">20260901</div>
+
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:10px;">
+  <div class="slide-label">今日主線</div>
+  <h2 style="font-size:30px;margin:0;">把 model／inference 邊界說準，再落成可驗收的視覺交付</h2>
+  <p class="lead" style="font-size:15px;">今天由 loader warning 開始，經過 <code>T+η</code>、<code>φ/CCF</code>、<code>z/g</code> marginalization 的語意查核，最後同步到 <code>module_format</code> 的 slide 3–5。</p>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;flex:1;min-height:0;">
+    <div class="info-card red" style="display:flex;flex-direction:column;gap:7px;padding:14px 16px;"><div class="card-title">① 執行環境清理</div><div style="font-size:15px;line-height:1.4;">移除造成 loader warning 的空 <code>daily-work-html/SKILL.md</code> 舊 skill。</div><div style="margin-top:auto;padding:8px 10px;background:#fff1f0;border-radius:7px;font-size:13px;"><b>狀態：</b>已移除；後續重載才能觀察 warning 是否消失。</div></div>
+    <div class="info-card blue" style="display:flex;flex-direction:column;gap:7px;padding:14px 16px;"><div class="card-title">② Model／inference contract</div><div style="font-size:15px;line-height:1.4;">釐清 particle state 是 <code>T+η</code>；<code>φ/CCF</code> 是派生量，<code>z_i/g_i</code> 在 likelihood-side 被邊際化。</div><div style="margin-top:auto;padding:8px 10px;background:#f0f7ff;border-radius:7px;font-size:13px;"><b>狀態：</b>語意已釐清；<code>minor_cn</code> 文字仍有一個實作落差。</div></div>
+    <div class="info-card green" style="display:flex;flex-direction:column;gap:7px;padding:14px 16px;"><div class="card-title">③ 可重用 SVG 素材</div><div style="font-size:15px;line-height:1.4;">完成 K=3 topology-only tree、REF／ALT read 元件與六階段 model-process composite。</div><div style="margin-top:auto;padding:8px 10px;background:#f6ffed;border-radius:7px;font-size:13px;"><b>留下：</b><code>fixed_k3_clone_tree.svg</code>、<code>ref_read.svg</code>／<code>alt_read.svg</code>、<code>model_process_composite.svg</code>。</div></div>
+    <div class="info-card yellow" style="display:flex;flex-direction:column;gap:7px;padding:14px 16px;"><div class="card-title">④ module_format 消費端</div><div style="font-size:15px;line-height:1.4;">slide 3 改成 Data input 目的、slide 4 回到四大類別＋<code>read_pileup.svg</code>、slide 5 嵌回移除 z 後的流程圖。</div><div style="margin-top:auto;padding:8px 10px;background:#fffbe6;border-radius:7px;font-size:13px;"><b>驗證：</b><code>PASS: 16 rendered slide checks</code>；最後人工視覺確認仍待補。</div></div>
+  </div>
+  <div class="takeaway" style="font-size:15px;margin-top:auto;"><b>今日成果：</b>8 個去重任務、4 個主題；核心定義已從「候選樹＋資料評分」收斂成可回查的 model／inference contract，並完成一輪 module_format 視覺同步。</div>
+</div></div>
+
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:9px;">
+  <div class="slide-label">Model／inference contract</div>
+  <h2 style="font-size:30px;margin:0;">SMC 探索的是 <code>T+η</code>；其餘變數在 model emission 中被推導或邊際化</h2>
+  <p class="lead" style="font-size:15px;">今天把「候選狀態」和「評分所需的隱藏變數」拆開：inference 保存與更新 particle，model 用 canonical row、purity／CN 與 counts 計算每個候選的 evidence。</p>
+  <div style="display:grid;grid-template-columns:1.23fr .77fr;gap:16px;flex:1;min-height:0;">
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0;">
+      <div style="font-size:13px;font-weight:800;color:#1d4ed8;background:#eff6ff;border-left:5px solid #3b82f6;padding:7px 10px;border-radius:5px;">候選 → 預測 → 比較 → 得分</div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-height:0;">
+        <div style="background:#e0f2fe;border:1px solid #7dd3fc;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;"><div><b style="font-size:18px;color:#075985;">particle state</b><div style="font-size:13px;color:#334155;">inference 直接探索／保存</div></div><code style="font-size:20px;background:#fff;padding:5px 10px;border-radius:6px;color:#075985;">T + η</code></div>
+        <div style="text-align:center;color:#64748b;font-size:18px;line-height:1;">↓</div>
+        <div style="background:#eef2ff;border:1px solid #a5b4fc;border-radius:8px;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;"><div><b style="font-size:17px;color:#3730a3;">derived quantity</b><div style="font-size:13px;color:#334155;">沿 tree 累加 local fraction</div></div><code style="font-size:18px;background:#fff;padding:5px 10px;border-radius:6px;color:#3730a3;">φ / CCF</code></div>
+        <div style="text-align:center;color:#64748b;font-size:18px;line-height:1;">↓</div>
+        <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:8px;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;"><div><b style="font-size:17px;color:#9a3412;">joint emission inputs</b><div style="font-size:13px;color:#334155;">與 CCF 共同進入預期 ALT 機率</div></div><code style="font-size:16px;background:#fff;padding:5px 10px;border-radius:6px;color:#9a3412;">ρ + CN + g/m</code></div>
+        <div style="text-align:center;color:#64748b;font-size:18px;line-height:1;">↓</div>
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;"><div><b style="font-size:17px;color:#166534;">observed evidence</b><div style="font-size:13px;color:#334155;">canonical row 的真實 counts</div></div><code style="font-size:16px;background:#fff;padding:5px 10px;border-radius:6px;color:#166534;">REF/ALT reads → ξ → likelihood</code></div>
+        <div style="text-align:center;color:#64748b;font-size:18px;line-height:1;">↓</div>
+        <div style="background:#fefce8;border:1px solid #fde047;border-radius:8px;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;"><div><b style="font-size:17px;color:#854d0e;">posterior score</b><div style="font-size:13px;color:#334155;">candidate 之間比較，不宣稱唯一真樹</div></div><code style="font-size:18px;background:#fff;padding:5px 10px;border-radius:6px;color:#854d0e;">prior × likelihood</code></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:0;">
+      <table class="ruletable" style="font-size:13px;table-layout:fixed;width:100%;"><colgroup><col style="width:28%;"><col style="width:35%;"><col style="width:37%;"></colgroup><thead><tr><th>項目</th><th>現行意義</th><th>排除的誤讀</th></tr></thead><tbody>
+        <tr class="hl"><td><code>T+η</code></td><td>SMC particle state</td><td>不是動態新增腫瘤假說</td></tr>
+        <tr><td><code>φ/CCF</code></td><td><code>η_v + descendants</code></td><td>不是 observed VAF</td></tr>
+        <tr><td><code>z_i/g_i</code></td><td>likelihood-side latent；marginalize</td><td>不是直接存進 particle</td></tr>
+        <tr><td><code>ξ</code></td><td>expected ALT probability</td><td>不是 read count 或唯一 CCF</td></tr>
+      </tbody></table>
+      <div class="info-card blue" style="padding:10px 12px;font-size:13px;line-height:1.4;"><div class="card-title">原文中的可核對數字</div><code>ηA=.5, ηB=.3, ηC=.2</code> 且 <code>A→B→C</code> 時：<code>φA=1.0</code>、<code>φB=.5</code>、<code>φC=.2</code>。<code>major_cn=3, minor_cn=1, total_cn=4</code> 時，candidate 例為 mutation-before-CN 的 <code>m=1,2,3</code> 加上 post-CN <code>m=1</code>。</div>
+      <div class="info-card yellow" style="padding:10px 12px;font-size:13px;line-height:1.4;"><div class="card-title">今天留下的限制</div><code>minor_cn</code> 會被驗證並用來檢查 <code>total_cn</code>，但現行 candidate enumeration 主要按 <code>major_cn</code> 與非 diploid <code>total_cn</code> 建立；不能把研究文字直接寫成「兩個 homolog side 都各自枚舉」。</div>
+    </div>
+  </div>
+  <div class="takeaway" style="font-size:14px;"><b>結論：</b>圖上可以畫成單向 scoring pipeline，但語意上 <code>φ/CCF</code> 與 purity／CN／multiplicity 是共同進入 <code>ξ</code>；likelihood 再回頭改變候選 <code>T+η</code> 的 posterior。</div>
+</div></div>
+
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:9px;">
+  <div class="slide-label">可重用 SVG 素材治理</div>
+  <h2 style="font-size:30px;margin:0;">術語先對到既有素材，再新增最小的 K=3、read 與 composite 元件</h2>
+  <p class="lead" style="font-size:15px;">今天的素材決策以「先查庫、再組合」為原則；新圖都有 exact path、preview 或 QA，沒有把外部論文圖直接描摹進 repo。</p>
+  <div style="display:grid;grid-template-columns:1.35fr .65fr;gap:16px;flex:1;min-height:0;">
+    <div style="min-width:0;">
+      <table class="ruletable" style="font-size:12.5px;table-layout:fixed;width:100%;"><colgroup><col style="width:22%;"><col style="width:49%;"><col style="width:29%;"></colgroup><thead><tr><th>術語</th><th>採用素材（repo-relative）</th><th>今天的決定</th></tr></thead><tbody>
+        <tr class="hl"><td>candidate tree <code>T</code></td><td><code>assets/components/fixed_k3_clone_tree.svg</code></td><td>K=3、topology-only</td></tr>
+        <tr><td>clone fraction <code>η</code></td><td><code>assets/components/eta_phi_tree.svg</code></td><td>只保留 η／φ 示意</td></tr>
+        <tr><td>assignment <code>z</code></td><td><code>assets/components/snv_assignment.svg</code></td><td>單一採用素材</td></tr>
+        <tr><td>multiplicity</td><td><code>assets/png_to_svg/multiplicity.svg</code></td><td>實際不在 components/</td></tr>
+        <tr><td>canonical input</td><td><code>assets/png_to_svg/canonical_snv_row.svg</code></td><td>代表一列 SNV</td></tr>
+        <tr><td>ALT／REF reads</td><td><code>assets/components/read_pileup.svg</code></td><td>slide-4 恢復 IGV-style</td></tr>
+        <tr><td>purity／CN</td><td><code>assets/components/purity_mixture.svg</code><br><code>assets/components/cn_segment_context.svg</code></td><td>共同進入 ξ</td></tr>
+      </tbody></table>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:0;">
+      <div class="info-card green" style="padding:11px 13px;font-size:13px;line-height:1.4;"><div class="card-title">新增／收斂的元件</div><code>fixed_k3_clone_tree.svg</code>：<code>C1→C2/C3</code>，畫布 <code>320×190</code>。<br><code>ref_read.svg</code>／<code>alt_read.svg</code>：藍 REF <code>G</code>、綠 ALT <code>A</code>，焦點鹼基置中。</div>
+      <div class="info-card blue" style="padding:11px 13px;font-size:13px;line-height:1.4;"><div class="card-title">組合交付</div><code>assets/components/model_process_composite.svg</code> 依 <code>model_process.svg</code> 六段骨架組合 78 個具穩定 ID／<code>data-meaning</code> 元素，並留下 spec、QA、preview。</div>
+      <div class="info-card yellow" style="padding:11px 13px;font-size:13px;line-height:1.4;"><div class="card-title">使用邊界</div>多數素材有 baked-in 白底或示例數值；外部 Figure（PhyloWGS、COMPASS、B-SCITE 等）只作視覺語法 reference，不是可直接重用的 repo asset。</div>
+    </div>
+  </div>
+  <div class="takeaway" style="font-size:14px;"><b>成果：</b>術語與素材的 mapping 已回寫 <code>module_format.md</code>；目前「素材存在」與「素材已被 slide 使用」分開記錄，避免把 standalone read 元件誤當成 slide-4 的最終圖。</div>
+</div></div>
+
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:10px;">
+  <div class="slide-label"><code>module_format</code> 消費端呈現</div>
+  <h2 style="font-size:30px;margin:0;">slide 3–5 已同步：input、SNV row、model scoring 各自只保留一個清楚答案</h2>
+  <p class="lead" style="font-size:15px;">來源 Markdown、HTML 生成器與輸出頁面一起更新；最後一輪再把 slide-5 的舊 tree／read 雙欄換回指定的 <code>model_process.svg</code>。</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:1;min-height:0;">
+    <div class="info-card blue" style="display:flex;flex-direction:column;gap:8px;padding:13px 14px;"><div class="card-title">slide-3 · Data input目的</div><div style="font-size:16px;line-height:1.45;"><code>data input</code> 把 BAM、VCF、ASCAT 的資訊轉換成一列一個 SNV 的基本資料，供 model 讀取。</div><div style="margin-top:auto;padding:9px;background:#f0f7ff;border-radius:7px;font-size:13px;line-height:1.4;"><b>刪除：</b>原本重複的「一句話功能」callout。</div></div>
+    <div class="info-card green" style="display:flex;flex-direction:column;gap:8px;padding:13px 14px;"><div class="card-title">slide-4 · snv data row四大類別</div><div style="font-size:16px;line-height:1.45;">四大類別保留：<b>Identity</b>、<b>Read counts</b>、<b>Purity</b>、<b>Copy number</b>。</div><div style="margin-top:auto;padding:9px;background:#f6ffed;border-radius:7px;font-size:13px;line-height:1.4;"><b>圖像決定：</b>移除 standalone REF／ALT 圖，恢復 <code>read_pileup.svg</code>。</div></div>
+    <div class="info-card yellow" style="display:flex;flex-direction:column;gap:8px;padding:13px 14px;"><div class="card-title">slide-5 · model目的</div><div style="font-size:15px;line-height:1.43;">輸入 read counts、purity、CN；搭配 inference 探索的 <code>T</code>、<code>η</code>、<code>z</code> 推導 <code>φ/CCF</code>，再經 purity＋CN＋multiplicity 得到 <code>ξ(xi)</code>、likelihood 與 posterior。</div><div style="margin-top:auto;padding:9px;background:#fffbe6;border-radius:7px;font-size:13px;line-height:1.4;"><b>視覺更新：</b>舊 Root／Clone／reads 區域移除，改嵌單一 <code>model_process.svg</code>。</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div class="info-card red" style="padding:10px 13px;font-size:13px;line-height:1.35;"><div class="card-title">改前的誤讀</div>slide-5 用 Root／Clone A／Clone B／Clone C 與 read-pileup 雙欄，容易把教學案例當成 active inference 的完整 state。</div>
+    <div class="info-card green" style="padding:10px 13px;font-size:13px;line-height:1.35;"><div class="card-title">改後的邊界</div><code>model_process.svg</code> 的候選狀態第一段只保留 <code>T+η</code>；latent <code>z</code> 不再畫成 particle 直接保存的變數。</div>
+  </div>
+  <div class="takeaway" style="font-size:14px;"><b>驗證：</b>本日 HTML verifier 回報 <code>PASS: 16 rendered slide checks</code>；但最後移除 z 後的 slide-5 仍需一次人工瀏覽器確認，才能把 machine check 提升為視覺核准。</div>
+</div></div>
+
+<div class="slide-outer"><div class="slide" style="padding:28px 40px 20px;display:flex;flex-direction:column;gap:10px;">
+  <div class="slide-label">待決事項</div>
+  <h2 style="font-size:30px;margin:0;">定義已收斂；剩下的是最後語意拍板與人工視覺驗收</h2>
+  <p class="lead" style="font-size:15px;">這頁只列逐字稿明確留下、或由目前產物可直接驗證的卡點；「已產生」不等於「已被使用者核准」。</p>
+  <table class="ruletable" style="font-size:14px;table-layout:fixed;width:100%;"><colgroup><col style="width:22%;"><col style="width:42%;"><col style="width:36%;"></colgroup><thead><tr><th>性質</th><th>項目</th><th>狀態卡在哪</th></tr></thead><tbody>
+    <tr><td rowspan="2"><b>要拍板的決定</b></td><td class="old-c">`model_process.svg` 底部的 joint posterior 要不要保留 <code>P(T,η,z|data)</code>？</td><td>候選 state 已改為 <code>T+η</code>，但上一輪只說「暫時保留」底部記號；需決定是表達 model joint target，還是改成 marginal posterior <code>P(T,η|data)</code>。</td></tr>
+    <tr class="hl"><td>如何在正式文件中標示 K=3？</td><td>K=3 元件已完成，但 current primary workflow 是 K=6、K=4/8 sensitivity；需維持「illustrative topology」標註，避免被讀成正式 K=3 結果。</td></tr>
+    <tr><td rowspan="2"><b>部署／執行前必做</b></td><td class="new-c">人工確認 slide-5 內嵌新版 <code>model_process.svg</code></td><td>XML／生成器檢查已過；最後一輪 Firefox sandbox 限制使人工瀏覽器驗收尚未完成。</td></tr>
+    <tr class="hl"><td>人工確認 <code>model_process_composite.svg</code> 與 standalone read previews</td><td>目前狀態是 machine-validated / awaiting-human-visual-approval；尚未由使用者確認文字大小、白底與元件留白。</td></tr>
+    <tr><td><b>已知但未排</b></td><td>是否保留未被 slide-4 使用的 <code>ref_read.svg</code>／<code>alt_read.svg</code></td><td>元件已產生且路徑固定，但消費端最後選回完整 <code>read_pileup.svg</code>；保留／刪除尚未形成決定。</td></tr>
+    <tr><td><b>已知但未排</b></td><td><code>minor_cn</code> 的文件敘述與 candidate enumeration 對齊</td><td>實作會驗證 <code>minor_cn</code> 與 <code>total_cn</code>，但候選集合主要由 <code>major_cn</code>／非 diploid <code>total_cn</code> 建立；需另開規格修正文案。</td></tr>
+  </tbody></table>
+  <div class="takeaway warn" style="font-size:14px;"><b>明日建議順序：</b>先拍板 joint posterior 的 <code>z</code> 表達，再完成 slide-5 與 composite 的人工視覺驗收，最後決定 standalone read 元件與 <code>minor_cn</code> 文件落差的後續處理。</div>
+</div></div>
+
+</div>
+
+<div class="nav" id="nav">
+  <button id="prev">← 上一頁</button>
+  <div class="dots" id="dots"></div>
+  <span class="count" id="count"></span>
+  <button id="next">下一頁 →</button>
+</div>
+<button class="nav-toggle" id="navToggle" title="收合導覽列">▼</button>
+
+<script>window.DECK_NAME = '進度報告20260901'; window.DECK_DATE = '20260901'; window.DECK_PRESENTER = 'boyu114';</script>
+<script>
+/* 進度報告投影片 — 彙整 deck 的執行時功能：頁數切換 / 進出投影片 / 匯出 PPTX。
+   支援新版 .slide-outer/.slide 與舊版 .block 兩種結構。
+   依賴 head 已載入 mermaid、html2canvas、pptxgenjs。檔名取 window.DECK_NAME。 */
+(function () {
+  mermaid.initialize({ startOnLoad: false, theme: 'base', flowchart: { curve: 'basis' }, themeVariables: { fontSize: '13px' } });
+
+  // 支援新版 .slide-outer 與舊版 .block
+  const newSlides = Array.from(document.querySelectorAll('.slide-outer'));
+  const oldBlocks = Array.from(document.querySelectorAll('.block'));
+  const useNew = newSlides.length > 0;
+  const slides = useNew ? newSlides : oldBlocks;
+
+  const STORAGE_KEY = 'deck_idx_' + (window.DECK_NAME || location.pathname);
+  let idx = Math.min(+(localStorage.getItem(STORAGE_KEY) || 0), slides.length - 1);
+  let slideMode = false, navCollapsed = false;
+
+  /* ── 縮放：將 .slide 填滿 .slide-outer（scroll 模式） ── */
+  function scaleSlideInOuter(outer) {
+    const inner = outer.querySelector('.slide');
+    if (!inner) return;
+    const scale = outer.offsetWidth / 1280;
+    inner.style.transform = `scale(${scale})`;
+    inner.style.top = '0';
+    inner.style.left = '0';
+  }
+
+  /* ── 縮放：將 .slide 填滿視窗置中（slide 模式，扣掉導覽列高度） ── */
+  function scaleSlideFullscreen(outer) {
+    const inner = outer.querySelector('.slide');
+    if (!inner) return;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const navEl = document.getElementById('nav');
+    const navH = (!navCollapsed && navEl) ? navEl.offsetHeight : 0;
+    const availH = vh - navH;
+    const scale = Math.min(vw / 1280, availH / 720);
+    const tx = (vw - 1280 * scale) / 2;
+    const ty = (availH - 720 * scale) / 2;
+    inner.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    inner.style.top = '0';
+    inner.style.left = '0';
+  }
+
+  function scaleAll() {
+    if (!useNew) return;
+    if (slideMode) {
+      const active = slides[idx];
+      if (active) scaleSlideFullscreen(active);
+    } else {
+      slides.forEach(scaleSlideInOuter);
+    }
+  }
+
+  window.addEventListener('resize', scaleAll);
+
+  function renderDots() {
+    const dots = document.getElementById('dots');
+    if (!dots) return;
+    dots.innerHTML = '';
+    slides.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === idx ? ' on' : '');
+      d.onclick = () => go(i);
+      dots.appendChild(d);
+    });
+  }
+
+  function go(i) {
+    idx = Math.max(0, Math.min(slides.length - 1, i));
+    localStorage.setItem(STORAGE_KEY, idx);
+    slides.forEach((s, k) => s.classList.toggle('active', k === idx));
+    document.getElementById('prev').disabled = idx === 0;
+    document.getElementById('next').disabled = idx === slides.length - 1;
+    document.getElementById('count').textContent = (idx + 1) + ' / ' + slides.length;
+    renderDots();
+    window.scrollTo({ top: 0 });
+    if (slideMode && useNew) scaleSlideFullscreen(slides[idx]);
+  }
+
+  function setMode(on) {
+    slideMode = on;
+    document.body.classList.toggle('slides', on);
+    document.getElementById('modeBtn').textContent = on ? '◼ 退出投影片' : '▶ 投影片模式';
+    if (!on) {
+      // 退出時重置導覽列收合狀態
+      navCollapsed = false;
+      const navEl = document.getElementById('nav');
+      if (navEl) navEl.classList.remove('nav-collapsed');
+      const navToggleBtn = document.getElementById('navToggle');
+      if (navToggleBtn) { navToggleBtn.textContent = '▼'; navToggleBtn.title = '收合導覽列'; }
+    }
+    if (on) {
+      go(idx);
+    } else {
+      // 回到 scroll 模式時重新縮放所有 slide
+      if (useNew) slides.forEach(scaleSlideInOuter);
+    }
+  }
+
+  document.getElementById('prev').onclick = () => go(idx - 1);
+  document.getElementById('next').onclick = () => go(idx + 1);
+  document.getElementById('modeBtn').onclick = () => setMode(!slideMode);
+
+  const navToggleBtn = document.getElementById('navToggle');
+  if (navToggleBtn) {
+    navToggleBtn.onclick = () => {
+      navCollapsed = !navCollapsed;
+      const navEl = document.getElementById('nav');
+      if (navEl) navEl.classList.toggle('nav-collapsed', navCollapsed);
+      navToggleBtn.textContent = navCollapsed ? '▲' : '▼';
+      navToggleBtn.title = navCollapsed ? '展開導覽列' : '收合導覽列';
+      if (slideMode && useNew) scaleSlideFullscreen(slides[idx]);
+    };
+  }
+  document.addEventListener('keydown', (e) => {
+    if (!slideMode) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(idx + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(idx - 1); e.preventDefault(); }
+    if (e.key === 'Escape') setMode(false);
+    if ((e.key === 'c' || e.key === 'C') && !e.ctrlKey && !e.metaKey) { copyCurrentSlide(); e.preventDefault(); }
+  });
+
+  /* ── 把單一 slide 以 1:1 原尺寸截圖成 canvas；影片區域挖白（回傳其相對位置供後續嵌入）。
+     匯出 PPTX 與「複製本頁」共用同一套擷取邏輯，畫質一致。 ── */
+  async function renderSlideToCanvas(s) {
+    let captureEl = s;
+    let restoreTransform = null;
+
+    // 找出 [data-pptx-video] 元素，截圖前從 DOM 移除，截完再插回
+    const videoEls = [...s.querySelectorAll('[data-pptx-video]')];
+    videoEls.forEach(v => { v._nextSibling = v.nextSibling; v._parent = v.parentNode; v.remove(); });
+
+    // html2canvas 不支援 object-fit:contain，會把圖片直接拉伸塞進 box 造成變形/壓縮。
+    // 截圖前手動算出等比例縮放後的實際顯示尺寸，暫時覆寫成固定 width/height，截完再還原。
+    const fitImgs = [...s.querySelectorAll('img')].filter(img => {
+      const fit = getComputedStyle(img).objectFit;
+      return fit === 'contain' && img.naturalWidth && img.naturalHeight;
+    });
+    const fitImgSnapshots = fitImgs.map(img => {
+      const prevCss = img.style.cssText;
+      const boxW = img.clientWidth;
+      const boxH = img.clientHeight;
+      const scale = Math.min(boxW / img.naturalWidth, boxH / img.naturalHeight);
+      img.style.objectFit = 'none';
+      img.style.width = (img.naturalWidth * scale) + 'px';
+      img.style.height = (img.naturalHeight * scale) + 'px';
+      img.style.display = 'block';
+      img.style.margin = '0 auto';
+      return { img, prevCss };
+    });
+
+    if (useNew) {
+      // 對 .slide 以 1:1 原尺寸截圖，得到最高畫質
+      const inner = s.querySelector('.slide');
+      if (inner) {
+        restoreTransform = inner.style.transform;
+        inner.style.transform = 'none';
+        captureEl = inner;
+      }
+    }
+
+    const canvas = await html2canvas(captureEl, {
+      scale: 1.5,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      width: useNew ? 1280 : undefined,
+      height: useNew ? 720 : undefined,
+    });
+
+    if (restoreTransform !== null) {
+      captureEl.style.transform = restoreTransform;
+    }
+    videoEls.forEach(v => { v._parent.insertBefore(v, v._nextSibling); });
+    fitImgSnapshots.forEach(({ img, prevCss }) => { img.style.cssText = prevCss; });
+
+    // 把影片區域從截圖 canvas 挖白，避免後續影片層重疊
+    const ctx = canvas.getContext('2d');
+    const slideW = captureEl.offsetWidth || 1280;
+    const slideH = captureEl.offsetHeight || 720;
+    const base = captureEl.getBoundingClientRect();
+    const videoRects = videoEls.map(v => {
+      const vr = v.getBoundingClientRect();
+      return {
+        v,
+        rx: (vr.left - base.left) / slideW,
+        ry: (vr.top - base.top) / slideH,
+        rw: vr.width / slideW,
+        rh: vr.height / slideH,
+      };
+    });
+    for (const { rx, ry, rw, rh } of videoRects) {
+      ctx.clearRect(rx * canvas.width, ry * canvas.height, rw * canvas.width, rh * canvas.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(rx * canvas.width, ry * canvas.height, rw * canvas.width, rh * canvas.height);
+    }
+    return { canvas, videoRects };
+  }
+
+  /* ── 輕量提示條（複製 / 下載結果回饋，避免 alert 打斷） ── */
+  function toast(msg, isErr) {
+    let t = document.getElementById('deckToast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'deckToast';
+      t.style.cssText = 'position:fixed;left:50%;top:20px;transform:translateX(-50%);z-index:9999;'
+        + 'padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;'
+        + 'box-shadow:0 4px 14px rgba(0,0,0,.25);transition:opacity .25s;pointer-events:none;';
+      document.body.appendChild(t);
+    }
+    t.style.background = isErr ? '#dc2626' : '#16a34a';
+    t.textContent = msg;
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2400);
+  }
+
+  /* ── 複製當前頁成 PNG 圖片：優先寫入剪貼簿；非安全內容（如 http 區網 IP）不支援時，
+     自動 fallback 成下載單頁 PNG。快捷鍵 c。 ── */
+  async function copyCurrentSlide() {
+    const btn = document.getElementById('copyImgBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '擷取中…'; }
+    try {
+      const { canvas } = await renderSlideToCanvas(slides[idx]);
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+      const pageNo = String(idx + 1).padStart(2, '0');
+      // 剪貼簿寫圖需要安全內容（https / localhost / file://）；http 區網 IP 下不可用
+      if (navigator.clipboard && window.ClipboardItem && window.isSecureContext) {
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+          toast('已複製第 ' + (idx + 1) + ' 頁到剪貼簿');
+          return;
+        } catch (e) { /* 落到下載 fallback */ }
+      }
+      // fallback：下載單頁 PNG
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (window.DECK_NAME || 'slide') + '-' + pageNo + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(a.href);
+      toast('此環境不支援複製到剪貼簿，已改下載第 ' + (idx + 1) + ' 頁 PNG');
+    } catch (e) {
+      console.error(e);
+      toast('複製失敗：' + e.message, true);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '⧉ 複製本頁'; }
+    }
+  }
+
+  const copyImgBtn = document.getElementById('copyImgBtn');
+  if (copyImgBtn) copyImgBtn.onclick = copyCurrentSlide;
+
+  async function exportPptx() {
+    const btn = document.getElementById('exportBtn');
+    const wasSlides = slideMode;
+    btn.disabled = true; btn.textContent = '輸出中…';
+    if (wasSlides) setMode(false);
+    await new Promise(r => setTimeout(r, 80));
+    try {
+      const pptx = new PptxGenJS();
+      pptx.defineLayout({ name: 'W16x9', width: 13.333, height: 7.5 });
+      pptx.layout = 'W16x9';
+      const PW = 13.333, PH = 7.5;
+
+      // 自動產封面投影片（native text，可在 PowerPoint 編輯）；只在匯出 PPTX 時產生，
+      // deck.html 本身（瀏覽/編輯用的中間產物）不會有這張封面 slide。
+      // 但若 deck.html 是用 --titlecover 建置的，第一頁已經是靜態封面（data-titlecover="1"），
+      // 這裡就不再重複加一張，避免匯出的 PPTX 開頭出現兩張「進度報告」封面。
+      const hasStaticCover = slides[0] && slides[0].dataset.titlecover === '1';
+      if (!hasStaticCover) {
+        const cover = pptx.addSlide();
+        cover.background = { color: 'FFFFFF' };
+        cover.addText('進度報告', { x: 0, y: 2.2, w: PW, h: 1.1, align: 'center', fontSize: 44, bold: true, color: '1f2329' });
+        cover.addText(window.DECK_DATE || '', { x: 0, y: 3.45, w: PW, h: 0.65, align: 'center', fontSize: 22, color: '6b7280' });
+        cover.addText(window.DECK_PRESENTER || '', { x: 0, y: 4.2, w: PW, h: 0.65, align: 'center', fontSize: 22, bold: true, color: '344054' });
+      }
+
+      // 嘗試把影片 src fetch 成 base64；file:// 下 Chrome 會失敗則 fallback
+      async function fetchVideoBase64(src) {
+        try {
+          const resp = await fetch(src);
+          if (!resp.ok) return null;
+          const buf = await resp.arrayBuffer();
+          const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+          return 'data:video/mp4;base64,' + b64;
+        } catch { return null; }
+      }
+
+      for (const s of slides) {
+        const { canvas, videoRects } = await renderSlideToCanvas(s);
+        const img = canvas.toDataURL('image/png');
+        const slide = pptx.addSlide();
+        slide.background = { color: 'FFFFFF' };
+        slide.addImage({ data: img, x: 0, y: 0, w: PW, h: PH });
+
+        // 把影片嵌入 PPT（放在挖空的位置）
+        for (const { v, rx, ry, rw, rh } of videoRects) {
+          const mediaData = await fetchVideoBase64(v.src || v.currentSrc);
+          if (mediaData) {
+            slide.addMedia({ type: 'video', data: mediaData, extension: 'mp4',
+              x: rx * PW, y: ry * PH, w: rw * PW, h: rh * PH });
+          } else {
+            // fetch 失敗（file:// CORS）：截當前幀作 fallback
+            const fc = document.createElement('canvas');
+            fc.width = v.videoWidth || 640; fc.height = v.videoHeight || 360;
+            fc.getContext('2d').drawImage(v, 0, 0, fc.width, fc.height);
+            slide.addImage({ data: fc.toDataURL('image/png'),
+              x: rx * PW, y: ry * PH, w: rw * PW, h: rh * PH });
+          }
+        }
+      }
+      await pptx.writeFile({ fileName: (window.DECK_NAME || 'progress-report') + '.pptx' });
+    } catch (e) {
+      console.error(e);
+      alert('匯出失敗：' + e.message);
+    } finally {
+      if (wasSlides) setMode(true);
+      btn.disabled = false;
+      btn.textContent = '↓ 匯出 PPTX';
+    }
+  }
+
+  document.getElementById('exportBtn').onclick = exportPptx;
+
+  /* ── 匯出可攜版 HTML：圖片依實際顯示尺寸重新編碼（縮圖+壓縮）並內嵌成 data URI，
+     CDN 的 mermaid / html2canvas / pptxgenjs 也內嵌成腳本內容，整份檔案可離線、脫離資料夾單獨搬動 ── */
+  async function blobToDataURL(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // 用已經載入好的 <img> 元素，依「實際顯示尺寸」（乘 2 保留清晰度，不超過原始尺寸）
+  // 重新畫到 canvas 輸出成 JPEG，避免直接內嵌原始大圖把 HTML 撐得過大
+  function liveImgToDataURL(liveImg) {
+    try {
+      const dispW = liveImg.clientWidth || liveImg.naturalWidth || 1;
+      const dispH = liveImg.clientHeight || liveImg.naturalHeight || 1;
+      const w = Math.max(1, Math.min(Math.round(dispW * 2), liveImg.naturalWidth || dispW * 2));
+      const h = Math.max(1, Math.min(Math.round(dispH * 2), liveImg.naturalHeight || dispH * 2));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(liveImg, 0, 0, w, h);
+      return c.toDataURL('image/jpeg', 0.85);
+    } catch (e) { return null; } // canvas 被跨源污染（tainted）等情況，交給呼叫端 fallback
+  }
+
+  async function exportPortableHtml() {
+    const btn = document.getElementById('exportPortableBtn');
+    btn.disabled = true; btn.textContent = '輸出中…';
+    try {
+      const clone = document.documentElement.cloneNode(true);
+
+      // 圖片內嵌成 data URI（依畫面顯示尺寸縮圖 + JPEG 壓縮，避免檔案過大）
+      const liveImgs = document.querySelectorAll('img');
+      const cloneImgs = clone.querySelectorAll('img');
+      for (let i = 0; i < cloneImgs.length; i++) {
+        const src = cloneImgs[i].getAttribute('src');
+        if (!src || src.startsWith('data:')) continue;
+        let dataUrl = liveImgToDataURL(liveImgs[i]);
+        if (!dataUrl) {
+          try {
+            const resp = await fetch(new URL(src, location.href).href);
+            if (resp.ok) dataUrl = await blobToDataURL(await resp.blob());
+          } catch (e) { /* 放棄，保留原連結 */ }
+        }
+        if (dataUrl) cloneImgs[i].setAttribute('src', dataUrl);
+      }
+
+      // 外部 <script src> 內嵌成內容（含 CDN 的 mermaid / html2canvas / pptxgenjs），離線也能開
+      const scripts = clone.querySelectorAll('script[src]');
+      for (const s of scripts) {
+        const src = s.getAttribute('src');
+        try {
+          const resp = await fetch(src);
+          const text = await resp.text();
+          const inline = document.createElement('script');
+          inline.textContent = text;
+          s.replaceWith(inline);
+        } catch (e) {
+          console.warn('腳本內嵌失敗，保留原連結（需連網才能運作）:', src, e);
+        }
+      }
+
+      const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+      const blob = new Blob([html], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (window.DECK_NAME || 'deck') + '_portable.html';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    } catch (e) {
+      console.error(e);
+      alert('匯出可攜版失敗：' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '⇓ 匯出可攜版 HTML';
+    }
+  }
+
+  const exportPortableBtn = document.getElementById('exportPortableBtn');
+  if (exportPortableBtn) exportPortableBtn.onclick = exportPortableHtml;
+
+  /* mermaid 量標籤用的是 getBoundingClientRect，會吃到 .slide 的 transform: scale()。
+     渲染期間先把縮放拿掉（見 slides.css 的 .mermaid-measuring），量完再還原，
+     否則節點框會照縮放比例做小，文字爆框被裁掉。 */
+  document.body.classList.add('mermaid-measuring');
+  mermaid.run().finally(() => {
+    document.body.classList.remove('mermaid-measuring');
+    if (useNew) slides.forEach(scaleSlideInOuter);
+    renderDots();
+    setMode(true);
+  });
+})();
+
+</script>
+</body>
+</html>
