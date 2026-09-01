@@ -1,0 +1,17 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "fixed-k3-clone-tree",
+  "claim": "A reusable, topology-only schematic of a three-clone tumor tree for the fixed K=3 model setting.",
+  "element_count": 7,
+  "quantities": {
+    "clone-count": {
+      "count": 3,
+      "value": 3.0
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

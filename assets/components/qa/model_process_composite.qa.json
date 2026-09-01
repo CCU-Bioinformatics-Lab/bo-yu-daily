@@ -1,0 +1,16 @@
+{
+  "status": "machine-validated / awaiting-human-visual-approval",
+  "component_id": "model-process-composite",
+  "claim": "候選演化樹狀態與 canonical SNV row 共同經由 CCF、purity、CN、multiplicity 與 read evidence 評分，形成候選樹 posterior。",
+  "element_count": 78,
+  "quantities": {
+    "xi_expected_alt_probability": {
+      "value": 0.42
+    }
+  },
+  "allowed_overlaps": [],
+  "external_references": 0,
+  "warnings": [
+    "Text bounds are approximate; inspect a rendered preview."
+  ]
+}

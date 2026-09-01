@@ -1,0 +1,17 @@
+{
+  "component_id": "multiplicity",
+  "claim": "The user-provided multiplicity raster is preserved as a self-contained SVG asset.",
+  "canvas": {"width": 221, "height": 78, "background": "#ffffff"},
+  "elements": [
+    {
+      "id": "multiplicity-raster",
+      "type": "image",
+      "asset": "raw_png/multiplicity.PNG",
+      "x": 0,
+      "y": 0,
+      "width": 221,
+      "height": 78,
+      "meaning": "Original user-provided multiplicity diagram preserved without redrawing or semantic reinterpretation."
+    }
+  ]
+}

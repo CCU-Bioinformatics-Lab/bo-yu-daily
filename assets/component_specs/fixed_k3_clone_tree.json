@@ -1,0 +1,52 @@
+{
+  "component_id": "fixed-k3-clone-tree",
+  "claim": "A reusable, topology-only schematic of a three-clone tumor tree for the fixed K=3 model setting.",
+  "canvas": {"width": 320, "height": 190, "background": "#f2f6fc"},
+  "semantic_contract": {
+    "unique_claim": "K=3 fixes the number of clone nodes for a run; this component shows one rooted three-clone topology and does not encode local fractions or posterior support.",
+    "reading_order": "Read the rooted topology from C1 through C3.",
+    "visual_encoding": "Dark blue lines encode parent-descendant relations. Orange circular marks identify clone nodes. Node count encodes K=3; equal node size is categorical and does not encode fraction. The light-blue canvas matches the fixed-K model panel so the reusable nested SVG has no white block.",
+    "quantitative_claims": "Exactly three clone-node marks are displayed, so K=3. The tree has one tumor founder C1 and two direct descendants C2-C3. No η or φ values are asserted.",
+    "topology_rule": "C1 is the single founder; C1 parents C2 and C3. Edge length is schematic and has no time or fraction scale.",
+    "overlap_policy": "Tree edges intentionally meet clone-node marks as structural connections. Clone labels sit outside the visible orange marks."
+  },
+  "asset_inventory": [
+    {
+      "path": "raw_png/clone_node_transparent.png",
+      "role": "repeated atomic clone-node mark",
+      "dimensions": "83×93 PNG, transparent background, visible orange glyph retained",
+      "reuse": "three times with preserved aspect ratio; node size is categorical only"
+    }
+  ],
+  "external_visual_references": [
+    {
+      "citation": "Satas & Raphael, PASTRI: tumor phylogeny inference using tree-constrained importance sampling, Fig. 1a-c",
+      "url": "https://academic.oup.com/bioinformatics/article/33/14/i152/3953987",
+      "use": "Reference-only grammar for separating a fixed clone count k from a rooted clone tree; original artwork is not copied."
+    },
+    {
+      "citation": "Manica et al., Inferring clonal composition from multiple tumor biopsies, Fig. 1a-b",
+      "url": "https://www.nature.com/articles/s41540-020-00147-5",
+      "use": "Reference-only grammar for a finite clone tree with short clone labels; original artwork and values are not copied."
+    },
+    {
+      "citation": "Jun et al., PhylEx, Fig. 1b-d",
+      "url": "https://www.nature.com/articles/s41467-023-36202-y",
+      "use": "Reference-only grammar for readable finite branching-tree spacing; original artwork, prevalence values, and colors are not copied."
+    }
+  ],
+  "quantities": [
+    {"id":"clone-count","count_group":"clone-node","expected":3,"label_element":"c1-label"}
+  ],
+  "elements": [
+    {"id":"edges","type":"path","d":"M160 81L96 125M160 81L224 125","stroke":"#17233a","stroke_width":3,"meaning":"parent-descendant relations in the three-clone topology"},
+    {"id":"node-c1","type":"image","asset":"raw_png/clone_node_transparent.png","x":144,"y":45,"width":32,"height":36,"meaning":"founder clone C1","count_group":"clone-node"},
+    {"id":"node-c2","type":"image","asset":"raw_png/clone_node_transparent.png","x":80,"y":125,"width":32,"height":36,"meaning":"descendant clone C2","count_group":"clone-node"},
+    {"id":"node-c3","type":"image","asset":"raw_png/clone_node_transparent.png","x":208,"y":125,"width":32,"height":36,"meaning":"descendant clone C3","count_group":"clone-node"},
+    {"id":"c1-label","type":"text","x":188,"y":67,"font_size":12,"font_weight":700,"fill":"#17233a","meaning":"founder clone identity; also anchors the machine-validated clone count","value_from_quantity":"clone-count","template":"C1"},
+    {"id":"c2-label","type":"text","x":57,"y":148,"font_size":12,"font_weight":700,"anchor":"end","fill":"#17233a","meaning":"clone identity","value":"C2"},
+    {"id":"c3-label","type":"text","x":250,"y":148,"font_size":12,"font_weight":700,"fill":"#17233a","meaning":"clone identity","value":"C3"}
+  ],
+  "allowed_overlaps": [],
+  "minimum_gap": 8
+}
