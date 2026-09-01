@@ -7,15 +7,20 @@
 > 本文件摘要 data input、model、inference 的模組邊界與輸入輸出，供模組規格與 HTML 視覺化對照使用。
 > 完整的 likelihood、prior、posterior 與推理實作細節，請以參考文件為準。
 
+
+## md和svg生成html report
+
+放上build_html_report_process.svg圖片
+
 ## 研究模組主線架構
 
 ![HCC1395 tumor evolution tree module](assets/png_to_svg/full_arch.svg)
 
 ## 1. Data input
 
-### 一句話功能
+### 目的
 
-`data input` 把 BAM、VCF、ASCAT 的資訊整理成一列一個 SNV 的基本資料，供 model
+`data input` 把 BAM、VCF、ASCAT 的資訊轉換成一列一個 SNV 的基本資料，供 model
 讀取。
 
 ### 從哪裡取得資料
@@ -37,21 +42,38 @@
 
 ## 2. Model
 
-Model 的主要目的是讀取 data input 整理出的 canonical SNV table。它把表中的 read counts、purity 和 copy number，連同候選 tree 的 clone fraction 及模型內部建立的 multiplicity，計算成候選 tree 的分數，讓 inference 模組負責探索不同候選樹並根據分數更新參數。
+### model目的
 
-假設有一顆腫瘤演化樹
+Model 使用 data input SNV row 中的資訊，搭配 inference 演算法猜測出來的演化樹拓樸(T)、local clone fraction(η) 與 SNV assignment(z)去推導出 CCF 並且使用 purity + CN + multiplicity 的矯正，最後輸出預期ALT機率ξ(xi)，再與真實的 REF／ALT reads 比較得到 likelihood，最後和 prior 合併得到候選樹的 posterior。
+
 
 ```text
-Root
-  │
-  ├── Clone A
-  │      └── Clone B
-  │
-  └── Clone C
+演化樹候選狀態：T + η + z
+                  ↓
+              推導 φ／CCF
+                  ↓
+         加入 purity + CN context + multiplicity 矯正
+                  ↓
+             預期 ALT 機率
+                  ↓
+      實際 ALT／REF read counts → likelihood
+                  ↓
+          prior × likelihood → posterior 分數
 ```
 
+### 圖片與術語對應（素材紀錄）
 
-之後必須讓電腦了解這個腫瘤演化樹故事，就必須寫成數學模型。
+| 文字／術語 | 找到的既有素材 | 預覽 |
+|---|---|---|
+| 候選樹 `T` | 收斂的 k=3 版本：`fixed_k3_clone_tree.svg` | `assets/components/previews/fixed_k3_clone_tree.png` |
+| clone fraction `η` | `eta_phi_tree.svg` | `assets/components/previews/eta_phi_tree.png` |
+| assignment `z` | `snv_assignment.svg` | `assets/components/previews/snv_assignment.png` |
+| multiplicity | `multiplicity.svg` | `assets/components/previews/multiplicity.png` |
+| 推導 `φ`／CCF | `eta_phi_tree.svg` | `assets/components/previews/eta_phi_tree.png` |
+| canonical input | `/bip8_disk/boyu114/main_work/assets/png_to_svg/canonical_snv_row.svg` | `assets/components/previews/canonical_snv_row.png` |
+| ALT／REF read counts | `/bip8_disk/boyu114/main_work/assets/components/read_pileup.svg` | `assets/components/previews/read_pileup.png` |
+| purity／CN context | `purity_mixture.svg`、`cn_segment_context.svg` | `assets/components/previews/cn_segment_context.png` |
+
 
 ### 數學模型
 
@@ -87,9 +109,7 @@ posterior ∝ prior × likelihood
 
 ### 目的
 
-`inference` 按照 model 定義的 posterior、likelihood、prior 與結構限制，持續探索不同的腫瘤演化樹拓樸與各 clone 的比例，反覆評估哪些參數組合最能解釋目前的 sequencing data，並保留多個具有 posterior 支持的候選腫瘤演化樹結果。
-
-
+`inference` 按照 model 定義的prior 和 與結構限制，持續探索不同的腫瘤演化樹拓樸與各 clone 的比例，反覆評估哪些參數組合最能解釋目前的 sequencing data，並保留多個具有 posterior 支持的候選腫瘤演化樹結果。
 
 
 ## 4. 參考文件
@@ -105,11 +125,28 @@ posterior ∝ prior × likelihood
 
 此區塊記錄 [`module_format.html`](module_format.html) 的 inline SVG／元件基礎與文字來源；重新生成時只更新本區塊。
 
+### 版面變更記錄
+
+- `new`：`slide-1-build-html-report` 新增為第 1 頁，使用來源段落指定的 `assets/png_to_svg/build_html_report_process.svg`。
+- `moved`：既有視覺槽位整體順延一頁；保留原 visual ID、SVG、來源 `##` 與槽位數量，只更新 HTML 頁面錨點。
+- `preserved`：`slide-6-output-parameters` 仍保留為歷史上的 `removed` 記錄，沒有重新加入 HTML。
+
+### slide-1-build-html-report（new）
+
+![Markdown、SVG 素材與 HTML report 生成關係](assets/png_to_svg/build_html_report_process.svg)
+
+- HTML：[`module_format.html#slide-1`](module_format.html#slide-1)
+- 保留強度：`anchored`
+- 視覺槽位：`build-html-report`（1／1）
+- SVG：inline SVG；`assets/png_to_svg/build_html_report_process.svg`
+- 對應來源：`## md和svg生成html report`
+- 涵蓋文字：來源段落指定的 build_html_report_process.svg 流程圖。
+
 ### slide-1-module-flow（updated）
 
 ![研究模組主線](assets/png_to_svg/full_arch.svg)
 
-- HTML：[`module_format.html#slide-1`](module_format.html#slide-1)
+- HTML：[`module_format.html#slide-2`](module_format.html#slide-2)
 - 保留強度：`anchored`
 - 視覺槽位：`module-flow`（1／1）
 - SVG：inline SVG；`assets/png_to_svg/full_arch.svg`
@@ -120,12 +157,12 @@ posterior ∝ prior × likelihood
 
 ![BAM、VCF、ASCAT 匯入 canonical SNV row](assets/components/source_to_input.svg)
 
-- HTML：[`module_format.html#slide-2`](module_format.html#slide-2)
+- HTML：[`module_format.html#slide-3`](module_format.html#slide-3)
 - 保留強度：`anchored`
 - 視覺槽位：`source-to-row`（1／1）
 - SVG：inline SVG；組裝基礎 `assets/components/source_to_input.svg`
-- 對應來源：`## 1. Data input` → `### 一句話功能`、`### 從哪裡取得資料`
-- 涵蓋文字：BAM、VCF、ASCAT 整理為一列一個 SNV 的基本資料。
+- 對應來源：`## 1. Data input` → `### 目的`、`### 從哪裡取得資料`
+- 涵蓋文字：`data input` 把 BAM、VCF、ASCAT 的資訊轉換成一列一個 SNV 的基本資料，供 model 讀取。
 
 ### slide-3-canonical-fields（updated）
 
@@ -133,23 +170,23 @@ posterior ∝ prior × likelihood
 
 ![Read counts](assets/components/read_pileup.svg)
 
-- HTML：[`module_format.html#slide-3`](module_format.html#slide-3)
+- HTML：[`module_format.html#slide-4`](module_format.html#slide-4)
 - 保留強度：`anchored`
 - 視覺槽位：`canonical-fields`（1／1）
 - SVG：inline SVG；組裝基礎 `assets/components/snv_identity_igv_reads.svg`、`assets/components/read_pileup.svg`、`assets/components/cn_segment_context.svg`、`assets/components/purity_mixture.svg`
 - 對應來源：`## 1. Data input` → `### raw data轉換model基本輸入資料`
-- 涵蓋文字：Identity 元件以已核准示例 `mutation_id = 1`、`chr1:123,456,789`、`G → A` 表達 `mutation_id, chrom, pos, ref, alt`，並以 IGV-style reads 呈現共享基因座與示意 read pileup；read pileup 上方也以 `ref = G · alt = A` 標示該示例鹼基。圖中同時表達 read counts、`rho_ASCAT` 與 copy number；CN 圖以已核准的示例 `major_cn = 3`、`minor_cn = 1` 表達重複 copy，並標示 `total_cn = 4`，不是由本文件推得的資料值。
+- 涵蓋文字：Identity 元件以已核准示例 `mutation_id = 1`、`chr1:123,456,789`、`G → A` 表達 `mutation_id, chrom, pos, ref, alt`，並以 IGV-style read counts 呈現共享基因座與 REF／ALT evidence。圖中同時表達 read counts、`rho_ASCAT` 與 copy number；CN 圖以已核准的示例 `major_cn = 3`、`minor_cn = 1` 表達重複 copy，並標示 `total_cn = 4`，不是由本文件推得的資料值。
 
 ### slide-4-candidate-tree（updated）
 
-![候選 clone tree](assets/components/clone_tree.svg)
+![候選演化樹如何變成 posterior 分數](assets/png_to_svg/model_process.svg)
 
-- HTML：[`module_format.html#slide-4`](module_format.html#slide-4)
+- HTML：[`module_format.html#slide-5`](module_format.html#slide-5)
 - 保留強度：`anchored`
 - 視覺槽位：`candidate-tree-evidence`（1／1）
-- SVG：inline SVG；組裝基礎 `assets/components/clone_tree.svg`、`assets/components/read_pileup.svg`；clone 標籤依來源改為 Root、Clone A、Clone B、Clone C，示例 read counts 已移除
+- SVG：inline SVG；使用 `assets/png_to_svg/model_process.svg`；移除候選 tree 的 Root／Clone A／Clone C／Clone B 與 sequencing data REF／ALT reads 的舊雙欄圖片區域，改用六段 model scoring flow
 - 對應來源：`## 2. Model` 的候選腫瘤演化樹與兩項假設
-- 涵蓋文字：Root、Clone A、Clone B、Clone C 與祖先／後代、clone fraction 假設；一顆 SNV 指派至一個 clone。
+- 涵蓋文字：Root、Clone A、Clone B、Clone C 與祖先／後代、clone fraction 假設；候選狀態在此圖中只呈現 topology <code>T</code> 與 local fraction <code>η</code>。
 
 ### slide-6-output-parameters（removed）
 
@@ -160,55 +197,55 @@ posterior ∝ prior × likelihood
 - 替代 visual ID：`slide-6-topology`、`slide-6-local-eta`、`slide-6-cumulative-phi`、`slide-6-clone-assignment`
 - 變更：`split`；依使用者指示將四個平行參數拆成四個獨立槽位。
 
-### slide-6-topology（new）
+### slide-6-topology（updated）
 
 ![Tree topology](assets/components/clone_tree.svg)
 
-- HTML：[`module_format.html#slide-6`](module_format.html#slide-6)
+- HTML：[`module_format.html#slide-7`](module_format.html#slide-7)
 - 保留強度：`anchored`
 - 視覺槽位：`tree-topology`（1／4）
 - SVG：inline SVG；`assets/components/clone_tree.svg`
 - 對應來源：`## 2. Model` → `### model輸出參數`
 - 涵蓋文字：Tree topology `T` 表示哪些 clone 是 parent／descendant。
 
-### slide-6-local-eta（new）
+### slide-6-local-eta（updated）
 
 ![local fraction eta](assets/components/eta_phi_tree.svg)
 
-- HTML：[`module_format.html#slide-6`](module_format.html#slide-6)
+- HTML：[`module_format.html#slide-7`](module_format.html#slide-7)
 - 保留強度：`anchored`
 - 視覺槽位：`local-eta`（2／4）
 - SVG：inline SVG；聚焦 `assets/components/eta_phi_tree.svg` 的 local `eta_v` 結構
 - 對應來源：`## 2. Model` → `### model輸出參數`
 - 涵蓋文字：`eta_v` 是每個 clone 自己獨有、且不包含 descendants 的 tumor-cell fraction。
 
-### slide-6-cumulative-phi（new）
+### slide-6-cumulative-phi（updated）
 
 ![CCF phi](assets/components/eta_phi_tree.svg)
 
-- HTML：[`module_format.html#slide-6`](module_format.html#slide-6)
+- HTML：[`module_format.html#slide-7`](module_format.html#slide-7)
 - 保留強度：`anchored`
 - 視覺槽位：`cumulative-phi`（3／4）
 - SVG：inline SVG；聚焦 `assets/components/eta_phi_tree.svg` 的 cumulative `phi` 結構
 - 對應來源：`## 2. Model` → `### model輸出參數`
 - 涵蓋文字：CCF／`phi` 是某 clone 加上 descendants 的累積比例。
 
-### slide-6-clone-assignment（new）
+### slide-6-clone-assignment（updated）
 
 ![Clone assignment](assets/components/snv_assignment.svg)
 
-- HTML：[`module_format.html#slide-6`](module_format.html#slide-6)
+- HTML：[`module_format.html#slide-7`](module_format.html#slide-7)
 - 保留強度：`anchored`
 - 視覺槽位：`clone-assignment`（4／4）
 - SVG：inline SVG；`assets/components/snv_assignment.svg`
 - 對應來源：`## 2. Model` → `### model輸出參數`
 - 涵蓋文字：Clone assignment `z` 表示一顆 SNV 比較支持哪個 clone。
 
-### slide-7-inference-module（new）
+### slide-7-inference-module（updated）
 
 ![Inference 探索、評估與候選結果](assets/png_to_svg/inference_module.svg)
 
-- HTML：[`module_format.html#slide-7`](module_format.html#slide-7)
+- HTML：[`module_format.html#slide-8`](module_format.html#slide-8)
 - 保留強度：`anchored`
 - 視覺槽位：`inference-module-overview`（1／1）
 - SVG：inline SVG；`assets/png_to_svg/inference_module.svg`
