@@ -61,6 +61,10 @@ def inline(
     raw = (ROOT / path).read_text(encoding="utf-8")
     raw = re.sub(r"<\?xml[^>]*>\s*", "", raw)
     raw = re.sub(r"<script\b[^>]*>.*?</script>\s*", "", raw, flags=re.S | re.I)
+    # The source wrapper may already carry a raster-origin data-source.  The
+    # HTML contract reserves data-source for the adopted repository SVG path;
+    # avoid duplicate attributes and keep the wrapper's other metadata.
+    raw = re.sub(r'\sdata-source="[^"]*"', "", raw, flags=re.I)
     # Component titles can also contain example-only terminology.  The slide
     # label is drawn from the Markdown claim ledger, so it is the safe title.
     raw = re.sub(r"<title\b[^>]*>.*?</title>", f"<title>{description}</title>", raw, count=1, flags=re.S | re.I)
@@ -135,7 +139,7 @@ def inline(
     raw = re.sub(r'\bid="([^"]+)"', lambda match: f'id="{prefix}-{match.group(1)}"', raw)
     raw = re.sub(r'url\(#([^)]*)\)', lambda match: f'url(#{prefix}-{match.group(1)})', raw)
     raw = re.sub(r'((?:href|xlink:href)=[\"\'])#([^\"\']+)([\"\'])', lambda match: f'{match.group(1)}#{prefix}-{match.group(2)}{match.group(3)}', raw)
-    raw = raw.replace("<svg ", f'<svg data-source="{path}" data-visual-id="{visual_id}" ' , 1)
+    raw = raw.replace("<svg ", f'<svg data-source="{path}" data-visual-id="{visual_id}" ', 1)
     if component_ids:
         raw = raw.replace("<svg ", f'<svg data-component-id="{component_ids}" ', 1)
     return raw.replace("</title>", f"</title><desc>{description}</desc>", 1)
@@ -152,18 +156,14 @@ def visual(visual_id: str, components: list[str], references: list[str], label: 
         return ""
     panel_labels = {
         "slide-3-canonical-fields": ["Identity", "Read counts", "Copy number", "Fixed sample purity"],
-        "slide-4-candidate-tree": ["候選 tree 的 parent／descendant", "sequencing data 中的 REF／ALT reads"],
         "slide-6-output-parameters": ["local ηᵥ 與 cumulative φ", "一顆 SNV 比較支持哪個 clone"],
     }.get(visual_id, [])
     panels = []
     for index, piece in enumerate(pieces):
         panel_label = f'<p class="panel-label">{panel_labels[index]}</p>' if index < len(panel_labels) else ""
         panels.append(f'<div class="asset">{panel_label}{piece}</div>')
-    relation = ""
-    if visual_id == "slide-4-candidate-tree":
-        relation = '<p class="relation-label">不同 clone fraction 會影響觀察到的 ALT reads</p>'
     return f'''<figure class="visual" data-visual-id="{visual_id}" data-source="{' '.join(components + references)}" data-component-id="{component_ids}">
-  <div class="art" aria-label="{label}">{''.join(panels)}</div>{relation}
+  <div class="art" aria-label="{label}">{''.join(panels)}</div>
 </figure>'''
 
 
@@ -209,25 +209,30 @@ def output_parameter_slots() -> str:
 
 
 slides = [
+    ("HTML report", "md 與 svg 生成 HTML report",
+     "本頁放上來源段落指定的 build_html_report_process.svg 圖片。",
+     "slide-1-build-html-report", [], ["assets/png_to_svg/build_html_report_process.svg"],
+     "Markdown、SVG 素材與 HTML report 生成關係的流程圖。",
+     "<p class=\"note\">本頁只呈現「md和svg生成html report」段落指定的流程圖。</p>"),
     ("研究模組主線", "研究模組主線由既有架構圖呈現",
      "此頁保留來源段落中已有的 HCC1395 tumor evolution tree module 架構圖。",
      "slide-1-module-flow", [], ["assets/png_to_svg/full_arch.svg"],
      "由 raw data、data input、model、inference、output 組成的研究模組主線。",
      "<p class=\"note\">本頁只呈現「研究模組主線架構」直接描述的順序與目的；data input 與 model 的細節從下一頁開始。</p>"),
-    ("Data input", "一顆 SNV 對應一列可供 model 讀取的基本資料",
-     "data input 將 BAM、VCF、ASCAT 的資訊整理為 canonical SNV row，而非讓 model 直接讀取原始來源。",
+    ("Data input", "Data input目的",
+     "data input 把 BAM、VCF、ASCAT 的資訊轉換成一列一個 SNV 的基本資料，供 model 讀取。",
      "slide-2-source-to-row", ["assets/components/source_to_input.svg"], [],
      "BAM、VCF、ASCAT 匯集欄位為一列 canonical SNV data 的實際元件與來源圖。",
-     "<div class=\"callout\"><b>一句話功能</b>：把 BAM、VCF、ASCAT 的資訊整理成一列一個 SNV 的基本資料，供 model 讀取。</div>"),
-    ("Canonical SNV row", "同一列同時保留 identity、reads、purity 與 copy number",
-     "欄位把哪一顆 SNV 與它的觀察 read counts、固定 sample-level purity、site-level CN context 放在同一個可讀取單位。",
+     ""),
+    ("Canonical SNV row", "snv data row四大類別",
+     "",
      "slide-3-canonical-fields", ["assets/components/snv_identity_igv_reads.svg", "assets/components/read_pileup.svg", "assets/components/cn_segment_context.svg", "assets/components/purity_mixture.svg"], [],
-     "canonical SNV identity、read pileup、SNV 對齊的 ASCAT copy-number segment 與 purity mixture 元件。identity 與 CN 值皆為已核准的示例呈現。",
+     "canonical SNV identity、IGV-style read counts、SNV 對齊的 ASCAT copy-number segment 與 purity mixture 元件。identity 與 CN 值皆為已核准的示例呈現。",
      "<div class=\"field-grid\"><p><b>Identity</b><code>mutation_id, chrom, pos, ref, alt</code></p><p><b>Read counts</b><code>ref_reads, alt_reads, total_reads</code></p><p><b>Purity</b><code>rho_ASCAT</code>；主分析為 0.99</p><p><b>Copy number</b><code>major_cn, minor_cn, total_cn</code></p></div><p class=\"note\">G/A 僅為 pileup 示例。total_reads = ref_reads + alt_reads；total_cn = major_cn + minor_cn。</p>"),
-    ("Model", "model 為候選演化樹與資料的吻合程度評分",
-     "model 讀取 canonical SNV table，連同候選 tree 的 clone fraction 與模型內部建立的 multiplicity，計算候選 tree 的分數；inference 負責探索不同候選樹並更新參數。",
-     "slide-4-candidate-tree", ["assets/components/clone_tree.svg", "assets/components/read_pileup.svg"], [],
-     "候選 tree 的 parent-descendant 結構與 read pileup 中的 REF／ALT evidence。",
+    ("Model", "model目的",
+     "Model 使用 data input 的 SNV row 中的 read counts、purity 與 copy number，搭配 inference 探索的候選樹(T)與 clone fraction(η) 去推導出 φ／CCF，並使用 purity、CN context 與 multiplicity 的矯正，最後輸出預期 ALT 機率 ξ (xi)，再與真實的 REF／ALT reads 比較得到 likelihood，最後和 prior 合併得到候選樹的 posterior。",
+     "slide-4-candidate-tree", [], ["assets/png_to_svg/model_process.svg"],
+     "候選演化樹狀態如何經由 CCF、purity、CN、multiplicity、read evidence 與 Bayesian 組合形成 posterior 分數的六段流程。",
      "<div class=\"callout\"><b>候選樹的兩個假設</b><br>祖先 clone 原則上會被後代 clone 繼承。不同 clone 有不同腫瘤細胞比例，會影響 sequencing data 中看到的 ALT reads。</div>"),
     ("Model language", "候選樹的可信度由 prior 與 likelihood 組成 posterior",
      "把腫瘤演化樹故事寫成數學模型後，候選樹的可信度可表為原本假設的合理性與它和真實資料的吻合程度。",
@@ -247,6 +252,7 @@ slides = [
 
 
 section_sources = [
+    "## md和svg生成html report",
     "## 研究模組主線架構",
     "## 1. Data input",
     "## 1. Data input",
@@ -275,6 +281,11 @@ html = f'''<!doctype html>
 <aside class="sources" aria-label="來源 Markdown"><b>來源 Markdown</b><ul><li><a href="module_format.md">MOD-01 · module_format.md</a></li></ul><p class="note">本 HTML 的敘事只由 module_format.md 支持；SVG 是該敘事的可追溯視覺素材。</p></aside>
 <main class="viewport">{''.join(sections)}</main><nav class="nav" aria-label="投影片導覽"><button id="prev" type="button">← Previous</button><div class="dots" aria-hidden="true">{''.join('<span class="dot' + (' active' if i == 0 else '') + '"></span>' for i in range(len(slides)))}</div><span id="page" aria-live="polite">1 / {len(slides)}</span><button id="next" type="button">Next →</button></nav></div>
 <script>(()=>{{const s=[...document.querySelectorAll('.slide')],d=[...document.querySelectorAll('.dot')],p=document.querySelector('#prev'),n=document.querySelector('#next'),c=document.querySelector('#page');let i=0;function show(x){{i=Math.max(0,Math.min(s.length-1,x));s.forEach((e,j)=>e.classList.toggle('active',i===j));d.forEach((e,j)=>e.classList.toggle('active',i===j));p.disabled=i===0;n.disabled=i===s.length-1;c.textContent=`${{i+1}} / ${{s.length}}`;history.replaceState(null,'',`#${{s[i].id}}`)}}function hash(){{const x=s.findIndex(e=>`#${{e.id}}`===location.hash);show(x<0?0:x)}}p.onclick=()=>show(i-1);n.onclick=()=>show(i+1);addEventListener('keydown',e=>{{if(e.key==='ArrowLeft')show(i-1);if(e.key==='ArrowRight')show(i+1);if(e.key==='Home')show(0);if(e.key==='End')show(s.length-1)}});addEventListener('hashchange',hash);hash()}})();</script></body></html>'''
+
+html = html.replace(
+    '.asset svg{display:block;width:100%;height:auto;max-height:310px}',
+    '.asset svg{display:block;width:100%;height:auto;max-height:310px} .visual[data-visual-id="slide-4-candidate-tree"] .asset svg{max-height:720px}',
+)
 
 OUT.write_text(html, encoding="utf-8")
 print(f"wrote {OUT.relative_to(ROOT)} with {len(slides)} slides")
