@@ -1,0 +1,18 @@
+{
+  "component": "model_process",
+  "source_asset": "assets/raw_png/model_process.png",
+  "output": "assets/png_to_svg/model_process.svg",
+  "claim": "The candidate evolutionary-tree state shown in panel 1 consists of topology T and clone fractions eta; the z SNV-assignment illustration is deliberately omitted.",
+  "edits": [
+    {
+      "id": "remove-z-candidate-state",
+      "bounds_px": [650, 180, 990, 370],
+      "meaning": "Remove the z label and SNV-assignment tree from panel 1."
+    },
+    {
+      "id": "candidate-state-heading",
+      "text": "演化樹候選狀態：T + η",
+      "meaning": "Panel 1 heading names only the remaining candidate-state terms."
+    }
+  ]
+}

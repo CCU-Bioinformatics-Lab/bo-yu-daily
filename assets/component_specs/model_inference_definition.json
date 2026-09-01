@@ -1,0 +1,179 @@
+{
+  "component_id": "model-inference-definition",
+  "claim": "The active model scores a fixed-K tree topology and clone-specific local-fraction vector, while SMC stores and explores only T plus eta; SNV assignment and genotype/multiplicity uncertainty are marginalized in the likelihood.",
+  "canvas": {
+    "width": 1600,
+    "height": 1040,
+    "background": "#ffffff"
+  },
+  "minimum_gap": 8,
+  "semantic_contract": {
+    "unique_claim": "The model defines a collapsed score for a candidate particle state T plus eta, and annealed SMC explores, reweights, rejuvenates, and retains many such states. z_i and g_i are latent quantities in the joint model but are not persistent particle variables.",
+    "reading_order": "Read the left model panel from candidate state through derived CCF and likelihood-side marginalization to the collapsed score; then read the right inference panel from particle population through score, resampling/rejuvenation, retained posterior particles, and summaries.",
+    "visual_encoding": "Blue frames identify model semantics, teal frames identify SMC operations, purple marks likelihood-side latent quantities and derived CCF, and orange marks posterior summaries. Tree edges encode parent-descendant relation only; their length encodes neither time nor fraction. Candidate-tree images are categorical examples, not posterior estimates.",
+    "state_rule": "For one fixed K run, the persistent SMC particle state is T plus eta, with eta_v greater than zero and sum_v eta_v equal to one. phi/CCF is derived as a descendant sum. SMC weights, beta, and ancestors are algorithmic bookkeeping, not biological variables.",
+    "latent_rule": "The joint model contains z_i (SNV-to-clone assignment) and g_i (CN-aware genotype/timing and multiplicity candidate). The active particle score sums over z_i and g_i, so neither is stored as a per-particle state dimension.",
+    "formula_rule": "The displayed collapsed likelihood is schematic but exact in its boundaries: P(D_i|T,eta) equals a sum over z_i of eta_z times a sum over g_i of P(g_i|C_i) times the Binomial emission evaluated at xi_i(g_i,phi_z).",
+    "external_visual_references": [
+      {
+        "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12964358/",
+        "locator": "PhyClone Figure 1; accessed 2026-09-01",
+        "status": "primary source; reference-only",
+        "visual_grammar": "Separate input evidence, clone-tree posterior, and inference process rather than presenting one selected tree as ground truth.",
+        "not_copied": "No source artwork, layout, labels, or values are reused."
+      },
+      {
+        "source": "https://www.nature.com/articles/s41467-019-10737-5",
+        "locator": "B-SCITE Figure 2; accessed 2026-09-01",
+        "status": "primary source; reference-only",
+        "visual_grammar": "Show candidate-tree search and evidence-based scoring as distinct operations.",
+        "not_copied": "No source artwork, layout, labels, or values are reused."
+      },
+      {
+        "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4359439/",
+        "locator": "PhyloWGS model/paper; accessed 2026-09-01",
+        "status": "primary source; reference-only",
+        "visual_grammar": "Keep copy-number-aware variant evidence visibly separate from phylogeny representation.",
+        "not_copied": "No source artwork, layout, labels, or values are reused."
+      }
+    ],
+    "asset_inventory": [
+      {
+        "path": "components/candidate_tree_state_a.svg",
+        "role": "categorical example of a topology plus eta particle state",
+        "dimensions": "240 by 260 SVG",
+        "reuse": "embedded once with its self-contained labels and quantitative eta contract"
+      },
+      {
+        "path": "components/candidate_tree_state_b.svg",
+        "role": "categorical alternative topology plus eta particle state",
+        "dimensions": "240 by 260 SVG",
+        "reuse": "embedded twice as illustrative input and retained particle examples"
+      },
+      {
+        "path": "components/candidate_tree_state_c.svg",
+        "role": "categorical alternative topology plus eta particle state",
+        "dimensions": "240 by 260 SVG",
+        "reuse": "embedded once as an illustrative particle example"
+      },
+      {
+        "path": "components/read_pileup.svg",
+        "role": "observed REF/ALT read evidence",
+        "dimensions": "1200 by 460 SVG",
+        "reuse": "embedded with preserved aspect ratio; its counts are illustrative only"
+      },
+      {
+        "path": "components/cn_segment_context.svg",
+        "role": "ASCAT major/minor/total copy-number context",
+        "dimensions": "1200 by 460 SVG",
+        "reuse": "embedded with preserved aspect ratio; its values are illustrative only"
+      },
+      {
+        "path": "components/purity_mixture.svg",
+        "role": "fixed rho_ASCAT tumour-purity input",
+        "dimensions": "1200 by 420 SVG",
+        "reuse": "embedded with preserved aspect ratio; it is explicitly outside the particle state"
+      }
+    ],
+    "overlap_policy": "Tree images include intentional internal edge-node contacts declared by their own component specifications. No overlap between labels and adjacent cards is intentional."
+  },
+  "allowed_overlaps": [],
+  "elements": [
+    {"id":"title","type":"text","x":800,"y":52,"font_size":32,"font_weight":700,"anchor":"middle","fill":"#17233a","meaning":"title states the combined model and inference definition","value":"Model + SMC inference: state, marginalization, outputs"},
+    {"id":"subtitle","type":"text","x":800,"y":86,"font_size":17,"anchor":"middle","fill":"#52627a","meaning":"subtitle states the active runtime boundary","value":"Active contract: particle state = T + η; zᵢ / gᵢ are marginalized in the likelihood"},
+
+    {"id":"model-panel","type":"rect","x":28,"y":118,"width":760,"height":886,"rx":24,"fill":"#f7fbff","stroke":"#2563eb","stroke_width":3,"meaning":"left panel groups model definitions and the collapsed candidate score"},
+    {"id":"model-badge","type":"rect","x":52,"y":142,"width":48,"height":48,"rx":24,"fill":"#2563eb","stroke":"none","stroke_width":0,"meaning":"categorical badge identifies the model panel"},
+    {"id":"model-badge-label","type":"text","x":76,"y":176,"font_size":24,"font_weight":700,"anchor":"middle","fill":"#ffffff","meaning":"model panel categorical badge label","value":"M"},
+    {"id":"model-heading","type":"text","x":118,"y":176,"font_size":26,"font_weight":700,"fill":"#1d4ed8","meaning":"model panel heading","value":"Candidate score"},
+    {"id":"model-note","type":"text","x":76,"y":208,"font_size":14,"fill":"#475569","meaning":"model panel scope note","value":"Fixed K; inputs are not state."},
+
+    {"id":"state-card","type":"rect","x":54,"y":232,"width":314,"height":352,"rx":18,"fill":"#ffffff","stroke":"#60a5fa","stroke_width":2,"meaning":"card shows the two persistent biological particle-state variables"},
+    {"id":"state-card-title","type":"text","x":211,"y":264,"font_size":20,"font_weight":700,"anchor":"middle","fill":"#1d4ed8","meaning":"persistent state card title","value":"persistent particle state"},
+    {"id":"state-card-formula","type":"text","x":211,"y":306,"font_size":22,"font_weight":700,"anchor":"middle","fill":"#17233a","meaning":"candidate state contains topology and local fractions only","value":"T + η"},
+    {"id":"state-card-image","type":"image","x":91,"y":320,"width":240,"height":247,"asset":"components/candidate_tree_state_a.svg","meaning":"illustrative candidate state with one rooted topology and a positive eta simplex"},
+
+    {"id":"derived-card","type":"rect","x":390,"y":232,"width":360,"height":154,"rx":18,"fill":"#faf5ff","stroke":"#8b5cf6","stroke_width":2,"meaning":"card distinguishes derived CCF from persistent state"},
+    {"id":"derived-title","type":"text","x":570,"y":267,"font_size":20,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"derived quantity heading","value":"derived, not state"},
+    {"id":"derived-formula","type":"text","x":570,"y":307,"font_size":22,"font_weight":700,"anchor":"middle","fill":"#4c1d95","meaning":"CCF equals a clone local fraction plus descendants local fractions","value":"φᵥ / CCF = ηᵥ + Σ descendants"},
+    {"id":"derived-note","type":"text","x":570,"y":342,"font_size":14,"anchor":"middle","fill":"#5b21b6","meaning":"derived CCF interpretation","value":"T determines descendants; η determines local mass."},
+
+    {"id":"input-card","type":"rect","x":390,"y":404,"width":360,"height":180,"rx":18,"fill":"#ffffff","stroke":"#93c5fd","stroke_width":2,"meaning":"card groups fixed observed inputs used only by the emission"},
+    {"id":"input-title","type":"text","x":570,"y":437,"font_size":20,"font_weight":700,"anchor":"middle","fill":"#1d4ed8","meaning":"input evidence heading","value":"observed / fixed emission context"},
+    {"id":"input-line-1","type":"text","x":570,"y":472,"font_size":16,"font_weight":700,"anchor":"middle","fill":"#334155","meaning":"observed read count input label","value":"REF/ALT reads"},
+    {"id":"input-line-2","type":"text","x":570,"y":505,"font_size":16,"font_weight":700,"anchor":"middle","fill":"#334155","meaning":"fixed purity input label","value":"ρ_ASCAT purity"},
+    {"id":"input-line-3","type":"text","x":570,"y":538,"font_size":16,"font_weight":700,"anchor":"middle","fill":"#334155","meaning":"copy number input label","value":"major / minor / total CN"},
+    {"id":"input-note","type":"text","x":570,"y":568,"font_size":13,"anchor":"middle","fill":"#52627a","meaning":"inputs are not sampled particle-state variables","value":"Inputs, not particle state."},
+
+    {"id":"model-arrow-1","type":"path","d":"M368 408 L390 408 M379 397 L390 408 L379 419","stroke":"#334155","stroke_width":3,"meaning":"arrow links persistent state to the derived CCF definition"},
+    {"id":"model-arrow-2","type":"path","d":"M401 585 L401 614 M390 603 L401 614 L412 603","stroke":"#334155","stroke_width":3,"meaning":"arrow directs model state and input context to the marginalized likelihood layer"},
+
+    {"id":"latent-card","type":"rect","x":54,"y":614,"width":696,"height":210,"rx":18,"fill":"#faf5ff","stroke":"#8b5cf6","stroke_width":2,"meaning":"card defines likelihood-side latent variables and their marginalization"},
+    {"id":"latent-title","type":"text","x":402,"y":650,"font_size":21,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"latent variables heading","value":"Latent layer: integrated, not stored"},
+    {"id":"latent-z","type":"text","x":100,"y":693,"font_size":18,"font_weight":700,"fill":"#4c1d95","meaning":"z_i denotes the latent clone assignment of SNV i","value":"zᵢ: clone assignment for SNV i"},
+    {"id":"latent-g","type":"text","x":100,"y":727,"font_size":18,"font_weight":700,"fill":"#4c1d95","meaning":"g_i denotes the latent CN-aware genotype and multiplicity candidate of SNV i","value":"gᵢ：CN timing / multiplicity candidate"},
+    {"id":"latent-note","type":"text","x":100,"y":764,"font_size":15,"fill":"#6b21a8","meaning":"latent uncertainty is integrated rather than fixed in a particle","value":"Integrate zᵢ and gᵢ (Rao–Blackwellization)."},
+    {"id":"latent-formula","type":"text","x":402,"y":802,"font_size":15,"font_weight":700,"anchor":"middle","fill":"#4c1d95","meaning":"collapsed per-site likelihood sums assignment and genotype candidates","value":"P(Dᵢ|T,η) = Σ_z η_z · Σ_g P(g|Cᵢ) · Binomial(ALTᵢ | totalᵢ, ξᵢ(g,φ_z))"},
+
+    {"id":"score-card","type":"rect","x":54,"y":848,"width":696,"height":126,"rx":18,"fill":"#eff6ff","stroke":"#2563eb","stroke_width":2,"meaning":"card presents the collapsed model score that SMC receives"},
+    {"id":"score-title","type":"text","x":402,"y":884,"font_size":20,"font_weight":700,"anchor":"middle","fill":"#1d4ed8","meaning":"collapsed posterior score heading","value":"Collapsed posterior score passed to SMC"},
+    {"id":"score-formula","type":"text","x":402,"y":921,"font_size":20,"font_weight":700,"anchor":"middle","fill":"#17233a","meaning":"SMC scores T and eta after z and g are marginalized","value":"P(T,η | D,C,ρ) ∝ P(T) · P(η|T) · ∏ᵢ P(Dᵢ|T,η,Cᵢ,ρ)"},
+    {"id":"score-note","type":"text","x":402,"y":951,"font_size":13,"anchor":"middle","fill":"#52627a","meaning":"collapsed score explicitly excludes z and g as persistent state dimensions","value":"zᵢ / gᵢ summed out; persistent state is T + η."},
+
+    {"id":"inference-panel","type":"rect","x":812,"y":118,"width":760,"height":886,"rx":24,"fill":"#f4fffb","stroke":"#0f766e","stroke_width":3,"meaning":"right panel groups active annealed SMC operations and posterior summaries"},
+    {"id":"inference-badge","type":"rect","x":836,"y":142,"width":48,"height":48,"rx":24,"fill":"#0f766e","stroke":"none","stroke_width":0,"meaning":"categorical badge identifies the inference panel"},
+    {"id":"inference-badge-label","type":"text","x":860,"y":176,"font_size":24,"font_weight":700,"anchor":"middle","fill":"#ffffff","meaning":"inference panel categorical badge label","value":"I"},
+    {"id":"inference-heading","type":"text","x":902,"y":176,"font_size":26,"font_weight":700,"fill":"#0f766e","meaning":"inference panel heading","value":"SMC search"},
+    {"id":"inference-note","type":"text","x":860,"y":208,"font_size":14,"fill":"#475569","meaning":"inference panel scope note","value":"Each particle is one T + η."},
+
+    {"id":"population-card","type":"rect","x":838,"y":232,"width":358,"height":390,"rx":18,"fill":"#ffffff","stroke":"#5eead4","stroke_width":2,"meaning":"card shows a finite SMC population of illustrative topology-plus-eta particle states"},
+    {"id":"population-title","type":"text","x":1017,"y":266,"font_size":20,"font_weight":700,"anchor":"middle","fill":"#0f766e","meaning":"particle population heading","value":"particle population"},
+    {"id":"particle-a-label","type":"text","x":905,"y":298,"font_size":14,"font_weight":700,"anchor":"middle","fill":"#334155","meaning":"first illustrative particle label","value":"particle 1: T + η"},
+    {"id":"particle-a","type":"image","x":850,"y":325,"width":110,"height":119,"asset":"components/candidate_tree_state_a.svg","meaning":"first illustrative SMC particle state"},
+    {"id":"particle-b-label","type":"text","x":1125,"y":298,"font_size":14,"font_weight":700,"anchor":"middle","fill":"#334155","meaning":"second illustrative particle label","value":"particle 2: T + η"},
+    {"id":"particle-b","type":"image","x":1070,"y":325,"width":110,"height":119,"asset":"components/candidate_tree_state_b.svg","meaning":"second illustrative SMC particle state"},
+    {"id":"particle-c-label","type":"text","x":1017,"y":468,"font_size":14,"font_weight":700,"anchor":"middle","fill":"#334155","meaning":"third illustrative particle label","value":"particle 3: another T + η"},
+    {"id":"particle-c","type":"image","x":962,"y":496,"width":110,"height":92,"asset":"components/candidate_tree_state_c.svg","meaning":"third illustrative SMC particle state"},
+    {"id":"population-note","type":"text","x":1017,"y":618,"font_size":13,"anchor":"middle","fill":"#52627a","meaning":"candidate images are categorical illustrations rather than posterior estimates","value":"Each tree / η is an illustrative candidate state."},
+
+    {"id":"process-card","type":"rect","x":1218,"y":232,"width":326,"height":390,"rx":18,"fill":"#f0fdfa","stroke":"#14b8a6","stroke_width":2,"meaning":"card shows the score, resampling, and rejuvenation steps of annealed SMC"},
+    {"id":"process-title","type":"text","x":1381,"y":266,"font_size":20,"font_weight":700,"anchor":"middle","fill":"#0f766e","meaning":"SMC process heading","value":"SMC update loop"},
+    {"id":"process-step-1","type":"rect","x":1250,"y":294,"width":262,"height":64,"rx":14,"fill":"#ffffff","stroke":"#2dd4bf","stroke_width":2,"meaning":"model scoring step applies the collapsed posterior score to each particle"},
+    {"id":"process-step-1-text","type":"text","x":1381,"y":322,"font_size":18,"font_weight":700,"anchor":"middle","fill":"#115e59","meaning":"model scoring step label","value":"1. model score / reweight"},
+    {"id":"process-step-1-note","type":"text","x":1381,"y":350,"font_size":12,"anchor":"middle","fill":"#52627a","meaning":"model score uses the collapsed likelihood","value":"uses P(T,η | D,C,ρ)"},
+    {"id":"process-step-2","type":"rect","x":1250,"y":392,"width":262,"height":64,"rx":14,"fill":"#ffffff","stroke":"#2dd4bf","stroke_width":2,"meaning":"resampling step retains high-weight particle lineages when ESS is low"},
+    {"id":"process-step-2-text","type":"text","x":1381,"y":420,"font_size":18,"font_weight":700,"anchor":"middle","fill":"#115e59","meaning":"resampling step label","value":"2. ESS low → resample"},
+    {"id":"process-step-2-note","type":"text","x":1381,"y":448,"font_size":12,"anchor":"middle","fill":"#52627a","meaning":"resampling bookkeeping note","value":"weights / ancestors are bookkeeping"},
+    {"id":"process-step-3","type":"rect","x":1250,"y":490,"width":262,"height":88,"rx":14,"fill":"#ffffff","stroke":"#2dd4bf","stroke_width":2,"meaning":"rejuvenation step proposes topology and eta changes while preserving the same particle-state definition"},
+    {"id":"process-step-3-text","type":"text","x":1381,"y":521,"font_size":18,"font_weight":700,"anchor":"middle","fill":"#115e59","meaning":"rejuvenation step label","value":"3. rejuvenate"},
+    {"id":"process-step-3-line-1","type":"text","x":1381,"y":548,"font_size":13,"anchor":"middle","fill":"#52627a","meaning":"topology rejuvenation move label","value":"topology move: update T"},
+    {"id":"process-step-3-line-2","type":"text","x":1381,"y":573,"font_size":13,"anchor":"middle","fill":"#52627a","meaning":"eta rejuvenation move label","value":"Dirichlet proposal: update η"},
+    {"id":"process-arrow-1","type":"path","d":"M1381 358 L1381 382 M1371 372 L1381 382 L1391 372","stroke":"#0f766e","stroke_width":3,"meaning":"arrow orders reweighting before resampling"},
+    {"id":"process-arrow-2","type":"path","d":"M1381 456 L1381 480 M1371 470 L1381 480 L1391 470","stroke":"#0f766e","stroke_width":3,"meaning":"arrow orders resampling before rejuvenation"},
+    {"id":"process-loop","type":"path","d":"M1250 534 L1230 534 L1230 326 L1240 326","stroke":"#0f766e","stroke_width":3,"meaning":"feedback loop indicates repeated annealing updates through beta stages"},
+    {"id":"population-to-process","type":"path","d":"M1196 427 L1218 427 M1208 417 L1218 427 L1208 437","stroke":"#334155","stroke_width":3,"meaning":"arrow passes candidate particles into SMC scoring"},
+
+    {"id":"posterior-card","type":"rect","x":838,"y":654,"width":706,"height":146,"rx":18,"fill":"#ffffff","stroke":"#f59e0b","stroke_width":2,"meaning":"card shows that SMC retains a population of posterior-supported particles rather than a unique tree"},
+    {"id":"posterior-title","type":"text","x":1191,"y":689,"font_size":21,"font_weight":700,"anchor":"middle","fill":"#b45309","meaning":"posterior particle population heading","value":"terminal resampling → many equal-weight posterior particles"},
+    {"id":"posterior-a","type":"image","x":870,"y":704,"width":76,"height":82,"asset":"components/candidate_tree_state_a.svg","meaning":"first illustrative retained posterior particle"},
+    {"id":"posterior-b","type":"image","x":988,"y":704,"width":76,"height":82,"asset":"components/candidate_tree_state_b.svg","meaning":"second illustrative retained posterior particle"},
+    {"id":"posterior-c","type":"image","x":1106,"y":704,"width":76,"height":82,"asset":"components/candidate_tree_state_c.svg","meaning":"third illustrative retained posterior particle"},
+    {"id":"posterior-note-1","type":"text","x":1352,"y":737,"font_size":15,"font_weight":700,"anchor":"middle","fill":"#92400e","meaning":"posterior does not imply a unique true tree","value":"Uncertainty retained."},
+    {"id":"posterior-note-2","type":"text","x":1352,"y":765,"font_size":13,"anchor":"middle","fill":"#a16207","meaning":"particles remain defined by topology and eta","value":"Each retained particle remains T + η."},
+    {"id":"process-to-posterior","type":"path","d":"M1381 622 L1381 642 M1371 632 L1381 642 L1391 632","stroke":"#334155","stroke_width":3,"meaning":"arrow carries completed particle population to terminal posterior particles"},
+
+    {"id":"outputs-title","type":"text","x":1191,"y":840,"font_size":20,"font_weight":700,"anchor":"middle","fill":"#0f766e","meaning":"posterior summaries heading","value":"Posterior outputs summarized from retained particles"},
+    {"id":"output-1","type":"rect","x":838,"y":864,"width":166,"height":98,"rx":14,"fill":"#f0fdfa","stroke":"#2dd4bf","stroke_width":2,"meaning":"output card for topology edge support"},
+    {"id":"output-1-a","type":"text","x":921,"y":899,"font_size":16,"font_weight":700,"anchor":"middle","fill":"#115e59","meaning":"topology summary output label","value":"topology"},
+    {"id":"output-1-b","type":"text","x":921,"y":927,"font_size":14,"anchor":"middle","fill":"#52627a","meaning":"edge support interpretation","value":"edge support"},
+    {"id":"output-2","type":"rect","x":1022,"y":864,"width":166,"height":98,"rx":14,"fill":"#faf5ff","stroke":"#a78bfa","stroke_width":2,"meaning":"output card for eta-derived CCF summaries"},
+    {"id":"output-2-a","type":"text","x":1105,"y":899,"font_size":16,"font_weight":700,"anchor":"middle","fill":"#6d28d9","meaning":"eta and CCF output label","value":"η → φ / CCF"},
+    {"id":"output-2-b","type":"text","x":1105,"y":927,"font_size":14,"anchor":"middle","fill":"#52627a","meaning":"CCF posterior summary interpretation","value":"posterior summary"},
+    {"id":"output-3","type":"rect","x":1206,"y":864,"width":166,"height":98,"rx":14,"fill":"#eff6ff","stroke":"#60a5fa","stroke_width":2,"meaning":"output card for SNV assignment posterior summaries"},
+    {"id":"output-3-a","type":"text","x":1289,"y":899,"font_size":16,"font_weight":700,"anchor":"middle","fill":"#1d4ed8","meaning":"SNV assignment output label","value":"SNV assignment"},
+    {"id":"output-3-b","type":"text","x":1289,"y":927,"font_size":14,"anchor":"middle","fill":"#52627a","meaning":"assignment uncertainty interpretation","value":"posterior / MAP summary"},
+    {"id":"output-4","type":"rect","x":1390,"y":864,"width":154,"height":98,"rx":14,"fill":"#fff7ed","stroke":"#fb923c","stroke_width":2,"meaning":"output card for multiplicity posterior summaries"},
+    {"id":"output-4-a","type":"text","x":1467,"y":899,"font_size":16,"font_weight":700,"anchor":"middle","fill":"#c2410c","meaning":"multiplicity output label","value":"multiplicity"},
+    {"id":"output-4-b","type":"text","x":1467,"y":927,"font_size":14,"anchor":"middle","fill":"#52627a","meaning":"multiplicity posterior interpretation","value":"posterior"}
+  ]
+}
