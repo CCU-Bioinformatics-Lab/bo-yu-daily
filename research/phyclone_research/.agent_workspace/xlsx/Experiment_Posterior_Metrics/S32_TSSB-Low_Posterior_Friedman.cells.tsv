@@ -1,0 +1,10 @@
+cell	value
+A1	metric
+B1	p_value
+C1	significant
+A2	relationship_reconstruction_error
+B2	3.788610940256143e-79
+C2	1
+A3	log_perplexity_ratio
+B3	1.565651897322087e-147
+C3	1

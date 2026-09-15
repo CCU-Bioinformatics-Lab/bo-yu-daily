@@ -1,0 +1,135 @@
+{
+  "workbook": "Experiment_Friedman_Nemenyi_Tests.xlsx",
+  "sheets": [
+    {
+      "name": "S15 TSSB-Low, Friedman",
+      "state": "visible",
+      "dimension": "A1:C5",
+      "max_row_seen": 5,
+      "max_col_seen": 3,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S15_TSSB-Low_Friedman.cells.tsv"
+    },
+    {
+      "name": "S16 TSSB-Low, Nemenyi",
+      "state": "visible",
+      "dimension": "A1:G61",
+      "max_row_seen": 61,
+      "max_col_seen": 7,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S16_TSSB-Low_Nemenyi.cells.tsv"
+    },
+    {
+      "name": "S17 TSSB-High, Friedman",
+      "state": "visible",
+      "dimension": "A1:C5",
+      "max_row_seen": 5,
+      "max_col_seen": 3,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S17_TSSB-High_Friedman.cells.tsv"
+    },
+    {
+      "name": "S18 TSSB-High, Nemenyi",
+      "state": "visible",
+      "dimension": "A1:G41",
+      "max_row_seen": 41,
+      "max_col_seen": 7,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S18_TSSB-High_Nemenyi.cells.tsv"
+    },
+    {
+      "name": "S19 FS-CRP Loss, Nemenyi",
+      "state": "visible",
+      "dimension": "A1:F5",
+      "max_row_seen": 5,
+      "max_col_seen": 6,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S19_FS-CRP_Loss_Nemenyi.cells.tsv"
+    },
+    {
+      "name": "S20 Pairtree, Friedman",
+      "state": "visible",
+      "dimension": "A1:C5",
+      "max_row_seen": 5,
+      "max_col_seen": 3,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S20_Pairtree_Friedman.cells.tsv"
+    },
+    {
+      "name": "S21 Pairtree, Nemenyi",
+      "state": "visible",
+      "dimension": "A1:G41",
+      "max_row_seen": 41,
+      "max_col_seen": 7,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S21_Pairtree_Nemenyi.cells.tsv"
+    },
+    {
+      "name": "S22 CONIPHER No-Noise, Friedman",
+      "state": "visible",
+      "dimension": "A1:C5",
+      "max_row_seen": 5,
+      "max_col_seen": 3,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S22_CONIPHER_No-Noise_Friedman.cells.tsv"
+    },
+    {
+      "name": "S23 CONIPHER No-Noise, Nemenyi",
+      "state": "visible",
+      "dimension": "A1:G41",
+      "max_row_seen": 41,
+      "max_col_seen": 7,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S23_CONIPHER_No-Noise_Nemenyi.cells.tsv"
+    },
+    {
+      "name": "S24 CONIPHER Noise, Friedman",
+      "state": "visible",
+      "dimension": "A1:C5",
+      "max_row_seen": 5,
+      "max_col_seen": 3,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S24_CONIPHER_Noise_Friedman.cells.tsv"
+    },
+    {
+      "name": "S25 CONIPHER Noise, Nemenyi",
+      "state": "visible",
+      "dimension": "A1:G41",
+      "max_row_seen": 41,
+      "max_col_seen": 7,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S25_CONIPHER_Noise_Nemenyi.cells.tsv"
+    },
+    {
+      "name": "S26 Copy Number Error, Friedman",
+      "state": "visible",
+      "dimension": "A1:C5",
+      "max_row_seen": 5,
+      "max_col_seen": 3,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S26_Copy_Number_Error_Friedman.cells.tsv"
+    },
+    {
+      "name": "S27 Copy Number Error, Nemenyi",
+      "state": "visible",
+      "dimension": "A1:G41",
+      "max_row_seen": 41,
+      "max_col_seen": 7,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S27_Copy_Number_Error_Nemenyi.cells.tsv"
+    }
+  ]
+}
