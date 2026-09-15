@@ -1,0 +1,367 @@
+[
+  {
+    "workbook": "Experiment_Friedman_Nemenyi_Tests.xlsx",
+    "sheets": [
+      {
+        "name": "S15 TSSB-Low, Friedman",
+        "state": "visible",
+        "dimension": "A1:C5",
+        "max_row_seen": 5,
+        "max_col_seen": 3,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S15_TSSB-Low_Friedman.cells.tsv"
+      },
+      {
+        "name": "S16 TSSB-Low, Nemenyi",
+        "state": "visible",
+        "dimension": "A1:G61",
+        "max_row_seen": 61,
+        "max_col_seen": 7,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S16_TSSB-Low_Nemenyi.cells.tsv"
+      },
+      {
+        "name": "S17 TSSB-High, Friedman",
+        "state": "visible",
+        "dimension": "A1:C5",
+        "max_row_seen": 5,
+        "max_col_seen": 3,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S17_TSSB-High_Friedman.cells.tsv"
+      },
+      {
+        "name": "S18 TSSB-High, Nemenyi",
+        "state": "visible",
+        "dimension": "A1:G41",
+        "max_row_seen": 41,
+        "max_col_seen": 7,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S18_TSSB-High_Nemenyi.cells.tsv"
+      },
+      {
+        "name": "S19 FS-CRP Loss, Nemenyi",
+        "state": "visible",
+        "dimension": "A1:F5",
+        "max_row_seen": 5,
+        "max_col_seen": 6,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S19_FS-CRP_Loss_Nemenyi.cells.tsv"
+      },
+      {
+        "name": "S20 Pairtree, Friedman",
+        "state": "visible",
+        "dimension": "A1:C5",
+        "max_row_seen": 5,
+        "max_col_seen": 3,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S20_Pairtree_Friedman.cells.tsv"
+      },
+      {
+        "name": "S21 Pairtree, Nemenyi",
+        "state": "visible",
+        "dimension": "A1:G41",
+        "max_row_seen": 41,
+        "max_col_seen": 7,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S21_Pairtree_Nemenyi.cells.tsv"
+      },
+      {
+        "name": "S22 CONIPHER No-Noise, Friedman",
+        "state": "visible",
+        "dimension": "A1:C5",
+        "max_row_seen": 5,
+        "max_col_seen": 3,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S22_CONIPHER_No-Noise_Friedman.cells.tsv"
+      },
+      {
+        "name": "S23 CONIPHER No-Noise, Nemenyi",
+        "state": "visible",
+        "dimension": "A1:G41",
+        "max_row_seen": 41,
+        "max_col_seen": 7,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S23_CONIPHER_No-Noise_Nemenyi.cells.tsv"
+      },
+      {
+        "name": "S24 CONIPHER Noise, Friedman",
+        "state": "visible",
+        "dimension": "A1:C5",
+        "max_row_seen": 5,
+        "max_col_seen": 3,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S24_CONIPHER_Noise_Friedman.cells.tsv"
+      },
+      {
+        "name": "S25 CONIPHER Noise, Nemenyi",
+        "state": "visible",
+        "dimension": "A1:G41",
+        "max_row_seen": 41,
+        "max_col_seen": 7,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S25_CONIPHER_Noise_Nemenyi.cells.tsv"
+      },
+      {
+        "name": "S26 Copy Number Error, Friedman",
+        "state": "visible",
+        "dimension": "A1:C5",
+        "max_row_seen": 5,
+        "max_col_seen": 3,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S26_Copy_Number_Error_Friedman.cells.tsv"
+      },
+      {
+        "name": "S27 Copy Number Error, Nemenyi",
+        "state": "visible",
+        "dimension": "A1:G41",
+        "max_row_seen": 41,
+        "max_col_seen": 7,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S27_Copy_Number_Error_Nemenyi.cells.tsv"
+      }
+    ]
+  },
+  {
+    "workbook": "Experiment_Performance_Metrics.xlsx",
+    "sheets": [
+      {
+        "name": "S2 TSSB-Low",
+        "state": "visible",
+        "dimension": "A1:L3001",
+        "max_row_seen": 3001,
+        "max_col_seen": 12,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S2_TSSB-Low.cells.tsv"
+      },
+      {
+        "name": "S3 TSSB-High",
+        "state": "visible",
+        "dimension": "A1:L2001",
+        "max_row_seen": 2001,
+        "max_col_seen": 12,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S3_TSSB-High.cells.tsv"
+      },
+      {
+        "name": "S4 FS-CRP Loss",
+        "state": "visible",
+        "dimension": "A1:M601",
+        "max_row_seen": 601,
+        "max_col_seen": 13,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S4_FS-CRP_Loss.cells.tsv"
+      },
+      {
+        "name": "S5 Pairtree",
+        "state": "visible",
+        "dimension": "A1:M2881",
+        "max_row_seen": 2881,
+        "max_col_seen": 13,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S5_Pairtree.cells.tsv"
+      },
+      {
+        "name": "S6 CONIPHER No-Noise",
+        "state": "visible",
+        "dimension": "A1:J751",
+        "max_row_seen": 751,
+        "max_col_seen": 10,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S6_CONIPHER_No-Noise.cells.tsv"
+      },
+      {
+        "name": "S7 CONIPHER Noise",
+        "state": "visible",
+        "dimension": "A1:J751",
+        "max_row_seen": 751,
+        "max_col_seen": 10,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S7_CONIPHER_Noise.cells.tsv"
+      },
+      {
+        "name": "S8 HGSOC WGS, p2",
+        "state": "visible",
+        "dimension": "A1:I6",
+        "max_row_seen": 6,
+        "max_col_seen": 9,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S8_HGSOC_WGS_p2.cells.tsv"
+      },
+      {
+        "name": "S9 HGSOC WGS + Targeted, p2",
+        "state": "visible",
+        "dimension": "A1:I6",
+        "max_row_seen": 6,
+        "max_col_seen": 9,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S9_HGSOC_WGS_Targeted_p2.cells.tsv"
+      },
+      {
+        "name": "S10 HGSOC WGS, p3",
+        "state": "visible",
+        "dimension": "A1:I6",
+        "max_row_seen": 6,
+        "max_col_seen": 9,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S10_HGSOC_WGS_p3.cells.tsv"
+      },
+      {
+        "name": "S11 HGSOC WGS + Targeted, p3",
+        "state": "visible",
+        "dimension": "A1:I6",
+        "max_row_seen": 6,
+        "max_col_seen": 9,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S11_HGSOC_WGS_Targeted_p3.cells.tsv"
+      },
+      {
+        "name": "S12 HGSOC WGS, p9",
+        "state": "visible",
+        "dimension": "A1:I6",
+        "max_row_seen": 6,
+        "max_col_seen": 9,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S12_HGSOC_WGS_p9.cells.tsv"
+      },
+      {
+        "name": "S13 HGSOC WGS + Targeted, p9",
+        "state": "visible",
+        "dimension": "A1:I6",
+        "max_row_seen": 6,
+        "max_col_seen": 9,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S13_HGSOC_WGS_Targeted_p9.cells.tsv"
+      },
+      {
+        "name": "S14 Copy Number Error",
+        "state": "visible",
+        "dimension": "A1:J2251",
+        "max_row_seen": 2251,
+        "max_col_seen": 10,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S14_Copy_Number_Error.cells.tsv"
+      }
+    ]
+  },
+  {
+    "workbook": "Experiment_Posterior_Metrics.xlsx",
+    "sheets": [
+      {
+        "name": "S28 Pairtree Posterior Metrics",
+        "state": "visible",
+        "dimension": "A1:L2881",
+        "max_row_seen": 2881,
+        "max_col_seen": 12,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S28_Pairtree_Posterior_Metrics.cells.tsv"
+      },
+      {
+        "name": "S29 Pairtree Posterior Friedman",
+        "state": "visible",
+        "dimension": "A1:C3",
+        "max_row_seen": 3,
+        "max_col_seen": 3,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S29_Pairtree_Posterior_Friedman.cells.tsv"
+      },
+      {
+        "name": "S30 Pairtree Posterior Nemenyi",
+        "state": "visible",
+        "dimension": "A1:G21",
+        "max_row_seen": 21,
+        "max_col_seen": 7,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S30_Pairtree_Posterior_Nemenyi.cells.tsv"
+      },
+      {
+        "name": "S31 TSSB-Low Posterior Metrics",
+        "state": "visible",
+        "dimension": "A1:K2501",
+        "max_row_seen": 2501,
+        "max_col_seen": 11,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S31_TSSB-Low_Posterior_Metrics.cells.tsv"
+      },
+      {
+        "name": "S32 TSSB-Low Posterior Friedman",
+        "state": "visible",
+        "dimension": "A1:C3",
+        "max_row_seen": 3,
+        "max_col_seen": 3,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S32_TSSB-Low_Posterior_Friedman.cells.tsv"
+      },
+      {
+        "name": "S33 TSSB-Low Posterior Nemenyi",
+        "state": "visible",
+        "dimension": "A1:G21",
+        "max_row_seen": 21,
+        "max_col_seen": 7,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S33_TSSB-Low_Posterior_Nemenyi.cells.tsv"
+      },
+      {
+        "name": "S34 TSSB-High Posterior Metrics",
+        "state": "visible",
+        "dimension": "A1:K2001",
+        "max_row_seen": 2001,
+        "max_col_seen": 11,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S34_TSSB-High_Posterior_Metrics.cells.tsv"
+      },
+      {
+        "name": "S35 TSSB-High Post. Friedman",
+        "state": "visible",
+        "dimension": "A1:C3",
+        "max_row_seen": 3,
+        "max_col_seen": 3,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S35_TSSB-High_Post._Friedman.cells.tsv"
+      },
+      {
+        "name": "S36 TSSB-High Posterior Nemenyi",
+        "state": "visible",
+        "dimension": "A1:G21",
+        "max_row_seen": 21,
+        "max_col_seen": 7,
+        "merges": [],
+        "formulas": [],
+        "cell_dump": "S36_TSSB-High_Posterior_Nemenyi.cells.tsv"
+      }
+    ]
+  }
+]

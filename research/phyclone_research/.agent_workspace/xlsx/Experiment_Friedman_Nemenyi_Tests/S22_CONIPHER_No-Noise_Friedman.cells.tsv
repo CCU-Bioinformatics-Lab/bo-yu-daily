@@ -1,0 +1,16 @@
+cell	value
+A1	metric
+B1	p_value
+C1	significant
+A2	ancestor_descendant_f_score
+B2	1.600216078688653e-80
+C2	1
+A3	v_measure
+B3	2.81147524188394e-18
+C3	1
+A4	time
+B4	3.178027388906146e-126
+C4	1
+A5	memory
+B5	3.646828824242405e-116
+C5	1

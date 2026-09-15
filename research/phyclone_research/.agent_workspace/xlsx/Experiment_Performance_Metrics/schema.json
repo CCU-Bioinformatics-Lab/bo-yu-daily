@@ -1,0 +1,135 @@
+{
+  "workbook": "Experiment_Performance_Metrics.xlsx",
+  "sheets": [
+    {
+      "name": "S2 TSSB-Low",
+      "state": "visible",
+      "dimension": "A1:L3001",
+      "max_row_seen": 3001,
+      "max_col_seen": 12,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S2_TSSB-Low.cells.tsv"
+    },
+    {
+      "name": "S3 TSSB-High",
+      "state": "visible",
+      "dimension": "A1:L2001",
+      "max_row_seen": 2001,
+      "max_col_seen": 12,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S3_TSSB-High.cells.tsv"
+    },
+    {
+      "name": "S4 FS-CRP Loss",
+      "state": "visible",
+      "dimension": "A1:M601",
+      "max_row_seen": 601,
+      "max_col_seen": 13,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S4_FS-CRP_Loss.cells.tsv"
+    },
+    {
+      "name": "S5 Pairtree",
+      "state": "visible",
+      "dimension": "A1:M2881",
+      "max_row_seen": 2881,
+      "max_col_seen": 13,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S5_Pairtree.cells.tsv"
+    },
+    {
+      "name": "S6 CONIPHER No-Noise",
+      "state": "visible",
+      "dimension": "A1:J751",
+      "max_row_seen": 751,
+      "max_col_seen": 10,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S6_CONIPHER_No-Noise.cells.tsv"
+    },
+    {
+      "name": "S7 CONIPHER Noise",
+      "state": "visible",
+      "dimension": "A1:J751",
+      "max_row_seen": 751,
+      "max_col_seen": 10,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S7_CONIPHER_Noise.cells.tsv"
+    },
+    {
+      "name": "S8 HGSOC WGS, p2",
+      "state": "visible",
+      "dimension": "A1:I6",
+      "max_row_seen": 6,
+      "max_col_seen": 9,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S8_HGSOC_WGS_p2.cells.tsv"
+    },
+    {
+      "name": "S9 HGSOC WGS + Targeted, p2",
+      "state": "visible",
+      "dimension": "A1:I6",
+      "max_row_seen": 6,
+      "max_col_seen": 9,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S9_HGSOC_WGS_Targeted_p2.cells.tsv"
+    },
+    {
+      "name": "S10 HGSOC WGS, p3",
+      "state": "visible",
+      "dimension": "A1:I6",
+      "max_row_seen": 6,
+      "max_col_seen": 9,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S10_HGSOC_WGS_p3.cells.tsv"
+    },
+    {
+      "name": "S11 HGSOC WGS + Targeted, p3",
+      "state": "visible",
+      "dimension": "A1:I6",
+      "max_row_seen": 6,
+      "max_col_seen": 9,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S11_HGSOC_WGS_Targeted_p3.cells.tsv"
+    },
+    {
+      "name": "S12 HGSOC WGS, p9",
+      "state": "visible",
+      "dimension": "A1:I6",
+      "max_row_seen": 6,
+      "max_col_seen": 9,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S12_HGSOC_WGS_p9.cells.tsv"
+    },
+    {
+      "name": "S13 HGSOC WGS + Targeted, p9",
+      "state": "visible",
+      "dimension": "A1:I6",
+      "max_row_seen": 6,
+      "max_col_seen": 9,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S13_HGSOC_WGS_Targeted_p9.cells.tsv"
+    },
+    {
+      "name": "S14 Copy Number Error",
+      "state": "visible",
+      "dimension": "A1:J2251",
+      "max_row_seen": 2251,
+      "max_col_seen": 10,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S14_Copy_Number_Error.cells.tsv"
+    }
+  ]
+}

@@ -1,0 +1,701 @@
+Bioinformatics, 2025, 41(7), btaf344
+https://doi.org/10.1093/bioinformatics/btaf344
+Advance Access Publication Date: 13 June 2025
+Original Paper
+
+
+
+
+Phylogenetics
+
+
+
+
+                                                                                                                                                               Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+PhyClone: accurate Bayesian reconstruction of cancer
+phylogenies from bulk sequencing
+Emilia Hurtado1,2 , Alexandre Bouchard-Co  �3, Andrew Roth1,4,5,�
+                                        ^ te
+1
+  Department of Molecular Oncology, BC Cancer Agency, 675 West 10th Avenue, Vancouver, BC, V5Z 1L3, Canada
+2
+  Graduate Bioinformatics Training Program, University of British Columbia, 315- 2185 East Mall, Vancouver, BC, V6T 1Z4, Canada
+3
+  Department of Statistics, University of British Columbia, 2207 Main Mall, Vancouver, BC, V6T 1Z4, Canada
+4
+  Department of Pathology and Laboratory Medicine, University of British Columbia, 2211 Wesbrook Mall, Vancouver, BC, V6T 1Z7, Canada
+5
+  Department of Computer Science, University of British Columbia, 2366 Main Mall, Vancouver, BC, V6T 1Z4, Canada
+�Corresponding author. Department of Molecular Oncology, BC Cancer Agency, 675 West 10th Avenue, Vancouver, BC V5Z 1L3, Canada.
+E-mail: aroth@bccrc.ca.
+Associate Editor: Russell Schwartz
+
+Abstract
+Motivation: Cancer is driven by somatic mutations that result in the expansion of genomically distinct sub-populations of cells called clones.
+Identifying the clonal composition of tumours and understanding the evolutionary relationships between clones is a crucial task in cancer geno­
+mics. Bulk DNA sequencing is commonly used for studying the clonal composition of tumours, but it is challenging to infer the genetic relation­
+ship between different clones due to the mixture of different cell populations.
+Results: In this work, we introduce a new probabilistic model called PhyClone that can infer clonal phylogenies from bulk-sequencing data. We
+demonstrate the performance of PhyClone on simulated and real-world datasets and show that it outperforms previous methods in terms of ac­
+curacy and sample scalability.
+Availability and implementation: Source code is available on Github at: https://github.com/Roth-Lab/PhyClone under the GPL v3.0 license.
+
+
+
+1 Introduction                                                                    To address this deficiency, a number of approaches have
+                                                                                  attempted to reconstruct the clonal phylogeny from bulk se­
+Inferring the evolutionary history of cancer cell populations is a
+                                                                                  quencing (Deshwar et al. 2015, Malikic et al. 2015, Popic et al.
+fundamental problem in cancer biology (Burrell et al. 2013,
+                                                                                  2015, Wintersinger et al. 2022, Grigoriadis et al. 2024). Beyond
+McGranahan and Swanton 2017). High throughput genomics
+                                                                                  providing an estimate of the phylogenetic tree, a key benefit of
+methods have been transformative in this effort, providing
+                                                                                  these approaches is that they allow for the genotypes and preva­
+insights into mechanisms of malignant ontogeny, therapeutic re­
+                                                                                  lence of clones to be resolved.
+sistance and metastasis (Turajlic et al. 2019). While single-cell
+                                                                                     Methods for inferring clonal phylogenies from bulk se­
+sequencing methods exist to precisely characterize tumour evo­                    quencing generally make the infinite sites assumption (ISA),
+lution (Zahn et al. 2017, Laks et al. 2019), their application has                which implies that mutations with higher cellular prevalence
+remained limited due to cost and technical challenges when ap­                    cannot be acquired later than mutations with lower cellular
+plied to patient tumour samples. Thus, the field remains heavily                  prevalence (Dentro et al. 2017, McGranahan and Swanton
+reliant on bulk sequencing and computational deconvolution of                     2017, Tarabichi et al. 2021). In the context of bulk sequenc­
+tumours to infer clonal population structure (Dentro et al.                       ing this assumption can lead to ambiguities, and cannot, e.g.
+2021, Frankell et al. 2023).                                                      resolve whether two clonal populations are siblings or ances­
+   Many tools for quantifying clonal populations in bulk se­                      tor/descendants if the sum of cellular prevalence does not ex­
+quencing have focused on clustering mutations that occur at the                   ceed one. This deficiency can partially be addressed by
+same cellular prevalence, i.e. occur in the same proportion of                    conducting multi-region sequencing (Tarabichi et al. 2021,
+malignant cells (Miller et al. 2014, Roth et al. 2014, Deveau                     Cort�es-Ciriano et al. 2022), which has now become common
+et al. 2018, Gillis and Roth 2020). These approaches assume                       practice in cancer evolution studies (Frankell et al. 2023).
+that mutations with the same cellular prevalence across samples                   The key insight is that if a mutation has higher prevalence
+occur in the same set of cells. Clustering mutations based on cel­                than another mutation in one sample, but the reverse rela­
+lular prevalence thus provides insight into which mutations                       tionship between the mutations is observed in a different
+originated during the same clonal expansions and have the                         sample, the mutations must originate in clones from different
+same pattern of mutation loss (Gerstung et al. 2020). While ef­                   clades of the phylogeny, i.e. the associated clones lie on dif­
+fective for identifying clonal populations, clustering approaches                 ferent branches (Tarabichi et al. 2021). In addition to only
+ignore the underlying phylogenetic relationship among clones.                     providing weak identifiability, the additivity assumption is
+
+Received: 7 August 2024; Revised: 20 May 2025; Editorial Decision: 28 May 2025; Accepted: 11 June 2025
+© The Author(s) 2025. Published by Oxford University Press.
+This is an Open Access article distributed under the terms of the Creative Commons Attribution License (https://creativecommons.org/licenses/by/4.0/), which
+permits unrestricted reuse, distribution, and reproduction in any medium, provided the original work is properly cited.
+2                                                                                                                                     Hurtado et al.
+
+
+violated if mutation loss occurs. In the context of cancer evo­              the number of clones, the sets of mutations that originate at
+lution, mutation loss can occur due to genomic instability                   each node in the tree, and the phylogenetic ordering of muta­
+leading to the deletion of large regions of the genome                       tions. We marginalize prevalence of clones in each sample,
+(McGranahan and Swanton 2017, Tarabichi et al. 2021).                        but if needed, the prevalences can be reinstantiated via maxi­
+Frequent mutation loss has been identified in genomically un­                mum a posteriori (MAP) estimation or sampling after
+stable cancers in several studies (McPherson et al. 2016,                    tree inference.
+Jamal-Hanjani et al. 2017, Gerstung et al. 2020, Watkins                        We first describe the non-parametric Bayesian tree-
+et al. 2020).                                                                structured clustering prior distribution used by PhyClone.
+
+
+
+
+                                                                                                                                                        Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+   In this work, we develop a new method for inferring clonal                We then provide a full description of the basic PhyClone
+phylogenies based on bulk sequencing. Given that bulk se­                    model, and several extensions. Finally, we describe the infer­
+quencing may only contain information to partially resolve                   ence strategy. More detailed discussion of the model and in­
+the clonal phylogenetic structure, we adopt a Bayesian statis­               ference strategy are provided in the Supplementary Methods,
+tical approach, which allows us to infer a posterior distribu­               available as supplementary data at Bioinformatics online.
+tion over the set of potential phylogenies compatible with the
+data. To address the fact that the number of clonal popula­                  2.1 Prior distribution over clone phylogenies
+tions is unknown, we have developed a non-parametric                         PhyClone employs the forest structured Chinese restaurant
+Bayesian model of clusters related by a tree structure. A key                process (FS-CRP) as a prior over tree topologies and clusters.
+benefit of our approach is the ability to marginalize the                    In this section, we briefly describe the generative process that
+parameters associated with tree nodes (clonal prevalence),                   defines the FS-CRP. In the first step of the FS-CRP, we parti­
+allowing us to perform posterior inference in the lower di­                  tion SNVs into clusters assumed to have the same evolution­
+mensional space of tree topologies. Inference in the collapsed
+                                                                             ary history. To do so, SNVs are split into clusters via the
+space of discrete clustering trees still requires exploration of
+                                                                             Chinese restaurant process (CRP) (Aldous 1985, pg. 92). In
+an exponential number of tree topologies with variable num­
+                                                                             the notation that follows, this partitioning of SNVs is repre­
+bers of nodes. To address this issue, we developed an infer­
+                                                                             sented by b, with b 2 b representing an individual cluster in
+ence algorithm using particle Gibbs sampling (Andrieu et al.
+                                                                             this partitioning.
+2010) coupled with an auxiliary variable construction. In ad­
+                                                                                In the second step of the FS-CRP, we sample a topology for
+dition, our approach allows for partial information about
+                                                                             the clonal phylogeny. A directed, rooted, forest of multifur­
+clustering generated by fast non-phylogenetic methods to be
+incorporated. We demonstrate in the results, that these                      cating arborescences (trees) with as many nodes as clusters is
+advances allow our approach to scale favourably in terms of                  thus selected uniformly at random, and each cluster is associ­
+running time and accuracy with increasing numbers of sam­                    ated to a node, ultimately forming a one-to-one relation be­
+ples. In addition, we show how our proposed method can be                    tween clusters and nodes. The sampled directed forest may
+adapted to allow for the potential of mutation loss for accu­                exhibit multiple roots, so we use the observation that any
+rate inference in real datasets.                                             rooted forest (i.e. any collection of rooted trees) over K nodes
+                                                                             can be turned into a single-rooted tree over K þ 1 nodes by
+                                                                             setting all root nodes to be children of a new empty
+2 Materials and methods                                                      root node.
+The PhyClone model takes as input: (i) allelic count data                       In the third step, we assign clonal prevalence to each node.
+from somatic single nucleotide variants (SNVs); (ii) copy                    The clonal prevalence is defined to be the proportion of ma­
+number variant (CNV) information; (iii) tumour content esti­                 lignant cells that originate at a node, or equivalently the pro­
+mates from bulk sequence data of one or more related tu­                     portion of cells with the genotype defined by the union set of
+mour samples (Fig. 1). Using this information PhyClone                       mutations assigned to nodes on the path to the root. To do
+infers the posterior distribution of phylogenetic trees relating             so, for each individual sample provided, a vector of length
+the clones in the sample. As part of this inference, we infer                equal to the number of nodes is sampled from a Dirichlet
+
+
+
+
+Figure 1. Overview of the PhyClone model. Outline of the high-level process of clonal phylogeny reconstruction from bulk sequencing used by PhyClone.
+As input PhyClone requires allele-specific read counts and copy number data for single nucleotide variants (SNVs) identified in one or more samples.
+PhyClone                                                                                                                                   3
+
+
+distribution. This enforces the constraint that the sum of all      2.2.1 Marginalizing clonal prevalence
+clonal prevalence within a sample adds to one. To obtain the        For inference, it is beneficial to work with the collapsed joint
+cellular prevalence, i.e. the proportion of malignant cells that    distribution, where we marginalize the node   P parameters ρ.
+harbour an SNV, we move recursively up the tree from the            Let Δk denote the k simplex, Δk ¼ fρ 2 Rkþ : ρi ¼ 1g.
+leafs, summing the clonal prevalence of the node with the cel­
+                                                                                      Ð
+lular prevalence of its children. This corresponds to the ISA            pðX; b; TÞ ¼ ΔjVj pðX; b; T; ρÞdρ
+which in turn implies that SNVs are propagated to all                                                Ð
+                                                                                    ¼ pðbjαÞpðTjbÞ ΔjVj pðρjκÞpðXjρ; b; TÞdρ
+descendants from their clone of origin. The output of this
+
+
+
+
+                                                                                                                                               Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+process is a tree-structured clustering of SNVs, which we re­                                        Ð           N
+                                                                                                                 Y
+fer to as a clone phylogeny. In the clone phylogeny, each                              ¼ pðbjαÞpðTjbÞ ΔjVj pðρjκÞ f ðxn j�
+                                                                                                                         ρ vn Þdρ
+                                                                                                                        n¼1
+node has a collection of originating SNVs, clonal prevalence,
+and cellular prevalence defined.                                                   Ð         QN
+                                                                       Computing pðρjκÞ n¼1 f ðxn j�ρ vn Þdρ is non-trivial because
+                                                                    of the dependence on the tree structure. We describe an effi­
+2.2 PhyClone model                                                  cient dynamic programming algorithm in the Supplementary
+Figure 1 outlines the PhyClone model for multiple samples           Material (Section S1.5, available as supplementary data at
+with no outliers. For simplicity, in the following we will as­      Bioinformatics online) that computes the marginalized likeli­
+sume a single sample to keep the notation uncluttered (Fig. 1,      hood in OðjVj2 Þ.
+available as supplementary data at Bioinformatics online).
+                                                                    2.2.2 Pre-clustering
+The observed data vector X contains the allelic read counts
+and copy number information for all mutations n 2 ½N� ¼             For computational efficiency, PhyClone can use clustering in­
+                                                                    formation from fast non-phylogenetic approaches such as
+f1; . . . ; Ng used for computing the PyClone likelihood
+                                                                    PyClone-VI (Gillis and Roth 2020). In principle, PhyClone
+(Methods S1.1 and S1.2, available as supplementary data at
+                                                                    can be used without pre-clustering. However, as it drastically
+Bioinformatics online). This model can be generalized to
+                                                                    increases the computational complexity, pre-clustering is rec­
+multi-region sequencing by sampling the clonal prevalence of        ommended for WGS sized datasets.
+each region from a Dirichlet distribution (Fig. 2, available as       Our approach enforces that any mutations clustered to­
+supplementary data at Bioinformatics online). To compute            gether by the pre-clustering step will be kept together.
+the cellular prevalence of a mutation, which will be used in        However, mutations assigned to different clusters by the pre-
+the PyClone emission density for the allele counts of a muta­       clustering algorithm can also be placed together by
+tion, let:                                                          PhyClone; a feature, i.e. achieved through PhyClone’s ability
+                                                                    to merge separate clusters (or single mutations for un-
+ � b   denotes a clustering of the mutations, such                  clustered inputs) together inside a node. This allows
+   that b ¼ fb � f1; . . . ; Ng : bi \ bi0 ¼ ;; [b ¼ ½N�g.          PhyClone to refine and improve upon the clustering based on
+     � More plainly, b is a set of SNV clusters b, such that        the constraints imposed by the phylogeny.
+       the union of all clusters b 2 b is equal to the set of all
+       SNVs in N.                                                   2.2.3 Outliers
+     � Furthermore, each cluster b in b is a unique set of          To accommodate SNVs that do not satisfy the additivity as­
+       SNVs, such that there is no overlap between any two          sumption due to mutation loss, we allow the possibility of
+       clusters in b.                                               outliers. Each SNV is assigned a prior probability of being an
+                                                                    outlier, νn . We define a binary variable on that indicates
+ � α denotes the concentration parameter used during clus­
+                                                                    whether mutation n is an outlier. If a mutation is not an out­
+   tering of b.                                                     lier, it joins a node in the tree and contributes to the likeli­
+ � ρ denotes a vector of clonal prevalences sampled from a
+                                                                    hood as above. If the mutation is an outlier, it has the
+   Dirichlet distribution of dimension jbj þ 1 ¼ jVj.               standard PyClone likelihood where we assume it has a cellu­
+ � Tv denotes the subtree of T rooted at node v.
+                                                                    lar prevalence drawn from a Uniform distribution. We mar­
+ � Vv denotes the set of nodes in Tv .
+                                                                    ginalize the cellular prevalence in this case using numerical
+ � Cv denotes the set of children nodes of v.
+                                                                    integration.
+ � vn 2 V denotes the node associated with cluster b 2 b such
+                                                                       The joint-likelihood with outliers becomes:
+   that n 2 b. That is, mutation n is in cluster b, and cluster b
+   is assigned
+         P     to tree nodePvn .                                                              N
+                                                                                              Y         ð1
+   ρ v ¼ v0 2Vv ρv0 ¼ ρv þ v0 2Cv ρ� v0
+ � �
+                                                                            pðX; b; T; oÞ ¼       ½νn        f ðxn jρÞdρ�Iðon ¼1Þ
+                                                                                              n¼1        0
+                                                                                                           Ð
+In this notation, ρv and �ρ v represent the clonal and cellular                              × pðbjαÞpðTjbÞ ΔjVj pðρjκÞ
+prevalence of node v, respectively. The likelihood is given by:                                  N
+                                                                                                 Y
+                                                                                             ×                        ρ vn Þ�Iðon ¼0Þ dρ
+                                                                                                     ½ð1 − νn Þf ðxn j�
+                                   N
+                                   Y                                                             n¼1
+                  pðXjρ; b; TÞ ¼         f ðxn j�ρ vn Þ;
+                                   n¼1
+                                                                    2.3 Inference
+where f ðxn j�ρ vn Þ represents the copy number and tumour con­     To simultaneously infer the posterior distribution of tree to­
+tent corrected likelihood of allele counts based on the             pologies and cluster assignments (T and b), we use a sequen­
+PyClone model (Fig. 3, available as supplementary data at           tial Monte Carlo (SMC) algorithm. The SMC algorithm
+Bioinformatics online, Roth et al. 2014).                           works by evolving a set of particles that are iteratively
+4                                                                                                                                             Hurtado et al.
+
+
+extended and reweighed (Fig. 4, available as supplementary                           To see that this algorithm yields a sampler that can sample
+data at Bioinformatics online), such that the final iteration                     all trees, note that the single node tree can be reached at any
+yields an approximation of the posterior. The SMC design in                       iteration of the algorithm. From this configuration, the sam­
+PhyClone grows the rooted forest (the eventual phylogeny)                         pling σ is uniform, thus allowing any ordering of mutations
+from the bottom up. The primary motivation behind this                            to be chosen for the subsequent update of ðT; bÞ.
+bottom-up (or post-order) design is that it allows us to define
+a partial likelihood that, in unison with our dynamic pro­                        2.3.2 Additional MCMC moves
+gramming marginalization algorithm, can be efficiently eval­                      To improve the mixing of the sampler, it is beneficial to in­
+
+
+
+
+                                                                                                                                                                 Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+uated using the SMC approach.                                                     clude additional moves in addition to the particle Gibbs
+   We assume that a permutation, σ, of the mutation indices                       updates. We use two moves, neither of which change the
+[N] has been given. At algorithmic time t of the SMC proce­                       number of nodes in the tree.
+dure we add data point XσðtÞ ¼ xt . The definition of the target                     The first move is a subtree prune-regraft (Swofford and
+density used to guide the SMC iterations can be found in                          Sullivan 2009, pgs. 283, 286). To perform this move, we se­
+Methods S1.6.1, available as supplementary data at                                lect a node at random from the tree and remove the subtree
+Bioinformatics online.                                                            rooted at this node. We then compute the probability of the
+   A key parameter to define for SMC algorithms is the pro­                       tree which would result from attaching the subtree to a node
+posal function, qðxt þ 1 jxt Þ, which extends the state xt to a                   in the tree. We do this for all nodes in the tree and Gibbs sam­
+new state xt þ 1 . In the case of our algorithm, this corresponds                 ple a new attachment node.
+to choosing which node in the tree to allocate mutation                              The second move we consider is to sample new node
+σðt þ 1Þ to. To propose a new state at time t þ 1, we consider                    assignments vn 2 V for each data point xn 2 X without
+all possible states that can be reached by:                                       changing the topology. To do this, we first shuffle the data
+                                                                                  point ordering σ, obtaining a new permutation of the indices
+    1) Adding a data point to an existing root node.                              [N], σ0 . Then, for each datapoint xi 2 Xσ0 , if removing xi from
+    2) Creating a new node choosing a possibly empty subset                       its current node vi does not empty vi , we compute the proba­
+       of children from the existing root nodes as children.                      bility of each tree resulting from having added xi to 8vi0 2 V,
+                                                                                  such that vi0 6¼ vi . We then sample a new candidate tree from
+  We randomly choose whether to join an existing root node                        this set of topologically-stable (i.e. isomorphic) yet data-
+or start a new node. When adding a mutation to an existing                        clustering perturbed configurations.
+root node, we compute the probabilities of the resulting trees
+with the mutation attached at each root node. When adding a                       2.4 Experiments
+mutation to a new node, we randomly sample the set of chil­                       We tested PhyClone against five state-of-the-art methods:
+dren. This approach provides a compromise between the                             PhyloWGS (Deshwar et al. 2015), Pairtree (Wintersinger
+quality of trees proposed and the computational complexity.                       et al. 2022), CONIPHER, Orchard (Kulman et al. 2024), and
+                                                                                  fastBE (Schmidt and Raphael 2024). Here, we describe the
+2.3.1 Overcoming the impact of data ordering                                      datasets, program settings, and performance metrics used for
+A limitation of the procedure so far described is that not all                    these benchmarking experiments (see Table 1).
+trees can be sampled due to the fixed order of the data points.
+Specifically, if x ¼ σ i and y ¼ σj , where i < j then any tree                   2.4.1 Datasets
+where x is an ancestor of y cannot be sampled given a fixed σ                     A combination of newly simulated synthetic datasets, previ­
+(Figs 5–7, available as supplementary data at Bioinformatics                      ously published synthetic datasets, and real human cancer
+online). For example, the first element of σ can never be a                       data were used to perform benchmarking of the methods.
+root node unless the sampled tree has only a single node.
+   To address this issue we use a particle Gibbs (PG) sampler                     2.4.1.1 FS-CRP loss data
+to embed our SMC procedure in a more general Markov                               Tree topologies and clusterings were simulated using the FS-
+chain Monte Carlo sampler (Andrieu et al. 2010). At a high                        CRP prior. Mutational loss was simulated by first randomly
+level, we treat σ as an auxiliary variable and alternate be­                      selecting a set of mutations equal to the proportion to be lost;
+tween sampling σ and ðT; bÞ. Sampling of σ is constrained                         e.g. if there were 100 mutations in total and the loss propor­
+such that the SMC procedure could generate the current con­                       tion was 0.2, we would randomly select 20 of those muta­
+figuration of T and b (Fig. 8, available as supplementary data                    tions to be lost. A node is then selected from which the set of
+at Bioinformatics online).                                                        mutations is to be ‘lost’ from; the loss-node is selected such
+
+Table 1. Method feature comparison table.
+
+Method                                       Publication      Infers mutational       Sequencing error        Clusters          Computes            Multiple
+                                                year                 loss                correction          mutations       clonal prevalence      solutions
+
+PhyloWGS (Deshwar et al. 2015)                  2015          Yes                     No                     Yes             No                     Yes
+Pairtree (Wintersinger et al. 2022)             2022          No                      Yesa                   Nob             Yes                    Yes
+CONIPHER (Grigoriadis et al. 2024)              2023          Yes                     Yes                    Yes             Yes                    Yes
+Orchard (Kulman et al. 2024)                    2024          No                      Yesa                   Nob             Yes                    Yes
+fastBE (Schmidt and Raphael 2024)               2024          No                      No                     Nob             No                     No
+PhyClone                                        2025          Yes                     Yes                    Yes             Yes                    Yes
+  a
+     Method cannot correct for sequencing error or mutational loss during tree building, but an included pre-processing script can be used to adjust the input
+prior to tree building.
+  b
+     Method does not cluster mutations during tree building but can do so separately.
+PhyClone                                                                                                                            5
+
+
+that it is a descendant node from the node that the lost muta­         Methods were provided with the complete set of processed
+tions originate from. All mutations that are members of the         and clustered SNVs (per patient/dataset) on which to infer
+lost set are given positions on the same chromosome, to simu­       their clonal phylogeny solutions. However, the ground-truth
+late the genomic locality of sub-clonal chromosomal region          trees established by McPherson et al. (2016) were defined
+loss. All nodes downstream of (and including) the loss-node         only by the subset of mutations that were selected for single-
+then have the cellular prevalence of the lost set of mutations      cell targeted deep sequencing. Thus, when computing met­
+subtracted from the node’s total, to reflect the impact of hav­     rics, each method’s phylogeny solution was post-processed to
+ing lost the mutations.                                             contain only the ground-truth defining mutations, with any
+
+
+
+
+                                                                                                                                         Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+   We simulated 100 trials for each level of mutation propor­       resulting empty nodes from this process being collapsed into
+tion to lose, with the mutation proportions being                   their parent node so as to not corrupt the inferred topology.
+f0:0; 0:1; 0:2g. Each trial simulated 600 SNVs, with a depth
+of 1000, eight samples, and a tumour content of 1.0.                2.4.2 Program parameters
+                                                                    Pre-clustering was performed for synthetic data (2.4.1, 2.4.1,
+2.4.1.2 Tree-structured stick breaking data                         and 2.4.1) using PyClone-VI v0.1.6 initialized with 100 clus­
+Tree topologies and clusterings were simulated using the tree-      ters, 100 random restarts, and using the binomial allele-count
+structured stick breaking (TSSB) prior. The TSSB prior is an        density. For the HGSOC data (2.4.1), we used the clusters
+alternative non-parametric Bayesian prior over clusters and         provided in the original publication. Pre-clustered results
+tree topologies (Ghahramani et al. 2010). Allelic count data        were supplied to CONIPHER, Pairtree, Orchard, fastBE, and
+were simulated as diploid heterozygous mutations with a tu­         PhyClone for all experiments. Each method was allowed 48 h
+mour content of 1.0. Two TSSB datasets were produced.               wall-clock time to complete each individual trial in
+Both datasets that were simulated had a read depth of 1000,         each dataset.
+sample number levels of [2, 4, 8, 16], and tumour content of           PhyClone (version 0.7.0) was run with the following
+1.0. The small dataset (TSSB-Low) was simulated with 100            parameters: four independent chains, 100 burn-in iterations,
+SNVs and the larger (TSSB-High) had 10 000 SNVs.                    5000 MCMC iterations, 100 particles, Beta-Binomial allele-
+Additionally, the small TSSB dataset also included runs with        count density, and semi-adapted proposal kernel; further­
+128 samples.                                                        more, for the version of PhyClone that includes outlier
+                                                                    modelling, we set the ‘–assign-loss-prob’ flag and accompa­
+2.4.1.3 Pairtree data                                               nying (default) outlier prior probabilities of 0.0001 and 0.4
+We used previously published data from Wintersinger et al.          for the low and high loss prior probabilities, respectively. The
+(2022). In order to avoid clashing with the notation previously     final output tree for PhyClone was selected by MAP
+established in this article, the variables describing the experi­   joint-likelihood.
+mental parameters below have been redefined from those used            PhyloWGS, Pairtree, CONIPHER, Orchard, and fastBE
+in the Pairtree publication; however, their values and meaning      methods were run with default parameters, with the excep­
+remain unchanged. The Pairtree data consisted of simulated          tion of CONIPHER in the HGSOC experiments, where the
+datasets that varied according to combinations of the following     ‘min_cluster_size’ option was set to 3. This setting was ad­
+parameters: number of sub-clones, K ¼ f3; 10; 30; 100g; num­        justed in the HGSOC experiments to allow for CONIPHER
+ber of samples, M ¼ f1; 3; 10; 30; 100g; total depth,               to potentially infer the loss of smaller mutation clusters, a sit­
+D ¼ f50; 200; 1000g; and number of mutations equal to data­         uation which was present in the ground truth.
+set K � N, where N ¼ f10; 20; 100g; with four replicates each,         For all point-estimate (i.e. single tree) metrics, the default
+for a total of 576 datasets.                                        or top-scoring tree provided by each method was used for
+                                                                    the evaluation.
+2.4.1.4 CONIPHER data
+We used previously published data from Grigoriadis et al.           2.4.3 Metrics
+We used datasets 1 and 2, each with a total of 150 trials,          Each experimental method was measured against ground
+which we refer to as the ‘noise’ and ‘no-noise’ datasets, re­       truth in order to assess the accuracy of clonal phylogeny re­
+spectively. For analysis, we split each dataset into three cate­    construction and SNV assignments. The following metrics
+gories according to number of samples: 2–3, 4–7, and 8þ.            were employed:
+
+2.4.1.5 High grade serous ovarian cancer data                        � V-measure:    a metric for measuring clustering accuracy
+We used data from a previous single-cell study of high grade           (Rosenberg and Hirschberg 2007). That is, this metric is
+serous ovarian cancer (HGSOC) where ground-truth trees                 concerned with quantifying how well a method clusters
+were inferred from single-cell, whole-genome, and targeted             together mutations that are clustered in the ground truth,
+deep sequencing data (McPherson et al. 2016). Two sets of              while excluding those that are not.
+data were reconstructed for the HGSOC experiments; one               � Ancestor–descendant F-score (AD F-score): a reconstruc­
+dataset consisted of purely whole-genome sequencing (WGS)              tion accuracy metric which measures the F-score (or F1-
+bulk data, while the second dataset replaced the WGS allele            score) of a method’s phylogenetic reconstruction from the
+counts with the targeted deep sequencing counts for the                perspective of SNV ancestor–descendant relationships
+SNVs which were present in both sets; these datasets are re­           (Fig. 9, available as supplementary data at Bioinformatics
+ferred to as WGS and WGS þ Targeted. Pre-processing in­                online). Positive cases result when an SNV is assigned to a
+volved reconstruction of copy number, read count, and                  node that can form an upward path to the node where a
+cluster assignment data from the supplementary tables, avail­          corresponding true ancestral SNV is assigned.
+able as supplementary data at Bioinformatics online, pro­                � Put more simply, given a tree, for a given node, and
+vided with the original study.                                             for each mutation in the node: this metric constructs a
+6                                                                                                                              Hurtado et al.
+
+
+         set of ancestor–descendant pairs from the current mu­
+         tation to all mutations present in the descendant
+         nodes. This set of pairs is then compared against the
+         set of true ancestor–descendant pairs from the
+         ground-truth, and from these two sets of pairs, true
+         and false positives and negatives are tabulated. These
+         measures are then used to compute the F-score.
+       � This metric is meant to evaluate a method’s ability to
+
+
+
+
+                                                                                                                                                 Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+         accurately reconstruct pair-wise ancestral relation­
+         ships between mutations.
+    � Posterior metrics: the following metrics are measured
+     over the set of all unique solutions produced by a method,
+     and are each computed as likelihood-weighted averages.
+                                                                   Figure 2. PhyClone performance with mutations loss. (A) V-measure and
+      � Log perplexity ratio (LPR): also known as the VAF re­
+                                                                   (B) ancestor–descendant F-score for PhyClone with (PC) and without
+        construction loss, this metric measures the LPR be­        outlier modelling (PC-N) as a function of the proportion of mutations lost.
+        tween the clonal cellular prevalence matrices returned
+        by a method against that of the ground truth. To inter­    mutations lost in the tree increases (Fig. 2). However, the ad­
+        pret this metric, a lower (including negative values)      dition of the outlier state addresses this issue, making the
+        score is better (Wintersinger et al. 2022, Kulman et al.   method far more robust to loss. In addition, the inclusion of
+        2024). To not bias the results of the LPR, all method      outlier modelling does not appear to impact performance
+        solutions were scored using the PhyClone marginaliza­      when no mutation loss is observed (Fig. 2).
+        tion algorithm.                                               In sequel, we only consider the PhyClone model with out­
+      � Relationship reconstruction error (RRE): following an
+                                                                   lier modelling in the experiments, as we expect that allowing
+        exhaustive construction of all possible valid topologies   for mutation loss will be the default use-case when analysing
+        (i.e. those that do not violate the ISA) that fit the      real data.
+        ground-truth clonal cellular prevalence matrix, this
+        metric evaluates how well a method’s solutions have        3.2 Scalable and accurate Bayesian inference
+        reconstructed the pairwise evolutionary relationships      We first analysed the small TSSB dataset with 100 SNVs. We
+        present in the set of valid ground-truth topologies        note, this model is equivalent to the PhyloWGS model and
+        (Wintersinger et al. 2022, Kulman et al. 2024).            thus should favour that method. Our goal was to compare
+   We only report the posterior metrics for the TSSB and           the accuracy and efficiency of different modelling and infer­
+Pairtree datasets, as the CONIPHER dataset does not comply         ence approaches when data is generated from a well-defined
+with the perfect phylogeny assumption; the tree enumeration        statistical model. PhyClone and PhyloWGS are fully Bayesian
+used by the RRE metric fails in this case.                         models, whereas Pairtree uses a Gaussian approximation to
+   Significance testing for differences in performance for each    perform MAP estimation, CONIPHER optimizes a heuristic
+benchmarking experiment was performed via Friedman–                objective, fastBE employs a two stage regression and optimi­
+Nemenyi testing. If the metric being tested demonstrated a         zation strategy, and Orchard implements a factorized ap­
+global significance difference (P-value <.01) as per the           proximation of the posterior over phylogenetic space. In
+Friedman test, a pairwise post hoc Nemenyi test was then run       addition, PhyClone, Pairtree, CONIPHER, Orchard, and
+to assess which methods performed significantly (P-value           fastBE are all capable of utilizing pre-clustering of the data to
+<.01) differently from each other. Subsequently, the mean          scale inference.
+difference was used to determine the direction of said signifi­       The clustering and tree accuracy results for this experiment
+cance (i.e. which performed better out of the pair)                are summarized in Fig. 3, while the posterior metrics can be
+(Dem�sar 2006).                                                    viewed in Fig. 10C and D, available as supplementary data at
+                                                                   Bioinformatics online. For the TSSB-Low dataset, PhyClone sig­
+                                                                   nificantly outperformed all other methods in both RRE and
+3 Results                                                          LPR. PhyClone also significantly outperformed all other meth­
+3.1 Outlier modelling mitigates major                              ods in AD F-score, while additionally significantly outperform­
+additivity violations                                              ing PhyloWGS in V-measure. Furthermore, no method was
+While the PyClone emission model can account for the effect        found to significantly outperform PhyClone in any of the afore­
+of sequencing error (Roth et al. 2014), it cannot correct for      mentioned metrics. PhyloWGS was significantly slower than all
+larger violations of the additivity assumption. Thus, the dele­    other methods, requiring over an order of magnitude more time
+tion of a large number of SNVs due to copy number variation        to finish than other approaches, with the gap widening with
+could conceivably pose a challenge.                                larger numbers of samples (Fig. 11, available as supplementary
+   To investigate this, we first simulated data from the           data at Bioinformatics online).
+PhyClone model allowing for mutation loss (data described             This experiment supports the idea that fully Bayesian infer­
+in Section 2.4.1). We used this dataset to assess the perfor­      ence can be more accurate. Furthermore, pre-clustering of
+mance of including an outlier state in the PhyClone model.         data can accelerate inference without compromising accu­
+As this dataset is inherently biased to favour PhyClone, we        racy. Based on the long running times observed for
+omit other methods from this comparison. The results of this       PhyloWGS, and the fact performance was not significantly
+experiment suggest that the performance of the outlier naïve       better than other approaches under conditions which favour
+PhyClone model (PC-N) deteriorates as the proportion of            it, we did not include it in subsequent experiments.
+PhyClone                                                                                                                                    7
+
+
+                                                                        Bioinformatics online). In general, the performance of all
+                                                                        methods deteriorated as the number of nodes increased.
+                                                                        However, the relative performance rankings remained similar
+                                                                        as a function of the number of nodes. As we show in Fig. 13,
+                                                                        available as supplementary data at Bioinformatics online, the
+                                                                        performance degradation is related to the ratio between the
+                                                                        number of tree nodes and the number of samples for all meth­
+                                                                        ods. In general, this result would suggest one should not ex­
+
+
+
+
+                                                                                                                                                 Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+                                                                        pect to resolve significantly more clones than the number of
+                                                                        samples acquired when doing bulk sequencing.
+                                                                           Overall, these experiments suggest that PhyClone is rela­
+                                                                        tively robust to the phylogenetic data generation model.
+                                                                        Furthermore, PhyClone tends to benefit more than other
+                                                                        approaches from increasing numbers of samples. This is
+                                                                        reflected in both increasing median performance, and reduc­
+                                                                        tion in interquartile range of results for V-measure, AD F-
+                                                                        score, and posterior metrics.
+
+                                                                        3.4 Accurate inference in the presence of noise
+                                                                        We next considered the impact of ‘noise’, i.e. mutations
+                                                                        which fail to satisfy ISA. We analysed a previously published
+                                                                        dataset, which we refer to as the CONIPHER noise dataset,
+Figure 3. Performance on small TSSB dataset by number of samples. (A)   which includes clusters of mutations that do not satisfy the
+V-measure, clustering accuracy. (B) Ancestor–descendant F-score.        ISA due to sequencing error or mutation loss. The results of
+                                                                        this experiment are summarized in Fig. 5.
+3.3 Robust performance across                                              PhyClone, CONIPHER, and fastBE had no significant per­
+phylogenetic models                                                     formance differences, and all three methods significantly out­
+We next sought to compare the performance of the methods                performed Pairtree and Orchard in terms of AD F-score. As
+across a range of clonal phylogeny simulation strategies. We            in the previous experiments, no method was found to signifi­
+analysed the large TSSB (TSSB-High), pre-clustered Pairtree,            cantly outperform PhyClone. Again, PhyClone benefited the
+and CONIPHER no-noise (CONIPHER-NN) datasets.                           most from increasing numbers of samples, with both better
+Datasets spanned a range of copy number, sample number,                 median performance and reduced variability.
+mutation count, and tumour content values. All data in these               Additionally, an experiment was run on a copy number
+experiments were simulated to satisfy the ISA. Results for              perturbed version of the CONIPHER-NN dataset, the results
+this experiment are summarized in Fig. 4 and Fig. 10, avail­            of which are summarized in Fig. 14, available as supplemen­
+able as supplementary data at Bioinformatics online.                    tary data at Bioinformatics online. Across the copy number
+   For AD F-score, PhyClone significantly outperformed both             perturbed dataset, no method significantly outperformed
+Orchard and Pairtree regardless of dataset; while in terms of           PhyClone in any metric. However, PhyClone significantly
+V-measure, PhyClone significantly outperformed Pairtree                 outperformed fastBE, Orchard, and Pairtree for both AD F-
+and Orchard in the TSSB-High dataset. The performance                   score and V-measure, while significantly outperforming
+advantages of PhyClone over CONIPHER were significant                   CONIPHER in AD F-score. Notably, the impact of increas­
+for both metrics in all cases except for V-measure on the               ing copy number error in this experiment appears to be mini­
+TSSB-High dataset. PhyClone significantly outperformed                  mal across the methods. We believe this effect is seen due to
+fastBE in AD F-score across the pre-clustered Pairtree data.            the PyClone-VI pre-clustering step used by all methods,
+   PhyClone was only significantly outperformed in V-mea­               which is somewhat robust to sample specific copy number
+sure for the TSSB-High dataset, and only by one method,                 errors. This is likely due to the fact the PyClone emission
+CONIPHER. In no case, across all datasets, did any method               model allows for uncertainty over mutational genotype, as
+significantly outperform PhyClone in AD F-score.                        opposed to clustering based on a point-estimate of cellu­
+   Posterior metrics for the pre-clustered Pairtree and TSSB-High       lar prevalence.
+datasets are summarized in Fig. 10, available as supplementary
+data at Bioinformatics online. For the pre-clustered Pairtree data­     3.5 PhyClone allows for accurate inference of clone
+set, PhyClone significantly outperformed both CONIPHER and              phylogenies with mutation loss
+fastBE in RRE, additionally, PhyClone significantly outper­             To assess how mutation loss impacts the performance of all
+formed CONIPHER, fastBE, and Pairtree in LPR. In the poste­             methods, we analysed previously published data from three
+rior metrics measurement of the TSSB-High dataset, PhyClone             patients with HGSOC (McPherson et al. 2016). Two patients
+was found to significantly outperform all other methods in LPR,         (patients 2 and 3) exhibited complex forms of mutation loss,
+while significantly outperforming Pairtree, fastBE, and Orchard         where clones experienced the loss of a subset of ancestral
+in RRE. In terms of the posterior metrics LPR and RRE, no               mutations. These results were validated with targeted single-
+method was found to significantly outperform PhyClone.                  cell sequencing, which we used as ground truth.
+   For the pre-clustered Pairtree dataset, we also explored                Pairtree struggled to resolve valid tree topologies (i.e. a single-
+how the performance of methods varied as a function of the              rooted directed acyclic graph) across all three patients included
+number of nodes in the tree, as opposed to the number of                in this dataset, as such this section focuses on the results pro­
+samples (Fig. 12, available as supplementary data at                    vided by PhyClone, CONIPHER, Orchard, and fastBE.
+8                                                                                                                                     Hurtado et al.
+
+
+
+
+                                                                                                                                                       Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+Figure 4. Performance on noise free synthetic data. V-measure and ancestor–descendant F-score for (A, B) high SNV TSSB (TSSB-High), (C, D) pre-
+clustered Pairtree, and (E, F) CONIPHER no-noise (CONIPHER-NN) datasets.
+
+
+                                                                             Bayesian non-parametric model, the FS-CRP, which we de­
+                                                                             velop in this work. A key feature of using the FS-CRP in
+                                                                             PhyClone is the ability to marginalize the clonal prevalence
+                                                                             given the constraints imposed by the tree. This allows us to
+                                                                             perform collapsed inference in a parameter space that does
+                                                                             not depend on the number of samples. As we demonstrate in
+                                                                             the results, this improves the efficiency of sampling and accu­
+                                                                             racy of results as additional samples are used. In addition, we
+                                                                             have developed a Particle Gibbs sampler for efficient infer­
+                                                                             ence. A key innovation of this inference scheme is an auxil­
+                                                                             iary variable construction over the sequence of points visited
+                                                                             during each sequential Monte Carlo round.
+                                                                                The key limitation of PhyClone is the underlying PyClone
+                                                                             model for correcting for mutational genotype. In particular,
+Figure 5. Performance on CONIPHER noise dataset. (A) V-measure and
+(B) ancestor–descendant F-score for methods on the CONIPHER                  the model is not capable of modelling regions of sub-clonal
+noise dataset.                                                               copy number variation. However, as the number of samples
+                                                                             increases we expect this deficiency to be less acute. For exam­
+   PhyClone, CONIPHER, and fastBE all appeared to capably re­                ple, the HGSOC dataset analysed has numerous sub-clonal
+construct the phylogenetic history of the clones in patients 2 and           copy number events (McPherson et al. 2016, 2017). In future,
+9, with varying levels of resolution; while Orchard was only able            the PyClone model could also be improved to adjust for sub-
+to produce an accurate reconstruction for patient 9, and only                clonal copy number variation following approaches such as
+when provided with the WGS with targeted deep sequencing                     those in Frankell et al. (2023).
+counts (WGS þ Targeted), Figs 15 and 16, Table 1, available as                  PhyClone presents a robust and scalable Bayesian method
+supplementary data at Bioinformatics online. For patient 3, in               for clonal history reconstruction from multi-sample bulk-se­
+both forms of the data, WGS (Fig. 6A) and WGS with targeted                  quencing cancer data. Regardless of the source of synthetic
+deep sequencing counts (Fig. 6B), PhyClone was able to correctly             data, PhyClone performed as well or frequently better than
+identify and remove two SNV clusters that were found to be lost              other state-of-the-art methods. Furthermore, PhyClone was
+in ground-truth clones below the root. Neither CONIPHER nor                  able to reconstruct accurate phylogenies in real datasets in
+fastBE were able to remove the lost SNVs and thus were unable                the presence of mutation loss. With its ability to leverage
+to completely reconstruct the ground-truth phylogeny. The im­                pre-clustering information, PhyClone easily scales to whole-
+pact of the correct removal of the lost SNVs is further reflected in         genome scale datasets. PhyClone also scales well in the
+the performance metrics where PhyClone outperforms all meth­                 number of samples analysed in terms of running time and
+ods for patient 3 (Table 1, available as supplementary data at               accuracy, allowing for extensive multi-region sequencing
+Bioinformatics online).                                                      datasets to be analysed.
+
+
+4 Discussion                                                                 Author contributions
+In this work, we have presented PhyClone, a new statistical                  Emilia Hurtado (Conceptualization [supporting], Formal analy­
+method for reconstructing clonal phylogenies from multi-                     sis [lead], Investigation [lead], Methodology [supporting],
+sample bulk-sequencing data. PhyClone is based on a                          Software [equal], Visualization [equal], Writing—original draft
+PhyClone                                                                                                                                                9
+
+
+
+
+                                                                                                                                                             Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+Figure 6. HGSOC patient 3 clonal phylogenetic trees. (A) Predicted trees built using purely whole-genome sequencing (WGS) data. (B) Predicted trees
+built using a combination of WGS and targeted deep sequencing data (McPherson et al. 2016). From left to right: ground-truth phylogenetic tree inferred
+from single-cell and targeted deep sequencing data (McPherson et al. 2016), nodes with a dashed border denote clones that are defined only by the
+absence of SNVs from the parent. Predicted trees built using: PhyClone with outlier modelling; CONIPHER; Pairtree; fastBE; and Orchard. Colours of
+nodes in method inferred trees correspond to the single nucleotide variant clonal (SNV) assignment from ground truth. Predicted tree nodes with a
+dashed border denote SNVs that the method has classified as outliers/lost.
+
+
+
+
+[equal]), Alexandre Bouchard-Cote (Conceptualization [equal],                 source code for the version of PhyClone used during bench­
+Methodology [equal], Software [supporting], Writing—review                    marking is available from Zenodo, https://doi.org/10.5281/
+& editing [equal]), and Andrew Roth (Conceptualization                        zenodo.15062184.
+[equal], Methodology [equal], Resources [lead], Software
+[equal], Visualization [equal], Writing—original draft [equal],
+Writing—review & editing [equal])                                             References
+                                                                              Aldous DJ. Exchangeability and related topics. In: Hennequin PL (ed.),
+                                                                                 �
+                                                                                 Ecole    � e de Probabilit�es de Saint-Flour XIII—1983.. Berlin,
+                                                                                       d’Et�
+Supplementary data                                                               Heidelberg: Springer Berlin Heidelberg, 1985, 1–198. https://doi.
+Supplementary data is available at Bioinformatics online.                        org/10.1007/BFb0099421
+                                                                              Andrieu C, Doucet A, Holenstein R. Particle Markov chain Monte
+Conflict of interest: No competing interest is declared.                         Carlo methods. J R Stat Soc Ser B Stat Methodol 2010;72:269–342.
+                                                                                 https://doi.org/10.1111/j.1467-9868.2009.00736.x
+                                                                              Burrell RA, McGranahan N, Bartek J et al. The causes and consequen­
+Funding                                                                          ces of genetic heterogeneity in cancer evolution. Nature 2013;501:
+A.R. is a Michael Smith Health Research BC scholar [grant                        338–45. https://doi.org/10.1038/nature12625
+18245]. We acknowledge generous funding support provided                      Cort�es-Ciriano I, Gulhan DC, Lee JJ-K et al. Computational analysis of
+to A.R. by the BC Cancer Foundation. In addition, A.R.                           cancer genome sequencing data. Nat Rev Genet 2022;23:298–314.
+receives operating funds from the Natural Sciences and                           https://doi.org/10.1038/s41576-021-00431-y
+                                                                              Dem�sar J. Statistical comparisons of classifiers over multiple data sets. J
+Engineering Research Council of Canada (grant RGPIN-
+                                                                                 Mach Learn Res 2006;7:1–30.
+2022–04378).                                                                  Dentro SC, Wedge DC, Van Loo P. Principles of reconstructing the sub­
+                                                                                 clonal architecture of cancers. Cold Spring Harb Perspect Med
+Data availability                                                                2017;7:a026625. https://doi.org/10.1101/cshperspect.a026625
+                                                                              Dentro SC, Leshchiner I, Haase K et al.; PCAWG Evolution and
+Pairtree (Wintersinger et al. 2022), CONIPHER (Grigoriadis                       Heterogeneity Working Group and the PCAWG Consortium.
+et al. 2024), and HGSOC (McPherson et al. 2016) datasets                         Characterizing genetic intra-tumor heterogeneity across 2,658 hu­
+are available from their respective publications. Pairtree data­                 man cancer genomes. Cell 2021;184:2239–54.e39. https://doi.org/
+sets were retrieved from https://github.com/morrislab/pair                       10.1016/j.cell.2021.03.009
+tree-experiments and CONIPHER datasets were retrieved                         Deshwar AG, Vembu S, Yung CK et al. PhyloWGS: reconstructing subclonal
+from Grigoriadis et al. 2024. TSSB synthetic datasets, FS-                       composition and evolution from whole-genome sequencing of tumors.
+                                                                                 Genome Biol 2015;16:35. https://doi.org/10.1186/s13059-015-0602-8
+CRP loss synthetic datasets, method input files, and method
+                                                                              Deveau P, Colmet Daage L, Oldridge D et al. QuantumClone: clonal as­
+output files for all experiments are available from Zenodo,
+                                                                                 sessment of functional mutations in cancer based on a genotype-
+https://doi.org/10.5281/zenodo.13240565.                                         aware method for clonal reconstruction. Bioinformatics 2018;34:
+                                                                                 1808–16. https://doi.org/10.1093/bioinformatics/bty016
+                                                                              Frankell AM, Dietzen M, Al Bakir M et al.; TRACERx Consortium.
+Code availability                                                                The evolution of lung cancer and impact of subclonal selection in
+PhyClone source code is available on Github at: https://                         TRACERx. Nature 2023;616:525–33. https://doi.org/10.1038/
+github.com/Roth-Lab/PhyClone. An archival snapshot of the                        s41586-023-05783-5
+10                                                                                                                                                    Hurtado et al.
+
+
+Gerstung M, Jolly C, Leshchiner I et al.; PCAWG Consortium. The evo­                     evolution. PLoS Comput Biol 2014;10:e1003665. https://doi.org/
+    lutionary history of 2,658 cancers. Nature 2020;578:122–8. https://                  10.1371/journal.pcbi.1003665
+    doi.org/10.1038/s41586-019-1907-7                                                 Popic V, Salari R, Hajirasouliha I et al. Fast and scalable inference of
+Ghahramani Z, Jordan M, Adams RP. Tree-structured stick breaking                         multi-sample cancer lineages. Genome Biol 2015;16:91. https://doi.
+    for hierarchical data. In: Lafferty J, Williams C, Shawe-Taylor J et                 org/10.1186/s13059-015-0647-8
+    al. (eds.), Advances in Neural Information Processing Systems, Vol.               Rosenberg A, Hirschberg J. V-measure: a conditional entropy-based ex­
+    23. Red Hook, NY, United States: Curran Associates, Inc., 2010.                      ternal cluster evaluation measure. In: Eisner J (ed.), Proceedings of
+Gillis S, Roth A. PyClone-VI: scalable inference of clonal population                    the 2007 Joint Conference on Empirical Methods in Natural
+    structures using whole genome data. BMC Bioinformatics 2020;21:                      Language Processing and Computational Natural Language
+
+
+
+
+                                                                                                                                                                       Downloaded from academic.oup.com/bioinformatics/article/41/7/btaf344/8161563 by National Chung Cheng University user on 15 September 2026
+    571. https://doi.org/10.1186/s12859-020-03919-2                                      Learning (EMNLP-CoNLL). Prague, Czech Republic: Association
+Grigoriadis K, Huebner A, Bunkum A et al. CONIPHER: A computa­                           for Computational Linguistics, 2007, 410–20.
+    tional framework for scalable phylogenetic reconstruction with er­                Roth A, Khattra J, Yap D et al. PyClone: statistical inference of clonal
+    ror correction. Nat Protoc 2024;19:159–83. https://doi.org/10.                       population structure in cancer. Nat Methods 2014;11:396–8.
+    1038/s41596-023-00913-9                                                              https://doi.org/10.1038/nmeth.2883
+Jamal-Hanjani M, Wilson GA, McGranahan N et al.; TRACERx                              Schmidt H, Raphael BJ. A regression based approach to phylogenetic
+    Consortium. Tracking the evolution of non-small-cell lung cancer. N Engl             reconstruction from multi-sample bulk DNA sequencing of tumors.
+    J Med 2017;376:2109–21. https://doi.org/10.1056/NEJMoa1616288                        PLoS Comput Biol 2024;20:e1012631.
+Kulman E, Kuang R, Morris Q. Orchard: building large cancer phyloge­                  Swofford DL, Sullivan J. Phylogeny inference based on parsimony and
+    nies using stochastic combinatorial search. PLoS Comput Biol                         other methods using PAUP. In: Lemey P, Salemi M, Vandamme A-
+    2024;20:e1012653.                                                                    M (eds.), The Phylogenetic Handbook. Cambridge: Cambridge
+Laks E, McPherson A, Zahn H et al.; CRUK IMAXT Grand Challenge                           University Press, 2009, 267–312.
+    Team. Clonal decomposition and DNA replication states defined by                  Tarabichi M, Salcedo A, Deshwar AG et al. A practical guide to can­
+    scaled single-cell genome sequencing. Cell 2019;179:1207–21.e22.                     cer subclonal reconstruction from DNA sequencing. Nat
+    https://doi.org/10.1016/j.cell.2019.10.026                                           Methods 2021;18:144–55. https://doi.org/10.1038/s41592-020-
+Malikic S, McPherson AW, Donmez N et al. Clonality inference in mul­                     01013-2
+    tiple tumor samples using phylogeny. Bioinformatics 2015;31:                      Turajlic S, Sottoriva A, Graham T et al. Resolving genetic heterogeneity
+    1349–56. https://doi.org/10.1093/bioinformatics/btv003                               in cancer. Nat Rev Genet 2019;20:404–16. https://doi.org/10.1038/
+McGranahan N, Swanton C. Clonal heterogeneity and tumor evolu­                           s41576-019-0114-6
+    tion: past, present, and the future. Cell 2017;168:613–28. https://               Watkins TBK, Lim EL, Petkovic M et al. Pervasive chromosomal insta­
+    doi.org/10.1016/j.cell.2017.01.018                                                   bility and karyotype order in tumour evolution. Nature 2020;587:
+McPherson A, Roth A, Laks E et al. Divergent modes of clonal spread                      126–32. https://doi.org/10.1038/s41586-020-2698-6
+    and intraperitoneal mixing in high-grade serous ovarian cancer. Nat               Wintersinger JA, Dobson SM, Kulman E et al. Reconstructing complex
+    Genet 2016;48:758–67. https://doi.org/10.1038/ng.3573                                cancer evolutionary histories from multiple bulk DNA samples us­
+McPherson AW, Roth A, Ha G et al. ReMixT: clone-specific genomic                         ing Pairtree. Blood Cancer Discov 2022;3:208–19. https://doi.org/
+    structure estimation in cancer. Genome Biol 2017;18:140. https://                    10.1158/2643-3230.bcd-21-0092
+    doi.org/10.1186/s13059-017-1267-2                                                 Zahn H, Steif A, Laks E et al. Scalable whole-genome single-cell library
+Miller CA, White BS, Dees ND et al. SciClone: inferring clonal architec­                 preparation without preamplification. Nat Methods 2017;14:
+    ture and tracking the spatial and temporal patterns of tumor                         167–73. https://doi.org/10.1038/nmeth.4140
+
+
+
+
+© The Author(s) 2025. Published by Oxford University Press.
+This is an Open Access article distributed under the terms of the Creative Commons Attribution License (https://creativecommons.org/licenses/by/4.0/), which permits
+unrestricted reuse, distribution, and reproduction in any medium, provided the original work is properly cited.
+Bioinformatics, 2025, 41, 1–10
+https://doi.org/10.1093/bioinformatics/btaf344
+Original Paper
+

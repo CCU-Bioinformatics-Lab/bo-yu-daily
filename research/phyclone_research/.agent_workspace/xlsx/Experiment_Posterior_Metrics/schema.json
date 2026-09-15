@@ -1,0 +1,95 @@
+{
+  "workbook": "Experiment_Posterior_Metrics.xlsx",
+  "sheets": [
+    {
+      "name": "S28 Pairtree Posterior Metrics",
+      "state": "visible",
+      "dimension": "A1:L2881",
+      "max_row_seen": 2881,
+      "max_col_seen": 12,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S28_Pairtree_Posterior_Metrics.cells.tsv"
+    },
+    {
+      "name": "S29 Pairtree Posterior Friedman",
+      "state": "visible",
+      "dimension": "A1:C3",
+      "max_row_seen": 3,
+      "max_col_seen": 3,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S29_Pairtree_Posterior_Friedman.cells.tsv"
+    },
+    {
+      "name": "S30 Pairtree Posterior Nemenyi",
+      "state": "visible",
+      "dimension": "A1:G21",
+      "max_row_seen": 21,
+      "max_col_seen": 7,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S30_Pairtree_Posterior_Nemenyi.cells.tsv"
+    },
+    {
+      "name": "S31 TSSB-Low Posterior Metrics",
+      "state": "visible",
+      "dimension": "A1:K2501",
+      "max_row_seen": 2501,
+      "max_col_seen": 11,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S31_TSSB-Low_Posterior_Metrics.cells.tsv"
+    },
+    {
+      "name": "S32 TSSB-Low Posterior Friedman",
+      "state": "visible",
+      "dimension": "A1:C3",
+      "max_row_seen": 3,
+      "max_col_seen": 3,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S32_TSSB-Low_Posterior_Friedman.cells.tsv"
+    },
+    {
+      "name": "S33 TSSB-Low Posterior Nemenyi",
+      "state": "visible",
+      "dimension": "A1:G21",
+      "max_row_seen": 21,
+      "max_col_seen": 7,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S33_TSSB-Low_Posterior_Nemenyi.cells.tsv"
+    },
+    {
+      "name": "S34 TSSB-High Posterior Metrics",
+      "state": "visible",
+      "dimension": "A1:K2001",
+      "max_row_seen": 2001,
+      "max_col_seen": 11,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S34_TSSB-High_Posterior_Metrics.cells.tsv"
+    },
+    {
+      "name": "S35 TSSB-High Post. Friedman",
+      "state": "visible",
+      "dimension": "A1:C3",
+      "max_row_seen": 3,
+      "max_col_seen": 3,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S35_TSSB-High_Post._Friedman.cells.tsv"
+    },
+    {
+      "name": "S36 TSSB-High Posterior Nemenyi",
+      "state": "visible",
+      "dimension": "A1:G21",
+      "max_row_seen": 21,
+      "max_col_seen": 7,
+      "merges": [],
+      "formulas": [],
+      "cell_dump": "S36_TSSB-High_Posterior_Nemenyi.cells.tsv"
+    }
+  ]
+}
