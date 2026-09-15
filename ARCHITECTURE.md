@@ -2,7 +2,7 @@
 
 更新日期：2026-08-24
 
-![alt text](arch.png)
+![alt text](assets/arch.png)
 
 ## 核心模塊與 validation 文件引用
 

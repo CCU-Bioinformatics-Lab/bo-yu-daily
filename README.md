@@ -2,7 +2,7 @@
 
 目前 repo 的研究輸入、模型、推理與輸出文件：
 
-- [arch.md](arch.md)：整體研究架構；說明 `data input`、`model`、`inference_algo`、`output` 與 `validation` 的文件引用與資料流向
+- [ARCHITECTURE.md](ARCHITECTURE.md)：整體研究架構；說明 `data input`、`model`、`inference_algo`、`output` 與 `validation` 的文件引用與資料流向
 - [data.md](data.md)：canonical data/provenance
 - [model.md](model.md)：model specification（posterior、likelihood、prior 與 latent quantities）
 - [inference_algo.md](inference_algo.md)：目前 Rao–Blackwellized annealed SMC 的推理流程、PhyClone-inspired local SPR/global tree moves、particle state、ESS/resampling、rejuvenation 與 backend input/output contract
@@ -13,5 +13,5 @@
 - [inference/](inference/)：active C++17 finite-K annealed SMC backend，提供 AlgorithmRegistry、repeat/site 平行化與 particle artifacts（包含每個 SNV 的 multiplicity posterior）
 - [daily/](daily/)：每天產生的 HTML的相關資料和每日總結。
 
-建議文件閱讀順序是 `arch.md` → `data.md` → `model.md` → `inference_algo.md` → `output.md` → `validation.md`：
-先從 `arch.md` 掌握模塊分工與連線，再確認資料表、posterior model、推理演算法與模型輸出，最後用 `validation.md` 驗證輸出能支持到哪一層研究 claim。
+建議文件閱讀順序是 `ARCHITECTURE.md` → `data.md` → `model.md` → `inference_algo.md` → `output.md` → `validation.md`：
+先從 `ARCHITECTURE.md` 掌握模塊分工與連線，再確認資料表、posterior model、推理演算法與模型輸出，最後用 `validation.md` 驗證輸出的腫瘤演化樹

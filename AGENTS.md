@@ -1,48 +1,23 @@
-# Repository Guidelines
+# 關鍵字搜尋路徑
 
-## Project Structure & Module Organization
+依任務中的關鍵字選擇一個分支，只讀該列的「入口」。入口不足以回答或需要驗證目前行為時，才讀「深入」；任務明確跨分支時才開啟多列。每項必要主張都有對應來源後即停止擴大讀取範圍。
 
-- `inference/` contains the active C++17 SMC backend: public headers in `include/`, implementation in `src/`, and C++/contract tests in `tests/`.
-- `tumor_tree_pipeline/` contains the Python workflow, input contracts, configurations, diagnostics, and Python tests/fixtures.
-- Root Markdown files define the research modules: `data.md`, `model.md`, `inference_algo.md`, `output.md`, `validation.md`, and `experiment_workflow.md`.
-- `output/` stores generated input bundles and experiment artifacts; `daily/YYYYMMDD/` stores daily HTML records. Treat generated outputs as provenance records, not source code.
+| 關鍵字或問題 | 入口 | 入口不足時才深入 |
+|---|---|---|
+| 儲存庫導覽、功能位置 | `README.md` | 對應模組的 README 或原始碼 |
+| 跨模組架構、資料流、模組邊界 | `ARCHITECTURE.md` | `CONTEXT.md` |
+| 領域詞彙、核心實體、既有決策 | `CONTEXT.md` | `docs/adr/` 中與問題相符的 ADR |
+| 輸入、schema、v4、reads、CNV、purity、PS | `data.md` | `inference/src/model.cpp`、`inference/tests/` |
+| 樣本、BAM、purity label、資料 inventory | `tumor_sample.md` | 該文件指向的 manifest 或外部路徑 |
+| model、multiplicity、topology、CCF、likelihood | `model.md` | `inference/include/tumor_tree_inference/model.hpp`、`inference/src/model.cpp`、相關 ADR/tests |
+| SMC、annealing、ESS、resampling、rejuvenation | `inference_algo.md` | `inference/README.md`、`inference/src/algorithm.cpp`、相關 tests |
+| C++ backend、CLI、API、contract | `inference/README.md` | `inference/include/`、`inference/src/`、`inference/tests/` |
+| smoke、pilot、formal、gate、停止條件 | `experiment_workflow.md` | `validation.md`、使用者指定的 config、script 或 receipt |
+| 驗證指標、穩定性、claim ceiling | `validation.md` | `inference/tests/` 與使用者指定的 diagnostics 或 receipt |
+| artifact、manifest、receipt、provenance、`_SUCCESS`／`_FAILED` | `output.md` | 使用者指定的 artifact 或 manifest；若含 `git_sha`，再對照該版本原始碼 |
+| legacy 欄位、淘汰介面 | `legacy_data.md` | `inference/tests/` 與相關 Git history |
+| 文獻、方法比較、歷史研究 | `research/` 中與主題相符的 README 或 Markdown | 該文件直接引用的論文或資料 |
+| 近期決策、實驗歷程 | `daily/` 中與日期或關鍵字相符的 HTML | 原始碼、tests、manifest 與 receipts；每日紀錄只作導覽 |
+| HTML、SVG、元件、視覺化 | `module_format.md` | `module_format.html`、`assets/`、`tools/` 中與元件相符的檔案 |
 
-## Build, Test, and Development Commands
-
-```bash
-cmake -S inference -B inference/build -DCMAKE_BUILD_TYPE=Release
-cmake --build inference/build --parallel
-ctest --test-dir inference/build --output-on-failure
-inference/tests/run_contract_tests.sh inference/build/tumor_tree_inference
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tumor_tree_pipeline/tests -p 'test_*.py'
-```
-
-Use the fixture smoke workflow before larger experiments:
-
-```bash
-TUMOR_TREE_INFERENCE_THREADS=4 PYTHONDONTWRITEBYTECODE=1 \
-  python3 -m tumor_tree_pipeline run \
-  --config tumor_tree_pipeline/configs/smoke.active.json
-```
-
-Follow `experiment_workflow.md` for pilot/formal gates and stop conditions.
-
-## Coding Style & Naming Conventions
-
-Preserve the existing C++17 style: four-space indentation, `PascalCase` types, and `snake_case` functions/files. Use Python `snake_case`, `test_*.py` test names, and explicit type/contract checks where already present. No repository-wide formatter is configured; keep diffs focused and readable.
-
-## Testing Guidelines
-
-Add or update tests with behavior changes. C++ contract/smoke tests belong in `inference/tests`; Python workflow tests belong in `tumor_tree_pipeline/tests`. Run both suites for backend or workflow changes. Do not claim a pilot is formal validation: inspect its receipts and diagnostics.
-
-## Research and Data Boundaries
-
-Keep the v4 canonical input contract and `rho_ASCAT` purity boundary intact. Multiplicity is inferred inside the C++ model; do not reintroduce legacy input columns such as `tumor_dna_fraction`. Keep model, inference, output, and validation descriptions modular.
-
-## Agent Information Retrieval
-
-When investigating repository state, first scan relevant `daily/` HTML for a quick overview of recent decisions and experiments. Then follow `README.md`'s order—`arch.md` → `data.md` → `model.md` → `inference_algo.md` → `output.md` → `validation.md`—and verify claims against source code, tests, manifests, and receipts. Treat daily HTML as orientation/history, not authority; never use it alone. Separate current, historical, and uncommitted work.
-
-## Commit & Pull Request Guidelines
-
-Recent history uses scoped conventional prefixes such as `feat:`, `fix:`, `docs:`, `data:`, `refactor:`, and `docs(daily):`. Use a short imperative subject and one logical change per commit. PRs should describe affected modules, tests run, experiment/output provenance, and any known gate limitations. For HTML changes, include a screenshot or rendered-file path; do not commit unrelated generated artifacts or rewrite remote history.
+入口提到的路徑若不存在，以目前 `rg --files` 的結果為準，不沿用文件中的舊路徑。
