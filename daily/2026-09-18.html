@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!-- daily-log:generated — 這個檔由 render.py 產生，手改會被覆蓋 -->
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026-09-18 工作日誌</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<header class="page"><h1 class="date">2026-09-18</h1>
+<div class="meta">涵蓋 09-18 00:00 ~ 09-18 14:10</div>
+<div class="headline">五份核心規格已改為重新設計佔位內容，後續可從乾淨的文件邊界重建資料、模型、推論、輸出與驗證設計</div>
+</header>
+
+<nav class="outline"><h2 class="section">今日概覽</h2><ol><li><a href="#item-1">data、model、推論演算法、輸出與驗證文件已清空舊規格，改為一致的重新設計佔位內容。</a></li></ol></nav>
+
+<section class="item" id="item-1">
+<h3><span class="num">01</span>把 data.md、model.md 等五份核心規格改為重新設計佔位內容<span class="badge done">完成</span></h3>
+<div class="field question"><div class="label">問題</div><div class="body"><p>既有的資料、模型、推論演算法、輸出與驗證規格已不再適合作為下一輪設計的起點，如何先建立明確的重設邊界？</p></div></div>
+<div class="field approach"><div class="label">做法</div><div class="body"><p>將 data.md、model.md、inference_algo.md、output.md 與 validation.md 的既有內容移除，只留下各自的文件標題和「重新設計中；未來待補。」標記。</p></div></div>
+<div class="field result"><div class="label">結果</div><div class="body"><p>五份文件已各自以獨立 local commit 保存；舊規格不再與新的待設計內容混在同一份文件中。</p></div></div>
+<div class="field interpretation"><div class="label">解讀</div><div class="body"><p>下一輪設計可以分別補回輸入契約、模型假設、推論流程、輸出 artifact 與驗證標準，而不會把先前的假設誤當成仍有效的規格。</p></div></div>
+<div class="field gaps"><div class="label">還缺</div><div class="body"><p>五份文件目前只有佔位內容；新的欄位、演算法、輸出格式與驗收條件都尚未定義。</p></div></div>
+<details class="detail"><summary>執行細節</summary><div class="inner"><p>各文件的最終內容均為文件標題加上「重新設計中；未來待補。」；所有提交均為 local commits，沒有 push。</p><div class="art"><div class="t">碰過的檔案</div><ul><li><code>data.md</code></li><li><code>model.md</code></li><li><code>inference_algo.md</code></li><li><code>output.md</code></li><li><code>validation.md</code></li></ul></div><div class="art"><div class="t">跑過的指令</div><ul><li><code>git add &lt;each changed file&gt;</code></li><li><code>git commit &lt;one file per commit&gt;</code></li></ul></div><div class="art"><div class="t">產出</div><ul><li><code>commits 4bc0381, 327c9a5, 0420e3c, 5d267c8, 324184e</code></li></ul></div></div></details>
+</section>
+
+<section class="block"><details class="record"><summary>本日其他 3 項（完整紀錄）</summary><div class="inner"><div class="rec"><div class="t">逐檔提交 README.md、inference/ 等工作樹的 29 項變更<span class="badge done">完成</span></div><p>為了讓當前工作樹的每個變更都能獨立回查，使用者要求逐檔 stage 與 commit。最後共建立 29 個 local commits，涵蓋五份規格佔位文件，以及既有的 inference、測試與文件刪除／重設；最新為 324184e。工作樹已乾淨，且沒有執行 git push。</p><div class="why">未進主要工作項：落在邊界；此項是版本控制保存動作，雖有 29 個檔案的落地規模，但不改變研究方法本身。</div><div class="art"><div class="t">碰過的檔案</div><ul><li><code>README.md</code></li><li><code>data.md</code></li><li><code>model.md</code></li><li><code>inference_algo.md</code></li><li><code>output.md</code></li><li><code>validation.md</code></li><li><code>inference/</code></li></ul></div><div class="art"><div class="t">跑過的指令</div><ul><li><code>git add &lt;file&gt;</code></li><li><code>git commit -m &lt;message&gt;</code></li></ul></div><div class="art"><div class="t">產出</div><ul><li><code>29 local commits from 9457f3f through 324184e</code></li></ul></div></div><div class="rec"><div class="t">盤點 main_work 的目錄與文件現況<span class="badge done">完成</span></div><p>為了解目前可重設的範圍，以 README-first 方式由多個子代理分頭盤點根目錄規格文件、inference C++ backend、assets 與 tools 的視覺產製鏈、docs/adr 與 research。統整結果確認 daily 目錄當時為空，並發現 README 與 data.md 曾提到但現況不存在的 tumor_tree_pipeline。盤點完成後未修改檔案。</p><div class="why">未進主要工作項：落在邊界；成果是一次唯讀導覽，未產生程式或文件落地變更。</div><div class="art"><div class="t">碰過的檔案</div><ul><li><code>README.md</code></li><li><code>ARCHITECTURE.md</code></li><li><code>inference/</code></li><li><code>assets/</code></li><li><code>tools/</code></li><li><code>docs/adr/</code></li><li><code>research/</code></li><li><code>daily/</code></li></ul></div><div class="art"><div class="t">產出</div><ul><li><code>main_work 目錄責任與核心資料流摘要</code></li></ul></div></div><div class="rec"><div class="t">分類 Git 演進並審查 AlgorithmRegistry 抽象<span class="badge done">完成</span></div><p>為了理解既有設計如何演進，子代理將 82 個可達 commits 分成研究／C++ 推論建置、規格契約化、annealed SMC、安全與模型擴充、視覺元件與 legacy 清理等階段，且確認沒有 merge commit。針對 committed HEAD 的 reviewer 發現 AlgorithmRegistry 沒有公開註冊 API、factory 私下硬編碼且 CLI 先拒絕其他名稱；因此目前的可替換演算法抽象不能由呼叫端真正擴充。工作停在提出 registry／CLI 收斂或移除過早抽象的建議。</p><div class="why">未進主要工作項：使用者討論與產出都較少，且此次只完成唯讀分類與審查，未實作修正。</div><div class="art"><div class="t">碰過的檔案</div><ul><li><code>inference/include/tumor_tree_inference/registry.hpp</code></li><li><code>inference/src/registry.cpp</code></li><li><code>inference/src/main.cpp</code></li></ul></div><div class="art"><div class="t">跑過的指令</div><ul><li><code>git log</code></li><li><code>git show</code></li></ul></div><div class="art"><div class="t">產出</div><ul><li><code>82-commit 時間分期與一項 P2 registry 抽象發現</code></li></ul></div></div></div></details></section>
+
+<footer class="page"><span></span><a href="../index.html">所有日誌</a><span></span></footer>
+</div>
+</body>
+</html>

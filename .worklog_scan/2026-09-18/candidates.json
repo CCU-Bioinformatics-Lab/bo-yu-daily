@@ -1,0 +1,50 @@
+[
+  {
+    "title": "把五份核心規格改為重新設計佔位內容",
+    "signals": {
+      "user_msgs": 4,
+      "decision": false,
+      "files": 5,
+      "commit": true,
+      "continued": false,
+      "kind": "method"
+    },
+    "note": "data、model、推論演算法、輸出與驗證文件均保留標題及未來待補說明。"
+  },
+  {
+    "title": "逐檔提交目前工作樹的 29 項變更",
+    "signals": {
+      "user_msgs": 1,
+      "decision": false,
+      "files": 29,
+      "commit": true,
+      "continued": false,
+      "kind": "infra"
+    },
+    "note": "以每一檔一個 local commit 保存目前變更，未 push。"
+  },
+  {
+    "title": "盤點儲存庫目錄與文件現況",
+    "signals": {
+      "user_msgs": 5,
+      "decision": false,
+      "files": 0,
+      "commit": false,
+      "continued": false,
+      "kind": "capability"
+    },
+    "note": "多個子代理按 README-first 方式盤點文件、C++ backend、資產、工具、研究與 ADR。"
+  },
+  {
+    "title": "分類 Git 演進並審查 AlgorithmRegistry 抽象",
+    "signals": {
+      "user_msgs": 4,
+      "decision": false,
+      "files": 0,
+      "commit": false,
+      "continued": false,
+      "kind": "capability"
+    },
+    "note": "歷史分期與 committed HEAD 審查發現 registry 的可替換設計尚無公開擴充點。"
+  }
+]

@@ -1,0 +1,182 @@
+{
+  "schema_version": "2",
+  "date": "2026-09-18",
+  "headline": "五份核心規格已改為重新設計佔位內容，後續可從乾淨的文件邊界重建資料、模型、推論、輸出與驗證設計",
+  "items": [
+    {
+      "title": "把 data.md、model.md 等五份核心規格改為重新設計佔位內容",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "data、model、推論演算法、輸出與驗證文件已清空舊規格，改為一致的重新設計佔位內容。",
+      "question": "既有的資料、模型、推論演算法、輸出與驗證規格已不再適合作為下一輪設計的起點，如何先建立明確的重設邊界？",
+      "approach": "將 data.md、model.md、inference_algo.md、output.md 與 validation.md 的既有內容移除，只留下各自的文件標題和「重新設計中；未來待補。」標記。",
+      "result": "五份文件已各自以獨立 local commit 保存；舊規格不再與新的待設計內容混在同一份文件中。",
+      "interpretation": "下一輪設計可以分別補回輸入契約、模型假設、推論流程、輸出 artifact 與驗證標準，而不會把先前的假設誤當成仍有效的規格。",
+      "gaps": "五份文件目前只有佔位內容；新的欄位、演算法、輸出格式與驗收條件都尚未定義。",
+      "artifacts": {
+        "files": [
+          "data.md",
+          "model.md",
+          "inference_algo.md",
+          "output.md",
+          "validation.md"
+        ],
+        "commands": [
+          "git add <each changed file>",
+          "git commit <one file per commit>"
+        ],
+        "outputs": [
+          "commits 4bc0381, 327c9a5, 0420e3c, 5d267c8, 324184e"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "重新設計佔位內容",
+          "plain": "先清掉不再採用的規格，只留下明確標記，之後再逐一補上新的設計。"
+        }
+      ],
+      "details": "各文件的最終內容均為文件標題加上「重新設計中；未來待補。」；所有提交均為 local commits，沒有 push。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 404,
+          "session_id": "01a0b300",
+          "project": "main_work",
+          "ts": "09-18 13:57",
+          "ref": "01a0b300:404"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "逐檔提交 README.md、inference/ 等工作樹的 29 項變更",
+      "what": "為了讓當前工作樹的每個變更都能獨立回查，使用者要求逐檔 stage 與 commit。最後共建立 29 個 local commits，涵蓋五份規格佔位文件，以及既有的 inference、測試與文件刪除／重設；最新為 324184e。工作樹已乾淨，且沒有執行 git push。",
+      "why_demoted": "落在邊界；此項是版本控制保存動作，雖有 29 個檔案的落地規模，但不改變研究方法本身。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "README.md",
+          "data.md",
+          "model.md",
+          "inference_algo.md",
+          "output.md",
+          "validation.md",
+          "inference/"
+        ],
+        "commands": [
+          "git add <file>",
+          "git commit -m <message>"
+        ],
+        "outputs": [
+          "29 local commits from 9457f3f through 324184e"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "逐檔 commit",
+          "plain": "每次提交只包含一個檔案，因此之後能單獨查看或回復那個檔案的變更。"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 1055,
+          "session_id": "01a0b300",
+          "project": "main_work",
+          "ts": "09-18 14:04",
+          "ref": "01a0b300:1055"
+        }
+      ]
+    },
+    {
+      "title": "盤點 main_work 的目錄與文件現況",
+      "what": "為了解目前可重設的範圍，以 README-first 方式由多個子代理分頭盤點根目錄規格文件、inference C++ backend、assets 與 tools 的視覺產製鏈、docs/adr 與 research。統整結果確認 daily 目錄當時為空，並發現 README 與 data.md 曾提到但現況不存在的 tumor_tree_pipeline。盤點完成後未修改檔案。",
+      "why_demoted": "落在邊界；成果是一次唯讀導覽，未產生程式或文件落地變更。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "README.md",
+          "ARCHITECTURE.md",
+          "inference/",
+          "assets/",
+          "tools/",
+          "docs/adr/",
+          "research/",
+          "daily/"
+        ],
+        "commands": [],
+        "outputs": [
+          "main_work 目錄責任與核心資料流摘要"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "README-first",
+          "plain": "先從專案導覽文件開始，只在需要時再查看它明確指向的目錄或檔案。"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 35,
+          "session_id": "01a0b300",
+          "project": "main_work",
+          "ts": "09-18 13:33",
+          "ref": "01a0b300:35"
+        }
+      ]
+    },
+    {
+      "title": "分類 Git 演進並審查 AlgorithmRegistry 抽象",
+      "what": "為了理解既有設計如何演進，子代理將 82 個可達 commits 分成研究／C++ 推論建置、規格契約化、annealed SMC、安全與模型擴充、視覺元件與 legacy 清理等階段，且確認沒有 merge commit。針對 committed HEAD 的 reviewer 發現 AlgorithmRegistry 沒有公開註冊 API、factory 私下硬編碼且 CLI 先拒絕其他名稱；因此目前的可替換演算法抽象不能由呼叫端真正擴充。工作停在提出 registry／CLI 收斂或移除過早抽象的建議。",
+      "why_demoted": "使用者討論與產出都較少，且此次只完成唯讀分類與審查，未實作修正。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "inference/include/tumor_tree_inference/registry.hpp",
+          "inference/src/registry.cpp",
+          "inference/src/main.cpp"
+        ],
+        "commands": [
+          "git log",
+          "git show"
+        ],
+        "outputs": [
+          "82-commit 時間分期與一項 P2 registry 抽象發現"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "AlgorithmRegistry",
+          "plain": "集中列出可用推論演算法、並依名稱建立其實作的程式元件。"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 486,
+          "session_id": "01a0b300",
+          "project": "main_work",
+          "ts": "09-18 14:00",
+          "ref": "01a0b300:486"
+        }
+      ]
+    }
+  ],
+  "issues": [],
+  "advisor": [],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "09-18 00:00 ~ 09-18 14:10",
+  "scan": {
+    "last_scanned": "2026-09-18T14:10:07",
+    "sessions": [
+      "01a0b300",
+      "01a0b320"
+    ],
+    "layers": {
+      "show": 1,
+      "record": 1,
+      "border": 2
+    }
+  }
+}
