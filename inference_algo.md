@@ -1,3 +1,0 @@
-# Inference algorithm
-
-> 重新設計中；未來待補。
