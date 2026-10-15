@@ -1,0 +1,48 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## 研究目標
+
+這是專門研究**腫瘤演化樹（tumor phylogeny / clonal evolution tree）重建**的研究目錄。主軸是：
+
+1. 以 **PhyClone**（Roth-Lab，bulk SNV + CN 的 clone tree 推理，Particle Gibbs/SMC）為基線，分析並改善其模型與推理。
+2. 加入 **long read 才有的特徵**，特別是 **longphase-s 產生的 haplotype（HP1/HP2 phasing）** 資訊，例如 phased reads 上 SNV 與 haplotype／allele-specific CN 的對應、同一 read 上多個 SNV 的共現關係，用來約束 multiplicity、CNV timing、clone assignment 與 topology。
+
+資料是 ONT 腫瘤細胞株（HCC1395、COLO829、H1437、H2009、HCC1937、HCC1954）的 alignment，已由 BAM 轉成 **CRAM**（reference：`/big8_disk/ref/GRCh38_no_alt_analysis_set.fasta`）。每株有多個 nominal purity 的 subsample（`tX_nY`），詳見 `tumor_sample.md`。注意：`tX_nY` 的百分比是 design tumor fraction，**不是**實測 purity ground truth；`t00_n25` 是純 normal baseline。
+
+
+## 目錄結構
+
+- `tumor_sample.md`：樣本／CRAM 路徑盤點（`/big8_disk/data/<cell line>/ONT*/subsample/<purity label>/<line>_<purity label>.cram`；部分舊 `.bam` symlink 已失效，以該檔為準），以及 PhyClone benchmarking 資料集（`/big8_disk/boyu114/phyclone_dataset/`）。
+- `research/phyclone_research/`：PhyClone 論文分析。
+  - `PhyClone/`：上游 PhyClone 原始碼，是 **git submodule**（`https://github.com/Roth-Lab/PhyClone.git`），改動要在 submodule 內另外 commit。
+  - `notes/`（`zh-TW/` 是中文版）：`00_SOURCE_MAP` 到 `07_PRESENTATION_BRIEF`，涵蓋論文全貌、方法、實驗、code mapping、evidence matrix、假設與限制。要了解 PhyClone 時優先讀這裡，再回頭查原始碼。
+  - `RESEARCH_PLAN.md`：分析規範。分析 PhyClone 時，讀取範圍限制在 `research/phyclone_research/` 內，並區分「論文描述」「程式實作」「分析推論」。
+  - `.agent_workspace/`：多 agent 分析的中間產物，不是最終結論。
+- `research/hcc1395_golden_tree_research/`：HCC1395 golden tree 文獻整理，以及 PhyloWGS model review，可作為 HCC1395 的驗證參考。
+- `daily/`：每日工作日誌 HTML（由 `daily-log` skill 產生；`.data/`、`.worklog_scan/` 是它的掃描產物）。日誌只作導覽，不能當成事實來源。
+- `tools/`：視覺化元件產生腳本（`build_visual_components.py` 會呼叫 `~/.codex/skills/svg-component-builder`）。
+
+## PhyClone 常用指令
+
+PhyClone 的程式碼位於 `research/phyclone_research/PhyClone/phyclone/`。`smc/` 是 SMC kernels／samplers，`mcmc/` 是 Particle Gibbs、Gibbs-MH 與 concentration，`tree/` 是 tree 結構與分布，`process_trace/` 負責 MAP、consensus 與 topology report。
+
+```bash
+# 推理與摘要（需先建立 conda 環境：conda create -n phyclone -c bioconda phyclone，或在 submodule 內 pip install -e .）
+phyclone run -i INPUT.tsv -c CLUSTERS.tsv -o TRACE.h5 --num-chains 4
+phyclone map -i TRACE.h5 -t TREE.nwk -o TABLE.tsv -s SAMPLE_PREVALENCE_TABLE.tsv
+phyclone consensus -i TRACE.h5 -t TREE.nwk -o TABLE.tsv -s SAMPLE_PREVALENCE_TABLE.tsv
+phyclone topology-report -i TRACE.h5 -o TOPOLOGY_TABLE.tsv -t SAMPLED_TOPOLOGIES.tar.gz
+
+# 測試（unittest；在 submodule 根目錄執行）
+cd research/phyclone_research/PhyClone
+python -m unittest discover -s phyclone/tests/unit_tests
+python -m unittest phyclone.tests.unit_tests.test_tree            # 單一測試檔
+python -m unittest phyclone.tests.unit_tests.test_tree.<Class>.<method>
+```
+
+## 工作慣例
+
+- 文件以**繁體中文**撰寫，技術名詞（SNV、CCF、multiplicity、topology、purity、ESS 等）保留英文。
+- 做研究 claim 時，要區分 nominal purity 與實測 purity，也要區分論文主張與程式實際行為，並標明證據來源。
