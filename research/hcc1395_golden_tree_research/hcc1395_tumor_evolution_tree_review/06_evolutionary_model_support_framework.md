@@ -306,7 +306,7 @@ Model fit
     候選樹能否解釋 bulk / CN / HP observations？
 
 Inference reliability
-    chains、ESS、K sensitivity、edge stability、holdout？
+    chains、ESS、edge stability、holdout？
 
 Biological support
     CNA/LOH、single-cell CNV、orthogonal assay 是否相容？
@@ -317,7 +317,7 @@ Biological support
 1. 直接比較 `linear`、`branching`、`polytomy` 與 alternative branch order。
 2. 對不同 topology 計算 posterior、marginal likelihood 或 held-out predictive likelihood。
 3. 移除一組 replicate、某類 CNA、低 confidence sites 或某個 evidence source 後重新推理。
-4. 檢查主要 branch 是否在不同 seed、chain、K 與 held-out data 中保留。
+4. 檢查主要 branch 是否在不同 seed、chain 與 held-out data 中保留。
 5. 對候選樹做 posterior predictive check，確認 observed CCF/VAF/CN pattern 可被重現。
 
 這些結果能提高「計算穩定性」或「資料相容性」，仍不會自動變成 single-cell lineage truth。
@@ -349,37 +349,7 @@ Level 5  single-cell SNV lineage truth          not available
 
 > HCC1395 的 ploidy、allele-specific CN、LOH、clonal/subclonal CNA 與 10x single-cell CNV 結果，支持其具有複雜且異質的細胞族群，因此 branching evolution 是合理且比單一路徑模型更符合整體證據的候選模型。這個結果命名為 **high-confidence candidate branching tree topology**；目前沒有 single-cell SNV lineage 或逐 edge validation，因此不能宣稱 S1–S10 是唯一真實演化樹。
 
-## 10. 對目前 repo 的模塊邊界
-
-目前 repo 應維持：
-
-```text
-data input → model → inference_algo → output
-                                      │
-                                      ▼
-                              support evaluator
-```
-
-`support evaluator` 可以讀取：
-
-- candidate topology、CCF、SNV assignment；
-- ASCAT site/segment table 與 LOH/QC；
-- inference diagnostics、holdout 與 topology stability；
-- optional single-cell CNV clusters；
-- optional multi-SNV long-read linkage。
-
-但 single-cell CNV 不應被假定為目前 model likelihood 的輸入；目前 repo 的 `Hᵢ` long-read HP counts 也只是 site-level allocation evidence，不能等同於 single-cell lineage evidence。
-
-建議 output 分開保存：
-
-```text
-model_fit
-inference_reliability
-biological_support
-claim_grade
-```
-
-## 11. 請檢查的問題
+## 10. 請檢查的問題
 
 1. 是否同意把本章的主要動詞從「證明」改為「檢查相容性」？ **Yes。**
 2. 是否同意把 `support evaluator` 視為 output 後的獨立評估層，而不是塞入現有 likelihood？ **Yes。**
@@ -429,9 +399,9 @@ high-confidence candidate branching tree topology
 - `high-confidence` 描述整合後的候選模型可信度，不代表每一條 edge 都有獨立 lineage truth；
 - `candidate` 保留 PhyloWGS 輸入、posterior topology support 與 single-cell SNV validation 未完整公開的限制。
 
-## 12. 來源
+## 11. 來源
 
-- [HCC1395 原始 PDF](../../hcc1395_golden_tree.pdf)：Fig. 4、Methods 的 CNA、clonality 與 single-cell CNV。
+- [HCC1395 原始 PDF](../hcc1395_golden_tree.pdf)：Fig. 4、Methods 的 CNA、clonality 與 single-cell CNV。
 - [01_data_and_callset.md](01_data_and_callset.md)
 - [02_tree_reconstruction.md](02_tree_reconstruction.md)
 - [03_validation_evidence.md](03_validation_evidence.md)
