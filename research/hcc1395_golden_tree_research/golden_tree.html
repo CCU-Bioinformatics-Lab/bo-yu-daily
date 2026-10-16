@@ -389,8 +389,8 @@
         </svg>
       </div>
       <div class="source-row" style="margin-top: 12px;">
-        <a href="golden_tree/hcc1395_golden_tree.pdf">原始 PDF · Fig. 4 · p. 7</a>
-        <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md">樹重建章節</a>
+        <a href="hcc1395_golden_tree.pdf">原始 PDF · Fig. 4 · p. 7</a>
+        <a href="hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md">樹重建章節</a>
       </div>
     </section>
 
@@ -558,7 +558,6 @@
           <tbody>
             <tr><td>主要 observation</td><td>bulk WGS/WES VAF + local CN</td><td>bulk REF/ALT、ASCAT CN、ASCAT purity、multiplicity、HP1/HP2 counts</td></tr>
             <tr><td>long read</td><td>PacBio 主要作 mutation validation / filter</td><td>LongPhase-S HP counts 是 likelihood observation</td></tr>
-            <tr><td>tree inference</td><td>PhyloWGS；本文未公開完整 input/設定</td><td>finite-K、PhyloWGS-inspired C++ MCMC backend</td></tr>
             <tr><td>single-cell</td><td>10x CNV corroboration</td><td>目前 model 不吃 single-cell CNV</td></tr>
             <tr><td>輸出定位</td><td>inferred tree + CCF</td><td>candidate topology + CCF + SNV assignment</td></tr>
           </tbody>
@@ -617,27 +616,23 @@
       <div class="card pad">
         <details open>
           <summary>論文與圖</summary>
-          <p><a href="golden_tree/hcc1395_golden_tree.pdf">golden_tree/hcc1395_golden_tree.pdf</a> · Fig. 1–2（call-set）、Fig. 4（tree + single-cell CNV）、Extended Data Fig. 9（SuperFreq + subHMM）。</p>
+          <p><a href="hcc1395_golden_tree.pdf">hcc1395_golden_tree.pdf</a> · Fig. 1–2（call-set）、Fig. 4（tree + single-cell CNV）、Extended Data Fig. 9（SuperFreq + subHMM）。</p>
         </details>
         <details>
           <summary>六份研究章節</summary>
           <div class="source-row">
-            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/README.md">README.md</a>
-            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md">01 data</a>
-            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md">02 tree</a>
-            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md">03 validation</a>
-            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/04_confidence_and_limits.md">04 limits</a>
-            <a href="golden_tree/research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md">05 repo lessons</a>
+            <a href="hcc1395_tumor_evolution_tree_review/README.md">README.md</a>
+            <a href="hcc1395_tumor_evolution_tree_review/01_data_and_callset.md">01 data</a>
+            <a href="hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md">02 tree</a>
+            <a href="hcc1395_tumor_evolution_tree_review/03_validation_evidence.md">03 validation</a>
+            <a href="hcc1395_tumor_evolution_tree_review/04_confidence_and_limits.md">04 limits</a>
+            <a href="hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md">05 repo lessons</a>
           </div>
         </details>
         <details>
-          <summary>目前 repo 的模型文件</summary>
+          <summary>模型補充</summary>
           <div class="source-row">
-            <a href="data.md">data.md</a>
-            <a href="model.md">model.md</a>
-            <a href="inference_algo.md">inference_algo.md</a>
-            <a href="output.md">output.md</a>
-            <a href="golden_tree/research/phylowgs_model_review.md">PhyloWGS model review</a>
+            <a href="phylowgs_model_review.md">PhyloWGS model review</a>
           </div>
         </details>
         <details>
