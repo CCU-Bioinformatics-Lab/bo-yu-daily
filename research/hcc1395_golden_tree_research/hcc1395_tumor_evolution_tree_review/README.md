@@ -4,7 +4,7 @@
 
 > Fang et al., *Establishing community reference samples, data and call sets for benchmarking cancer mutation detection using whole-genome sequencing*, Nature Biotechnology 39, 1151–1160 (2021).
 
-主要問題是：論文如何把多來源資料與多層驗證，組合成 HCC1395 的 **high-confidence candidate branching tree topology**（原論文第 4a 圖）。論文 PDF 位於 [`golden_tree/hcc1395_golden_tree.pdf`](../../hcc1395_golden_tree.pdf)。
+主要問題是：論文如何把多來源資料與多層驗證，組合成 HCC1395 的 **high-confidence candidate branching tree topology**（原論文第 4a 圖）。論文 PDF 位於 [`hcc1395_golden_tree.pdf`](../hcc1395_golden_tree.pdf)。
 
 ## 先看結論
 
