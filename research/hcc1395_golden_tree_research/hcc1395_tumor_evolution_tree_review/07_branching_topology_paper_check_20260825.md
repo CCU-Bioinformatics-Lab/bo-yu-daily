@@ -1,4 +1,4 @@
-# HCC1395 分支拓樸與目前 sampler 輸出的查核
+# HCC1395 分支拓樸的論文查核
 
 ## 結論先說
 
@@ -44,40 +44,15 @@ Normal cells
 
 Extended Data Fig. 9 使用 WES / SuperFreq 依 local copy number 校正 SNV VAF，並對 SNV、CNA 的 clonality 與 uncertainty 做 clustering；另用 subHMM 推斷 clonal / subclonal CNA。這些結果支持多個早期與晚期 subclone 的存在，但不是獨立的 edge-level posterior。
 
-## 和目前 repo pilot 的對照
-
-檢查的 run：
-
-`/bip8_disk/boyu114/main_work/output/tumor_tree_pipeline/20260824T103554Z_7f715611ea9c_rho0p99_K4-6-8_seed20260824`
-
-| K | branching particles（4 repeats） | 解讀 |
-|---|---:|---|
-| K4 | 0/256、0/256、0/256、0/256 | 目前是線性 chain，不是論文式分支候選 |
-| K6 | 38/256、0/256、30/256、1/256 | 有少量分支 particle，但不穩定 |
-| K8 | 131/256、256/256、69/256、0/256 | 有明顯 branching-shaped candidate，但跨 repeat 不一致 |
-
-最適合拿來示範「目前有分支候選」的是 K8 / repeat_02。其 raw representative tree 出現 `clone_1` 同時連到兩個子節點的 bifurcation；但 canonical topology summary 顯示後段 edge support 約為 0.55–0.75，替代分支位置也分散。因此目前只能稱為：
-
-> K8/repeat_02 branching-shaped pilot candidate
-
-不能稱為 high-confidence branching topology，也不能稱為 HCC1395 的唯一真實樹。該 pilot 的 `formal_gate_not_evaluated=true`，目前 validation 層尚未完成正式 topology-class scoring、selection margin 與獨立 branch support gate。
-
 ## 對目前研究的實際含義
 
 論文提供的方向不是「所有真實資料都必須產生分支」，而是：
 
 > 如果資料真的含有多個 subclone，且 copy-number / clonality 證據支持早晚事件差異，模型應該能保留 branching topology；不能只用固定 chain 當作唯一合理答案。
 
-所以目前應同時保留：
-
-- K4 的線性 topology，作為目前穩定度較高的 baseline candidate。
-- K8/repeat_02 的分支 topology，作為需要進一步驗證的 branching candidate。
-
-下一步應比較 topology class 的跨 repeat posterior、branch edge support、CCF nesting 與 CNV compatibility，而不是只挑一張視覺上像分支的 representative tree。
-
 ## 來源
 
-- 本地論文：[hcc1395_golden_tree.pdf](/bip8_disk/boyu114/main_work/golden_tree/hcc1395_golden_tree.pdf)，Fig. 4a 位於 PDF p.7（期刊 p.1157）。
+- 本地論文：[hcc1395_golden_tree.pdf](../hcc1395_golden_tree.pdf)，Fig. 4a 位於 PDF p.7（期刊 p.1157）。
 - [Nature Biotechnology article](https://www.nature.com/articles/s41587-021-00993-6)
 - [Nature Fig. 4](https://www.nature.com/articles/s41587-021-00993-6/figures/4)
 - [Nature Extended Data Fig. 9](https://www.nature.com/articles/s41587-021-00993-6/figures/13)
