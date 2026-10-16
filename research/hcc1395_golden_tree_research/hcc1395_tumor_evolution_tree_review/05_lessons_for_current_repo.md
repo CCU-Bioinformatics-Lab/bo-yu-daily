@@ -2,7 +2,7 @@
 
 這一章只把論文的可移植原則，對照目前 repo 的 ASCAT + long-read/HP-count 架構；不把論文的資料介面假設成目前模型已經使用的介面。
 
-目前 repo 對 PhyloWGS 原始模型的補充整理可參考 [`research/phylowgs_model_review.md`](../phylowgs_model_review.md)；本章只保留這篇 HCC1395 resource paper 對資料可信度與驗證層級的啟示。
+目前 repo 對 PhyloWGS 原始模型的補充整理可參考 [`phylowgs_model_review.md`](../phylowgs_model_review.md)；本章只保留這篇 HCC1395 resource paper 對資料可信度與驗證層級的啟示。
 
 ## 1. 可直接借用的研究原則
 
@@ -40,7 +40,6 @@ independent QC / holdout / biological interpretation
 
 | 論文 HCC1395 tree | 目前 repo |
 |---|---|
-| PhyloWGS / SuperFreq 的 bulk clonality analysis | 目前 active inference 是 finite-K、PhyloWGS-inspired 的 C++ MCMC backend |
 | 以 VAF accounting for local CN 的 bulk evidence 為主 | 額外保留 ASCAT purity、major/minor CN、multiplicity 與 long-read HP1/HP2 counts |
 | PacBio 是 orthogonal validation | long-read HP counts 在目前方向中是 likelihood observation |
 | high-confidence candidate branching tree topology 沒有公開完整 input table/command | 目前 repo 應保存 canonical site-level input contract 與每次 run 的 provenance |
