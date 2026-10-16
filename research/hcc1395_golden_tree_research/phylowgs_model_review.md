@@ -1,6 +1,6 @@
 # PhyloWGS model review
 
-> Scope: original PhyloWGS paper and the official `morrislab/phylowgs` repository only. This is a model and sampler review for the current ASCAT + long-read/HP-count tumor-tree project. No code change is proposed in this file.
+> Scope: original PhyloWGS paper and the official `morrislab/phylowgs` repository only. This is a model and sampler review. No code change is proposed in this file.
 
 ## Primary sources
 
@@ -110,7 +110,7 @@ The acceptance log-ratio combines the old/new data posterior and the forward/rev
 
 ## 3. How topology is explored — and what it does **not** do
 
-The important finding for the current failure is:
+The key finding about topology moves is:
 
 > PhyloWGS does not use a single-parent topology MH proposal such as “pick one existing clone and randomly change its parent.” It also does not expose an explicit NNI, SPR, or split–merge topology kernel in the official sampler code.
 
@@ -122,39 +122,6 @@ Topology changes arise indirectly from the TSSB assignment sampler:
 - `resample_stick_orders()` redraws the sibling order, can allocate an additional child, removes unrepresented children, and then resamples sticks.
 - `resample_sticks()` updates the Beta stick variables from child-data counts.
 
-Thus, the tree is a nonparametric allocation structure whose occupied nodes and sibling ordering change as assignments and sticks are resampled. This avoids the specific problem in the current C++ implementation: a parent rewrite can alter the prevalence contribution of an entire clone across roughly 30,000 SNVs in one low-probability proposal. In PhyloWGS, the topology-changing part is separated from the continuous mass MH step, and the assignment proposal is restricted by a slice level rather than proposing an arbitrary parent for a whole clone.
+Thus, the tree is a nonparametric allocation structure whose occupied nodes and sibling ordering change as assignments and sticks are resampled. In PhyloWGS, the topology-changing part is separated from the continuous mass MH step, and the assignment proposal is restricted by a slice level rather than proposing an arbitrary parent for a whole clone.
 
 This is an implementation-based inference, not a claim that PhyloWGS always mixes well. Its assignment update is still datum-wise, so strongly correlated mutations may require many iterations to move together. The official code should therefore not be described as a guaranteed solution to topology mixing or as a split–merge sampler.
-
-## 4. What can be ported to this repository
-
-### Reasonable reusable ideas
-
-1. Keep the current ASCAT/HP-count likelihood, but reparameterize clone prevalence with nonnegative node masses \(\eta\) and derive parent prevalence by descendant sums.
-2. Replace the current whole-clone parent-rewire proposal with a TSSB-inspired allocation kernel: move one SNV/CNV-observation assignment through existing clone nodes, allow birth of an occupied child, remove empty nodes, and resample sibling order/sticks.
-3. Keep the continuous prevalence update as a separate Dirichlet random-walk MH block, with forward/reverse proposal correction and explicit acceptance diagnostics.
-4. Run multiple independently seeded chains. The official repository recommends four concurrent chains because multiple chains improve posterior approximation; they do not reduce the runtime of one chain.
-
-### Non-portable assumptions and required adaptations
-
-| PhyloWGS assumption | Why it cannot be copied directly into the current model |
-|---|---|
-| Input is SSM `a,d,mu_r,mu_v` plus CNV `a,d,ssms` | The current model has REF/ALT counts, ASCAT total/major/minor CN, multiplicity posterior, ASCAT purity, and HP1/HP2 counts. HP counts cannot be reduced to `mu_r`/`mu_v` without losing the long-read observation model. |
-| \(\tilde{\phi}\) is a per-event population frequency | It is not the same object as global `rho_ASCAT=0.99`. The official parser describes CNV cellular prevalence as the fraction of all sample cells carrying the event, not simply the fraction of tumor cells. Purity must remain a separate mixture parameter or be explicitly converted to an all-cell prevalence convention. |
-| CNV events have prevalence and sometimes \(C^m,C^p\) | ASCAT segment CN alone does not provide CNV-event prevalence or the evolutionary timing of an SSM relative to a CNV. A direct port needs a CNV-event layer, a principled multiplicity/allelic-copy mapping, or a CN-stable-region restriction. |
-| Infinite-sites assumption for SSMs | It can be a useful SNV prior, but PS/HP phase blocks are chromosome-copy linkage, not automatically clone ancestry. A PS group must not be treated as one evolutionary node without a likelihood or proposal model that justifies the correlation. |
-| Variable-size TSSB tree | The current experiment uses finite `K` sensitivity settings. A faithful port needs birth/death or allocation-based variable node count; a finite-\(K\) approximation must state that it is not the original TSSB prior. |
-| No SSM phasing required | PhyloWGS averages maternal/paternal CNV placements when phase is unavailable. The current project specifically wants long-read HP information, so the HP likelihood should be retained as an additional observation, not discarded in favor of PhyloWGS's unphased shortcut. |
-
-## Bottom line for the next C++ revision
-
-The most faithful lesson is **not** “add a more aggressive parent MH move.” It is:
-
-\[
-\text{tree allocation / occupied-node changes}
-\quad\perp\quad
-\text{continuous clone-mass MH}.
-\]
-
-For this repository, the next design should first implement a finite-tree, TSSB-inspired assignment/birth/cull/order kernel around the existing ASCAT + multiplicity + HP-count likelihood. Only afterward should we decide whether a true variable-\(K\) TSSB prior and explicit CNV pseudo-observations are scientifically justified. This preserves the current data model while addressing the observed zero topology-acceptance failure without pretending that ASCAT purity, SNV multiplicity, and PhyloWGS population frequency are interchangeable.
-
