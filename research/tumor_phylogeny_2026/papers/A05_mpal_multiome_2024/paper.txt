@@ -1,0 +1,904 @@
+                                    Article                                                                                                     https://doi.org/10.1038/s41467-024-52317-2
+
+
+                                    Multiomic single cell sequencing identiﬁes
+                                    stemlike nature of mixed phenotype acute
+                                    leukemia
+                                    Received: 10 November 2023                           Cheryl A. C. Peretz1,2,11, Vanessa E. Kennedy3,11, Anushka Walia3, Cyrille L. Delley4,
+                                                                                         Andrew Koh3, Elaine Tran3, Iain C. Clark 5, Corey E. Hayford6, Chris D’Amato6,
+                                    Accepted: 30 August 2024
+                                                                                         Yi Xue6, Kristina M. Fontanez6, Aaron A. May-Zhang 6, Trinity Smithers 6,
+                                                                                         Yigal Agam6, Qian Wang7,8, Hai-ping Dai 7,8, Ritu Roy 2, Aaron C. Logan 3,
+                                                                                         Alexander E. Perl9, Adam Abate 4, Adam Olshen2,10 & Catherine C. Smith 2,3
+                                        Check for updates
+                  1234567890():,;
+1234567890():,;
+
+
+
+
+                                                                                         Despite recent work linking mixed phenotype acute leukemia (MPAL) to cer-
+                                                                                         tain genetic lesions, speciﬁc driver mutations remain undeﬁned for a sig-
+                                                                                         niﬁcant proportion of patients and no genetic subtype is predictive of clinical
+                                                                                         outcomes. Moreover, therapeutic strategy for MPAL remains unclear, and
+                                                                                         prognosis is overall poor. We performed multiomic single cell proﬁling of 14
+                                                                                         newly diagnosed adult MPAL patients to characterize the inter- and intra-
+                                                                                         tumoral transcriptional, immunophenotypic, and genetic landscapes of MPAL.
+                                                                                         We show that neither genetic proﬁle nor transcriptome reliably correlate with
+                                                                                         speciﬁc MPAL immunophenotypes. Despite this, we ﬁnd that MPAL blasts
+                                                                                         express a shared stem cell-like transcriptional proﬁle indicative of high dif-
+                                                                                         ferentiation potential. Patients with the highest differentiation potential
+                                                                                         demonstrate inferior survival in our dataset. A gene set score, MPAL95, derived
+                                                                                         from genes highly enriched in the most stem-like MPAL cells, is applicable to
+                                                                                         bulk RNA sequencing data and is predictive of survival in an independent
+                                                                                         patient cohort, suggesting a potential strategy for clinical risk stratiﬁcation.
+
+
+                                    Survival of patients with mixed phenotype acute leukemia (MPAL) is             (WHO)2 and International Consensus Classiﬁcation3 guidelines continue
+                                    poor and inferior to that of the more common acute lymphoid and                to deﬁne MPAL by immunophenotype with only a subset with asso-
+                                    myeloid leukemias (ALL and AML)1. MPAL is characterized by leukemic            ciated genetic abnormalities (BCR::ABL1 fusion, KMT2A, ZNF384, and
+                                    blasts co-expressing both lymphoid and myeloid cell-surface markers or         BCL11B rearrangements). Of note, some of these genetic aberrations are
+                                    with co-existing populations of myeloid and lymphoid blasts. The               unique to pediatric patients4,5, leaving the drivers of adult MPAL even
+                                    diagnostic deﬁnition of MPAL remains unreﬁned. While both ALL and              less clear than its pediatric counterpart. Further, a large proportion of
+                                    AML are deﬁned by genetic drivers, the 2022 World Health Organization          MPAL remains unassociated with these deﬁning genetic abnormalities.
+
+
+                                    1
+                                     Division of Hematology and Oncology, Department of Pediatrics, University of California San Francisco, San Francisco, CA, USA. 2Helen Diller Family
+                                    Comprehensive Cancer Center, University of California San Francisco, San Francisco, CA, USA. 3Division of Hematology and Oncology, Department of
+                                    Medicine, University of California San Francisco, San Francisco, CA, USA. 4Department of Bioengineering and Therapeutic Sciences, University of California
+                                    San Francisco, San Francisco, CA, USA. 5Department of Bioengineering, University of California Berkeley, Berkeley, CA, USA. 6Fluent Biosciences Inc.,
+                                    Watertown, MA, USA. 7National Clinical Research Center for Hematologic Diseases, Jiangsu Institute of Hematology, The First Afﬁliated Hospital of Soochow
+                                    University, Suzhou, People’s Republic of China. 8Institute of Blood and Marrow Transplantation, Collaborative Innovation Center of Hematology, Soochow
+                                    University, Suzhou, People’s Republic of China. 9Department of Medicine, Division of Hematology-Oncology, Perelman School of Medicine at the University of
+                                    Pennsylvania, Philadelphia, PA, USA. 10Department of Epidemiology and Biostatistics, University of California San Francisco, San Francisco, CA, USA. 11These
+                                    authors contributed equally: Cheryl A. C. Peretz, Vanessa E. Kennedy.     e-mail: catherine.smith@ucsf.edu
+
+
+                                    Nature Communications | (2024)15:8191                                                                                                                     1
+Article                                                                                                 https://doi.org/10.1038/s41467-024-52317-2
+
+
+Genomic alterations in MPAL are not unique and include mutations             through unsupervised clustering of immunophenotypic markers, we
+recurrently mutated in ALL or AML6. The biologic connection between          identiﬁed 13 immunophenotypically deﬁned subpopulations. For
+immunophenotype and genotype in MPAL remains unknown. Impor-                 many of these subpopulations, the cell type as identiﬁed by tran-
+tantly, neither the immunophenotype nor the genotype of MPAL cor-            scription closely associated with the expected immunophenotype
+relate clearly with overall survival (OS) or treatment response,             (Supplementary Fig. 4). For example, transcriptionally deﬁned normal
+suggesting a more complete biologic understanding of MPAL is                 T cells were composed of 87.2% CD3+/CD5+ cells, while tran-
+required to guide disease deﬁnition and risk stratiﬁcation2,7.               scriptionally deﬁned normal B cells were 94.2% CD19+/CD22+
+     Due to the relative rarity and heterogeneous nature of MPAL,            cells (Fig. 1d).
+optimal therapeutic strategies remain uncertain. Emerging data sug-                To contrast, across all patients, the transcriptionally deﬁned “leu-
+gest that sub-classiﬁcation of MPAL may be needed to facilitate ther-        kemia” cells were comprised of cells from heterogeneous immuno-
+apeutic decision making8. However, the full immunophenotypic,                phenotypic subpopulations, with the greatest contributions from cells
+genetic, and transcriptomic proﬁles that may determine risk stratiﬁ-         with stem or myeloid markers, including CD34+/CD13+ cells (12.89% of
+cation of this complex disease have not been elucidated. Until recently,     leukemia population), CD34+/CD117+ cells (12.86%), CD33+/CD64+ cells
+the technology to simultaneously determine immunophenotypic,                 (11.60%), and CD34+/CD33+/CD117+ cells (11.20%). Cells with lymphoid
+genetic, and transcriptomic heterogeneity in MPAL has not existed.           markers were also present in the transcriptionally deﬁned leukemia
+MPAL, with its deﬁnitionally “mixed” immunophenotype, is uniquely            cells, but in smaller proportions, including CD19+/CD22+/CD30+ cells
+poised to beneﬁt from multiomic single cell (SC) sequencing analysis,        (5.96%) CD19+/CD22+/CD45+ cells (5.49%), CD3+/CD5+/CD7+ cells
+which can quantify the relationship between these biologic factors on        (4.45%), and CD3+/CD4+/CD5+ cells (0.4%) (Fig. 1d). Importantly, within
+a single cell level to better understand the biologic origin of MPAL and     the integrated leukemia population, transcriptionally deﬁned sub-
+potential drivers of prognosis.                                              populations did not cluster by immunophenotype (Fig. 1d). Similarly,
+     Here, we use multiomic SC proﬁling on newly diagnosed MPAL              when all leukemic cells were analyzed as immunophenotypically
+samples to characterize immunophenotypic, genetic, and transcrip-            deﬁned subpopulations, while there were some differences in gene
+tional landscapes of adult MPAL. We identify MPAL as a stem-like             expression, many subpopulations had markedly similar expression
+leukemia with a shared gene expression signature. We further describe        patterns (Fig. 1e). This reﬂects that many individual single cells and cell
+a transcriptional metric, derived from MPAL blasts with greatest dif-        population had similar gene expression, despite having heterogenous
+ferentiation potential, that is predictive of patient survival. These        immunophenotypes. There is no clear shared gene expression proﬁle
+results broaden our understanding of MPAL biology and suggest a              by immunophenotypic subtype.
+path toward risk stratiﬁcation for a disease in which no risk stratiﬁca-           On the individual patient level, the association between tran-
+tion currently exists.                                                       scription and immunophenotype was heterogeneous, closely asso-
+                                                                             ciating in 4/12 patients (33%) and not associating in 8/12 (66%).
+Results                                                                      In some patients, immunophenotype was closely associated with
+The transcriptional landscape of MPAL                                        a distinct transcriptional signature. For example, in Patient 11,
+To characterize the genetic, transcriptional, and immunophenotypic           immunophenotype-based clustering revealed distinct CD34+ and
+landscape of MPAL, we analyzed samples from 14 patients with newly           CD33+ populations (Fig. 1f). In addition to having distinct immuno-
+diagnosed MPAL using two SC technologies in parallel: CITE-seq (SC           phenotypes, these two populations also had distinct gene expres-
+RNA plus protein sequencing)9 and DAb-seq (SC DNA plus protein               sion proﬁles, with the CD33+ population demonstrating markedly
+sequencing)10–12 (Fig. 1a). Patient characteristics are in Supplementary     higher expression of major histocompatibility complex-encoding
+Data 1. By clinical immunophenotyping via ﬂow cytometry, our cohort          genes relative to the CD34+ population (Fig. 1g). In other patients,
+included 10 patients with B/myeloid, 3 patients with T/myeloid, and 1        however, immunophenotype and transcriptional proﬁle were not
+patient with B and T/myeloid MPAL.                                           closely associated. For example, in Patient 2, immunophenotype-
+      A total of 72,131 individual cells from 12 patients were analyzed by   based clustering also revealed distinct CD34+ and CD33+ sub-
+CITE-seq (median 6010 cells/sample; range 1173–10,275) (Supple-              populations, but these two immunophenotypically distinct sub-
+mentary Data 2). Two additional patients had insufﬁcient cells for CITE-     populations did not have distinct transcriptional proﬁles (Fig. 1h, i).
+seq analysis and were only proﬁled using DAb-seq. For CITE-seq ana-
+lysis, we used a particle-templated instant partitions sequencing (PIP-      MPAL cells upregulate stem-like pathways and are distinct from
+seq) approach to perform SC indexing of transcriptomes and epitomes          genetically deﬁned MPAL subsets
+sequencing (CITE-seq) analysis with a panel of 19 barcoded antibodies        To further deﬁne the common transcriptional signature of MPAL, we
+(Supplementary Data 3)9. Across all patients, SC transcriptional data        performed unbiased single-cell gene set enrichment analysis (GSEA) on
+were integrated, clustered by transcription, and annotated (Fig. 1b).        transcriptionally annotated leukemia cells systematically across all
+Notably, all 12 patients, regardless of MPAL immunophenotypic sub-           patients using all molecular signature database (MSigDB) hallmark and
+type, contributed to the cluster annotated as leukemia, and the com-         C2 gene sets (Fig. 2a)13,14. Single-cell GSEA demonstrated enrichment for
+mon leukemia cluster contained single cells from diagnostic samples          gene sets associated with stem cells. Out of all gene sets, the greatest
+derived from both bone marrow and peripheral blood (Supplementary            enrichment was demonstrated for a gene signature ﬁrst described in
+Fig. 1a, b). Each of the 12 patients contributed 4.5%–10.4% (median          CD133+ stem cells derived from human cord blood (normalized
+8.8%) of the cells in the common leukemia cluster after normalization        enrichment score [NES] 2.92, q value 0.0); genes associated with
+for number of cells isolated per patient. Furthermore, immunophe-            embryonic stem cells were also highly enriched (NES 2.41) (Fig. 2b;
+notypic subtype was not the primary predictor of transcriptional var-        Supplementary Data 6)15–17. Decreased enrichment was demonstrated in
+iation in correspondence analysis (Supplementary Fig. 2). Relative to        gene signatures associated with immune or inﬂammatory pathways,
+non-leukemic cells and clusters, the leukemia cluster demonstrated a         including natural killer cell cytotoxicity, complement activation, and
+unique transcriptional signature, despite its heterogeneity (Fig. 1c;        interferon-gamma signaling (Supplementary Fig. 5).
+Supplementary Fig. 3; Supplementary Data 4, 5).                                   We conducted a targeted assessment for the enrichment of
+                                                                             known gene sets derived from multiple immature or lineage-
+Transcription alone does not determine immunophenotype                       ambiguous leukemias, including: early T-cell progenitor (ETP) ALL18,
+We next examined how gene expression was associated with immu-               KMT2A-rearranged B-cell ALL19, early pro-B BCR-ABL + B-ALL20, hema-
+nophenotype in our integrated cohort. Across all cells and all patients,     topoietic stem cell (HSC)-like AML21, the acute myeloid leukemia stem
+
+
+Nature Communications | (2024)15:8191                                                                                                                 2
+Article                                                                                             https://doi.org/10.1038/s41467-024-52317-2
+
+
+
+
+cell (LSC)-4722, and B-ALL with subsequent monocytic lineage switch23.     2.07, q value 0.024), supporting MPAL as a stem-like leukemia (Fig. 2c;
+We also assessed gene sets derived from more differentiated acute          Supplementary Data 6, 7).
+leukemias, including granulocyte–monocyte progenitor-like AML21,                While many MPAL patients do not have characteristic genetic
+myeloid-like AML24, NUTM1-rearranged ALL19, and signatures for BCR-        features, a subset of MPAL is associated with BCL11B and ZNF384
+ABL + B-ALL spanning later B-cell differentiation20.                       rearrangements. More common in children, these rearrangements
+      Of these, only signatures associated with HSC-like AML21, and LSC-   were not identiﬁed in our adult cohort (Supplementary Data 1), and
+   22
+47 were both signiﬁcantly enriched (NES 2.15, q value 0.003; NES           gene sets associated with these rearrangements, including TCF3-
+
+
+Nature Communications | (2024)15:8191                                                                                                           3
+Article                                                                                                              https://doi.org/10.1038/s41467-024-52317-2
+
+Fig. 1 | MPAL is comprised of a common transcriptomic signature and het-                Source Data ﬁle. e Heatmap of scaled expression values for top 10 most upregu-
+erogenous transcription-immunophenotypic associations. a Schematic                      lated genes in each of the 13 immunophenotypic subpopulations from (d). Source
+depicting sample workﬂow. Created with BioRender.com released under a Creative          Data are provided as a Source Data ﬁle. f RNA-derived UMAP from 2594 cells from
+Commons Attribution-NonCommercial-NoDerivs 4.0 International license (https://          Patient 11. Cells are color-coded based on expression of CD34 (left) and CD33
+creativecommons.org/licenses/by-nc-nd/4.0/deed.en). b RNA-derived UMAP from             (right). Source Data are provided as a Source Data ﬁle. g Heatmap of scaled
+comprehensive SC CITE-seq analysis of 71,579 cells from 12 patients. Cells are color-   expression values for top 10 most upregulated genes for the CD34-positive cell
+coded by cell lineage/type as determined by gene expression data (left) and by          population (left columns) and the CD33-positive cell population (right columns)
+individual patient (right). Source Data are provided as a Source Data ﬁle. c Heatmap    from Patient 11. Source Data are provided as a Source Data ﬁle. h RNA-derived
+of scaled expression values for top 10 most upregulated genes for each tran-            UMAP from 6100 cells from Patient 2. Cells are color-coded based on expression of
+scriptionally deﬁned cell type as identiﬁed in (b). Source Data are provided as a       CD34 (left) and CD33 (right). Source Data are provided as a Source Data ﬁle.
+Source Data ﬁle. d RNA-derived UMAP from (b). Cells are annotated based on              i Heatmap of scaled expression values for top 10 most upregulated genes for the
+transcriptionally deﬁned cell populations, clustered by the expression of cell-         CD34-positive cell population (left columns) and the CD33-positive cell population
+surface immunophenotypic protein expression into 13 immunophenotype-deﬁned              (right columns) from Patient 2. Source Data are provided as a Source Data ﬁle.
+clusters, and then color-coded based on cluster. Source Data are provided as a
+
+
+
+ZNF384 B-ALL, ZNF384-rearranged B-ALL or MPAL, BCL11B-expressing                        again demonstrated signiﬁcant enrichment for RUNX1 targets (OR =
+CD34+ cells, and BCL11B-expressing T-ALL cells were not signiﬁcantly                     11.9, p = 1.69e − 6) (Supplementary Fig. 7d). Taken together, this
+enriched in MPAL leukemic blasts (Supplementary Data 6; Fig. 2a)5,25–27.                emphasizes the potential importance of RUNX1 as a leukemic driver in
+As BCL11B rearrangements are associated with BCL11B over-expres-                        adult MPAL, with or without known RUNX1 mutation or rearrange-
+sion, we also evaluated BCL11B expression in our cohort. Consistent                     ment. In addition to RUNX1, the most signiﬁcantly upregulated tran-
+with the genetic features, BCL11B was expressed in a small minority of                  scription factor programs identiﬁed by ChIP-x and ENCODE analysis
+cells (406 cells, 0.76%) in the common leukemia cluster and in <3% of                   (Fig. 2d) included KLF4 (OR 8.7, p = 2.34e − 4), a Yamanaka factor and
+cells in any individual patient (Supplementary Fig. 6a, b). BCL11B-                     known regulator of pluripotency31,32, as well as NELFE (OR 15.8,
+expressing cells did not overexpress the conserved MPAL gene sig-                       p = 0.0014), an RNA binding protein implicated in regulation of gene
+nature relative to non-BCL11B-expressing cells and there was no dif-                    signatures associated with MYC, another well-known pluripotency
+ference in OS for patients as stratiﬁed by percent of BCL11B cells                      factor33,34. The upregulation of gene programs driven by KLF4 and
+(Supplementary Fig. 6c, d). KMT2A and BCR::ABL1 rearrangements are                      associated with MYC further supports that the transcriptional sig-
+also recurrently associated with MPAL. While our cohort includes                        nature of MPAL is fundamentally stem-like.
+patients with these rearrangements (3 and 1 each with KMT2A rear-
+rangement and BCR::ABL, respectively) (Supplementary Data 1), blasts                    The common MPAL gene expression signature is upregulated in
+from these patients exhibited the same shared MPAL signature.                           an independent cohort
+Notably, a KMT2A-rearranged gene set19 was not enriched in MPAL                         We next assessed whether the gene expression signature identiﬁed in
+blasts from the three KMT2A-rearranged patients (or in the cohort as a                  the common leukemia cluster of our cohort was similarly upregulated
+whole). Overall, these data suggest that despite heterogenous under-                    in a separate validation cohort. To do this, we analyzed SC RNAseq data
+lying genetics, MPAL blasts share a gene expression proﬁle similar to                   from an independent, previously published cohort of ﬁve adult
+HSCs and distinct from previously identiﬁed gene signatures derived                     patients with MPAL. In contrast to our cohort, in which 9/12 patients
+from MPAL genetic subsets.                                                              had B/Myeloid disease, 4/5 patients in this independent cohort had
+                                                                                        T/Myeloid disease (4 T/Myeloid, 1 B/Myeloid)28. A total of 11,133 single
+MPAL cells upregulate RUNX1-regulated gene expression                                   cells were integrated, clustered by transcription, and annotated using
+programs                                                                                methods identical to those used in analysis of our cohort (Supple-
+A recent study integrating single-cell transcription and chromatin                      mentary Fig. 8a). Differentially upregulated genes identiﬁed in our
+accessibility in ﬁve adult MPAL patients found that RUNX1 motifs were                   common leukemia cluster were similarly upregulated in the common
+the most commonly shared accessible elements28. In our cohort,                          leukemia cluster of the independent cohort (Fig. 2e).
+RUNX1-regulated programs were similarly enriched. Pathway enrich-                             We then performed a GSEA on the annotated leukemia cells from
+ment analysis of the greatest differentially upregulated genes in the                   the independent cohort using the MSigDB hallmark, C2, and select
+common MPAL cluster against the ChIP-x Enrichment Analysis (ChEA)                       gene sets derived from other leukemias, as described above. GSEA on
+and Encyclopedia of DNA Elements (ENCODE) transcription factor                          the annotated leukemia cells demonstrated striking upregulation of
+targets databases via the enrichr platform identiﬁed RUNX1 as the                       our MPAL gene expression signature (NES 2.91; q = 0.000) (Fig. 2f); out
+most signiﬁcantly enriched (odds ratio [OR] 10.2, p = 1.3e − 5)                         of all gene sets assessed, this demonstrated the greatest enrichment
+(Fig. 2d)29,30. Similarly, in GSEA, Reactome transcriptional regulation by              (Supplementary Fig. 8b). Similar to our patient cohort, the leukemia
+RUNX1 and targets of RUNX1 in monocytes were signiﬁcantly enriched                      cells from the independent cohort also demonstrated signiﬁcant
+as well (NES 2.06, q = 0.028 and NES 2.02, q = 0.049, respectively)                     enrichment of stem cell gene sets and gene sets associated with stem-
+(Supplementary Fig. 7a), and RUNX1 gene expression was increased in                     like AML; gene sets associated with immature ALL, differentiated leu-
+the leukemic population relative to non-leukemic cells (Supplemen-                      kemia, KMT2A, ZNF384, and BCL11B-rearranged leukemias were not
+tary Fig. 7b).                                                                          enriched (Supplementary Fig. 8b–d). Of note, like our cohort, this
+      Three patients in our cohort had pathogenic RUNX1 mutations as                    comparison cohort did not include characteristic ZNF384 or BCL11B
+identiﬁed by DAb-seq (Patients 4, 6, and 11). To assess whether RUNX1-                  rearrangements. Unlike our cohort, which included only samples from
+regulation transcription was enriched independent of RUNX1 muta-                        newly diagnosed patients, this cohort included newly diagnosed
+tions, although RUNX1 mutations are typically loss of function, we                      patients as well as patients previously treated with both AML and ALL
+repeated the above analyses in the nine patients without RUNX1                          chemotherapy regimens28.
+mutations. In this subset analysis, GSEA demonstrated similar enrich-
+ment for RUNX1 regulation (Reactome transcriptional regulation by                       The common MPAL gene expression signature is not upregu-
+RUNX1: NES 2.13, q = <0.001; targets of RUNX1 in monocytes: NES 1.94,                   lated in normal hematopoietic stem cells
+q = 0.003) (Supplementary Fig. 7c). Similarly, pathway enrichment                       To distinguish how stem-like MPAL blasts are transcriptionally distinct
+analysis of the conserved MPAL signature of the subsetted cohort                        from normal HSCs, we performed SC RNAseq on a bone marrow
+
+
+Nature Communications | (2024)15:8191                                                                                                                                   4
+Article                                                                                           https://doi.org/10.1038/s41467-024-52317-2
+
+
+
+
+sample from a normal, healthy donor. We identiﬁed 10,936 single cells,    genes comprising our common MPAL signature, while highly expres-
+including 308 HSCs, as identiﬁed via scType35 (Supplementary Fig. 9A).    sed in the MPAL blasts, were not overexpressed in the normal HSCs
+We next re-integrated and clustered the single cells from the normal      (Supplementary Fig. 9e). We next performed GSEA to further identify
+bone marrow with the 72,131 single cells proﬁled from our MPAL            differences in gene expression programs between MPAL blasts and
+cohort (Supplementary Fig. 9b, c). The normal-derived HSCs and the        normal HSCs. Relative to normal HSCs, MPAL blasts were signiﬁcantly
+leukemic MPAL blast comprised distinct clusters, indicative of distinct   enriched for transcriptional programs associated with DNA synthesis
+transcriptional proﬁles (Supplementary Fig. 9d). Importantly, the         and cell cycle regulation, including targets of the DREAM complex36
+
+
+Nature Communications | (2024)15:8191                                                                                                      5
+Article                                                                                                                https://doi.org/10.1038/s41467-024-52317-2
+
+Fig. 2 | The MPAL transcriptional signature is stem-like, on the continuum of           factor targets databases via enrichr. Points color-coded based on signiﬁcance as
+stem-like AML, and reproducible in an independent cohort. a Barplot of nor-             pink: p < 0.001, purple: p < 0.01, blue: p < 0.05. The three most signiﬁcant gene sets
+malized enrichment scores (NES) derived from gene set expression analysis (GSEA)        are annotated. P values are two-sided and calculated with Fisher’s exact test, where
+of all single cells in the common leukemia cluster. The top 10 positively enriched      genes are considered independent, and adjusted via the Benjamini–Hochberg
+gene sets are color-coded in red, the top 10 negatively enriched in blue, and           method. Source Data are provided as a Source Data ﬁle. e Heatmap of scaled
+additional gene sets of interest in green. Statistical signiﬁcance is indicated as      expression values of top 50 most differentially expressed genes in the common
+***q < 0.001, **q < 0.01, *q < 0.05. Source Data are provided as a Source Data ﬁle.     leukemia cluster of our cohort against clustered and annotated single cells from the
+b Enrichment proﬁle and ranking metric score for three example positively enri-         comparison cohort28. Source Data are provided as a Source Data ﬁle. f Enrichment
+ched gene sets, all of which are associated with stem cells. Source Data are provided   proﬁle and ranking metric score from GSEA of all single cells in the common leu-
+as a Source Data ﬁle. c Enrichment proﬁle and ranking metric score for the two          kemia cluster of the comparison cohort. The MPAL gene signature is comprised of
+signiﬁcant leukemia-speciﬁc genes tested, hematopoietic stem cell (HSC)-like AML        the top 50 most differentially expressed genes in the common leukemia cluster of
+and leukemia stem cell (LSC)-47. Source Data are provided as a Source Data ﬁle.         our cohort. The GSEA analysis in (b), (d), and (f) employs a one-sided permutation-
+d Volcano plot of transcription factors as identiﬁed by analysis of the top differ-     based test to determine the signiﬁcance of gene set enrichment, with raw p values
+entially expressed genes in the common leukemia cluster with the ChIP-x Enrich-         adjusted for multiple testing using the Benjamini–Hochberg procedure to control
+ment Analysis (ChEA) and Encyclopedia of DNA Elements (ENCODE) transcription            the false discovery rate (FDR). Source Data are provided as a Source Data ﬁle.
+
+
+
+
+and E2F family37, among others (Supplementary Fig. 9f). Genes com-                      regulation, with E2F4 being important in embryonic stem cell
+prising our common MPAL signature were also signiﬁcantly enriched                       regulation39. Notably, in this analysis NELFE remained enriched (OR
+in the MPAL blasts relative to the normal HSCs (NES 2.54, q = 0.000), as                22.5, p = 7.4e − 6) and SIN3A, a transcriptional co-repressor impli-
+were the gene signatures derived from HSC-like AML and the LSC-47                       cated in pluripotency40 and known to regulate MYC activity41, was
+(NES 2.37, q = 0.000; NES 1.99, q = 0.002, respectively) (Supplemen-                    also signiﬁcantly enriched (OR = 8.3, p = 3.3e − 5).
+tary Fig. 9g). Taken together, this conﬁrms that while MPAL blasts are
+stem-like, they are distinct from non-malignant HSCs and demonstrate                    Generation of a CytoTRACE-based prognostic score
+aberrant cell cycle regulation.                                                         We next sought to derive a CytoTRACE-based prognostic metric
+                                                                                        in patients with MPAL. To generate a CytoTRACE-based score, we
+MPAL cells demonstrate variable differentiation potential and                           compared the differential gene expression of single cells with very
+enhanced proliferation, which predict survival                                          high (>= 0.95) vs low (<0.95) CytoTRACE scores. Genes with greatest
+Given enrichment for genes associated with stemness as well as the                      upregulation in the cells with high CytoTRACE scores were then used
+lack of enrichment of other known leukemia gene signatures, we                          to compute a gene set score, which we termed MPAL95. When pseudo-
+sought to apply a more recently developed metric of stemness,                           bulking was applied to all single cells in our cohort, we conﬁrmed that
+CytoTRACE [for cellular (Cyto) Trajectory Reconstruction Analysis                       MPAL95 was prognostic for OS (Supplementary Fig. 11A), while the
+using gene Counts and Expression]38, to our SC transcriptional dataset.                 LSC-17, a transcriptionally based risk stratiﬁcation system previously
+CytoTRACE is a computational framework for predicting the differ-                       described in AML22, was not (Supplementary Fig. 11B). This suggests
+entiation potential of a single cell based on transcriptional data about                that, while stem-like AML gene expression is enriched in MPAL blasts,
+numbers of expressed genes, covariant gene expression, and local                        stemness scores deﬁned by other leukemias are not necessarily
+neighborhoods of transcriptionally similar cells. CytoTRACE provides                    prognostic in MPAL. Therefore, a MPAL-speciﬁc prognostic metric is
+a score for each cell representing its stemness within a given dataset,                 needed.
+ranging from 0 to 1, with higher scores indicating greater stemness38.
+When applied to our cohort, we found high CytoTRACE scores to be                        Validation of a CytoTRACE-based score in two independent
+overrepresented in our “leukemia” cluster relative to non-leukemic                      MPAL patient cohorts
+populations (median CytoTRACE 0.61 vs 0.23 for leukemia vs non-                         The prognostic ability of MPAL95 was validated using external bulk
+leukemia populations, p < 2e − 16) (Fig. 3a).                                           RNAseq data from two independent patient cohorts: (1) newly diag-
+     Across the cohort, CytoTRACE score was moderately correlated                       nosed adult patients with MPAL treated at the First Afﬁliated Hospital
+with higher CD34 expression, followed by HLA-DR, CD117, and CD33                        of Soochow University, Suzhou, China, which includes expression
+expression (Spearman correlation coefﬁcient 0.44, 0.25, 0.20, 0.18                      proﬁles for 89 patients with MPAL; 72 patients with available survival
+for CD34, HLA-DR, CD117, and CD33, respectively) (Fig. 3b, c). For                      data were included in this analysis42 and (2) newly diagnosed pediatric
+individual patients, the median CytoTRACE score of each patient’s                       patients with acute leukemias of ambiguous lineage from the Ther-
+leukemia population varied considerably, ranging from 0.13 (least                       apeutically Applicable Research To Generate Effective Treatments
+stemlike) to 0.89 (most stemlike). When stratiﬁed by median Cyto-                       (TARGET) initiative, which includes expression proﬁles for 115 pedia-
+TRACE score of the leukemia population, a higher median Cyto-                           tric patients with MPAL; 69 patients with available survival data were
+TRACE trends toward an inferior OS in our small cohort (p = 0.053)                      included in this analysis6,43.
+(Fig. 3d). Relative to single cells with lower CytoTRACE scores                              Patients from both validation cohorts demonstrated variable
+(<0.95), single cells with very high CytoTRACE scores (≥0.95)                           MPAL95 scores (Supplementary Fig. 11c, f). In the Soochow University
+demonstrated a distinct gene expression proﬁle (Fig. 3e). In a GSEA,                    cohort, relative to patients with the lowest MPAL95 scores, patients
+cells with CytoTRACE scores ≥0.95 demonstrated upregulation of                          with high MPAL95 scores demonstrated signiﬁcantly inferior OS, with a
+multiple pathways associated with cellular proliferation, cell cycle                    2-year OS of 44.1% (95% conﬁdence interval 30.3%–58.9%) for patients
+dysregulation, and a stem or progenitor-like cell state (Supplemen-                     with high MPAL95 scores vs 70.7% (95% conﬁdence interval
+tary Fig. 10a). Similarly, pathway enrichment analysis of the con-                      54.0%–98.5%) for patients with low MPAL95 scores (p = 0.042; Fig. 3f;
+served genes expressed in the cells with CytoTRACE ≥0.95 against                        Supplementary Fig. 11d). MPAL95 was similarly prognostic in the
+the ChEA and ENCODE databases via enrichr demonstrated sig-                             TARGET cohort, where the 2-year OS was 62.6% (95% CI 50.2%–78.1%)
+niﬁcant enrichment for transcription factors in the E2F family,                         for patients with high MPAL95 scores vs 88.1% (95% CI 73.9%–99.9%)
+including E2F4 (OR 35.23, p = 1.38e − 14), E2F1 (OR 10.58,                              for patients with low MPAL95 scores (p = 0.018; Fig. 3g; Supplementary
+p = 6.31e − 6), and E2F6 (OR = 4.78, p = 0.0002) (Supplementary                         Fig. 11g). Additional clinical variables were available for the TARGET
+Fig. 10b). The E2F family is involved in DNA synthesis and cell cycle                   cohort, and the prognostic ability of MPAL95 was preserved in a
+
+
+Nature Communications | (2024)15:8191                                                                                                                                       6
+Article                                                                                                               https://doi.org/10.1038/s41467-024-52317-2
+
+
+
+
+Fig. 3 | Measures of stemness are prognostic of MPAL patient outcomes. a RNA-           f Kaplan–Meier estimates of overall survival stratiﬁed by MPAL95, a gene set score
+derived UMAP from comprehensive SC CITE-seq analysis of 71,579 cells from 12            derived from single-cell transcriptional data, for 72 adult patients from Soochow
+patients with MPAL from Fig. 1e. Cells are color-coded based on cytoTRACE score         University42. Curves are compared using log-rank tests. Source Data are provided as
+from 0 (most differentiated) to 1 (least differentiated). Source Data are provided as   a Source Data ﬁle. g Kaplan–Meier estimates of overall survival stratiﬁed by
+a Source Data ﬁle. b UMAP from (a). Cells are color-coded based on cell-surface         MPAL95, a gene set score derived from single-cell transcriptional data, for 69
+expression of CD34 protein. Source Data are provided as a Source Data ﬁle.              pediatric patients with MPAL from the TARGET initiative. Curves are compared
+c Spearman correlation matrix of CytoTRACE score and cell-surface protein               using log-rank tests. Source Data are provided as a Source Data ﬁle. h Multivariate
+expression. Correlation coefﬁcient is denoted by color coding. Source Data are          Cox proportional hazards model for 69 pediatric patients with MPAL, with the
+provided as a Source Data ﬁle. d Kaplan–Meier estimates of overall survival stra-       MPAL95 gene signature included. For each variable, the hazard ratio and 95%
+tiﬁed by median CytoTRACE score <0.5 vs ≥0.5 for 12 adult patients with MPAL.           conﬁdence interval (CI) are graphically depicted. Hazard ratios and 95% conﬁdence
+Curves are compared using log-rank tests. Source Data are provided as a Source          intervals are from Cox proportional hazards analyses and p values are two-sided
+Data ﬁle. e Heatmap of scaled expression values for the genes with greatest upre-       and from Wald tests. Statistical signiﬁcance is indicated as *p < 0.05. Source Data
+gulation in single cells with high cytoTRACE (≥0.95) (left columns) vs low cyto-        are provided as a Source Data ﬁle.
+TRACE (<0.95) (right columns). Source Data are provided as a Source Data ﬁle.
+
+
+
+multivariable Cox regression model. High MPAL95 score was sig-                          consistent with being a pediatric MPAL cohort, the TARGET cohort
+niﬁcantly associated with inferior OS independent of patient age, sex,                  included genetic subgroups characteristic of MPAL (17.4% ZNF384-
+white blood cell count at diagnosis, WHO subtype, and type of front-                    rearranged, 10.1% KMT2A-rearranged, 2.9% BCL11B-rearranged) and
+line treatment, with a hazard ratio of 4.93 (95% conﬁdence interval 1.19                diverse pathogenic mutation proﬁles, suggesting that a differentiation-
+to 9.3, p = 0.028) (Fig. 3h). By contrast, the LSC-17 was not prognostic                potential prognostic metric may be applicable across genetic subtypes
+for OS in either validation cohort (Supplementary Fig. 11e, h). Of note,                (Supplementary Data 9).
+
+
+
+Nature Communications | (2024)15:8191                                                                                                                                    7
+Article                                                                                                 https://doi.org/10.1038/s41467-024-52317-2
+
+
+The CytoTRACE-based score is not prognostic in AML                            Fig. 14). Unlike transcription and immunophenotype, where we
+To assess the speciﬁcity of MPAL95 to MPAL vs other leukemias, we             observed minimal cross-cohort associations, we observed broad
+next applied MPAL95 to The Cancer Genome Atlas (TCGA) AML cohort              genotype–immunophenotype associations across our integrated
+(n = 173 patients with survival data available)44 and the BEAT AML            cohort. These included: associations between JAK2 mutations and
+cohort (n = 451 patients)45 (Supplementary Fig. 12a, b). Unlike the two       CD71 (point-biserial correlation coefﬁcient 0.8; p < 7.2e − 8), NRAS and
+MPAL validation cohorts described above, MPAL95 was not prognostic            CD34 (point-biserial correlation coefﬁcient 0.89; p = 0.004), and IDH2
+for survival in either AML cohort (Supplementary Fig. 12c, d). As AML         and CD11b and CD64 (point-biserial correlation coefﬁcients 0.87 and
+blasts can span a spectrum of differentiation states, we also assessed        0.80; p = 0.002 and p = 0.008, respectively) (Fig. 4f).
+whether MPAL95 was prognostic in the subset of AML patients with                   Across the integrated cohort, at the clonal level, we observed
+immature phenotypes, including HSC-like AML or progenitor-like                considerable inter- and intra-patient heterogeneity (Fig. 4g). For
+AML. Interestingly, patients with the lowest MPAL95 scores, repre-            instance, our cohort included four NRAS-mutated clones. In 3/4, NRAS-
+senting cells with the least differentiation potential, were not repre-       mutated cells had signiﬁcantly increased CD34 expression relative to
+sented in the HSC-like AML subgroup from either the TCGA or BEAT              NRAS-wildtype (WT) blasts within the same patient (t-statistics 52.3,
+AML cohorts (Supplementary Fig. 12e, g). For the subset of patients           20.1, 22.3; p = 0.0, p = 1.7e − 85, p = 3e − 99); however, in one clone
+with HSC-like AML in the BEAT AML cohort, MPAL95 was prognostic               there was no difference in CD34 expression between NRAS-mutated vs
+for patients with lower vs higher scores (Supplementary Fig. 12g). By         NRAS-WT cells (t-statistic 1.2; p = 0.25). Increased expression of other
+contrast, MPAL95 was not prognostic in the subgroup of progenitor-            immunophenotypic proteins associated with an immature cell state,
+like AML for either cohort or HSC-like AML in the TCGA cohort (Sup-           including CD38, CD33, CD123, and CD117, was also observed among
+plementary Fig. 12e, f, h). Taken together, this suggests that                select NRAS-mutated populations (Supplementary Fig. 15a). Similarly,
+CytoTRACE-based prognostic metrics are preferentially predictive in           select DNMT3A, IDH1 and IDH2 mutated populations were associated
+MPAL but may also have some prognostic ability in other immature              with increased expression of CD13 and CD11b, both associated with
+leukemias as well.                                                            myeloid/monocytic differentiation, but this pattern was not consistent
+                                                                              among all clones with these mutations (Supplementary Fig. 15b).
+The genetic landscape of MPAL                                                 Taken together, these ﬁndings suggest that, while some
+We next turned to evaluate the genetic landscape of our MPAL cohort           genotype–immunophenotype associations are present in MPAL, gen-
+using DAb-seq. For DAb-seq, we used a panel covering hotspots in 20           otype alone does not direct the deﬁnitional mixed MPAL phenotype.
+genes frequently mutated in leukemia combined with 25                              The heterogeneous association between genotype and immuno-
+antibody–oligonucleotide conjugates (AOCs) for cell-surface immu-             phenotype was also observed for speciﬁc gene mutations; notably, the
+nophenotypic proteins on hematopoietic cells (Supplementary                   same mutation does not consistently associate with the same immu-
+Data 10, 11)10–12. A total of 58,807 individual cells from 14 patients were   nophenotype across patients. For example, both Patient 7 and Patient
+genotyped, with a median of 4221 cells/sample (range 1093–7245 cells/         14 harbor an IDH2 R140Q mutation. In Patient 7, IDH2-mutated cells
+sample) (Supplementary Data 2).                                               were signiﬁcantly associated with increased expression of monocytic
+     The mutational landscape for all patients and clones is depicted in      markers relative to IDH2-WT cells (median CD11b expression 4.12 vs
+Fig. 4a, b. Across the cohort, we identiﬁed 27 pathogenic or likely           5.54, p = 9e − 88; CD64 2.01 vs 2.89, p = 1.3e − 34; CD13 3.34 vs 4.75,
+pathogenic mutations within 36 genetically distinct clones (median 2.6        p = 2.3e − 58; CD14 3.38 vs 3.90, p = 8.8e − 40) (Supplementary
+clones/patient, range 0–6); there was no difference in the number of          Fig. 16a, b). Although Patient 14 had the same IDH2 R140Q mutation,
+clones between B/myeloid and T/myeloid MPAL (2.8 vs 2.3, p = 0.66)            IDH2-mutated cells in this patient only demonstrated slightly higher
+(Supplementary Data 12). At the clone level, the most commonly                expression of CD11b and did not have higher expression of other
+mutated genes were NRAS, present in 10 clones (28%), TP53, present in         monocytic markers (median CD11b expression 3.29 vs 3.67, p = 0.012;
+8 clones (22%), and DNMT3A and IDH1, each present in 7 clones (19%).          CD64 1.04 vs 1.11, p = 0.12; CD13 3.06 vs 3.20, p = 0.09; CD14 2.76 vs
+Clone-level mutational co-occurrence analysis demonstrated the                2.88, p = 0.21) (Supplementary Fig. 16c, d).
+strongest positive association between NRAS/IDH1 (OR 8.91,
+p < 0.0001), FLT3/ASXL1 (OR 8.58, p = 0.008) and PTPN11/SF3B1 (OR             Progressive mutational acquisition is associated with increase in
+4.13, p = 0.002); IDH1/IDH2 were negatively associated (OR −0.58,             expression of immunophenotypic markers of immaturity
+p = 0.003) (Fig. 4c). Except for DNMT3A/ASXL1, mutations from the             In addition to the association between genotype and immunopheno-
+same functional class were infrequently co-mutated in the same single         type, we also assessed the association between mutational phyloge-
+cell and clone; notably, no clones demonstrated more than one dis-            netic progression and immunophenotypic evolution. Of the 14
+tinct signaling mutation.                                                     patients in our cohort, 9 had at least two stepwise mutational acqui-
+     Using SC DNA sequencing, we reconstructed the evolutionary               sitions identiﬁed on SC phylogenetic analysis (Supplementary Fig. 13).
+history of each patient using single cell inference of tumor evolution        For these nine patients, we measured how cell-surface immunophe-
+(SCITE), a probabilistic model to infer genetic phylogeny (Supple-            notypic protein expression changed with progressive acquisition of
+mentary Fig. 13)46. Patients demonstrated diverse phylogenetic trees          mutations (Fig. 5a).
+with both linear and branched architectures. Across the cohort, the                 Across all nine patients, the maximal change in protein expression
+most common functional class of founding mutations was epigenetic             was greatest for CD38, CD34, CD33, CD123, and CD117, markers asso-
+regulators, at 7/18 (38.8%). This ﬁnding in our adult cohort contrasts        ciated with immaturity (HSCs, and in some cases common myeloid or
+what has been described in pediatric MPAL, in which transcription             granulocyte–monocyte progenitor cells). Therefore, with progressive
+factors are the most common truncal mutations6. The most common               mutational acquisition, there was increased expression of these ﬁve
+functional class of branch mutations was activated signaling muta-            markers of immaturity. Figure 5b depicts the change in expression of
+tions, at 10/25 (40%).                                                        these ﬁve immunophenotypic proteins for all nine patients. Despite
+                                                                              containing diverse mutations, all nine patients demonstrated sig-
+Genotype alone does not determine immunophenotype                             niﬁcant increase in the expression of at least two of these ﬁve proteins
+Using DAb-seq, we examined the association between immunophe-                 with mutational acquisition, and in two patients (Patient 8 and Patient
+notype and genetic clonal architecture across all patients. Patients with     11), expression of all ﬁve proteins increased. Furthermore, for patients
+MPAL demonstrated heterogeneous immunophenotypes among both                   with three or more stepwise mutational acquisitions, these immaturity
+individual patients and MPAL subtypes (Fig. 4d, e; Supplementary              markers often increased multiple times.
+
+
+Nature Communications | (2024)15:8191                                                                                                               8
+Article                                                                                           https://doi.org/10.1038/s41467-024-52317-2
+
+
+
+
+     For example, in Patient 8, CD38 and CD34 expression signiﬁcantly    12, acquisition of a terminal DNMT3A mutation was associated with
+increase with acquisition of a single, heterozygous TP53 mutation, and   increased expression of CD11b, CD13, CD14, and CD64, consistent with
+then signiﬁcantly increase again with subsequent acquisition of a        myeloid and monocytic differentiation (Supplementary Fig. 17).
+second, biallelic TP53 mutation. While increased expression of imma-     Nonetheless, collectively, these ﬁndings suggest that in MPAL leu-
+ture markers CD38, CD34, CD33, CD123, and CD117 was the most             kemic progression, mutational evolution is associated with transition
+common immunophenotypic change, evidence of cellular differ-             to a more immature immunophenotype and is consistent with the
+entiation was seen in select genetic branches. For example, in Patient   stem-like gene expression proﬁle identiﬁed by CITE-seq.
+
+
+Nature Communications | (2024)15:8191                                                                                                       9
+Article                                                                                                                https://doi.org/10.1038/s41467-024-52317-2
+
+Fig. 4 | MPAL is comprised of heterogenous genotype–immunophenotype                      Fisher’s exact test. Source Data are provided as a Source Data ﬁle.
+associations. a Oncoprint of all 14 patients with newly diagnosed MPAL. Each             d Immunophenotype-derived UMAP from SC DAb-seq analysis of 51,847 cells from
+column is a unique patient. Patients (columns) are coded on the top row based on         14 patients. Cells are color-coded based on antibody expression. Selection myeloid
+immunophenotypic subtype and mutations (rows) are ordered based on biologic              and lymphoid markers are shown; all antibodies in the panel are visualized in
+function. Patient-level mutation status is indicated by dark gray (mutated) vs light     Supplementary Fig. 14. Source Data are provided as a Source Data ﬁle. e UMAP from
+gray (no detectable mutations) Clonal frequency is based on the total number of          (d). Cells are color-coded based on the presence of genetic mutation, with further
+clones the mutation was present in, not accounting for zygosity. b Oncoprint of 36       color coding based on biological function. Source Data are provided as a Source
+genetically deﬁned clones across all 14 patients with MPAL. Each column is a unique      Data ﬁle. f Spearman correlation matrix across 36 unique genetically deﬁned clones
+clone, and mutations (rows) are color-coded based on the type of mutation and            (51,847 single cells) and 22 cell-surface antibodies. Correlation coefﬁcient is
+zygosity. Clonal-level mutation status is indicated by heterozygous (Het.) missense      denoted by color coding from highly correlated (red) to highly anti-correlated
+(light green), homozygous (Hom.) missense (dark green), Het. frameshift insertion        (blue), with signiﬁcance denoted as *p < 0.05; **p < 0.01; ***p < 0.001. p values are
+(light blue), Hom. frameshift insertion (dark blue), or no detectable mutations (light   two-sided. Source Data are provided as a Source Data ﬁle. g Heatmap of t-statistics
+gray). c Pairwise association of driver mutations identiﬁed via SC DNA sequencing        generated by comparing cell-surface antibody expression of mutant vs non-mutant
+across 36 clones in 14 patients with MPAL. For each mutation pair, cooccurrence is       cell populations within an individual patient. To account for differences in
+summarized as log odds ratio (OR), with positive values indicating cooccurrence          expression across patients, comparisons are only made within individual patients,
+and negative values mutual exclusivity. Statistical signiﬁcance is indicated as          and not across multiple patients. Source Data are provided as a Source Data ﬁle.
+*p < 0.05; **p < 0.01; ***p < 0.001. P values are two-sided and calculated using
+
+
+
+Discussion                                                                               is particularly relevant clinically, as the current standard of care is to
+There is a critical need to improve patient outcomes in MPAL. The                        treat MPAL with ALL-like induction therapy69,70. Together, our
+historical lack of biologic understanding and subsequent confusion in                    ﬁndings situate MPAL among this previous work, as a disease rela-
+deﬁning this disease entity remain signiﬁcant barriers to improving                      ted to a stem-like, therapy-resistant AML.
+survival. Importantly, there are no consensus guidelines for treatment.                       While there are speciﬁc genetic aberrations associated with
+In current practice, patients are treated with either ALL- or AML-like                   MPAL2, our common MPAL gene signature and transcriptional prog-
+chemotherapy, based on empiric assessment rather than knowledge of                       nostic score is derived from and validated in patients with and without
+disease biology47,48. A recent analysis suggested matching treatment to                  MPAL-associated genetic lesions. Our original cohort of adult patients
+ALL- or AML-like chemotherapy based on methylation proﬁles may                           was genetically heterogenous and included patients with BCR::ABL1
+improve remission rates8, but this has not been adopted into clinical                    and KMT2A rearrangements, but no patients with ZNF384 or BCL11B
+practice. Without appropriate deﬁnition and comprehensive sub-                           rearrangements. Despite this, we identify a unifying gene signature
+classiﬁcation of MPAL, clinical trials to optimize therapy are challen-                  which validates in an independent cohort of adult MPAL patients
+ging. Furthermore, no risk stratiﬁcation for MPAL currently exists. In                   previously characterized by SC RNAseq28. While this independent
+this context, we use single cell sequencing to dissect the biologic ori-                 cohort also lacks MPAL-speciﬁc genetic lesions, it is similarly geneti-
+gins of MPAL to provide an improved framework for disease deﬁnition                      cally heterogenous and includes patients who received diverse
+and risk stratiﬁcation.                                                                  prior treatments28. Similarly, we derive a transcriptionally based
+     Although the nomenclature of MPAL suggests that the “mixed                          prognostic metric, MPAL95, that validates in two independent cohorts
+phenotype” is the most salient disease component, our data suggest                       of adult and pediatric patients with MPAL proﬁled by bulk RNA
+that the mixed immunophenotype of MPAL, while demonstrative of                           sequencing, including patients with ZNF384, BCL11B, and KMT2A
+lineage derangement, may have less biologic relevance. Instead, the                      rearrangements42,43. Notably, MPAL95 was a clear prognostic bio-
+common stem-like transcriptional signature, and the degree of                            marker for both cohorts. Interestingly, although the adult MPAL
+differentiation potential represented by this signature, likely deﬁne                    cohort found enrichment for an HSC-like signature, this was observed
+MPAL and dictate clinical behavior. Our data suggest MPAL is fun-                        only in patients with CEBPA and NOTCH1 mutations42. The fact that
+damentally a stem-like leukemia. Our transcriptional analysis high-                      MPAL95 validates in two independent cohorts highlights the robust-
+lights enrichment for multiple stem-like signatures, both in our                         ness of this metric despite its derivation from a relatively small cohort.
+cohort as well as in an independent MPAL cohort characterized by                         Overall, our ﬁndings suggest that our identiﬁed stem-like gene sig-
+SC RNA sequencing. We also demonstrate upregulation of tran-                             nature and associated prognostic score may be broadly applicable
+scriptional targets of RUNX1 as well as targets of pluripotency fac-                     across genetic subsets in adult and pediatric patients. Fundamentally,
+tors such as KLF4. RUNX1 is a key regulator of hematopoiesis49 and                       these data highlight the shared stem-like character of MPAL, regardless
+along with recurrent rearrangement/mutation in AML, unmutated                            of genetic subtype.
+RUNX150 has been implicated in LSC maintenance51 and leukemo-                                 In myeloid-related acute leukemias, increased stemness has been
+genesis in a variety of AML subtypes52,53. In AML, RUNX1 has also                        previously associated with inferior OS68,71–76. In MPAL, however, while
+been associated with an undifferentiated phenotype (M0)54 and                            AML-based stem-like gene signatures are signiﬁcantly enriched,
+RUNX1 upregulation has been associated with decreased survival                           they are not prognostic. Instead, survival for patients with MPAL is
+when applied to patients with AML in TCGA55. Although RUNX1 is                           predicted by the gene signature derived from stem-like MPAL blasts
+inactivated in some types of acute leukemia, RUNX1 upregulation is                       with the greatest differentiation potential as deﬁned by CytoTRACE.
+implicated in AML1-ETO52, and in MPAL, RUNX1 signatures have                             CytoTRACE is a metric of high differentiation potential in part based
+previously been shown to be enriched28,56. In this context, our data                     on a higher number of expressed genes in the leukemia cell
+support a role for RUNX1 activation in driving stem-like gene                            population38. In keeping with this deﬁnition of stemness and the
+expression and lineage aberrancy in MPAL. Our pathway enrich-                            association of stemness with MPAL phenotypes, MPAL-associated
+ment analyses highlighted RUNX1 targets involved in leukemogen-                          ZNF384 fusion oncoproteins have been found to demonstrate
+esis, including multiple zinc ﬁnger proteins (of which ZNF384 is                         increased promoter occupancy, high chromatin occupancy and high
+known to be important in MPAL), as well as ALDH57, ARHGAP58,                             transcriptional activity4,6. Similarly, BCL11B-rearranged leukemias are
+ETV59,60, FANC61, GATA62, HOX63, HSP64, LMO65, METTL66, and TRIM67                       known to display open chromatin proﬁles enriched for long-term
+family genes. Finally, we demonstrate enrichment in MPAL for stem-                       HSPC (LT-HSPC) and activated HSPC (Act-HSPC) signatures25. More
+like signatures derived from AML, rather than from ALL, suggesting                       speciﬁcally, in our data, higher differentiation potential as measured
+that MPAL may be more closely related to a stem-like AML22,68. This                      by higher CytoTRACE score correlates with a more proliferative,
+
+
+Nature Communications | (2024)15:8191                                                                                                                                     10
+Article                                                                                           https://doi.org/10.1038/s41467-024-52317-2
+
+
+
+
+aggressive leukemia based on GSEA. This is in opposition to the               In our SC data, the identiﬁcation of less differentiated and
+canonical description of a leukemic stem cell as quiescent77. Instead,   CytoTRACE-high cells was prognostic for patient outcomes. From
+high CytoTRACE, stem-like, MPAL blasts upregulate transcriptional        CytoTRACE-high cells in our SC data, we derived MPAL95, a gene set
+programs consistent with increased proliferation and cell cycle dys-     score applicable to bulk RNAseq data. MPAL95 is not a stemness score;
+regulation. Furthermore, MPAL cells with high CytoTRACE are enri-        in fact, there is no overlap in genes between MPAL95 and the estab-
+ched for expression of E2F4 transcriptional targets, which have been     lished AML stemness score LSC-1768. Instead, MPAL95 is enriched for
+linked to embryonic stem cell proliferation39.                           the expression of genes associated with proliferation/cell cycle
+
+
+Nature Communications | (2024)15:8191                                                                                                       11
+Article                                                                                                              https://doi.org/10.1038/s41467-024-52317-2
+
+Fig. 5 | Association between immunophenotypic evolution and mutational                 mutational acquisitions identiﬁed on single-cell DNA analysis. Each oval represents
+acquisition. a Barplot with dot-plot overlain depicting maximum t-statistic for 22     a genetically distinct subclone and arrows represent cumulative acquisition of
+cell-surface antibodies for each patient across all clones. Bars are deﬁned by the     mutational events. For each patient, the percentage of each clone among the total
+interquartile range, centered at the median, and whiskers indicate 95% conﬁdence       number of tumor cells and the 95% credible intervals from the posterior sampling
+interval error bars. For each antibody, antibody expression of all subsequent          are below each oval. Bottom: violin plots depicting normalized expression of CD38,
+branch phylogenetic clones are compared to the founding phylogenetic clone,            CD33, CD34, CD123, and CD117 for each subclone represented in the above phy-
+generating a t-statistic, and the maximum t-statistic for an individual antibody and   logeny. Violin plots color-coded in red indicate protein expression that has sig-
+patient is plotted. Each bar represents one immunophenotypic protein and each          niﬁcantly increased with mutational acquisition; plots color-coded in blue indicate
+overlain dot represents one of nine individual patients. Immunophenotypic pro-         a signiﬁcant decrease in protein expression. Statistical signiﬁcance is considered
+teins are ranked by maximum t-statistic across all patients, ranging from CD38         p < 0.05, with two-sided p values calculated using Student’s t-test and adjusted for
+(greatest increase in expression with mutational acquisition across patients) to CD8   multiple comparisons via the Bonferroni method. Het heterozygous, Hom homo-
+(lowest increase in expression). Source Data are provided as a Source Data ﬁle.        zygous. All mutations are heterozygous unless speciﬁed otherwise. Source Data are
+b Top: mutation phylogeny of nine patients with MPAL with at least two stepwise        provided as a Source Data ﬁle.
+
+
+
+
+regulation. Most importantly, MPAL95 is prognostic of survival in our                  Nevertheless, this work lays the foundation for a MPAL-speciﬁc risk
+cohort and in two independent MPAL validation cohorts of adult and                     stratiﬁcation system, which does not currently exist, and supports
+pediatric patients. Highlighting the speciﬁcity of MPAL95, this score is               prospective validation of transcriptionally deﬁned differentiation
+not prognostic in AML datasets—TCGA or BEAT AML, either broadly or                     potential as a prognostic biomarker.
+in the subset of progenitor-like AML.                                                       Future clinical studies are needed to validate CytoTRACE and
+      Ultimately, the combination of transcriptional and genetic data                  MPAL95 as prognostic tools and to elucidate optimal treatment stra-
+may provide the most powerful clinically prognostic information. Most                  tegies for MPAL across the span of differentiation potential. None-
+leukemias are thought to be driven by a series of successive genetic                   theless, the association of high differentiation potential with poor
+alterations, culminating in transformation to malignant disease. This                  survival suggests that the potential for lineage plasticity may be
+canonical road of leukemogenesis, when applied to MPAL, suggests                       advantageous for MPAL cells seeking to evade cytotoxic therapy.
+that sequential mutation acquisition leads an MPAL cell to have                        Finally, further mechanistic studies will be required to characterize the
+increased potential for lineage plasticity. Prior investigation into MPAL              true cell of origin for MPAL and determine the interplay between
+biology suggested the stem-like nature of MPAL and proposed that                       genetic, epigenetic, and microenvironmental factors that drive stem-
+mutations in a multipotent progenitor cell led to lineage promiscuity6.                ness and disease behavior.
+Interestingly, despite a limited genetic panel, we demonstrate that
+immunophenotypic markers of immaturity can be gained alongside                         Methods
+successive acquisition of mutations in MPAL. In our data, mutational                   Patient samples
+acquisition was associated with increased expression of multiple cell-                 Research complies with all relevant ethical regulations. All patients
+surface proteins associated with an immature and less differentiated                   provided written informed consent for sample banking and analysis
+cell state. MPAL may, therefore, arise from a primitive cell, or an MPAL               under protocols approved by the local Institutional Review Boards
+cell may revert to a more primitive phenotype with successive muta-                    (either University of California, San Francisco or University of Penn-
+tional evolution. This suggests that the MPAL cell of origin could span a              sylvania) and conducted in accordance with the Declaration of Hel-
+spectrum of differentiation and supports that a cell’s leukemic                        sinki. Cryopreserved unsorted bone marrow or peripheral blood
+potential cannot be assigned by immunophenotype alone. Epigenetics                     mononuclear cells from 14 adult patients with newly diagnosed MPAL
+may also inﬂuence the translation of the genome or transcriptome to                    were included in this study. Patients were diagnosed at either the
+lineage marker expression in individual leukemic populations.                          University of California San Francisco or the University of Pennsylvania
+Regardless, it has been previously shown that mutations do not explain                 from 2006 to 2020, and initial diagnosis was made using WHO criteria
+the intra-tumoral heterogeneity of MPAL6, and our data support                         operative at the time of diagnosis. All 14 diagnostic samples were
+this claim.                                                                            analyzed with simultaneous SC DNA and cell-surface protein sequen-
+      Multiomic SC analysis allows for direct measurement of cell-                     cing; 12 samples were concurrently analyzed with SC RNA and cell-
+surface markers comprising the “mixed” immunophenotype and per-                        surface protein sequencing (Fig. 1a).
+mits explicit correspondence of immunophenotype with both genetic
+and transcriptomic proﬁles. Further, the granularity provided by SC                    Single-cell RNA and protein sample preparation, library gen-
+analysis allows for the derivation of a prognostic gene set score                      eration, and sequencing
+applicable to bulk sequencing data. Prior studies have utilized SC                     We performed SC CITE-seq sequencing using a PIPseq platform9 on 12
+analysis both to generate a prognostic metric78 and to develop cell                    diagnostic samples from MPAL patients and one bone marrow sample
+state scores applicable to bulk RNAseq79. Our data similarly demon-                    from a healthy donor (StemCell Technologies). Brieﬂy, cryopreserved
+strate how specialized SC analysis of even a relatively small patient                  cells were thawed, and 1–2 million cells were incubated in 45 μl of Cell
+cohort can lead to broad and clinically relevant conclusions.                          Staining Buffer (BioLegend) per million cells with Trustain FcX block
+      As SC DAb-seq and CITE-seq analyses become more common,                          (BioLegend) for 15 min on ice. A pool of 19 antibodies (CD3, CD4, CD5,
+additional benchtop workﬂows and/or bioinformatic tools to integrate                   CD7, CD10, CD11b, CD13, CD14, CD19, CD22, CD30, CD33, CD34, CD45,
+these diverse data types are warranted. While packages to integrate                    CD56, CD64, CD117, IgG1, HLA-DR) were added (10 μg/mL) and incu-
+multiple SC CITE-seq datasets80 and bulk DNA sequencing with bulk                      bated on ice for 60 min (antibody staining performed on MPAL sam-
+RNA sequencing data81,82 exist, there remains an unmet need for robust                 ples only). Cells were resuspended in PBS with 0.04% BSA, combined in
+multiomic and tri-omic integration at the single-cell level. This analysis             a 1:10 ratio with barcoded hydrogel templates (1000 cells/μl), and
+of SC DNA and RNA data was done in parallel and thus, simultaneous                     processed according to PIPseq Single Cell Epitope Sequencing Use
+linkage of SC DNA and RNA sequencing data for each individual cell is                  Guide Rev 2.0 (FB0002079). Partitioning reagent (Fluent BioSciences)
+not possible. Our SC analysis was also limited by our targeted genetic                 was added to the cell-PIP mixture and vortexed on a custom vortexer
+panel, and it is possible biologically relevant co-mutational patterns                 (Fluent BioSciences). After the removal of excess partitioning reagent,
+and genotype–immunophenotype associations were not identiﬁed.                          the emulsion was placed on a dry bath (66 °C for 40 min followed by
+
+
+Nature Communications | (2024)15:8191                                                                                                                                   12
+Article                                                                                               https://doi.org/10.1038/s41467-024-52317-2
+
+
+4 °C for 11 min) for cell lysis and RNA capture. Emulsions were broken      described above; we additionally analyzed for enrichment of the top
+with de-partitioning reagent (Fluent BioSciences), washed, and cDNA         50 genes upregulated in the common leukemia cluster of our 12-
+synthesis was conducted on the RNA hybridized to PIP templates in           patient cohort (“Peretz_Kennedy_MPAL”) (Supplementary Data 8).
+bulk. Double-stranded DNA libraries were then enzymatically frag-
+mented and adapters for Illumina sequencing were ligated prior to           CytoTRACE-based analyses
+ampliﬁcation with appropriate index adapters. The resulting PIPseq          Differentiation potential was determined using CytoTRACE v0.3.3,
+libraries were pooled and sequenced using an Illumina NextSeq2000.          with 3000 single cells sub-sampled from the 12 individual patients38.
+                                                                            To generate MPAL95, a CytoTRACE-derived gene set score, we com-
+Single-cell CITE-seq data processing and analysis                           pared the differential gene expression of single cells with a high
+FASTQ ﬁles from single-cell CITE-seq were processed via PIPseeker           CytoTRACE score (≥0.95) vs a low CytoTRACE score (<0.95). Genes
+v0.52 (Fluent), which includes: trimming adapter sequences, demulti-        with greatest upregulation in the cells with high cytoTRACE scores
+plexing data into single cells (BCL Convert, Illumina Basespace dash-       were used to compute a gene set score, called MPAL95 (Supplemen-
+board), matching against a list of known barcodes, mapping against          tary Data 8), using the ﬁrst principal component, in an approach
+the GRCh38.p13 reference transcriptome (Salmon alevin v1.4.0), and          similar to that used to compute gene set scores from single-cell tran-
+separating putative cells from background9. Antibody analysis was also      scriptional data in AML79. MPAL95 was then applied to bulk RNAseq
+processed via PIPseeker v0.52, including error correction, trimming of      data from the following: (1) 72 adult patients with MPAL from the
+adapter sequences, mapping to a list of known barcodes, and gen-            recently published Soochow University dataset42, (2) 69 pediatric
+erating a UMI matrix (CITE-seq Count v1.4.3). Downstream bioinfor-          patients with MPAL from the TARGET-ALL-P3 dataset; samples were
+matics analysis was performed using Seurat 4.3.0 in R. Genes were           only included if survival outcomes were available43, (3) 173 adult
+ﬁltered if detected in <3 cells and cells were ﬁltered based on having      patients with AML from the TCGA AML cohort44, and (4) 451 adult
+low-complexity libraries (feature count <200) or high mitochondrial         patients with AML from the Beat AML cohort6. As additional validation,
+content (>15%). Unsupervised cell clustering on transcriptional data        MPAL95 was also applied to pseudo-bulked RNAseq data derived from
+was performed using Seurat with resolution set to 0.6, and clusters         SC RNAseq data from the 12 adult patients in our cohort. To pseudo-
+were visualized using the Seurat function RunUMAP with default set-         bulk our data, we extracted raw counts from all single cells after quality
+tings. Cell populations were annotated by RNA expression using a            ﬁltering and then aggregated counts to the sample level.
+combination of scType and clustifyr followed by independent manual               The TARGET dataset had additional clinical variables available
+conﬁrmation via marker genes35,83. Both annotation frameworks               which were included in multivariable survival analysis. These vari-
+agreed on all clusters apart from a population of cells assigned as         ables included: patient age, sex, white blood cell count at diagnosis,
+“cancer cells”, “pro-B cells”, “progenitor cells”, or “unknown” by scType   disease classiﬁcation per WHO classiﬁcation, and treatment type,
+and “CD34+” cells by clustifyr; this cluster was collapsed into a com-      classiﬁed per TARGET as AML-like, ALL-like, hybrid, or unknown43.
+mon “leukemia” cluster. Differentially expressed genes for each cluster     The TCGA AML and Beat AML datasets were further subsetted to
+were determined using Seurat’s FindConservedMarkers, FindAllMar-            identify patients with HSC-like and progenitor-like AML. To do this,
+kers, or FindMarkers functions, as appropriate.                             we derived gene set scores from cell state transcriptional signatures21
+                                                                            as previously described79. Patients with the top 10% of each HSC-like
+Gene set and pathway enrichment analyses                                    and progenitor-like transcriptional scores were included in subset
+GSEA were performed using gsea v4.2.3 by comparing single cells             analyses.
+annotated as leukemia vs non-leukemia or by comparing single cells
+within the leukemia cluster with CytoTRACE ≥0.95 vs <0.95; all genes        Single-cell DNA and protein sample preparation, library gen-
+with log2FC threshold ≥0.1 were included84. Gene sets used in this          eration, and sequencing
+study included the molecular signatures database hallmark v2022.1 (50       We performed SC DAb-seq using a microﬂuidic approach with the
+gene sets) and c2 (6449 gene sets)13,14 as well as gene sets associated     Tapestri platform (Mission Bio) as previously described10,87. Cryopre-
+with immature and mature AML and ALL, leukemias undergoing line-            served cells were thawed, normalized to 10,000 cells/μL in 180 μL PBS
+age switch, and ZNF384 and BCL11B rearrangements characteristic of          (Corning), and incubated with Human TruStain FcX (BioLegend) and
+MPAL (18 gene sets; Supplementary Data 7). Pathway enrichment               salmon sperm DNA (Invitrogen) for 15 min at 4 °C. A pool of 25 AOCs
+analysis was performed using the top 20 greatest upregulated genes          against 23 antibodies (CD3, CD4, CD5, CD7, CD8, CD10, CD11b, CD13,
+by log2FC for both single cells annotated as leukemia vs non-leukemia       CD14, CD15, CD16, CD19, CD22, CD30, CD33, CD34, CD38, CD45, CD56,
+and for single cells within the leukemia cluster with CytoTRACE ≥0.95       CD64, CD71, CD117, CD123) (Supplementary Data 11) was added
+vs <0.95. These gene sets were compared against the ChEA and                (2.5 μg/mL), and cells were incubated for 30 min. Individual samples
+ENCODE transcription factor targets databases via the enrichr               were also incubated with unique AOCs to provide sample-level iden-
+platform29,30,85,86.                                                        tiﬁers, and groups of 3 samples were pooled together for multiplexed
+                                                                            runs. All AOCs were generated as previously described, and successful
+Comparison with independent single-cell cohort of adult MPAL                conjugation was veriﬁed using a Bioanalyzer Protein 230 electro-
+patients                                                                    phoresis chip (Agilent Technologies, cat. no 5067-1517)10.
+We used a previously published, independent cohort of SC RNAseq                  Next, pooled samples were resuspended in cell buffer (Mission
+data derived from a cohort of ﬁve adult patients with MPAL using the        Bio), diluted to 4–7e6 cells/mL, and loaded onto a microﬂuidics car-
+10x platform28. We analyzed the ﬁrst replicate (“T1”) for each of the ﬁve   tridge, where individual cells were encapsulated, lysed, and barcoded
+patients (MPAL1-5) (GEO Accession Code GSE139369). Downstream               using the Tapestri instrument. DNA from barcoded cells was ampliﬁed
+bioinformatics processing, including ﬁltering for low-complexity            via PCR using a targeted panel (Supplementary Data 10). DNA PCR
+libraries or high mitochondrial content, data integration, unsu-            products were isolated, puriﬁed with AmpureXP beads (Beckman
+pervised clustering, cell annotation, and data visualization were per-      Coulter), used as a PCR template for library generation, and then
+formed using Seurat with identical workﬂow as described above. The          repuriﬁed with AmpureXP beads. Protein PCR products were isolated
+top 50 genes upregulated in the common leukemia cluster of our 12-          via incubation with a 5′ Biotin Oligo (IDT), puriﬁed using Streptavidin
+patient cohort were compared against this comparison dataset. We            C1 beads (Thermo Fisher Scientiﬁc), used as a PCR template for library
+next performed GSEA on the single cells annotated as leukemia vs non-       generation, and then repuriﬁed using AmpureXP beads. Both DNA and
+leukemia in the comparison cohort using the 6513 gene sets as               protein libraries were quantiﬁed and quality was assessed via a Qubit
+
+
+Nature Communications | (2024)15:8191                                                                                                              13
+Article                                                                                                 https://doi.org/10.1038/s41467-024-52317-2
+
+
+ﬂuorometer (Life Technologies) and Bioanalyzer (Agilent Technolo-             individual patients were inferred using SCITE, a probabilistic model for
+gies) prior to sequencing on an Illumina Novaseq.                             inferring phylogenetic trees40, using a global false positive rate set to
+                                                                              1% and a platform-provided false-negative rate as per prior SC DNA
+Single-cell DAb-seq data processing and analysis                              studies12. To deﬁne immunophenotypic subpopulations, unsupervised
+FASTQ ﬁles were processed via an open-source pipeline as described            hierarchical clustering was performed using the Scipy package in
+previously10,88. This analysis pipeline trims adapter sequences, demul-       Python, and UMAPs derived from protein expression data were con-
+tiplexes DNA panel amplicons and antibody tags into single cells, and         structed using the Umap function with default settings.
+aligns panel reads to the hg19 reference genome. Valid cell barcodes                In the nine patients that had at least two stepwise mutational
+were called using the inﬂection point of the cell-rank plot in addition to    acquisitions identiﬁed on SC phylogenetic analysis, we measured how
+the requirement that 60% of DNA intervals were covered by at least            cell-surface immunophenotype changed with progressive acquisition
+eight reads. Variants were called using GATK (v 4.1.3.0) according to         of mutations. For each patient, we compared expression of each of the
+GATK best practices89. ITDseek was used to detect FLT3 internal tan-          22 immunophenotypic proteins for the founding genetic clone to all
+dem duplications90. For valid cell barcodes, variants were ﬁltered            subsequent genetic clones and calculated a t-statistic. To identify
+according to quality and sequence depth reported by GATK, with low-           which cell-surface proteins changed the most with mutational acqui-
+quality variants and cells excluded based on the cutoffs of quality score     sition across the cohort, for each patient, we determined the maximum
+<30, read depth <10, and alternate allele frequency <20%. Cell-surface        t-statistic for each immunophenotypic protein (Fig. 5a).
+protein reads were normalized using centered log ratio
+transformations91.                                                            Statistics and reproducibility
+                                                                              Continuous variables were compared using Student’s t-test or
+SNP and antibody-based demultiplexing                                         Mann–Whitney U tests and categorical variables were compared using
+To de-multiplex individual patients combined into a single sample, we         Chi-squared or Fisher’s exact tests. To evaluate clone-level cooccur-
+used a custom computational approach incorporating both patient-              rence, a contingency table was constructed for each mutation pair and
+speciﬁc AOC hash antibodies as well as single nucleotide polymorph-           the log2-transformed OR computed; Fisher’s exact test was used to
+isms (SNPs) covered by the SC DNA panel91. Individual patient samples         evaluate statistical signiﬁcance. The association between individual
+were stained with unique AOC hash antibodies and then multiplexed             mutations and cell-surface antibody expression was determined using
+into groups of 3. All SNPs were treated as binary (mutated or WT). To         point-biserial correlations and the association between CytoTRACE
+identify SNPs that maximally differ between samples, for each multi-          and cell-surface antibody expression was determined using Spear-
+plexed group, we ﬁltered all SNPs mutated in <10% or >80% of cells. For       man’s correlation. Survival analysis was estimated using Kaplan–Meier
+the remaining SNPs, missing data were imputed based on a majority             curves and compared using log-rank tests. Hazard ratios were calcu-
+vote of the binary data from the ﬁve nearest neighbors using the kNN          lated using the multivariable Cox proportional hazards model. The
+function from the VIM package in R. Next, we hierarchically cluster           proportional hazard assumption was tested by examining Schoenfeld
+cells using cosine as the distance function and Ward’s method for             residuals using the cox.zph function from the R survival package. All p
+joining clusters and cut the resulting dendogram into three clusters,         values for single-cell level comparisons were adjusted via the Bonfer-
+one for each patient. To reﬁne the SNPs included in clustering, Fisher’s      roni methods unless otherwise speciﬁed. All statistical analyses were
+exact test was computed between the SNP value and cluster mem-                performed in R (v. 4.0.2).
+bership across cells; SNPs with p values < 10−12 were selected and re-
+clustered in the same hierarchical manner.                                    Reporting summary
+     Next, SNP-based cell clusters were reﬁned using hash antibody            Further information on research design is available in the Nature
+data. Starting with three SNP-based clusters, we add additional clusters      Portfolio Reporting Summary linked to this article.
+by traversing down the hierarchical tree and splitting if there was a
+signiﬁcant difference between the current cluster and subsequent split        Data availability
+by Hotelling’s T2 test with a p value cutoff of 10−5. Splitting was stopped   The data as generated here, including raw sequencing data in the form
+when there were <10 cells/cluster. Clusters were then assigned to a           of FASTQ ﬁles, have been deposited in NCBI’s Gene Expression
+speciﬁc hash antibody by comparing the antibody expression of the             Omnibus36 (GEO) and are accessible through GEO series Accession
+cluster to the expected hash background distribution. For each hash           Number GSE232074. Comparison cohorts include single cell RNAseq
+antibody, the antibody expression for a multiplexed experiment is             data from a cohort of ﬁve adult patients with MPAL28 deposited in GEO
+expected to be bimodal, with one right mode comprised of antibody-            and accessible through GEO Accession Code GSE139369, bulk RNAseq
+stained cells belonging to a single patient and one left mode com-            data from the pediatric database “Therapeutically Applicable Research
+prised of unstained cells. To estimate the expected background anti-          to Generate Effective Treatments (TARGET)” initiative43 which is pub-
+body distribution, we generated a symmetric distribution by reﬂecting         licly available through [https://ocg.cancer.gov/programs/target/
+the data to the left of the left mode about the mode. Clusters were           projects/acute-lymphoblastic-leukemia2021.:], and bulk RNAseq data
+assigned to a speciﬁc hash antibody and patient if >50% of cells from         from a cohort of adult patients treated at the First Afﬁliated Hospital of
+that cluster demonstrated hash antibody expression above the 95th             Soochow University, Suzhou, China, which was requested directly
+percentile of the expected background distribution. A cluster was             from corresponding authors42. Source data are provided with
+considered a multiplet if it was assigned to multiple patients. Cells         this paper.
+designated as multiplets or unassignable were excluded from down-
+stream analyses.                                                              Code availability
+                                                                              Downstream analysis scripts are available at github.com/SmithLa-
+Clonal analysis and inference of mutational phylogenies                       bUCSF/MPAL.
+Following demultiplexing, for individual patients, we analyzed all
+variants present in >0.1% of cells. Variants were assessed for known or       References
+likely pathogenicity via ClinVar and COSMIC databases24,92 and pre-           1.   Munker, R. et al. Mixed phenotype acute leukemia: outcomes with
+viously identiﬁed, nonintronic somatic variants were included in clonal            allogeneic stem cell transplantation. A retrospective study from the
+analyses. Genetic clones were deﬁned as >10 cells possessing identical             Acute Leukemia Working Party of the EBMT. Haematologica 102,
+genotype calls, as per prior SC DNA studies11,93. Phylogenetic trees for           2134–2140 (2017).
+
+
+Nature Communications | (2024)15:8191                                                                                                                14
+Article                                                                                                    https://doi.org/10.1038/s41467-024-52317-2
+
+
+2.  Khoury, J. D. et al. The 5th edition of the World Health Organization      27. Hirabayashi, S. et al. ZNF384-related fusion genes deﬁne a sub-
+    Classiﬁcation of haematolymphoid tumours: myeloid and histio-                  group of childhood B-cell precursor acute lymphoblastic leukemia
+    cytic/dendritic neoplasms. Leukemia 36, 1703–1719 (2022).                      with a characteristic immunotype. Haematologica 102,
+3. Arber, D. A. et al. International Consensus Classiﬁcation of myeloid            118–129 (2017).
+    neoplasms and acute leukemias: integrating morphologic, clinical,          28. Granja, J. M. et al. Single-cell multiomic analysis identiﬁes reg-
+    and genomic data. Blood 140, 1200–1228 (2022).                                 ulatory programs in mixed-phenotype acute leukemia. Nat. Bio-
+4. Dickerson, K. M. et al. ZNF384 fusion oncoproteins drive lineage                technol. 37, 1458–1465 (2019).
+    aberrancy in acute leukemia. Blood Cancer Discov. 3,                       29. Consortium EP. An integrated encyclopedia of DNA elements in the
+    240–263 (2022).                                                                human genome. Nature 489, 57–74 (2012).
+5. Zaliova, M. et al. A novel class of ZNF384 aberrations in acute leu-        30. Lachmann, A. et al. ChEA: transcription factor regulation inferred
+    kemia. Blood Adv. 5, 4393–4397 (2021).                                         from integrating genome-wide ChIP-X experiments. Bioinformatics
+6. Alexander, T. B. et al. The genetic basis and cell of origin of mixed           26, 2438–44 (2010).
+    phenotype acute leukaemia. Nature 562, 373–379 (2018).                     31. Zhang, P. et al. Kruppel-like factor 4 (Klf4) prevents embryonic stem
+7. Sudutan, T. et al. Zinc ﬁnger protein 384 (ZNF384) impact on                    (ES) cell differentiation by regulating Nanog gene expression. J.
+    childhood mixed phenotype acute leukemia and B-cell precursor                  Biol. Chem. 285, 9180–9 (2010).
+    acute lymphoblastic leukemia. Leuk. Lymphoma 63,                           32. Takahashi, K. & Yamanaka, S. Induction of pluripotent stem cells
+    2931–2939 (2022).                                                              from mouse embryonic and adult ﬁbroblast cultures by deﬁned
+8. Takahashi, K. et al. Integrative genomic analysis of adult mixed                factors. Cell 126, 663–76 (2006).
+    phenotype acute leukemia delineates lineage associated molecular           33. Dang, H. et al. Oncogenic activation of the RNA binding protein
+    subtypes. Nat. Commun. 9, 2670 (2018).                                         NELFE and MYC signaling in hepatocellular carcinoma. Cancer Cell
+9. Clark, I. C. et al. Microﬂuidics-free single-cell genomics with tem-            32, 101–114.e8 (2017).
+    plated emulsiﬁcation. Nat. Biotechnol. 41, 1557–1566 (2023).               34. Dang, H. et al. NELFE-dependent MYC signature identiﬁes a unique
+10. Demaree, B. et al. Joint proﬁling of DNA and proteins in single cells          cancer subtype in hepatocellular carcinoma. Sci. Rep. 9,
+    to dissect genotype-phenotype associations in leukemia. Nat.                   3369 (2019).
+    Commun. 12, 1583 (2021).                                                   35. Ianevski, A., Giri, A. K. & Aittokallio, T. Fully-automated and ultra-fast
+11. Miles, L. A. et al. Single-cell mutation analysis of clonal evolution in       cell-type identiﬁcation using speciﬁc marker combinations from
+    myeloid malignancies. Nature 587, 477–482 (2020).                              single-cell transcriptomic data. Nat. Commun. 13, 1246 (2022).
+12. Morita, K. et al. Clonal evolution of acute myeloid leukemia revealed      36. Sadasivam, S. & DeCaprio, J. A. The DREAM complex: master
+    by high-throughput single-cell genomics. Nat. Commun. 11,                      coordinator of cell cycle-dependent gene expression. Nat. Rev.
+    5327 (2020).                                                                   Cancer 13, 585–95 (2013).
+13. Liberzon, A. et al. The Molecular Signatures Database (MSigDB)             37. Johnson, D. G. & Schneider-Broussard, R. Role of E2F in cell cycle
+    hallmark gene set collection. Cell Syst. 1, 417–425 (2015).                    control and cancer. Front. Biosci. 3, d447–8 (1998).
+14. Liberzon, A. et al. Molecular signatures database (MSigDB) 3.0.            38. Gulati, G. S. et al. Single-cell transcriptional diversity is a hallmark of
+    Bioinformatics 27, 1739–40 (2011).                                             developmental potential. Science 367, 405–411 (2020).
+15. Jaatinen, T. et al. Global gene expression proﬁle of human cord            39. Hsu, J. et al. E2F4 regulates transcriptional activation in mouse
+    blood-derived CD133+ cells. Stem Cells 24, 631–41 (2006).                      embryonic stem cells independently of the RB family. Nat. Com-
+16. Wong, D. J. et al. Module map of stem cell genes guides creation of            mun. 10, 2939 (2019).
+    epithelial cancer stem cells. Cell Stem Cell 2, 333–44 (2008).             40. Saunders, A. et al. The SIN3A/HDAC corepressor complex func-
+17. Bhattacharya, B. et al. Gene expression in human embryonic stem                tionally cooperates with NANOG to promote pluripotency. Cell Rep.
+    cell lines: unique molecular signature. Blood 103, 2956–64 (2004).             18, 1713–1726 (2017).
+18. Anand, P. et al. Single-cell RNA-seq reveals developmental plasti-         41. Nascimento, E. M. et al. The opposing transcriptional functions of
+    city with coexisting oncogenic states and immune evasion pro-                  Sin3a and c-Myc are required to maintain tissue homeostasis. Nat.
+    grams in ETP-ALL. Blood 137, 2463–2480 (2021).                                 Cell Biol. 13, 1395–405 (2011).
+19. Khabirova, E. et al. Single-cell transcriptomics reveals a distinct        42. Wang, Q. et al. Integrative genomic and transcriptomic proﬁling
+    developmental state of KMT2A-rearranged infant B-cell acute lym-               reveals distinct molecular subsets in adult mixed phenotype acute
+    phoblastic leukemia. Nat. Med. 28, 743–751 (2022).                             leukemia. Am. J. Hematol. 98, 66–78 (2023).
+20. Kim, J. C. et al. Transcriptomic classes of BCR-ABL1 lymphoblastic         43. Hospital SJsR. TARGET-ALL-Phase3. In: Institute NC e, https://ocg.
+    leukemia. Nat. Genet. 55, 1186–1197 (2023).                                    cancer.gov/programs/target/projects/acute-lymphoblastic-
+21. van Galen, P. et al. Single-cell RNA-seq reveals AML hierarchies               leukemia2021 (2021).
+    relevant to disease progression and immunity. Cell 176, 1265–1281          44. Cancer Genome Atlas Research Network.Genomic and epigenomic
+    e24 (2019).                                                                    landscapes of adult de novo acute myeloid leukemia. N. Engl. J.
+22. Huang, B. J. et al. Integrated stem cell signature and cytomolecular           Med. 368, 2059–2074 (2013).
+    risk determination in pediatric acute myeloid leukemia. Nat. Com-          45. Tyner, J. W. et al. Functional genomic landscape of acute myeloid
+    mun. 13, 5487 (2022).                                                          leukaemia. Nature 562, 526–531 (2018).
+23. Novakova, M. et al. DUX4r, ZNF384r and PAX5-P80R mutated B-cell            46. Jahn, K., Kuipers, J. & Beerenwinkel, N. Tree inference for single-cell
+    precursor acute lymphoblastic leukemia frequently undergo                      data. Genome Biol. 17, 86 (2016).
+    monocytic switch. Haematologica 106, 2066–2075 (2021).                     47. Lazzarotto, D. et al. Multicenter retrospective analysis of clinical
+24. Tate, J. G. et al. COSMIC: the catalogue of somatic mutations in               outcome of adult patients with mixed-phenotype acute leukemia
+    cancer. Nucleic Acids Res. 47, D941–D947 (2019).                               treated with acute myeloid leukemia-like or acute lymphoblastic
+25. Monteﬁori, L. E. et al. Enhancer hijacking drives oncogenic BCL11B             leukemia-like chemotherapy and impact of allogeneic stem cell
+    expression in lineage-ambiguous stem cell leukemia. Cancer Dis-                transplantation: a Campus ALL study. Ann. Hematol. 102,
+    cov. 11, 2846–2867 (2021).                                                     1099–1109 (2023).
+26. Ha, V. L. et al. The T-ALL related gene BCL11B regulates the initial       48. Hrusak, O. et al. International cooperative study identiﬁes treatment
+    stages of human T-cell differentiation. Leukemia 31,                           strategy in childhood ambiguous lineage leukemia. Blood 132,
+    2503–2514 (2017).                                                              264–276 (2018).
+
+
+Nature Communications | (2024)15:8191                                                                                                                      15
+Article                                                                                                     https://doi.org/10.1038/s41467-024-52317-2
+
+
+49. de Bruijn, M. & Dzierzak, E. Runx transcription factors in the devel-       74. Gentles, A. J., Plevritis, S. K., Majeti, R. & Alizadeh, A. A. Association
+    opment and function of the deﬁnitive hematopoietic system. Blood                of a leukemic stem cell gene expression signature with clinical
+    129, 2061–2069 (2017).                                                          outcomes in acute myeloid leukemia. JAMA 304, 2706–2715 (2010).
+50. Sood, R., Kamikubo, Y. & Liu, P. Role of RUNX1 in hematological             75. Ng, S. W. K. et al. A clinical laboratory-developed LSC17 stemness
+    malignancies. Blood 129, 2070–2082 (2017).                                      score assay for rapid risk assessment of patients with acute myeloid
+51. Wesely, J. et al. Acute myeloid leukemia iPSCs reveal a role for                leukemia. Blood Adv. 6, 1064–1073 (2022).
+    RUNX1 in the maintenance of human leukemia stem cells. Cell Rep.            76. Qin, P. et al. Integrated decoding hematopoiesis and leukemo-
+    31, 107688 (2020).                                                              genesis using single-cell sequencing and its medical implication.
+52. Ben-Ami, O. et al. Addiction of t(8;21) and inv(16) acute myeloid               Cell Discov. 7, 2 (2021).
+    leukemia to native RUNX1. Cell Rep. 4, 1131–43 (2013).                      77. Nakamura-Ishizu, A., Takizawa, H. & Suda, T. The analysis, roles and
+53. Wilkinson, A. C. et al. RUNX1 is a key target in t(4;11) leukemias that         regulation of quiescence in hematopoietic stem cells. Development
+    contributes to gene activation through an AF4-MLL complex inter-                141, 4656–66 (2014).
+    action. Cell Rep. 3, 116–27 (2013).                                         78. Rodriguez-Meira, A. et al. Single-cell multi-omics identiﬁes chronic
+54. Silva, F. P. et al. Gene expression proﬁling of minimally differ-               inﬂammation as a driver of TP53-mutant leukemic evolution. Nat.
+    entiated acute myeloid leukemia: M0 is a distinct entity subdivided             Genet. 55, 1531–1541 (2023).
+    by RUNX1 mutation status. Blood 114, 3001–7 (2009).                         79. Bottomly, D. et al. Integrative analysis of drug response and clinical
+55. Morita, K. et al. Paradoxical enhancement of leukemogenesis in                  outcome in acute myeloid leukemia. Cancer Cell 40, 850–864
+    acute myeloid leukemia with moderately attenuated RUNX1                         e9 (2022).
+    expressions. Blood Adv. 1, 1440–1451 (2017).                                80. Gayoso, A. et al. Joint probabilistic modeling of single-cell multi-
+56. Merati, G. et al. Enrichment of double RUNX1 mutations in acute                 omic data with totalVI. Nat. Methods 18, 272–282 (2021).
+    leukemias of ambiguous lineage. Front. Oncol. 11, 726637 (2021).            81. Mo, Q. et al. A fully Bayesian latent variable model for integrative
+57. Rahmati, A. et al. The emerging roles of aldehyde dehydrogenase in              clustering analysis of multi-type omics data. Biostatistics 19,
+    acute myeloid leukemia and its therapeutic potential. Anticancer                71–86 (2018).
+    Agents Med. Chem. 23, 246–255 (2023).                                       82. Shen, R., Olshen, A. B. & Ladanyi, M. Integrative clustering of mul-
+58. Qi, Y. et al. ARHGAP4 promotes leukemogenesis in acute myeloid                  tiple genomic data types using a joint latent variable model with
+    leukemia by inhibiting DRAM1 signaling. Oncogene 42,                            application to breast and lung cancer subtype analysis. Bioinfor-
+    2547–2557 (2023).                                                               matics 25, 2906–12 (2009).
+59. Bohlander, S. K. ETV6: a versatile player in leukemogenesis. Semin.         83. Fu, R. et al. clustifyr: an R package for automated single-cell RNA
+    Cancer Biol. 15, 162–74 (2005).                                                 sequencing cluster classiﬁcation. F1000Res. 9, 223 (2020).
+60. Hock, H. & Shimamura, A. ETV6 in hematopoiesis and leukemia                 84. Subramanian, A. et al. Gene set enrichment analysis: a knowledge-
+    predisposition. Semin. Hematol. 54, 98–104 (2017).                              based approach for interpreting genome-wide expression proﬁles.
+61. Sebert, M. et al. Clonal hematopoiesis driven by chromosome 1q/                 Proc. Natl. Acad. Sci. USA 102, 15545–50 (2005).
+    MDM4 trisomy deﬁnes a canonical route toward leukemia in Fan-               85. Kuleshov, M. V. et al. Enrichr: a comprehensive gene set enrichment
+    coni anemia. Cell Stem Cell 30, 153–170.e9 (2023).                              analysis web server 2016 update. Nucleic Acids Res. 44,
+62. Zheng, R. & Blobel, G. A. GATA transcription factors and cancer.                W90–7 (2016).
+    Genes Cancer 1, 1178–88 (2010).                                             86. Chen, E. Y. et al. Enrichr: interactive and collaborative HTML5 gene
+63. Alharbi, R. A., Pettengell, R., Pandha, H. S. & Morgan, R. The role of          list enrichment analysis tool. BMC Bioinform. 14, 128 (2013).
+    HOX genes in normal hematopoiesis and acute leukemia. Leukemia              87. Pellegrino, M. et al. High-throughput single-cell DNA sequencing of
+    27, 1000–8 (2013).                                                              acute myeloid leukemia tumors with droplet microﬂuidics. Genome
+64. Xiong, J., Li, Y., Tan, X. & Fu, L. Small heat shock proteins in cancers:       Res. 28, 1345–1352 (2018).
+    functions and therapeutic potential for cancer therapy. Int. J. Mol.        88. Demaree, B. & Delley, C. L. Joint proﬁling of DNA and proteins in
+    Sci. 21, 6611 (2020).                                                           single cells to dissect genotype-phenotype associations in leuke-
+65. El Omari, K. et al. Structure of the leukemia oncogene LMO2:                    mia. https://github.com/AbateLab/DAb-seq, https://doi.org/10.
+    implications for the assembly of a hematopoietic transcription                  5281/ZENODO.4495688 (2020).
+    factor complex. Blood 117, 2146–56 (2011).                                  89. DePristo, M. A. et al. A framework for variation discovery and gen-
+66. Han, L. et al. METTL16 drives leukemogenesis and leukemia stem                  otyping using next-generation DNA sequencing data. Nat. Genet.
+    cell self-renewal by reprogramming BCAA metabolism. Cell Stem                   43, 491–8 (2011).
+    Cell 30, 52–68.e13 (2023).                                                  90. Au, C. H. et al. Clinical evaluation of panel testing by next-
+67. Huang, N. et al. TRIM family contribute to tumorigenesis, cancer                generation sequencing (NGS) for gene mutations in myeloid neo-
+    development, and drug resistance. Exp. Hematol. Oncol. 11, 75 (2022).           plasms. Diagn. Pathol. 11, 11 (2016).
+68. Ng, S. W. et al. A 17-gene stemness score for rapid determination of        91. Mule, M. P., Martins, A. J. & Tsang, J. S. Normalizing and denoising
+    risk in acute leukaemia. Nature 540, 433–437 (2016).                            protein expression data from droplet-based single cell proﬁling.
+69. George, B. S., Yohannan, B., Gonzalez, A. & Rios, A. Mixed-                     Nat. Commun. 13, 2099 (2022).
+    phenotype acute leukemia: clinical diagnosis and therapeutic                92. Landrum, M. J. et al. ClinVar: improving access to variant inter-
+    strategies. Biomedicines 10, 1974 (2022).                                       pretations and supporting evidence. Nucleic Acids Res. 46,
+70. Wolach, O. & Stone, R. M. How I treat mixed-phenotype acute leu-                D1062–D1067 (2018).
+    kemia. Blood 125, 2477–85 (2015).                                           93. Guess, T. et al. Distinct Patterns of Clonal Evolution Drive Myelo-
+71. Fornerod, M. et al. Integrative genomic analysis of pediatric                   dysplastic Syndrome Progression to Secondary Acute Myeloid
+    myeloid-related acute leukemias identiﬁes novel subtypes and                    Leukemia. Blood Cancer Discov. 3, 316–329 (2022).
+    prognostic indicators. Blood Cancer Discov. 2, 586–599 (2021).
+72. Eppert, K. et al. Stem cell gene expression programs inﬂuence               Acknowledgements
+    clinical outcome in human leukemia. Nat. Med. 17, 1086–93 (2011).           Sequencing was performed at the UCSF CAT, supported by UCSF PBBR,
+73. van Rhenen, A. et al. High stem cell frequency in acute myeloid             RRP IMIA, and NIH 1S10OD028511-01 grants. This research was sup-
+    leukemia at diagnosis predicts high minimal residual disease and            ported in part by the West Charitable Trust. C.A.C.P. is supported (in
+    poor survival. Clin. Cancer Res. 11, 6520–7 (2005).                         part) by the National Cancer Institute of the National Institutes of Health
+
+
+Nature Communications | (2024)15:8191                                                                                                                      16
+Article                                                                                                  https://doi.org/10.1038/s41467-024-52317-2
+
+
+under Award Number K12CA260225. The content is solely the respon-             Correspondence and requests for materials should be addressed to
+sibility of the authors and does not necessarily represent the ofﬁcial        Catherine C. Smith.
+views of the National Institutes of Health. C.C.S. is the Damon Runyon-
+Richard Lumsden Foundation Clinical Investigator supported (in part) by       Peer review information Nature Communications thanks Wenfei Jin who
+the Damon Runyon Cancer Research Foundation (CI-99-18) and is a               co-reviewed with Junliang WangIléana Antony-Debré and Arnaud Droit
+Leukemia and Lymphoma Society Scholar in Clinical Research.                   for their contribution to the peer review of this work. A peer review ﬁle is
+                                                                              available.
+Author contributions
+C.A.C.P. and V.E.K. contributed equally to this project in its conception     Reprints and permissions information is available at
+and manuscript writing. C.A.C.P. led experimental design and execution        http://www.nature.com/reprints
+and V.E.K. led analysis. A.K., E.T., C.D., Y.X., T.S., and Y.A. ran experi-
+ments. A.W., C.L.D., C.E.H., A.A.M.-Z., and R.R. performed or assisted        Publisher’s note Springer Nature remains neutral with regard to
+with analysis. Q.W. and H.D. analyzed Chinese patient cohort. I.C.C.,         jurisdictional claims in published maps and institutional afﬁliations.
+K.M.F., and A.A. worked on technology development. A.C.L. and A.E.P.
+provided samples and assisted with concept development. A.O. men-             Open Access This article is licensed under a Creative Commons
+tored and directed bioinformatic and statistical analysis. C.C.S. oversaw     Attribution 4.0 International License, which permits use, sharing,
+all aspects of project conception and completion.                             adaptation, distribution and reproduction in any medium or format, as
+                                                                              long as you give appropriate credit to the original author(s) and the
+Competing interests                                                           source, provide a link to the Creative Commons licence, and indicate if
+C.D., Y.X. and K.M.F. are employees of Fluent BioSciences whose tech-         changes were made. The images or other third party material in this
+nology was used for RNA–protein experiments. C.E.H. is a former               article are included in the article’s Creative Commons licence, unless
+employee of Fluent BioSciences. I.C.C. is a shareholder in Fluent BioS-       indicated otherwise in a credit line to the material. If material is not
+ciences. A.A. is a co-founder and shareholder of Mission Bio, whose           included in the article’s Creative Commons licence and your intended
+technology was used for DNA–protein experiments, and Fluent BioS-             use is not permitted by statutory regulation or exceeds the permitted
+ciences. All other authors declare no potential conﬂicts of interest.         use, you will need to obtain permission directly from the copyright
+                                                                              holder. To view a copy of this licence, visit http://creativecommons.org/
+Additional information                                                        licenses/by/4.0/.
+Supplementary information The online version contains
+supplementary material available at                                           © The Author(s) 2024
+https://doi.org/10.1038/s41467-024-52317-2.
+
+
+
+
+Nature Communications | (2024)15:8191                                                                                                                  17
+

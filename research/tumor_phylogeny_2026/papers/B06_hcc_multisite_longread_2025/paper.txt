@@ -1,0 +1,865 @@
+Research
+
+Multisite long-read sequencing reveals the early
+contributions of somatic structural variations to
+HBV-related hepatocellular carcinoma tumorigenesis
+Tianfu Zeng,1,3 Haotian Liao,2,3 Lin Xia,1,3 Siyao You,1 Yanqun Huang,1 Jiaxun Zhang,1
+Yahui Liu,1 Xuyan Liu,1 and Dan Xie1
+1
+ Laboratory of Omics Technology and Bioinformatics, Frontiers Science Center for Disease-related Molecular Network, State Key
+Laboratory of Biotherapy, West China Hospital, Sichuan University, Chengdu, Sichuan 610041, China; 2Division of Liver Surgery,
+Department of General Surgery and Laboratory of Liver Surgery, and State Key Laboratory of Biotherapy and Collaborative Innovation
+Center of Biotherapy, West China Hospital, Sichuan University, Chengdu, Sichuan 610041, China
+
+
+        Somatic structural variations (SVs) represent a critical category of genomic mutations in hepatocellular carcinoma (HCC).
+        However, the accurate identification of somatic SVs using short-read high-throughput sequencing is challenging. Here, we
+        applied long-read nanopore sequencing and multisite sampling in a cohort of 42 samples from five patients. We found that
+        adjacent nontumor tissue is not entirely normal, as significant somatic SV alterations were detected in these nontumor ge-
+        nomes. The adjacent nontumor tissue is highly similar to tumor tissue in terms of somatic SVs but differs in somatic single-
+        nucleotide variants and copy number variations. The types of SVs in adjacent nontumor and tumor tissue are markedly
+        different, with somatic insertions and deletions identified as early genomic events associated with HCC. Notably, hepatitis
+        B virus (HBV) DNA integration frequently results in the generation of somatic SVs, particularly inducing interchromosomal
+        translocations (TRAs). Although HBV DNA integration into the liver genome occurs randomly, multisite shared HBV-in-
+        duced SVs are early driving events in the pathogenesis of HCC. Long-read RNA sequencing reveals that some HBV-induced
+        SVs impact cancer-associated genes, with TRAs being capable of inducing the formation of fusion genes. These findings
+        enhance our understanding of somatic SVs in HCC and their role in early tumorigenesis.
+        [Supplemental material is available for this article.]
+
+As the most prevalent form of primary liver cancer, hepatocellular                  and deletions (indels), as they often arise from different mecha-
+carcinoma (HCC), which mostly forms after years of chronic liver                    nisms (Abyzov et al. 2015). SVs are generally defined as insertions
+disease, against a background of severe liver scarring and typically                (INSs), deletions (DELs), duplications (DUPs), inversions (INVs),
+cirrhosis, has been ranked as one of the leading causes of cancer-re-               and translocations (TRAs), and are known to play an important
+lated death worldwide (Villanueva 2019; Müller et al. 2020). More                   role in cancer pathogenesis (George et al. 2015; Waddell et al.
+than half of HCC cases globally occur in China, where chronic hep-                  2015). Over the past decade, utilizing short-read high-throughput
+atitis B virus (HBV) infection is the major etiological factor, account-            sequencing (HTS) technologies, studies have revealed that somatic
+ing for over 60% of cases (Llovet et al. 2021; Bray et al. 2024; Chen               SVs can drive malignant phenotypes by altering the expression or
+et al. 2024a). Somatic DNA alterations are known as pivotal drivers                 function of oncogenes (The ICGC/TCGA Pan-Cancer Analysis
+of HCC tumorigenesis and progression. Mutations in the TERT pro-                    of Whole Genomes Consortium 2020; Cosenza et al. 2022).
+moter are the most prevalent (∼60%) genetic alterations in HCC                      Additionally, certain somatic SVs within tumors have been used
+(Schulze et al. 2016), and the TERT promoter is a recurrent insertion               to make therapeutic decisions, such as the structural rearrange-
+site of HBV DNA. Other recurrently mutated genes primarily harbor                   ments involving the ALK gene in nonsmall cell lung cancer and
+somatic single-nucleotide variants (SNVs) within their coding re-                   the TRA leading to BCR-ABL1 fusion in chronic myeloid leukemia
+gions, including TP53 (∼30%), CTNNB1 (∼30%), and ARID1A                             (Soda et al. 2007; Hochhaus et al. 2017a,b). However, limited by
+(∼10%), which affect the cell cycle, WNT signaling, or chromatin re-                the short read lengths of HTS, the current understanding of
+modeling (Khemlina et al. 2017). Nevertheless, these most preva-                    somatic SVs in HCC is still incomplete.
+lent mutations remain undruggable at present (Zucman-Rossi                               Long-read sequencing (LRS) technology, represented by
+et al. 2015), and there are no mutations available in clinical practice             Oxford Nanopore Technologies (ONT) and Pacific Bioscience
+to predict therapeutic response, highlighting the incomplete under-                 (PacBio), can produce continuous reads longer than 10,000 bp.
+standing of the mutational landscape of HCC.                                        These reads can completely span across genomic repetitive seg-
+       Structural variants (SVs) are large genomic alterations (>50                 ments and complex genomic variant regions. Thus, LRS is progres-
+bp), distinct from small variants like SNVs and short insertions                    sively being applied to studies on genomic SVs in tumors. For
+                                                                                    instance, utilizing nanopore sequencing, a complex SV named
+                                                                                    “cancerous local copy-number lesions” (CLCLs) has been identi-
+3
+                                                                                    fied within lung cancer, and the precise junctions of these
+  These authors equally contributed to this work.
+Corresponding author: danxie@scu.edu.cn
+Article published online before print. Article, supplemental material, and publi-   © 2025 Zeng et al. This article, published in Genome Research, is available under
+cation date are at https://www.genome.org/cgi/doi/10.1101/gr.279617.124.            a Creative Commons License (Attribution-NonCommercial 4.0 International), as
+Freely available online through the Genome Research Open Access option.             described at http://creativecommons.org/licenses/by-nc/4.0/.
+
+
+35:671–685 Published by Cold Spring Harbor Laboratory Press; ISSN 1088-9051/25; www.genome.org                                 Genome Research                671
+                                                                                                                                  www.genome.org
+Zeng et al.
+
+
+complex SVs are difficult to identify using short-read sequencing        DEL, accounting for 98.47% and 99.17%, respectively. To further
+(Sakamoto et al. 2020). Although previous studies have revealed          characterize these sequences, we performed sequence annotation
+distinct mechanisms in the generation of germline and somatic            using RepeatMasker. The SVs ∼170 bp were predominantly com-
+SVs in liver cancer by analyzing complete breakpoint sequences           posed of satellite elements (Supplemental Fig. S2A), which are in-
+derived from long reads, the genome-wide landscape of somatic            volved in the maintenance of chromosomal integrity and have
+SV characteristics within HCC has yet to be fully elucidated             been found to be overexpressed in various cancer types (Ting
+(Fujimoto et al. 2021). A recent study revealed notable occurrences      et al. 2011; Ho et al. 2017). In contrast, the sequences near 320
+of somatic SVs within cirrhotic tissues (Brunner et al. 2019). Given     bp are primarily composed of SINEs (Supplemental Fig. S2B),
+that cirrhosis from any etiology is the strongest risk factor for HCC,   which are associated with SV mechanisms associated with the mo-
+this further underscores the importance of deciphering somatic           bilization of active transposable elements (Kolomietz et al. 2002;
+SVs in elucidating the pathogenesis of HCC.                              Robberecht et al. 2013). Notably, somatic INSs and DELs were sig-
+                                                                         nificantly shorter in length compared to somatic DUPs and INVs,
+                                                                         with the majority of INVs and DUPs exceeding 10,000 bp
+Results                                                                  (Wilcoxon rank-sum test, P-value < 2.2 × 10−16, Fig. 1D).
+                                                                               The mean variant allele frequency (VAF) of somatic SVs across
+Detection of somatic SVs using LRS                                       all samples was 0.14. Notably, the VAF of somatic SVs in the
+We performed a multisite sampling of tumor tissues and adjacent          adjacent nontumor samples from each patient was significantly
+nontumor tissues from five patients diagnosed with HBV-positive          lower than that in the tumor samples (Supplemental Fig. S3A), a
+HCC. The nontumor tissues were categorized as proximal nontu-            phenomenon also observed in somatic SNVs in this project
+mor (located within proximal 1 cm of the tumor) and distal non-          (Supplemental Fig. S3B) and prior studies (Huang et al. 2017;
+tumor (>1 cm distal to the tumor), with both exhibiting fibrosis.        Strandgaard et al. 2020). This indicates that the fibrotic liver tissue
+Blood samples collected before surgical resection were used as           adjacent to the tumor does not reflect a normal genomic state
+matched normal controls. In total, 27 tumor tissue samples, 10           and has undergone an accumulation of low-frequency somatic
+matched nontumor liver samples (comprising six proximal and              mutations.
+four distal), and five matched blood samples were obtained from
+the five patients (Fig. 1A). Detailed clinical information of includ-
+ed patients is presented in Supplemental Table S1.                       Somatic SVs are prominent in adjacent nontumor tissues
+      We generated long-read whole-genome sequencing data from           A recent study revealed that cirrhotic livers exhibit a higher muta-
+all samples using the PromethION (ONT) platform. To obtain               tion burden compared to normal livers, with the most significant
+high-quality sequencing data, we excluded reads with lengths <1          divergence observed in SVs (Brunner et al. 2019). To explore the
+kb and mean base quality lower than 7. The mean N50 of long              process of somatic mutation accumulation in HCC, we compared
+reads was 22.41 kb (19.22 kb ∼ 31.02 kb) after quality control           the burden of mutation between adjacent nontumor tissues
+(Supplemental Fig. S1A; Supplemental Table S2). The average se-          and tumor tissues. The genome was segmented into 500 bp bins,
+quencing depth reached 36.72 × (30.50× ∼ 44.22×) for tumor and           and the number of bins harboring each mutation type was
+nontumor tissues, 22.19× (19.84× ∼ 25.34×) for blood samples             determined. We observed a significantly lower count of somatic
+(Supplemental Fig. S1B). Considering the relatively high single-         SNVs in the adjacent nontumor liver samples compared to the tu-
+base error rate of LRS, short-read whole-genome sequencing using         mor samples (Wilcoxon rank-sum test, P-value = 5.7 × 10−9, Fig.
+the Illumina NGS platform was additionally conducted on all sam-         2A). Besides, there were also fewer somatic CNV events in the
+ples to facilitate the detection of somatic SNVs.                        adjacent nontumor liver samples, with 50% of these samples ex-
+      Utilizing LRS, we developed a rigorous in-house bioinfor-          hibiting no CNVs. However, somatic SVs were prominent in adja-
+matics pipeline to identify somatic SVs and HBV DNA integration          cent nontumor tissues, with no significant difference observed
+events, facilitating the characterization of SV types associated with    when compared to tumor tissues (Fig. 2A). These results indicate
+HBV integration (Supplemental Fig. S1C). Clean long reads were           that somatic SVs follow a distinct development process compared
+aligned against a custom reference genome consisting of the              to somatic CNVs and somatic SNVs during the progression of
+human genome and 21 HBV genomes using minimap2. Subse-                   HCC.
+quently, the alignment results from paired samples were merged.                To compare the mutation profiles across different sampling
+The widely used variant caller Sniffles2 was used to cluster the         sites, hierarchical clustering of all samples was performed on mu-
+long reads supporting the same SV. In instances where supporting         tation matrices of 500 bp for both somatic SNVs and SVs across
+reads for SVs span both the HBV and human genomes in align-              all samples. The clustering analysis of somatic SNVs revealed that
+ments, SV types were re-inferred based on the alignment patterns         tumor samples grouped according to their patient origin, whereas
+of human sequences flanking the breakpoints. After conducting            nontumor samples formed a distinct outgroup, separate from the
+quality control and manual inspection, we identified an average          tumor cohort (Fig. 2B). This separation likely arises from the signif-
+of 253 somatic SVs across all samples (range from 122 to 405, a me-      icantly lower number of somatic SNVs in adjacent nontumor tis-
+dian of 252, Fig. 1B). This count notably exceeds previous reports       sues compared to tumor tissues (an average of 851 vs. 24,234),
+based on short-read sequencing, where only ∼20% of HCC cases             leading to their clustering based on their mutual dissimilarity to
+displayed somatic SV counts >200 (Fujimoto et al. 2016; Li et al.        the tumors. In contrast, clustering analysis based on somatic SVs
+2020b). These results underscore the superior sensitivity of LRS         revealed a distinct pattern, with somatic SVs clustering according
+in the detection of SVs (Aganezov et al. 2020; Xu et al. 2023).          to patients, and both tumor and nontumor samples clustered to-
+      The number of somatic SVs rapidly decreases as the SV length       gether within individual (Fig. 2B). Due to the absence of somatic
+increases, consistent with previous studies (Beyter et al. 2021). We     CNVs in half of the adjacent nontumor samples, we directly
+identified two distinct peaks, located at ∼170 bp and 320 bp (Fig.       compared the mutational profiles of somatic CNVs across different
+1C). The predominant types of SVs at these peaks were INS and            sampling sites within the same patient (Supplemental Fig. S4A–E).
+
+
+672     Genome Research
+           www.genome.org
+                                                                                      Somatic variations in HCC by long-read sequencing
+
+
+           A
+
+
+
+
+           B
+
+
+
+
+           C                                                                    D
+
+
+
+
+Figure 1. Identification of somatic SVs through multiregion LRS. (A) Schematic diagram showing the sampling locations for five patients. Blue dots rep-
+resent adjacent nontumor tissues. Red dots represent tumor tissues. (B) Bar plots depicting the number of somatic SVs across individual samples, including
+INSs, DELs, DUPs, INVs, and TRAs. (C ) Stacked plots showing the distribution of somatic SV lengths are categorized into two ranges: (50 bp, 1 kb) and (1 kb,
+10 kb), stratified based on SV types. (D) The proportion of different SV size ranges within each somatic SV type.
+
+
+
+Notably, there was a high degree of consistency in CNV changes                   the adjacent nontumor samples (Supplemental Fig. S4A). These
+among various tumor sampling sites. For instance, all five tumor                 findings underscore the similarity of nontumor tissues to tumors
+sampling sites from HCC8 exhibited amplification of the entire                   in terms of somatic SVs, while highlighting a marked distinction
+Chromosome 2 and 5, despite the absence of CNV alterations in                    in terms of somatic CNVs and SNVs.
+
+
+                                                                                                                          Genome Research              673
+                                                                                                                             www.genome.org
+Zeng et al.
+
+
+              A
+
+
+
+
+              B                                                           C
+
+
+
+
+Figure 2. Somatic SVs are prominent in adjacent nontumors. (A) Bar plots showing the number of somatic mutations (classified into SVs, SNVs, and
+CNVs) in adjacent nontumor and tumor tissues from all patients. (B) Heatmap depicting the hierarchical clustering of 37 tumor and adjacent nontumor
+samples based on Jaccard indexes calculated from somatic SVs. (C) Heatmap depicting the hierarchical clustering of 37 tumor and adjacent nontumor
+samples based on Jaccard indexes calculated from somatic SNVs. The white dashed box outlines a cluster consisting of adjacent nontumor samples.
+
+
+
+
+      To further examine the similarities in mutations among sam-           whereas somatic SNVs accounted for only 0.45%. There were no
+ples in detail, we performed pairwise comparisons across different          shared somatic CNVs between adjacent nontumor and tumor tis-
+sampling sites (Supplemental Fig. S5A–E). The proportion of                 sues. This observation aligns with the current understanding of tu-
+shared mutations between adjacent nontumor and tumor tissues                mor evolution, indicating that the acquisition of CNVs occurs late
+exhibited significant differences among the categories of somatic           in clonal expansion (Li et al. 2020a), representing a consequence
+SVs, SNVs, and CNVs. Specifically, in both nontumor and tumor               of the final malignant transformation of genomic stability.
+samples, the proportion of shared somatic SVs between adjacent                    To further understand tumor evolution, we constructed phy-
+nontumor and tumor tissues was significantly higher than that               logenetic trees for each patient based on the mutation matrix of
+of somatic SNVs (P-value = 5.3 × 10−8 and 2.2 × 10−16, t-test,              500 bp windows, and branch evolution patterns correlated with
+Supplemental Fig. S6A). Notably, ∼12.98% of somatic SVs detected            tumor heterogeneity were observed in all patients (Supplemental
+in the tumors were also present in the adjacent nontumor tissues,           Fig. S7A). Notable branches shared between tumor and adjacent
+
+
+674     Genome Research
+           www.genome.org
+                                                                                     Somatic variations in HCC by long-read sequencing
+
+
+nontumor tissues were observed on the phylogenetic tree based on               amining HCC alongside seven other tumor types has demonstrat-
+somatic SVs, whereas no such pattern was evident in the case of                ed that adjacent nontumor tissues exhibit a unique intermediate
+somatic SNVs (Supplemental Fig. S7B). These results suggest that               state between health and tumor (Aran et al. 2017). To investigate
+somatic SVs may represent the primary mutation type in the con-                the role of shared SVs between adjacent nontumor and tumor tis-
+text of chronic liver disease during the early stages of HCC                   sues in HCC pathogenesis, we categorized somatic SVs into three
+progression.                                                                   distinct categories within individual: shared (present in both adja-
+                                                                               cent nontumor and tumor tissues), T-specific (exclusive to tumor
+                                                                               tissues), and N-specific (exclusive to adjacent nontumor tissues).
+HCC is characterized by somatic INS and DEL at an early stage                  For each patient, we found that the shared somatic SV categories
+                                                                               exclusively comprised DELs and INSs, whereas TRAs were unique
+The adjacent nontumor tissue in HCC is not entirely normal                     to the T-specific category (Fig. 3A). Although DUPs and INVs
+(Carlessi et al. 2023; Chen et al. 2024b). A transcriptomic study ex-          were present in both T-specific and N-specific categories, the
+
+
+              A                                                           B
+
+
+
+
+              C
+
+
+
+
+Figure 3. The characteristics of shared somatic SVs between adjacent nontumor and tumor tissues. (A) The frequency of each somatic SV type in different
+categories was shown: shared (in both adjacent nontumor and tumor tissues), T-specific (only in tumor tissues), and N-specific (only in adjacent nontumor
+tissues). (B) The length distribution of shared somatic SVs between adjacent nontumor and tumor tissues, as well as the SVs unique to either adjacent non-
+tumor or tumor tissues. (C) An overview of genes overlapped by recurrently shared somatic SVs in adjacent nontumor and tumor tissues across patients. The
+left bar chart shows the mutation percentage across patients. The right bar chart displays the mutation percentage across samples.
+
+
+                                                                                                                        Genome Research             675
+                                                                                                                           www.genome.org
+Zeng et al.
+
+
+relative proportions varied significantly among patients. For in-       HBV integrations induce the formation of SVs
+stance, HCC9 exhibited a high proportion of DUPs, whereas
+HCC13 had a higher proportion of INVs. Notably, although                Viral DNA integration into the host genome can lead to the malig-
+HCC9 lacked DUPs in the adjacent nontumor tissue, there was a           nant transformation of tumors, resulting in an increased burden of
+high consistency among DUPs across different tumor sites, with          mutations near the integration breakpoints (Zapatka et al. 2020).
+∼68.46% being mutually shared among samples (Supplemental               HBV infection is frequently linked to proliferative HCC, which is
+Fig. S8A). In contrast, although INVs were present in the adjacent      characterized by chromosomal instability (Villanueva 2019). To
+nontumor tissue of HCC13, no shared INVs were identified be-            further explore the connection between somatic SVs and HBV in-
+tween the tumor and adjacent tissues (Supplemental Fig. S8B).           tegrations, we developed a novel pipeline to comprehensively
+The accumulation of INVs in the tumor of HCC13 was localized            identify HBV integration events using LRS. We primarily identified
+to Chromosome 9, suggesting that this chromosome may have               two categories of long reads for detecting HBV integration events.
+experienced a catastrophic event, such as chromothripsis (Supple-       First, chimeric reads that mapped simultaneously to the human
+mental Fig. S8C). Moreover, the percentage of DUPs, INVs, and           genome and the HBV genome. Secondly, due to disparities in min-
+TRAs within the T-specific category exhibited a significantly high-     imap2 alignment, certain HBV sequences were either mapped as
+er prevalence than those in the N-specific category (chi-square test,   INSs or remained unmapped due to clipping (Supplemental Fig.
+P-value < 0.01). These specific types of SVs are frequently associat-   S12A). Basing on these two kinds of reads, we identified an average
+ed with chromosomal rearrangements in tumor evolution. These            of 10 HBV integration breakpoints in the tumor samples (range
+results indicate a significant difference in the types of SVs between   from 0 to 37, median: 8) and five in the adjacent nontumor
+adjacent nontumor tissues and tumors, suggesting that the tumor         samples (range from 0 to 15, median: 4), which was signifi-
+genome has undergone more complex genomic alterations.                  cantly more than previous short-read data sets (Sung et al. 2012;
+      We further investigated the differences in somatic INSs and       Álvarez et al. 2021). Furthermore, 61.38% of HBV DNA integrat-
+DELs between the shared and N/T-specific categories. Notably,           ed into the human genome exceeded 500 bp in length.
+the lengths of somatic INSs and DELs shared between adjacent            (Supplemental Fig. S12B). In short-read sequencing, aligning these
+nontumor and tumor samples were significantly greater than              insert sequences larger than the DNA library fragment size is chal-
+those exclusive to either category (Fig. 3B, Wilcoxon rank-sum          lenging, and complete insert sequences cannot be detected
+test, P < 2.2 × 10−16). Additionally, the shared somatic INSs and       (Craven et al. 2022; Rajaby et al. 2023).
+DELs exhibited a higher prevalence of complex repetitive sequenc-             Within the 335 identified HBV integration breakpoints,
+es and satellite elements, whereas nonrepetitive and simple repeat      85.67% (287/335) were derived from HBV integration events fully
+sequences were less represented (Supplemental Fig. S9A,B).              captured by long reads, characterized by HBV integration sequenc-
+      Next, we analyzed the landscape of shared somatic SVs be-         es flanked by human sequences on both sides within the same
+tween tumor and nontumor samples within individual. Notably,            read. These HBV integration events provided an opportunity for
+we identified a subset of recurrent somatic SVs, present in two or      further investigation into the specific patterns of HBV integration
+more patients, affecting a total of 42 genes (Fig. 3C). These include   into the HCC genome. Based on the alignment positions, orienta-
+tumor-related genes such as PGA5 and DPP6 (Shen et al. 2020;            tions, and order of human sequences flanking the HBV sequences,
+Choy et al. 2021; Munkhjargal et al. 2023), as well as newly iden-      we inferred the integration patterns of HBV (Supplemental Fig.
+tified candidate genes like EVA1C, which is present in four out of      S12C–G). We observed that simple INS of HBV accounted for
+five patients. EVA1C is a membrane protein-encoding gene that           only 20.20% of events, whereas the majority of HBV integra-
+plays a role in inflammatory and immunobiological processes             tions resulting in chromosomal rearrangements within the
+(Hu and Qu 2021). The SV observed on the EVA1C gene manifests           HCC genome. Among these genomic alterations, TRAs were
+as a DEL event spanning ∼160 bp in length. Moreover, this DEL is        the predominant type, constituting 44.80%, followed by INVs
+consistently located in close proximity across different samples,       (20.48%), DUPs (8.62%), DELs (4.12%), and complex SVs
+with breakpoint variations confined within 10 bp. Short-read se-        (1.78%). Notably, the complex SVs identified were all DUP-INV
+quencing in the samples failed to detect this DEL, primarily due        events, originating from five distinct tumor sampling sites in
+to the tandem-repeated Alu sequences present within the corre-          HCC9. These rearrangements were characterized by HBV integra-
+sponding region of the reference genome (Supplemental Fig.              tion resulting in a fold-back INV, with human sequences on
+S10A,B).                                                                both sides of the integration site being inverted and duplicated
+      To assess the functional impact of these recurrent somatic        (Fig. 4A). Moreover, a 76.23 Mb copy number amplification (Chr
+SVs, we conducted long-read RNA sequencing (RNA-seq) on                 7: 124,879,000–48,644,500) was observed 779 bp downstream
+samples HCC10_T7 and HCC10_N1 (Supplemental Table S3).                  from the HBV integration site, which is consistent with the break-
+Transcript loss was observed for EVA1C, GSTM1, and GSM2 in sam-         age-fusion-bridge (BFB) INV model.
+ples harboring DELs (Supplemental Fig. 11A,B), despite the DEL in             Next, we further explored the relationship between HBV inte-
+EVA1C localized exclusively to an intronic region. Additionally,        gration breakpoints and CNV boundaries. We found significant
+qPCR validation revealed that the expression level of the EVA1C         differences in the proximity of various HBV-induced SV types to
+gene in samples with DEL was significantly lower than in samples        CNV boundaries. INSs were located further from CNV boundaries,
+without DEL (Supplemental Fig. S11C). Furthermore, based on             with all INS breakpoints situated more than 100 kb away from the
+gene expression and clinical data obtained from the KM plotter da-      CNV borders. In contrast, except for five cases of complex (DUP-
+tabase (Menyhart et al. 2018), survival analysis showed that the        INV) events, TRAs and DUPs were found closer to the CNV bound-
+low expression of EVA1C was associated with poor survival of pa-        aries, with 6.4% of TRA breakpoints located within 1 kb of the CNV
+tients (Supplemental Fig. S11D, P = 0.0055). These findings indi-       boundary (Supplemental Fig. S13A). For instance, within the HBV
+cate that somatic SVs shared between tumors and adjacent                integration event observed in HCC13_T3, ∼2914 base pairs (bp)
+nontumor tissues have the potential to induce abnormal expres-          of HBV sequence integrated into the HCC genome, giving rise
+sion of genes associated with cancer.                                   to a TRA event that linked Chr 8: 31,957,777 and Chr 22:
+
+
+676     Genome Research
+          www.genome.org
+                                                                                   Somatic variations in HCC by long-read sequencing
+
+
+                 A
+
+
+
+
+                 B
+
+
+
+
+Figure 4. Inferring SV types based on HBV DNA integration patterns. (A) In sample HCC9_T3, an HBV DNA INS induces a fold-back INV in the host DNA.
+The top panel illustrates the CNV increase occurring ∼76.23 Mb downstream from the integration site. Sequencing data demonstrate that long reads en-
+compass the sequences flanking the HBV integration, revealing identical breakpoints and reverse DUP of the adjacent sequences. (B) An example of HBV
+DNA integration resulting in a TRA (HCC13_T2). The Integrative Genomics Viewer (IGV; Robinson et al. 2011) plot below illustrates the alignment of long
+reads to Chr 22, HBV, and Chr 8. The plot above depicts the concordance of its breakpoint on Chr 8 (red dashed line) with a breakpoint of ∼5.36 Mbp CNV
+(gray shade).
+
+
+50,545,277. Notably, a CNV is located 214 bp downstream from                  ed genes, such as NRG1, UNC5D, and KCNU1 (Fig. 4B; Repana et al.
+the TRA breakpoint on Chromosome 8. This CNV corresponds                      2019). These findings indicate that HBV-induced SVs may play a
+to a 5.36 Mb gain on Chromosome 8p12 (Chr 8: 31,957,991–                      role in CNV formation and directly affect critical oncogenes in-
+37,314,348), and this CNV region harbors several tumor-associat-              volved in tumorigenesis.
+
+
+                                                                                                                      Genome Research            677
+                                                                                                                         www.genome.org
+Zeng et al.
+
+
+     In addition, in comparison to a random genomic back-                      Among all samples, it was observed that 56.2% of breakpoints
+ground, we found a significant enrichment of somatic SVs in prox-              were shared across multiple samples (Supplemental Fig. S15A). It
+imity to HBV integration sites (two-sided binomial test, P-value <             is noteworthy that these breakpoints were shared among tumor
+0.01, Supplemental Fig. S13B). The above findings suggested that               samples, with no shared breakpoints detected in the adjacent non-
+the HBV integration was closely related to the formation of SVs                tumor tissues (Supplemental Fig. S15B). Specifically, we observed a
+within the HCC genome.                                                         pronounced aggregation of HBV-induced SV breakpoints within
+                                                                               tumors sampled from diverse regions of the same patient, whereas
+                                                                               HBV-induced SV breakpoints in adjacent nontumor tissues exhib-
+Multisite shared HBV-induced SVs emerge as distinctive                         ited a stochastic distribution (Fig. 5A). Furthermore, annotation of
+signatures of HCC                                                              the HBV genome revealed that the HBV-induced SVs shared across
+Based on the HBV-induced SVs identified above, we explored their               the five samples consistently harbored similar HBV integration se-
+breakpoint location characteristics within the HCC genome.                     quences, with an average sequence similarity of 96.78% (Fig. 5B).
+
+
+      A
+
+
+
+
+      B                                                                         C
+
+
+
+
+Figure 5. Integration breakpoints of HBV DNA in human and HBV genomes. (A) Integration breakpoints of HBV DNA within the human genome. The
+same color scheme represents the same patient. Circular points represent tumor samples, and triangular points represent adjacent nontumor samples. (B) A
+schematic diagram of shared HBV-induced SVs at all tumor sampling sites in the patients. The horizontal line represents the relative position of the inte-
+grated HBV sequence within the HBV genome. (C ) In HCC13, the clonal status of HBV integration sites was in the context of somatic SVs (top panel), with
+green indicating early clonal events. The red asterisk symbol represents the shared HBV integration sites. The middle panel represents the CNV status, and
+the lower panel displays the inferred mutation timeline.
+
+
+678     Genome Research
+           www.genome.org
+                                                                                Somatic variations in HCC by long-read sequencing
+
+
+These integration sequences were derived from proximal loci with-          sample and its corresponding adjacent nontumor tissue. To obtain
+in the HBV genome, with an average breakpoint position differ-             high-quality sequences, we conducted local assembly of the TRA
+ence of 35 bp (Supplemental Fig. S14A). For instance, all five             using reads supporting this integration events. By aligning RNA
+tumor sampling sites in HCC9 revealed a consistent TRA linked              reads spanning the integration breakpoints to the assembled TRA
+Chr 2: 74,273,672 and Chr 6: 70,300,819, with the integrated               sequence, we identified a fusion gene between the KLHDC7B-DT
+HBV sequences derived from the HBV Hbx gene (HBV:1544-                     gene and the inserted HBV sequence in the tumor sample. Howev-
+1481). These findings suggest that HBV DNA integration into                er, no evidence of this fusion gene was detected in the adjacent
+the liver occurs randomly, whereas integration at specific loci            nontumor sample (Fig. 6B). Subsequent PCR validation confirmed
+may lead to hepatocellular carcinogenesis.                                 the presence of this fusion gene in the tumor sample and its ab-
+      Given the PCR-free nature of nanopore sequencing, each read          sence in the adjacent nontumor sample (Fig. 6C). Additionally,
+is likely to represent a distinct single-cell origin. The probability of   quantitative PCR (qPCR) revealed that the expression levels of
+the same HBV DNA integration event occurring independently in              KLHDC7B in samples with HBV integration were significantly re-
+multiple cells is minimal. Therefore, the shared HBV-induced SVs           duced, whereas KLHDC7B-DT expression was markedly increased
+observed across different tumor sampling sites may indicate a com-         (Fig. 6D,E). These findings suggest that HBV integration may dis-
+mon clonal origin for these tumor regions. To elucidate the clonal         rupt the promoter of KLHDC7B, leading to decreased expression
+characteristics, we examined the mutational timing of the shared           of this gene. Furthermore, qPCR demonstrated that HBV integra-
+HBV-induced SVs within individuals. VAF analysis revealed a sig-           tion led to reduced expression of NRG1 in the tumor (Supplemen-
+nificantly higher VAF of HBV-induced somatic SVs that shared               tal Fig. S16C), potentially attributed to the integration disrupting
+within tumors compared to those appearing independently                    the structural integrity of the gene. Overall, these findings indicate
+(Supplemental Fig. S15C, Wilcoxon rank-sum test, P-value = 1.8 ×           that HBV-induced TRA can directly impact genes adjacent to inte-
+10−24). To further assess the cancer cell fraction (CCF) of these          gration sites, including the formation of fusion genes and disrup-
+shared HBV-induced SVs, we modified the existing algorithm                 tion of gene expression.
+SVclone (Cmero et al. 2020) to suit LRS data. By integrating estab-
+lished timing algorithms MutationTimeR (Gerstung et al. 2020),
+these shared HBV-induced SVs were identified as early clonal
+                                                                           Discussion
+events, preceding copy number gains (Fig. 5C).                             Somatic SVs play a pivotal role in HCC, yet their accurate identifi-
+                                                                           cation using short-read HTS poses challenges. To overcome limita-
+                                                                           tions related to intratumor heterogeneity (ITH) and refine the
+HBV-induced SVs influence genes associated with tumorigenesis              estimation of the mutational landscape, we employed multisite
+Next, we studied the potential effects of HBV-induced SVs on               sampling in tandem with long-read nanopore sequencing for the
+genes, including those genes directly intersecting with break-             comprehensive genome-wide analysis of somatic SVs. We depicted
+points or located closest to the breakpoints. Pathway enrichment           the characteristics of somatic SVs in both adjacent nontumor and
+analysis of the relevant genes revealed their significant association      tumor tissues, revealing somatic SVs as early genomic alterations
+with key HCC pathways, such as Proteoglycans in cancer, PI3K/              that may contribute to the complexity of HCC development.
+AKT signaling pathway, and viral carcinogenesis (Supplemental              Furthermore, we elucidated that HBV integration serves as a fre-
+Fig. S16A, P-value < 0.01). In addition, we found that shared              quent driver of somatic SVs, particularly in the context of inter-
+HBV-induced SVs within individuals impact a total of 24 genes, in-         chromosomal TRAs. Our findings indicated that shared HBV-
+cluding genes associated with tumorigenesis, such as SLC4A5,               induced SVs represent early clonal events in the progression of
+ABC13, NRG1, and SORCS1 (Fig. 6A). In addition, compared to                HCC, with the potential to directly impact the transcription of
+breakpoints occurring independently, breakpoints of shared                 genes relevant to tumorigenesis.
+HBV-induced SVs were significantly concentrated in gene bodies                   Building on these findings, it is important to note that al-
+and their flanking 5 kb regions (Supplemental Fig. S16B, chi-              though our study provides compelling insights into the role of
+square test, P-value = 2.8 × 10−5). This finding suggests that shared      somatic SVs in HCC, some of the results require additional valida-
+HBV-induced SVs were more likely to have an impact on gene                 tion to establish their broader significance. Specifically, we ob-
+regulation and expression. Notably, among these shared HBV-in-             served that the proportion of somatic DUPs, INVs, and TRAs was
+duced SVs, TRAs account for 71.43%, highlighting the evolution-            significantly higher in patients with a history of smoking com-
+ary advantage of this type of SV.                                          pared to nonsmokers. However, this observation warrants further
+      We next investigated the functional consequences of HBV-in-          validation through the inclusion of additional patient samples to
+duced TRAs on genes located near the integration breakpoints.              improve statistical robustness. Utilizing multiple tumor sampling
+Among these genes, NRG1, KLHDC7B, and KLHDC7B-DT, which                    sites, we identified that HCC13 exhibits the highest number of
+have been implicated in various cancers (Maillet et al. 2018; Li           somatic INVs in tumor sites T1, T2, and T5, which markedly differ
+et al. 2021; Yahiro et al. 2021), were directly affected by the            from those at T3 and T4. The morphological characteristics of
+TRAs. In HCC13, a shared HBV-induced TRA was detected across               HCC13 indicate that T1, T2, and T5 are spatially distinct from T3
+five sampling sites, with breakpoints located within the intronic          and T4, suggesting that the differing INV patterns may reflect their
+region between the first and second exons of NRG1, as well as up-          clonal origins. This highlights the potential of somatic SVs as bio-
+stream of KLHDC7B (620 bp) and KLHDC7B-DT (2359 bp). Al-                   markers for pathological subtyping, offering insights into the clon-
+though several previous studies have suggested their relevance to          al evolution of tumors and their underlying mechanisms. Further
+cancer (Martin-Pardillos and Cajal 2019; Rosas et al. 2021), muta-         investigation into these patterns could enhance our understand-
+tions within these genes have not been identified in the context of        ing of tumor heterogeneity and its implications for personalized
+HCC. Thus, we further investigated the impact of the HBV-in-               therapeutic strategies.
+duced TRA on the expression of genes situated on either side.                    Recent studies have shown that adjacent nontumor tissues
+Long-read RNA-seq was performed on both the HCC13_T1 tumor                 are not healthy and may harbor molecular features associated
+
+
+                                                                                                                 Genome Research            679
+                                                                                                                    www.genome.org
+Zeng et al.
+
+
+        A
+
+
+
+
+       B
+
+
+
+
+       C                                              D                                             E
+
+
+
+
+Figure 6. Genes disrupted by HBV-induced SVs. (A) Manhattan plot showing the genes affected by HBV-induced SVs. Tumor samples are represented by
+orange points, and adjacent nontumor samples are represented by blue points. Tumor genes annotated by COSMIC or NCG6 are marked in red. (B) IGV
+plot depicting the fusion transcript formed between the KLHDC7B-DT gene and the HBV DNA sequence. The top track represents the assembled TRA se-
+quence, and the bottom track illustrates gene annotations for the TRA sequence. The middle tracks include long-read RNA-seq from both tumor and ad-
+jacent nontumor samples, and Sanger sequencing reads for the fusion transcript PCR product. (C) The PCR products of fusion transcript were detected
+by agarose gel electrophoresis. (D) The relative expression levels of KLHDC7B determined using RT–PCR in samples with and without the HBV-induced
+TRA. (E) The relative expression levels of KLHDC7B-DT determined using RT–PCR in samples with and without the HBV-induced TRA.
+
+
+
+680     Genome Research
+            www.genome.org
+                                                                              Somatic variations in HCC by long-read sequencing
+
+
+with tumors (Carlessi et al. 2023; Zhu et al. 2023; Chen et al.          terns of viral genes (Fernandez et al. 2009; Mirabello et al. 2012).
+2024b). A recent study has found that the complexity of HCC aris-        However, we did not observe significant differences between adja-
+es during the progression to chronic liver disease and subsequent        cent nontumor and tumor tissues in the methylation status of in-
+malignant transformation (Brunner et al. 2019). However, to our          tegrated HBV DNA sequences. This highlights the need for more
+knowledge, the association of genomic mutation features between          advanced techniques, such as Cas9-targeted nanopore sequencing
+adjacent nontumor and tumor tissues remains to be further eluci-         (Goldsmith et al. 2021), to enhance the detection sensitivity of
+dated. In this study, we observed a comparable prevalence of             HBV DNA and facilitate a deeper exploration of its potential epige-
+somatic SVs in adjacent nontumor samples and tumor samples,              netic regulation.
+contrasting with the distinct patterns observed for somatic SNVs              In summary, our comprehensive analysis of somatic SVs in
+and CNVs. This could be attributed to the instability of the host ge-    HCC, including those induced by HBV integration, shed light on
+nome caused by HBV DNA integration (Zhao et al. 2016). The               the early genomic alterations and clonal events contributing to
+number of somatic SNVs and somatic CNVs in adjacent nontumor             HCC development. The intricate relationship between viral inte-
+tissues was significantly lower than that observed in tumor tissues,     gration and somatic SVs emphasizes the importance of consider-
+suggesting that these alterations may share similar developmental        ing these factors in understanding the molecular landscape of
+processes in HCC (Huang et al. 2017). Notably, the differences in        HCC. This study extends our understanding of somatic SVs in
+somatic CNVs observed between HCC and adjacent nontumor tis-             HCC, providing valuable insights into their characteristics and sig-
+sues are consistent with findings from a study on urothelial cell        nificance in early tumorigenesis.
+carcinoma (Li et al. 2020a), suggesting that this may represent a ge-
+neral feature of tumor evolution.
+      Furthermore, a considerable proportion of somatic SVs were
+                                                                         Methods
+found to be shared between the adjacent nontumor and tumor tis-          Long-read whole-genome sequencing
+sues. INSs and DELs have emerged as shared SV types between tu-
+                                                                         Tumor, nontumor, and blood samples from each patient were
+mor and adjacent nontumor tissues, potentially exerting a direct
+                                                                         frozen in liquid nitrogen for DNA isolation. Genomic DNA from
+influence on genes integral to normal hepatic function, including
+                                                                         each sample was extracted with the MagAttract HMW DNA Kit
+TCP10L and EVA1C. A possible explanation is that these somatic
+                                                                         (QIAGEN). DNA libraries were constructed using the SQK-
+SVs may arise from premalignant intermediate state cells or tumor
+                                                                         LSK109 library preparation kit (ONT, UK) following the manufac-
+cells within the adjacent nontumor tissues (Aran et al. 2017; Car-       turer’s instructions. Then, the prepared libraries were sequenced
+lessi et al. 2023). Additionally, a significant proportion of the INSs   on the PromethION sequencer (ONT, UK). Raw sequencing data
+and DELs consisted of transposons and other repetitive sequences,        were basecalled using Guppy 3.2.8 with the default parameters
+indicating that these elements may play an important role in tu-         during sequencing.
+morigenesis. The challenge of accurately mapping such repetitive
+sequences using short-read sequencing likely accounts for the in-
+                                                                         Short-read whole-genome sequencing
+creased detection of somatic SVs in our study. Given that these re-
+petitive sequences are often refractory to accurate mapping using        Genomic DNA was isolated from fresh-frozen tumor, nontumor,
+short-read sequencing, this could explain the higher number of           and blood tissues using the DNeasy Blood & Tissue Kit (QIAGEN)
+somatic SVs detected in our study. However, the functional impli-        according to the manufacturer’s protocol. The purity and integrity
+                                                                         of DNA were assessed via agarose gel electrophoresis. The DNA
+cations of these shared somatic SVs between adjacent nontumor
+                                                                         concentration was measured using Qubit 2.0 (Invitrogen). The
+and tumor tissues require further investigation, particularly from
+                                                                         DNA was fragmented to ∼350 bp using the Covaris ultrasonicator.
+the perspectives of transcriptomics and epigenetics.
+                                                                         The library was constructed using the established Illumina
+      The integration of the HBV was considered a major factor
+                                                                         paired-end protocols. Following library quality control, sequenc-
+driving the development of HCC. Studies had shown that HBV in-           ing was performed using the Illumina NovaSeq 6000 platform
+tegration could lead to an increased burden of mutations in the ge-      (Illumina).
+nomic region within tens to hundreds of kilobases around the
+integration sites (Zapatka et al. 2020). However, the specific char-
+                                                                         Identification of somatic SVs
+acteristics of HBV integration patterns were not yet clearly under-
+stood. Taking advantage of LRS, we could detect the complete             First, clean reads were obtained by excluding those with an average
+sequence of HBV integration. Our findings indicated that HBV in-         base quality < 7 and a length < 1000 bp. Then, minimap2 (v.2.17)
+tegration demonstrated a propensity toward generating somatic            (Li 2018) was used to align the clean reads to a custom reference
+SVs linked to chromosomal rearrangements, particularly inter-            genome (composed of GRCh38 (hg38) and 21 HBV genomes
+                                                                         [Yan et al. 2015; Zheng et al. 2021]), with the following parame-
+chromosomal TRAs, whereas simple INSs made up only ∼20.20%
+                                                                         ters: minimap2 -N 10 -p 0.3 -ax map-ont –MD. To calculate somatic
+of the occurrences. Notably, shared HBV-induced SVs emerged as
+                                                                         SVs, blood samples were used as normal controls, and the BAM fi-
+distinctive signatures of HCC, exhibiting a clustering tendency
+                                                                         les from paired tumor or adjacent nontumor samples were merged
+proximal to various cancer-associated genes. However, we did
+                                                                         with the BAM file from the blood sample after tagging. The merged
+not detect HBV integration in the promoter region of TERT, de-
+                                                                         files were then processed with Sniffles (v.2.0.6) (Smolka et al. 2024)
+spite previous studies reporting its presence in ∼30% of HCC cases       to identify SV breakpoints and discern supporting reads, with
+(Chen et al. 2024a). This discrepancy may stem from limitations in       the following parameters: Sniffles -i bam_merge -v vcf –tandem-
+our sample size or sequencing depth. In comparison to adjacent           repeats -t 36 –minsupport 1 –mapq 20 –min-alignment-length
+nontumor tissues, HBV DNA integration in HCC leads to a higher           500 –minsvlen 50 –output-rnames. All SVs with supporting reads
+incidence of gene fusion events (Zhuo et al. 2021). Using long-read      ≥3 and a length ≥ 50 bp were identified. If all supporting reads
+RNA-seq, we confirmed the formation of fusion transcripts be-            originated from tumor or adjacent nontumor samples, and none
+tween HBV and human genes. Previous studies have suggested               from the normal control, the SV was categorized as a candidate
+that HBV DNA methylation could influence the expression pat-             somatic SV.
+
+
+                                                                                                               Genome Research            681
+                                                                                                                  www.genome.org
+Zeng et al.
+
+
+      Next, we rigorously filtered the candidate somatic SVs. ONT      of human sequences flanking HBV DNA, five types of HBV-in-
+sequencing data from the liver tissues of five healthy individuals     duced SVs were identified. INS denotes direct INS of HBV DNA
+(Pascarella et al. 2022), along with data from 63 healthy individu-    into the human genome without altering the flanking human se-
+als from the HPRC cohort (Liao et al. 2023), were obtained             quences. DEL corresponds to the loss of human DNA segments
+(Supplemental Table S4). Together with the five blood samples          caused by HBV DNA integration. DUP refers to the presence of du-
+from this study, SVs were identified using Sniffles with the follow-   plicated human DNA segments flanking the HBV DNA integration
+ing parameters: Sniffles -i bam_merge -v vcf –tandem-repeats -t 36     breakpoint. INV occurs when the human DNA adjacent to one side
+–minsupport 3 –mapq 20 –min-alignment-length 500 –minsvlen             of the HBV DNA integration breakpoint is reversed. TRA involves
+50. Additionally, SVs derived from a cohort of 405 individuals         human sequences flanking HBV DNA originating from different
+from the Chinese population (Wu et al. 2021), also sequenced           chromosomes.
+via nanopore technology, as well as SVs from the HGSVC database
+(Ebert et al. 2021), were incorporated. These SVs were used to con-    Identification of somatic SNVs and CNVs
+struct a panel of normals (PON), which served to filter out false
+positives in somatic SV calls. Such false positives could arise due    The clean reads were aligned to the human reference genome
+to insufficient sequencing depth in paired normal samples, biases      GRCh38 (hg38) using Burrows–Wheeler Aligner (v.0.7.17) (Li
+associated with ONT technology, or tissue-specific SVs in normal       2013), with the following parameters: BWA-MEM -M -Y -t 38 -R.
+liver tissue. Any candidate somatic SVs present in the PON were ex-    SAMtools (v.1.9) (Li et al. 2009) was employed for sorting and in-
+cluded. We also removed SVs occurring in unreliable alignment re-      dexing the resulting BAM files. PCR duplicate reads were marked
+gions, including those where over 50% of reads in the SV region        using the MarkDuplicates module of the Genome Analysis
+had mapping quality < 20, and SVs with VAF below 0.01.                 Toolkit (GATK, v.4.1.2.0) (McKenna et al. 2010). Local realign-
+Furthermore, using GenomeView (Abeel et al. 2012) to visualize         ment and base quality recalibration were conducted using the
+SVs, we manually inspected all candidate somatic SVs. Following        GATK BaseRecalibrator and ApplyBQSR modules.
+the methodology employed in a previous study (Fujimoto et al.                Somatic SNVs were called from paired tumor and matched
+2021), candidate somatic SVs displaying matching breakpoints           blood samples using GATK Mutect2, followed by variant filtering
+in corresponding normal samples were discarded from further            using FilterMutectCalls. Next, annotation of the filtered somatic
+analysis.                                                              SNVs was performed via ANNOVAR (Wang et al. 2010). To ensure
+                                                                       high-quality somatic SNVs, the following quality control criteria
+                                                                       were applied: (1) the variants supported by at least 7% of total reads
+VCF merging of SVs and identification of shared somatic SVs            in tumor sample and <2% of total reads in normal sample were re-
+The Jasmine (v1.1.5) software was used to merge the VCF files of       tained. (2) The variants with sequencing depths <8 in tumor sam-
+somatic SVs across different samples, incorporating PON filtering      ple or <6 in normal sample were excluded. (3) Only variants with
+and identification of shared SVs. This tool is specifically designed   more than three mutation reads in the tumor were considered.
+for SV detection from LRS, considering factors such as the type,       Additionally, potential germline variants were filtered out by ex-
+length, breakpoint positions, and sequence context of the SVs.         cluding variants present in the 1000 Genomes Project database
+Jasmine compares and merges SV calls across samples by represent-      with a minor allele frequency ≥0.001.
+ing variants as points in a multidimensional space and construct-            Somatic CNVs were detected in paired tumor and normal
+ing a proximity graph based on their breakpoints and lengths. We       samples using FACETS (v0.6.2) (Shen and Seshan 2016), alongside
+employed Jasmine with the following parameters: jasmine file_list      evaluation of tumor purity and ploidy. The analysis was performed
+out_file –ignore_strand. The default parameters in Jasmine merge       with the following parameters: cnv_facets -t tumor_bam -n nor-
+SVs of the same type if they are within 100 bp of each other and       mal_bam -vcf snps –snp-nprocs 30 –depth 15 4000 –cval 25 400
+have length differences of <50%. SVs that could be merged are con-     –nbhd-snp 500. Copy numbers characterized by a total copy num-
+sidered as shared SVs.                                                 ber of 2 and a lesser copy number of 1 were subsequently filtered
+                                                                       out, as this is consistent with the normal diploid copy number
+                                                                       state. To focus on large-scale CNV alterations, any CNV smaller
+Detection of HBV integrations and HBV-induced SVs                      than 100 kb in length was removed from the analysis.
+Although the alignment results of long reads against the custom-
+ized reference genome already contain partial information con-         Phylogenetic tree construction and clustering analysis
+cerning HBV integration, notably the presence of chimeric reads        The genome was divided into 500 bp bins, and binary presence/ab-
+aligning to both HBV and human genomes, our examination re-            sence matrices were constructed based on SV breakpoints and
+vealed that certain HBV DNA sequences present on some long             SNVs. A distance-based neighbor-joining method was then ap-
+reads failed to align to the 21 HBV reference genomes. These           plied to construct the phylogenetic trees. The resulting phyloge-
+HBV sequences either received low alignment scores in minimap2,        netic trees were subsequently visualized using the ggtree (Yu
+resulting in being labeled as INS, or were too short and directly      et al. 2018) package.
+clipped without alignment. Based on these characteristics of reads,          For clustering analysis, Jaccard indices were computed pair-
+we developed a workflow for detecting HBV integration using LRS,       wise between samples. The resulting matrix of Jaccard indices
+mainly consisting of the following steps: (1) extraction of chimeric   was subjected to hierarchical clustering, using the pheatmap
+reads, (2) extraction of INS sequences and clipped sequences from      (v1.0.12) package in R (R Core Team 2023) with the “Pearson’s cor-
+all long reads, (3) realignment of INS and clipped sequences to the    relation” parameter.
+custom reference genome using BLAST, and (4) determination of
+HBV DNA integration breakpoints.
+      Benefiting from the advantages of LRS, long reads can simul-     Timing of somatic SVs
+taneously contain HBV DNA sequences and their adjacent human           SVclone (v1.1.2) (Cmero et al. 2020) is a computational tool
+sequences. We utilized these spanning reads to further deduce the      designed to infer the CCF of SV breakpoints based on short-
+structural consequences of HBV DNA integration on the human            read sequencing data. To adapt SVclone for SVs detected from
+genome. Based on the alignment direction, position, and order          nanopore sequencing, several modifications were implemented:
+
+
+682     Genome Research
+          www.genome.org
+                                                                              Somatic variations in HCC by long-read sequencing
+
+
+(1) SV supporting reads (including split and spanning reads), along      used is open source and available at GitHub (https://github.com/
+with normal reads crossing the SV breakpoints, were utilized to cal-     tianfuzeng/ONT_SV) and as Supplemental Code.
+culate the variant allele fraction (VAF) of SV breakpoints. (2) As
+each long read in nanopore sequencing represents a single DNA
+molecule and does not overestimate the number of normal reads            Competing interest statement
+in cases of DNA gain, the step of adjusting the number of normal
+                                                                         The authors declare no competing interests.
+reads was omitted. By integrating somatic SNVs, somatic CNVs, tu-
+mor purity, and ploidy, SVclone performed CCF estimation and
+clustering using a coclustering mode. Next, clonality of somatic
+                                                                         Acknowledgments
+SVs was determined based on the somatic CNVs and SVclone
+clusters using the timing analysis algorithm MutationTimeR               We thank Ranlei Wei from the Laboratory of Omics Technology
+(Gerstung et al. 2020). This step assigned somatic SVs to four differ-   and Bioinformatics, West China Hospital of Sichuan University,
+ent timing categories, include early clonal, clonal not specified,       and Kefei Yuan from the West China Hospital of Sichuan Univer-
+late clonal, and subclonal.                                              sity for their technical assistance. This work was supported by
+                                                                         grants from the National Natural Science Foundation of China
+                                                                         (82173383 to D.X., 32200508 to L.X., and 82202260 to H.L.),
+Long-read RNA-seq
+                                                                         the Sichuan Province Science and Technology Program
+RNA from tumor and nontumor tissues was extracted using TRIzol           (2022NSFSC1553 to L.X.), the 1·3·5 project for disciplines of excel-
+Reagent (Invitrogen) according to the standard instructions. The         lence, West China Hospital, Sichuan University (ZYYC23024 to
+RNA concentration was determined using Qubit RNA HS Assay                D.X.), and China Postdoctoral Science Foundation (2022TQ0221
+Kit (Thermo Fisher Scientific), and the purity and integrity were as-    to H.L.).
+sessed by NanoDrop One, Qubit, and agarose gel electrophoresis.                Author contributions: T.Z., H.L., and L.X. were responsible for
+The cDNA library was prepared according to the SQK-DCS109                the experimental design, execution, and data analysis. T.Z. wrote
+and EXP-NBD104 protocol (ONT). Then, the cDNA library was se-            the paper, with contributions from all other authors. Y.H. and
+quenced on a PromethION machine (ONT). Basecalling from raw              J.Z. were responsible for RNA sequencing and validation. S.Y.,
+data was performed in batches using Guppy software 3.2.8.                Y.L., and X.L. were responsible for data downloading, organiza-
+                                                                         tion, and processing of raw data. D.X. was responsible for supervi-
+PCR validation of human–HBV fusion expression                            sion of research, data interpretation, and manuscript preparation.
+
+Primers were designed to target the KLHDC7B-DT gene and HBV
+DNA sequences identified in the long-read RNA-seq (Supplemen-            References
+tal Table S5). A total of 35 ng SMART cDNA was mixed with 1 μL
+                                                                         Abeel T, Van Parys T, Saeys Y, Galagan J, Van de Peer Y. 2012. GenomeView:
+of forward primer, 1 μL of reverse primer, 12.5 μL of 2 × Taq Master        a next-generation genome browser. Nucleic Acids Res 40: e12. doi:10
+Mix (Vazyme), and nuclease-free water to a total volume of 25 μL.           .1093/nar/gkr995
+The thermal cycling protocol was as follows: 3 min at 95°C for ini-      Abyzov A, Li S, Kim DR, Mohiyuddin M, Stütz AM, Parrish NF, Mu XJ, Clark
+tial denaturation, 35 cycles of 15 sec at 95°C, 15 sec at 58°C, and 4       W, Chen K, Hurles M, et al. 2015. Analysis of deletion breakpoints from
+                                                                            1,092 humans reveals details of mutation mechanisms. Nat Commun 6:
+min at 72°C, followed by 5 min at 72°C. Next, DNA was electro-              7256. doi:10.1038/ncomms8256
+phoresed on a 1% agarose gel and sent to Youkang Bio for first-gen-      Aganezov S, Goodwin S, Sherman RM, Sedlazeck FJ, Arun G, Bhatia S, Lee I,
+eration sequencing.                                                         Kirsche M, Wappel R, Kramer M, et al. 2020. Comprehensive analysis of
+                                                                            structural variants in breast cancer genomes using single-molecule se-
+                                                                            quencing. Genome Res 30: 1258–1273. doi:10.1101/gr.260497.119
+qPCR validation of gene expression                                       Álvarez EG, Demeulemeester J, Otero P, Jolly C, García-Souto D, Pequeño-
+                                                                            Valtierra A, Zamora J, Tojo M, Temes J, Baez-Ortega A, et al. 2021.
+cDNA was prepared from 1 μg of RNA using the PrimeScript RT                 Aberrant integration of hepatitis B virus DNA promotes major restruc-
+reagent Kit with gDNA Eraser (TAKARA) following the manufactur-             turing of human hepatocellular carcinoma genome architecture. Nat
+er’s protocol. The qPCR primers were designed using Primer3Plus.            Commun 12: 6910. doi:10.1038/s41467-021-26805-8
+                                                                         Aran D, Camarda R, Odegaard J, Paik H, Oskotsky B, Krings G, Goga A, Sirota
+Each pair of primers was designed to target exons to avoid ampli-           M, Butte AJ. 2017. Comprehensive analysis of normal adjacent to tumor
+fication of genomic DNA. Oligos for qPCR are provided in Supple-            transcriptomes. Nat Commun 8: 1077. doi:10.1038/s41467-017-01027-z
+mental Table S5. For each sample, three replicates were performed        Beyter D, Ingimundardottir H, Oddsson A, Eggertsson HP, Bjornsson E,
+using iTaq universal SYBR Green supermix (Bio-Rad) following the            Jonsson H, Atlason BA, Kristmundsdottir S, Mehringer S, Hardarson
+                                                                            MT, et al. 2021. Long-read sequencing of 3,622 Icelanders provides in-
+manufacturer’s instructions. The thermal cycling protocol on the            sight into the role of structural variants in human diseases and other
+CFX96 Real-Time System (Bio-Rad) was as follows: 3 min at 95°C              traits. Nat Genet 53: 779–786. doi:10.1038/s41588-021-00865-4
+for initial denaturation, 41 cycles of (10 sec at 95°C, 30 sec at        Bray F, Laversanne M, Sung H, Ferlay J, Siegel RL, Soerjomataram I, Jemal A.
+60°C, and 15 sec at 72°C), followed by a melt curve from 65°C to            2024. Global cancer statistics 2022: GLOBOCAN estimates of incidence
+                                                                            and mortality worldwide for 36 cancers in 185 countries. CA Cancer J
+95°C in 0.5°C increments. Actin beta was employed as the internal           Clin 74: 229–263. doi:10.3322/caac.21834
+control, and the Cq value was used for quantitative analysis. The        Brunner SF, Roberts ND, Wylie LA, Moore L, Aitken SJ, Davies SE, Sanders
+experiment was repeated three times.                                        MA, Ellis P, Alder C, Hooks Y, et al. 2019. Somatic mutations and clonal
+                                                                            dynamics in healthy and cirrhotic human liver. Nature 574: 538–542.
+                                                                            doi:10.1038/s41586-019-1670-9
+                                                                         Carlessi R, Denisenko E, Boslem E, Köhn-Gaone J, Main N, Abu Bakar NDB,
+Data access                                                                 Shirolkar GD, Jones M, Beasley AB, Poppe D, et al. 2023. Single-nucleus
+                                                                            RNA sequencing of pre-malignant liver reveals disease-associated hepa-
+The raw sequence data reported in this paper have been deposited            tocyte state with HCC prognostic potential. Cell Genom 3: 100301.
+in the Genome Sequence Archive in National Genomics Data                    doi:10.1016/j.xgen.2023.100301
+Center (CNCB-NGDC Members Partners 2024), China National                 Chen L, Zhang C, Xue R, Liu M, Bai J, Bao J, Wang Y, Jiang N, Li Z, Wang W,
+                                                                            et al. 2024a. Deep whole-genome analysis of 494 hepatocellular carcino-
+Center for Bioinformation/Beijing Institute of Genomics, and                mas. Nature 627: 586–593. doi:10.1038/s41586-024-07054-3
+Chinese Academy of Sciences (GSA-Human; https://ngdc.cncb.ac             Chen Z, Shi Q, Zhao Y, Xu M, Liu Y, Li X, Liu L, Sun M, Wu X, Shao Z, et al.
+.cn/gsa-human/) under accession number HRA007177. All code                  2024b. Long-read transcriptome landscapes of primary and metastatic
+
+
+
+                                                                                                                  Genome Research              683
+                                                                                                                     www.genome.org
+Zeng et al.
+
+
+    liver cancers at transcript resolution. Biomark Res 12: 4. doi:10.1186/      Kolomietz E, Meyn MS, Pandita A, Squire JA. 2002. The role of Alu repeat
+    s40364-023-00554-w                                                               clusters as mediators of recurrent chromosomal aberrations in tumors.
+Choy TK, Wang CY, Phan NN, Khoa Ta HD, Anuraga G, Liu YH, Wu YF,                     Genes Chromosomes Cancer 35: 97–112. doi:10.1002/gcc.10111
+    Lee KH, Chuang JY, Kao TJ. 2021. Identification of dipeptidyl                Li H. 2013. Aligning sequence reads, clone sequences and assembly contigs
+    peptidase (DPP) family genes in clinical breast cancer patients via an in-       with BWA-MEM. arXiv:1303.3997 [q-bio.GN]. https://arxiv.org/abs/
+    tegrated bioinformatics approach. Diagnostics 11: 1204. doi:10.3390/             1303.3997v1302
+    diagnostics11071204                                                          Li H. 2018. Minimap2: pairwise alignment for nucleotide sequences.
+Cmero M, Yuan K, Ong CS, Schröder J, PCAWG Evolution and                             Bioinformatics 34: 3094–3100. doi:10.1093/bioinformatics/bty191
+    Heterogeneity Working Group, Corcoran NM, Papenfuss T, Hovens                Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G,
+    CM, Markowetz F, Macintyre G, et al. 2020. Inferring structural variant          Abecasis G, Durbin R, Genome Project Data Processing S. 2009. The se-
+    cancer cell fraction. Nat Commun 11: 730. doi:10.1038/s41467-020-                quence alignment/Map format and SAMtools. Bioinformatics 25: 2078–
+    14351-8                                                                          2079. doi:10.1093/bioinformatics/btp352
+CNCB-NGDC Members Partners. 2024. Database resources of the National             Li R, Du Y, Chen Z, Xu D, Lin T, Jin S, Wang G, Liu Z, Lu M, Chen X, et al.
+    Genomics Data Center, China National Center for Bioinformation in                2020a. Macroscopic somatic clonal expansion in morphologically
+    2024. Nucleic Acids Res 52: D18–D32. doi:10.1093/nar/gkad1078                    normal human urothelium. Science 370: 82–89. doi:10.1126/science
+Cosenza MR, Rodriguez-Martin B, Korbel JO. 2022. Structural variation in             .aba7300
+    cancer: role, prevalence, and mechanisms. Annu Rev Genomics Hum              Li Y, Roberts ND, Wala JA, Shapira O, Schumacher SE, Kumar K, Khurana E,
+    Genet 23: 123–152. doi:10.1146/annurev-genom-120121-101149                       Waszak S, Korbel JO, Haber JE, et al. 2020b. Patterns of somatic struc-
+Craven KE, Fischer CG, Jiang L, Pallavajjala A, Lin MT, Eshleman JR. 2022.           tural variation in human cancer genomes. Nature 578: 112–121.
+    Optimizing insertion and deletion detection using next-generation se-            doi:10.1038/s41586-019-1913-9
+    quencing in the clinical laboratory. J Mol Diagn 24: 1217–1231. doi:10       Li MX, Wang HY, Yuan CH, Ma ZL, Jiang B, Li L, Zhang L, Xiu DR. 2021.
+    .1016/j.jmoldx.2022.08.006                                                       KLHDC7B-DT aggravates pancreatic ductal adenocarcinoma develop-
+Ebert P, Audano PA, Zhu Q, Rodriguez-Martin B, Porubsky D, Bonder MJ,                ment via inducing cross-talk between cancer cells and macrophages.
+    Sulovari A, Ebler J, Zhou W, Serra Mari R, et al. 2021. Haplotype-resolved       Clin Sci (Lond) 135: 629–649. doi:10.1042/CS20201259
+    diverse human genomes and integrated analysis of structural variation.       Liao WW, Asri M, Ebler J, Doerr D, Haukness M, Hickey G, Lu S, Lucas JK,
+    Science 372: eabf7117. doi:10.1126/science.abf7117                               Monlong J, Abel HJ, et al. 2023. A draft human pangenome reference.
+Fernandez AF, Rosales C, Lopez-Nieva P, Graña O, Ballestar E, Ropero S,              Nature 617: 312–324. doi:10.1038/s41586-023-05896-x
+    Espada J, Melo SA, Lujambio A, Fraga MF, et al. 2009. The dynamic            Llovet JM, Kelley RK, Villanueva A, Singal AG, Pikarsky E, Roayaie S,
+    DNA methylomes of double-stranded DNA viruses associated with hu-                Lencioni R, Koike K, Zucman-Rossi J, Finn RS. 2021. Hepatocellular car-
+    man cancer. Genome Res 19: 438–451. doi:10.1101/gr.083550.108                    cinoma. Nat Rev Dis Primers 7: 6. doi:10.1038/s41572-020-00240-3
+Fujimoto A, Furuta M, Totoki Y, Tsunoda T, Kato M, Shiraishi Y, Tanaka H,        Maillet V, Boussetta N, Leclerc J, Fauveau V, Foretz M, Viollet B, Couty JP,
+    Taniguchi H, Kawakami Y, Ueno M, et al. 2016. Whole-genome muta-                 Celton-Morizur S, Perret C, Desdouets C. 2018. LKB1 as a gatekeeper
+    tional landscape and characterization of noncoding and structural mu-            of hepatocyte proliferation and genomic integrity during liver regener-
+    tations in liver cancer. Nat Genet 48: 500–509. doi:10.1038/ng.3547              ation. Cell Rep 22: 1994–2005. doi:10.1016/j.celrep.2018.01.086
+Fujimoto A, Wong JH, Yoshii Y, Akiyama S, Tanaka A, Yagi H, Shigemizu D,         Martin-Pardillos A, Cajal SRY. 2019. Characterization of Kelch domain-con-
+    Nakagawa H, Mizokami M, Shimada M. 2021. Whole-genome sequenc-                   taining protein 7B in breast tumours and breast cancer cell lines. Oncol
+    ing with long reads reveals complex structure and origin of structural           Lett 18: 2853–2860.
+    variation in human genetic variations and somatic mutations in cancer.       McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A,
+    Genome Med 13: 65. doi:10.1186/s13073-021-00883-1                                Garimella K, Altshuler D, Gabriel S, Daly M, et al. 2010. The genome
+George J, Lim JS, Jang SJ, Cun Y, Ozretić L, Kong G, Leenders F, Lu X,              analysis Toolkit: a MapReduce framework for analyzing next-generation
+    Fernández-Cuesta L, Bosco G, et al. 2015. Comprehensive genomic                  DNA sequencing data. Genome Res 20: 1297–1303. doi:10.1101/gr
+    profiles of small cell lung cancer. Nature 524: 47–53. doi:10.1038/              .107524.110
+    nature14664                                                                  Menyhart O, Nagy A, Gyorffy B. 2018. Determining consistent prognostic
+Gerstung M, Jolly C, Leshchiner I, Dentro SC, Gonzalez S, Rosebrock D,               biomarkers of overall survival and vascular invasion in hepatocellular
+    Mitchell TJ, Rubanova Y, Anur P, Yu K, et al. 2020. The evolutionary his-        carcinoma. R Soc Open Sci 5: 181006. doi:10.1098/rsos.181006
+    tory of 2,658 cancers. Nature 578: 122–128. doi:10.1038/s41586-019-          Mirabello L, Sun C, Ghosh A, Rodriguez AC, Schiffman M, Wentzensen N,
+    1907-7                                                                           Hildesheim A, Herrero R, Wacholder S, Lorincz A, et al. 2012.
+Goldsmith C, Cohen D, Dubois A, Martinez MG, Petitjean K, Corlu A,                   Methylation of human papillomavirus type 16 genome and risk of cer-
+    Testoni B, Hernandez-Vargas H, Chemin I. 2021. Cas9-targeted nano-               vical precancer in a Costa Rican population. J Natl Cancer Inst 104: 556–
+    pore sequencing reveals epigenetic heterogeneity after de novo assem-            565. doi:10.1093/jnci/djs135
+    bly of native full-length hepatitis B virus genomes. Microb Genom 7:         Müller M, Bird TG, Nault JC. 2020. The landscape of gene mutations in cir-
+    000507. doi:10.1099/mgen.0.000507                                                rhosis and hepatocellular carcinoma. J Hepatol 72: 990–1002. doi:10
+Ho XD, Nguyen HG, Trinh LH, Reimann E, Prans E, Kõks G, Maasalu K, Le                .1016/j.jhep.2020.01.019
+    VQ, Nguyen VH, Le NTN, et al. 2017. Analysis of the expression of repet-     Munkhjargal B, Kondo K, Soejima S, Tegshee B, Takai C, Kawakita N, Toba
+    itive DNA elements in osteosarcoma. Front Genet 8: 193. doi:10.3389/             H, Takizawa H. 2023. Aberrant methylation of dipeptidyl peptidase‐like
+    fgene.2017.00193                                                                 6 as a potential prognostic biomarker for lung adenocarcinoma. Oncol
+Hochhaus A, Larson RA, Guilhot F, Radich JP, Branford S, Hughes TP,                  Lett 25: 206. doi:10.3892/ol.2023.13792
+    Baccarani M, Deininger MW, Cervantes F, Fujihara S, et al. 2017a.            Pascarella G, Hon CC, Hashimoto K, Busch A, Luginbühl J, Parr C, Hin Yip
+    Long-term outcomes of imatinib treatment for chronic myeloid leuke-              W, Abe K, Kratz A, Bonetti A, et al. 2022. Recombination of repeat ele-
+    mia. N Engl J Med 376: 917–927. doi:10.1056/NEJMoa1609324                        ments generates somatic complexity in human genomes. Cell 185:
+Hochhaus A, Masszi T, Giles FJ, Radich JP, Ross DM, Gómez Casares MT,                3025–3040.e6. doi:10.1016/j.cell.2022.06.032
+    Hellmann A, Stentoft J, Conneally E, García-Gutiérrez V, et al. 2017b.       Rajaby R, Liu DX, Au CH, Cheung YT, Lau AYT, Yang QY, Sung WK. 2023.
+    Treatment-free remission following frontline nilotinib in patients               INSurveyor: improving insertion calling from short read sequencing
+    with chronic myeloid leukemia in chronic phase: results from the                 data. Nat Commun 14: 3243. doi:10.1038/s41467-023-38870-2
+    ENESTfreedom study. Leukemia 31: 1525–1531. doi:10.1038/leu.2017             R Core Team. 2023. R: A language and environment for statistical computing. R
+    .63                                                                              Foundation for Statistical Computing, Vienna. https://www.R-project
+Hu Z, Qu S. 2021. EVA1C is a potential prognostic biomarker and correlated           .org/.
+    with immune infiltration levels in WHO Grade II/III glioma. Front            Repana D, Nulsen J, Dressler L, Bortolomeazzi M, Venkata SK, Tourna A,
+    Immunol 12: 683572. doi:10.3389/fimmu.2021.683572                                Yakovleva A, Palmieri T, Ciccarelli FD. 2019. The Network of Cancer
+Huang A, Zhao X, Yang XR, Li FQ, Zhou XL, Wu K, Zhang X, Sun QM, Cao Y,              Genes (NCG): a comprehensive catalogue of known and candidate can-
+    Zhu HM, et al. 2017. Circumventing intratumoral heterogeneity to                 cer genes from cancer sequencing screens. Genome Biol 20: 1. doi:10
+    identify potential therapeutic targets in hepatocellular carcinoma. J            .1186/s13059-018-1612-0
+    Hepatol 67: 293–301. doi:10.1016/j.jhep.2017.03.005                          Robberecht C, Voet T, Zamani Esteki M, Nowakowska BA, Vermeesch JR.
+The ICGC/TCGA Pan-Cancer Analysis of Whole Genomes Consortium.                       2013. Nonallelic homologous recombination between retrotranspos-
+    2020. Pan-cancer analysis of whole genomes. Nature 578: 82–93.                   able elements is a driver of de novo unbalanced translocations.
+    doi:10.1038/s41586-020-1969-6                                                    Genome Res 23: 411–418. doi:10.1101/gr.145631.112
+Khemlina G, Ikeda S, Kurzrock R. 2017. The biology of hepatocellular carci-      Robinson JT, Thorvaldsdóttir H, Winckler W, Guttman M, Lander ES, Getz
+    noma: implications for genomic and immune therapies. Mol Cancer 16:              G, Mesirov JP. 2011. Integrative genomics viewer. Nat Biotechnol 29: 24–
+    149. doi:10.1186/s12943-017-0712-x                                               26. doi:10.1038/nbt.1754
+
+
+
+684      Genome Research
+            www.genome.org
+                                                                                       Somatic variations in HCC by long-read sequencing
+
+
+Rosas D, Raez LE, Russo A, Rolfo C. 2021. Neuregulin 1 Gene (NRG1). A po-            notypes, diseases and population adaptation. Nat Commun 12: 6501.
+    tentially new targetable alteration for the treatment of lung cancer.            doi:10.1038/s41467-021-26856-x
+    Cancers (Basel) 13: 5038. doi:10.3390/cancers13205038                         Xu L, Wang X, Lu X, Liang F, Liu Z, Zhang H, Li X, Tian S, Wang L, Wang Z.
+Sakamoto Y, Xu L, Seki M, Yokoyama TT, Kasahara M, Kashima Y, Ohashi A,              2023. Long-read sequencing identifies novel structural variations in co-
+    Shimada Y, Motoi N, Tsuchihara K, et al. 2020. Long-read sequencing              lorectal cancer. PLoS Genet 19: e1010514. doi:10.1371/journal.pgen
+    for non-small-cell lung cancer genomes. Genome Res 30: 1243–1257.                .1010514
+    doi:10.1101/gr.261941.120                                                     Yahiro K, Ogura K, Tsutsuki H, Iyoda S, Ohnishi M, Moss J. 2021. A
+Schulze K, Nault JC, Villanueva A. 2016. Genetic profiling of hepatocellular         novel endoplasmic stress mediator, Kelch domain containing 7B
+    carcinoma using next-generation sequencing. J Hepatol 65: 1031–1042.             (KLHDC7B), increased Harakiri (HRK) in the SubAB-induced apoptosis
+    doi:10.1016/j.jhep.2016.05.035                                                   signaling pathway. Cell Death Discov 7: 360. doi:10.1038/s41420-021-
+Shen R, Seshan VE. 2016. FACETS: allele-specific copy number and clonal              00753-0
+    heterogeneity analysis tool for high-throughput DNA sequencing.               Yan H, Yang Y, Zhang L, Tang G, Wang Y, Xue G, Zhou W, Sun S. 2015.
+    Nucleic Acids Res 44: e131. doi:10.1093/nar/gkw520                               Characterization of the genotype and integration patterns of hepatitis
+Shen S, Li H, Liu J, Sun L, Yuan Y. 2020. The panoramic picture of pepsin-           B virus in early- and late-onset hepatocellular carcinoma. Hepatology
+    ogen gene family with pan-cancer. Cancer Med 9: 9064–9080. doi:10                61: 1821–1831. doi:10.1002/hep.27722
+    .1002/cam4.3489
+                                                                                  Yu G, Lam TT, Zhu H, Guan Y. 2018. Two methods for mapping and visu-
+Smolka M, Paulin LF, Grochowski CM, Horner DW, Mahmoud M, Behera S,
+                                                                                     alizing associated data on phylogeny using ggtree. Mol Biol Evol 35:
+    Kalef-Ezra E, Gandhi M, Hong K, Pehlivan D, et al. 2024. Detection of
+                                                                                     3041–3043. doi:10.1093/molbev/msy194
+    mosaic and population-level structural variants with Sniffles2. Nat
+                                                                                  Zapatka M, Borozan I, Brewer DS, Iskar M, Grundhoff A, Alawi M, Desai N,
+    Biotechnol 42: 1571–1580. doi:10.1038/s41587-023-02024-y
+Soda M, Choi YL, Enomoto M, Takada S, Yamashita Y, Ishikawa S, Fujiwara              Sültmann H, Moch H, Pathogens P, et al. 2020. The landscape of viral
+    S, Watanabe H, Kurashina K, Hatanaka H, et al. 2007. Identification of           associations in human cancers. Nat Genet 52: 320–330. doi:10.1038/
+    the transforming EML4-ALK fusion gene in non-small-cell lung cancer.             s41588-019-0558-9
+    Nature 448: 561–566. doi:10.1038/nature05945                                  Zhao LH, Liu X, Yan HX, Li WY, Zeng X, Yang Y, Zhao J, Liu SP, Zhuang XH,
+Strandgaard T, Nordentoft I, Lamy P, Christensen E, Thomsen MBH, Jensen              Lin C, et al. 2016. Genomic and oncogenic preference of HBV integra-
+    JB, Dyrskjøt L. 2020. Mutational analysis of field cancerization in blad-        tion in hepatocellular carcinoma. Nat Commun 7: 12992. doi:10.1038/
+    der cancer. Bl Cancer 6: 253–264. doi:10.3233/BLC-200282                         ncomms12992
+Sung WK, Zheng H, Li S, Chen R, Liu X, Li Y, Lee NP, Lee WH, Ariyaratne PN,       Zheng B, Liu XL, Fan R, Bai J, Wen H, Du LT, Jiang GQ, Wang CY, Fan XT, Ye
+    Tennakoon C, et al. 2012. Genome-wide survey of recurrent HBV inte-              YN, et al. 2021. The landscape of cell-free HBV integrations and muta-
+    gration in hepatocellular carcinoma. Nat Genet 44: 765–769. doi:10               tions in cirrhosis and hepatocellular carcinoma patients. Clin Cancer
+    .1038/ng.2295                                                                    Res 27: 3772–3783. doi:10.1158/1078-0432.CCR-21-0002
+Ting DT, Lipson D, Paul S, Brannigan BW, Akhavanfard S, Coffman EJ,               Zhu H, Lin Y, Lu D, Wang S, Liu Y, Dong L, Meng Q, Gao J, Wang Y, Song N,
+    Contino G, Deshpande V, Iafrate AJ, Letovsky S, et al. 2011. Aberrant            et al. 2023. Proteomics of adjacent-to-tumor samples uncovers clinically
+    overexpression of satellite repeats in pancreatic and other epithelial can-      relevant biological events in hepatocellular carcinoma. Natl Sci Rev 10:
+    cers. Science 331: 593–596. doi:10.1126/science.1200801                          nwad167. doi:10.1093/nsr/nwad167
+Villanueva A. 2019. Hepatocellular carcinoma. N Engl J Med 380: 1450–             Zhuo Z, Rong W, Li H, Li Y, Luo X, Liu Y, Tang X, Zhang L, Su F, Cui H, et al.
+    1462. doi:10.1056/NEJMra1713263                                                  2021. Long-read sequencing reveals the structural complexity of geno-
+Waddell N, Pajic M, Patch AM, Chang DK, Kassahn KS, Bailey P, Johns AL,              mic integration of HBV DNA in hepatocellular carcinoma. NPJ Genom
+    Miller D, Nones K, Quek K, et al. 2015. Whole genomes redefine the mu-           Med 6: 84. doi:10.1038/s41525-021-00245-1
+    tational landscape of pancreatic cancer. Nature 518: 495–501. doi:10          Zucman-Rossi J, Villanueva A, Nault J-C, Llovet JM. 2015. Genetic landscape
+    .1038/nature14169                                                                and biomarkers of hepatocellular carcinoma. Gastroenterology 149:
+Wang K, Li M, Hakonarson H. 2010. ANNOVAR: functional annotation of                  1226–1239.e4. doi:10.1053/j.gastro.2015.05.061
+    genetic variants from high-throughput sequencing data. Nucleic Acids
+    Res 38: e164. doi:10.1093/nar/gkq603
+Wu Z, Jiang Z, Li T, Xie C, Zhao L, Yang J, Ouyang S, Liu Y, Li T, Xie Z. 2021.
+    Structural variants in the Chinese population and their impact on phe-        Received May 23, 2024; accepted in revised form January 30, 2025.
+
+
+
+
+                                                                                                                            Genome Research               685
+                                                                                                                               www.genome.org
+

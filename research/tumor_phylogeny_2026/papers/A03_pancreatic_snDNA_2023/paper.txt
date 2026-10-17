@@ -1,0 +1,1561 @@
+                                    Article                                                                                                  https://doi.org/10.1038/s41467-023-36344-z
+
+
+                                    Application of high-throughput single-
+                                    nucleus DNA sequencing in pancreatic
+                                    cancer
+                                    Received: 7 March 2022                              Haochen Zhang 1,2, Elias-Ramzey Karnoub 2,3, Shigeaki Umeda 2,4,
+                                                                                        Ronan Chaligné 5, Ignas Masilionis5, Caitlin A. McIntyre6, Palash Sashittal7,
+                                    Accepted: 24 January 2023
+                                                                                        Akimasa Hayashi 2,4,8, Amanda Zucker 2,4,9, Katelyn Mullen 1,2,
+                                                                                        Jungeui Hong3,4, Alvin Makohon-Moore2,4,10 &
+                                                                                        Christine A. Iacobuzio-Donahue 2,3,4
+                                        Check for updates
+                  1234567890():,;
+1234567890():,;
+
+
+
+
+                                                                                        Despite insights gained by bulk DNA sequencing of cancer it remains chal-
+                                                                                        lenging to resolve the admixture of normal and tumor cells, and/or of distinct
+                                                                                        tumor subclones; high-throughput single-cell DNA sequencing circumvents
+                                                                                        these and brings cancer genomic studies to higher resolution. However, its
+                                                                                        application has been limited to liquid tumors or a small batch of solid tumors,
+                                                                                        mainly because of the lack of a scalable workﬂow to process solid tumor
+                                                                                        samples. Here we optimize a highly automated nuclei extraction workﬂow that
+                                                                                        achieves fast and reliable targeted single-nucleus DNA library preparation of
+                                                                                        38 samples from 16 pancreatic ductal adenocarcinoma patients, with an
+                                                                                        average library yield per sample of 2867 single nuclei. We demonstrate that
+                                                                                        this workﬂow not only performs well using low cellularity or low tumor purity
+                                                                                        samples but reveals genomic evolution patterns of pancreatic ductal adeno-
+                                                                                        carcinoma as well.
+
+
+
+                                    The ﬁeld of single-cell genomics, since its advent about 10 years ago1,2,     inform understanding cancer evolution as well as targeted treatment
+                                    has been striving to increase the throughput and resolution of cancer         decisions.
+                                    research. Single-cell DNA sequencing (scDNA-seq) offers many                       Bulk sequencing of pancreatic ductal adenocarcinoma (PDAC) is
+                                    advantages over traditional “bulk” DNA-seq. Most importantly, it cir-         particularly problematic because of the high stromal content and low-
+                                    cumvents the issue of “mixed signals”3, i.e. the admixture of normal          tumor cellularity which further lowers variant calling sensitivity4–6.
+                                    and tumor cells, and/or of distinct tumor subclones. Solving the for-         Present solutions include multiregional sampling to increase sensitiv-
+                                    mer allows for much higher sensitivity in calling rare genetic events,        ity for variants with low allele frequency7,8 or laser-capture tissue
+                                    which opens opportunities to validate and discover cancer-related             microdissection to enrich for tumor content9,10, but they are laborious
+                                    somatic mutations. Solving the latter allows for more conﬁdent iden-          and not amenable to high-throughput. With targeted single-cell
+                                    tiﬁcation of different clonal lineages within a single tumor, which could     sequencing, because each cell is partitioned and PCR ampliﬁed
+
+
+                                    1
+                                     Gerstner Sloan Kettering Graduate School of Biomedical Sciences, Memorial Sloan Kettering Cancer Center, New York, NY, USA. 2Human Oncology and
+                                    Pathogenesis Program, Memorial Sloan Kettering Cancer Center, New York, NY, USA. 3David M. Rubenstein Center for Pancreatic Cancer Research, Memorial
+                                    Sloan Kettering Cancer Center, New York, NY, USA. 4Department of Pathology and Laboratory Medicine, Memorial Sloan Kettering Cancer Center, New York,
+                                    NY, USA. 5Computational and Systems Biology Program, Sloan Kettering Institute, Memorial Sloan Kettering Cancer Center, New York, NY, USA. 6Department
+                                    of Surgery, Memorial Sloan Kettering, New York, NY, USA. 7Department of Computer Science, Princeton University, Princeton, NJ, USA. 8Present address:
+                                    Department of Pathology, Kyorin University School of Medicine, Mitaka City, Tokyo, Japan. 9Present address: School of Medicine, Oregon Health and Science
+                                    University, Portland, OR, USA. 10Present address: Center for Discovery and Innovation, Hackensack Meridian Health, Nutley, NJ, USA.
+                                       e-mail: iacobuzc@mskcc.org
+
+
+                                    Nature Communications | (2023)14:749                                                                                                                   1
+Article                                                                                             https://doi.org/10.1038/s41467-023-36344-z
+
+
+individually, high-quality genomic data from a low percentage of           suspensions after 3 weeks and 14 weeks respectively as input for
+tumor cells could potentially be extracted from the background noise,      snDNA-seq. This allowed us to compare both the nuclei morphology
+making it valuable for genomic studies of PDAC.                            and the resulting snDNA-seq results between freshly extracted and
+     To date, several high-throughput single-cell partitioning systems     cryopreserved nuclei of the same biological samples. We found that
+have been developed, including microﬂuidic platforms, nanowells and        the freeze-thaw-resuspension process had >80% recovery rate and
+microdroplets, which have resulted in several reliable single-cell DNA     minimal change in nuclei morphology and clumping % (Supplemen-
+library preparation technologies11. Tapestri12,13, as a microdroplet-      tary Fig. 1a, b). Moreover, the ﬁnal library yield did not decrease when
+based, targeted sequencing approach, allows for high cell throughput       prepared with frozen nuclei; on the contrary, frozen nuclei gave
+(up to 10,000 cells per sample) and high coverage depth (>80X) of          slightly higher yield than fresh nuclei for both samples (Supplementary
+genomic sites of interest, and is therefore suited for high-resolution     Fig. 1c). Frozen nuclei generated similar quality results as freshly
+studies of key genetic variants within diseases. However, its use so far   extracted nuclei as measured by sharing the majority of high-quality
+has been limited to cell lines and liquid primary tumor samples, or a      variants (“Methods”) (Supplementary Fig. 1d, e), and having largely
+small batch of solid tumor tissues at a time14–20. While methods to        linearly correlated pseudobulk variant allele frequency (VAF) for all
+quickly and effectively dissociate clean single nuclei suspensions from    shared variants (Fig. 1d; Supplementary Fig. 1f). For both samples, fresh
+solid tumor tissues have been extensively tested for single-nucleus        and frozen nuclei revealed highly concordant genotypes as well
+RNA-seq (snRNA-seq)21, they have not been applied for single-nucleus       (Fig. 1e; Supplementary Fig. 1g).
+DNA-seq (snDNA-seq) usage.                                                       While the doublet rate inherent to the Tapestri scDNA library
+     In this work, we optimize a snap-frozen tissue single nuclei          preparation method has been estimated to be 5–8% by its
+extraction workﬂow that yields high throughput in generating the           manufacturer23, we sought to estimate the multiplet rate associated
+resulting snDNA libraries. Importantly, the workﬂow takes <30 min per      with our entire workﬂow when using snap-frozen tissue. We selected
+sample with minimal manual labor, thus ideal for processing large          two samples from two distinct patients, each with a tumor population
+batches of solid tumor samples. Coupling the snDNA data with bulk          characterized by a distinct driver mutation (TP53 p.C207Y vs. ARID1A
+whole exome sequencing (WES) or whole-genome sequencing (WGS)              splice) that was orthogonally validated by bulk WES as well as inde-
+data generated on the same samples, we are able to uncover single-cell     pendent Tapestri runs. Similar sized pieces of each tissue sample were
+clonal relationships among key driver mutations.                           mixed together and subjected to the entire nuclei extraction workﬂow
+                                                                           followed by snDNA library generation. Next, we assigned each cell to
+Results                                                                    the two originating tumors based on its genotype for the two driver
+Optimization of workﬂow to extract and store single nuclei from            mutations. The number of barcodes that carried somatic variants from
+snap-frozen tissue                                                         both tumors are as shown in the Venn Diagrams (Fig. 1f). Using a
+We recognized the need for a nuclei extraction workﬂow that has            mixture model (Supplementary Methods) we derived the doublet rate
+reduced hands-on operation, sample resuspension times, and total           to be 3–5%.
+processing time, all of which hinder scalability and could potentially           As a PCR-based method, our snDNA library preparation is sub-
+cause between-sample inconsistency in quality (clumping, debris) and       ject to technical noise introduced by uneven ampliﬁcation of both
+ﬁnal yields. Thus, we used an automated nuclei extraction machine22        alleles in a cell (allelic dropout, ADO). To quantify the ADO rate
+for homogenizing frozen tissues into single nuclei suspensions. The        inherent to the workﬂow, we selected 19 of our samples which came
+nuclei were then passed through a sucrose gradient to strip away           from resection of early-stage PDAC. We identiﬁed germline single-
+debris before microdroplet encapsulation. The entire procedure takes       nucleotide polymorphisms (SNPs) by comparing single-nuclei
+~30 min per sample and requires a single step of pelleting and resus-      sequencing results with bulk-sequencing results of matched normal
+pension (Fig. 1a; “Methods”). Although the resulting nuclei clumping       sample of the same patient, and calculated the mean ADO rate to be
+percentage and nuclei concentration varied across samples of differ-       19.6% (of 100 nuclei, 19.6 nuclei only have one of the two alleles)
+ent starting sizes, cellularity and morphology, most primary pancreas      (“Methods”) (Supplementary Table 3). However, we deem this as o-
+tumor samples of volumes ≥ 8 mm3, regardless of collection method          verestimation as we observed obvious single-nucleus colocalization
+(resection vs autopsy), resulted in ﬁnal nuclei suspensions with ≤10%      pattern of ADO of SNPs on different chromosome arms, which
+clumping and >2000 nuclei/µl suspended in > 35 µl buffer as input for      more likely suggests real copy number variation rather than
+Tapestri (Fig. 1b). Exceptions were samples with particularly high fat/    technical noise.
+stroma content or random technical errors, which either limited input            To determine the optimal sequencing depth (in this case, mean
+nuclei concentration or increased clumping rate as observed by             reads per cell per amplicon) required to extract signiﬁcant insights
+microscopy.                                                                from the snDNA-seq data, we selected two samples PA04-2-frozen and
+     With this protocol, we prepared 38 snDNA libraries from 34 bio-       PR05-3 that we deemed as over-sequenced (respectively, 278 million
+logically distinct snap-frozen PDAC samples from 16 patients. These        and 341 million total read pairs; 168 and 342 mean reads/cell/amplicon)
+samples were purposely selected to represent primary tumors and            and performed downsampling experiments by subsampling the raw
+metastases, different tissue collection methods, and with varying          FASTQ ﬁles at intervals of 50 millions read pairs (Supplementary
+tumor purities (Fig. 1c; Supplementary Table 1). Each was analyzed with    Fig. 2a, b; Supplementary Table 4). The elbow point could be spotted at
+a custom 186-amplicon panel covering 93 frequently mutated genes in        roughly 100 mean reads per cell per amplicon for the proportion of
+PDAC (Supplementary Table 2). The mean library yield of single nuclei      DNA read pairs assigned to cells, total number of barcodes captured,
+that passed quality control (“Methods”) was 2867 complete nuclei           and number of cells called (Supplementary Fig. 2c–e). However, the
+(standard deviation = 1672.67). For context, two previous studies17,19     proportion of tumor cells, as deﬁned by the orthogonally validated
+using primary acute myeloid leukemia (AML) cell suspensions for            KRAS mutation for each case, did not vary much along with total depth
+Tapestri resulted in on average 5072 complete cells/sample (146 sam-       and mean depth per cell per amplicon (Supplementary Fig. 2f). This
+ples) and 6102 complete cells/sample (154 samples) in the ﬁnal             indicates that the relative proportions of major clones and associated
+libraries.                                                                 biological insights could be robust to varying technical parameters
+     We next determined the extent to which extracted single nuclei        such as read depth and cell throughput. However, for the purpose of
+could be stored in suspension without affecting the yield. For two         rare clone discovery where cell throughput would be critical, the
+different samples (PA04-2 and PA04-3) we cryopreserved a portion of        results here suggest at least a mean depth of 100 is required for our
+the extracted nuclei (“Methods”) then thawed these frozen nuclei           panel speciﬁcally.
+
+
+Nature Communications | (2023)14:749                                                                                                              2
+Article                                                                                                                                                                                      https://doi.org/10.1038/s41467-023-36344-z
+
+
+                  a                                                                      Resuspend in
+                                                                                                                                                                                         b
+                                                                                         storage buffer
+
+                                                                                         store in -80C
+
+
+
+
+                                                                                         Dilute to optimal
+                                                                                          concentration
+
+
+
+
+                      Frozen                                                                  DAPI + Trypan blue                          Ready for
+                                    Singulator       Sucrose density    Resuspend in
+                      tissue                                                                       staining                             single-nuclei
+                                                        gradient        desired buffer
+                                                                                                                                        sequencing
+                               automated single                                                   count nuclei                           library prep
+                                nuclei extraction       filter out
+                                                    subnuclear debris
+
+
+
+                                      12 min             5 min            1 min                    10-15 min
+
+                  c
+
+
+
+
+                                                                                                                                                                                                                     100 μm
+
+
+
+
+                                                                                                                                                                                     d
+
+
+
+
+                                                                                                                                                                                     f
+                  e
+                                    PA04-2 Fresh: 2298 nuclei
+                                                                                                               2298 cells, 2 features
+
+
+
+
+                                                                                                                                              Genotype
+                      KRAS:p.G12V
+                                                                                                                                                  Missing
+
+
+                                                                                                                                                  HOM
+
+
+                   SMAD4:p.A39T                                                                                                                   HET
+
+
+                                                                                                                                                  WT
+                                                                                                                                                                                                  doublet rate: 5%
+
+                                    PA04-2 Fresh: 3278 nuclei
+                                                                                                                                                            3278 cells, 2 features
+
+
+
+
+                      KRAS:p.G12V
+
+
+
+
+                   SMAD4:p.A39T
+
+
+
+
+                                                                                                                                                                                                  doublet rate: 3%
+
+
+
+
+Validation against bulk-sequencing results                                                                limited to ﬁltered, higher-conﬁdence variants from bulk (“Methods”),
+To validate the robustness of our method for detection of single-                                         there was virtually complete concordance (Fig. 2b). Moreover, despite
+nucleotide variants (SNVs), we selected 18 samples previously used for                                    technical differences inherent to WES versus Tapestri (input tissue slice,
+bulk WES sequencing (“Methods”, Supplementary Data). When limiting                                        DNA library prep technology and sequencing depths) the bulk WES
+to variants present within the targeted panel, a strong concordance was                                   VAFs and snDNA-seq pseudobulk VAFs for all shared variants, except for
+noted between unﬁltered variants called from frozen nuclei versus                                         those with ≤2 alternative reads in bulk WES results, were linearly cor-
+those called by WES (Fig. 2a; Supplementary Fig. 4a). When we next                                        related for the majority of samples (Supplementary Fig. 4b–d).
+
+
+Nature Communications | (2023)14:749                                                                                                                                                                                                 3
+Article                                                                                                             https://doi.org/10.1038/s41467-023-36344-z
+
+Fig. 1 | Frozen tissue single nuclei extraction workﬂow for snDNA-seq.                 mutation, WT wildtype) heatmap of snDNA-seq libraries generated by fresh vs
+a Overview of frozen sample single nuclei extraction workﬂow for Tapestri snDNA-       frozen nuclei of sample PR04-2. Each row represents a bulk data-validated driver
+seq. b Representative microscopic images of extracted single nuclei, stained with      variant of this case, while each column represents a single nucleus in the library.
+Trypan blue (brightﬁeld, BF), DAPI (ﬂuorescence, FL). At least 3 representative        The nuclei were sorted based on KRAS variant’s VAF in ascending order from left to
+pictures were taken per sample and yielded similar results. c Technical and genetic    right. f Venn diagrams showing colocalization of genotypes belonging to two
+proﬁle of each biologically distinct sample. A total of 38 samples were processed,     separate tumor cell populations in one snDNA-seq library (two replicates shown);
+34 of which were biologically distinct samples from 16 unique patients. Genetic        the cells carrying both genotypes were identiﬁed as doublets. Nuclei suspension
+proﬁles were based on bulk sequencing. d Pseudobulk (p-bulk) variant allele fre-       extracted from two tumor samples from different patients were mixed and subject
+quency (VAF) comparison of all 160 shared variants between libraries prepared with     to snDNA-seq. The two distinct tumor populations were identiﬁed by genotype for
+fresh vs frozen (3 weeks) nuclei of sample PA04-2. Key drivers pre-identiﬁed by bulk   their respective driver variants TP53 p.C207Y and ARID1A splice. Source data are
+WES in this case are highlighted; regression line with 90% conﬁdence interval is       provided as a Source Data ﬁle.
+drawn. e Single-cell genotype (HOM homozygous mutation, HET heterozygous
+
+
+
+     We next sought to determine if our snDNA-seq approach can                         p.G12D mutation; hints of a minor KRAS p.G12V clone existed but
+detect subclonal copy number variations (CNVs). For this analysis we                   were on the borderline of the technologies’ detection sensitivity
+used sample PA02-1 with known homozygous deletions of SMAD4 and                        (Fig. 4a). Single-nucleus genotype heatmaps and Venn diagrams
+CDKN2A24. By calculating the single-cell per-amplicon (~200 bp) ploidy                 (Fig. 4b–e) of multiregional samples PR02-3 and PR02-4 suggested
+based on read counts (“Methods”), we were able to identify both                        colocalization of the major KRAS p.G12D with another likely driver
+homozygous deletions (ploidy~0) in the neoplastic population despite                   TP53 p.C203Y, which signiﬁed the major tumor clone in this sample;
+it comprising 28.5% of all cells (Fig. 2c, d; Supplementary Fig. 5a–d).                the minor KRAS p.G12V -bearing clone was mutually exclusive with
+                                                                                       the above two drivers and did not colocalize with any known driver
+snDNA-seq is applicable to low-cellularity, low-tumor content                          gene mutation at similar clonal frequency. In PR02-4, while the major
+samples                                                                                clone consisted of 221 cells (6.12% of all cells), the minor clone was
+Low cellularity and tumor content in certain clinical settings, such as                only 12 cells (0.33% of all cells, Fig. 4e), further buttressing the
+with ﬁne needle aspirations, core needle biopsies or for PDAC in                       technology’s sensitivity. The minor KRAS p.G12V clone in both sam-
+general25, represent major hurdles for bulk-sequencing and hinder the                  ples was substantiated with high-quality read data (Supplementary
+quality of resulting genomic information. We therefore tested our                      Fig. 7a, b); digital droplet PCR (ddPCR) also proved the presence of
+workﬂow’s performance in such settings.                                                the KRAS p.G12V (Supplementary Fig. 7c). Pathology review did not
+      We identiﬁed one sample PA04-1 of a primary pancreas tumor                       identify any apparent secondary neoplastic or metaplastic structure
+with both low-tumor cellularity (neoplastic cells occupying <50%                       (Fig. 4f). This observation aligns with several other studies6,26 in
+area of tissue section) and low overall cellularity due to high fat                    suggesting that multiple KRAS genetic variants may coexist in one
+content (Fig. 3a). Despite use of a tissue sample of similar size                      patient’s PDAC precursor/tumor.
+(~8 mm3) as others studied, we extracted a total of 30,000 nuclei,
+much lower than the optimal number of 200,000 as input for                             snDNA-seq identiﬁed complex clonal structures in a KRAS-
+Tapestri. Ultimately, we captured only 479 nuclei in the ﬁnal library,                 WT PDAC
+approximately 6-fold lower than average. Nonetheless, both driver                      The KRAS gene is mutated in >90% of all PDAC’s and signiﬁes the
+gene variants (KRAS p.G12V, SMAD4 p.A39T) identiﬁed by bulk WES                        phenotype of MAPK-ERK pathway hyperactivation25. By bulk exome
+of this same sample were identiﬁed with high-quality read data                         sequencing of three spatially distinct samples of resected PDAC
+(Supplementary Fig. 6a, b) and indicated 113 likely tumor cells (23.6%                 PR01, we noted that this case was wild type for KRAS yet contained an
+of all) captured for this sample based on the presence of the clonal                   FGFR1 p.T50K mutation as well as two distinct TGFBR2 mutations
+KRAS variant (Fig. 3b, c).                                                             (p.M450I, p.A451G) on the same allele. Pathology review of the
+      With a second sample (PR04-1) of particularly low-tumor purity as                samples’ H&E slides identiﬁed two well-isolated populations of PDAC
+revealed by pathology review (Fig. 3d) and bulk sequencing (Fig. 3e),                  cells with distinct histological features. A population of PDAC cells
+Tapestri data identiﬁed 40 out of 3866 nuclei (1%) of this sample car-                 characterized as dilated glands with extensive stroma was exclusively
+rying at least one of KRAS p.G12V, TP53 p.R186H, or SMAD4 p.508D                       present in sample PR01-1 (Fig. 5a, left), while another population
+(Fig. 3f, g). Again, the driver variants were genotyped with high-quality              characterized as small nests of tumor cells was exclusively present in
+read data (Supplementary Fig. 6c, d). Intriguingly, the single-nucleus                 PR01-2 (Fig. 5a, right). Sample PR01-3 had both populations present
+colocalization of the three main drivers violated the assumption of the                in the same tissue section. We performed snDNA-seq of all 3 samples
+inﬁnite sites model: more than half of the nuclei carry the KRAS                       and discovered that the FGFR1 and TGFBR2 mutations corresponded
+mutation and among them, a subset carry SMAD4 and TP53, yet a                          to two mutually exclusive clones: sample PR01-1 had only the TGFBR2
+signiﬁcant number of nuclei were wildtype for KRAS yet mutated for                     double-mutated clone (Supplementary Fig. 8a), PR01-2 only the
+SMAD4/TP53. If it were assumed that KRAS were mutated ﬁrst and                         FGFR1 mutated (Supplementary Fig. 8b), while PR01-3 contained
+SMAD4 and TP53 mutations followed, a likely explanation would be                       both clones that were mutually exclusive at the single-cell level
+that a subset of tumor cells lost their mutant KRAS allele through loss                (Fig. 5b, c, Supplementary Fig. 8c). To determine the extent to which
+of heterozygosity (LOH). Although ADO might factor in, similar pat-                    these two clones were unique neoplasms versus subclones that
+terns observed in snDNA-seq results of two other samples of this case                  shared a common ancestor, we included all other high-quality coding
+(PR04-2, PR04-3) seemed to support the abovementioned theory                           & non-germline variants to deﬁne a putative normal cell population
+(Supplementary Fig. 6e, f). However, more rigorous statistical model-                  (Supplementary Fig. 8c, blue clone) and computed the median per-
+ing is required for validation.                                                        amplicon ploidy within each clone (“Methods”). This revealed many
+                                                                                       shared CNVs between the two clones that included allelic losses of
+snDNA-seq identiﬁed two mutually exclusive clones bearing two                          ARID1A, TGFBR2, FGFR1 and SMAD4 as well as a homozygous deletion
+different KRAS mutations in the same PDAC patient                                      of CDKN2A (Fig. 5d, Supplementary Fig. 8c). Collectively these data
+For a PDAC surgical resection case PR02, based on both MSK-                            suggest that large-scale copy number aberrations preceded the for-
+IMPACT sequencing (high-depth targeted sequencing) and bulk WES,                       mation of the two distinct SNV clones and was likely the upstream
+we identiﬁed that the major tumor clone carried the hotspot KRAS                       oncogenic event.
+
+
+Nature Communications | (2023)14:749                                                                                                                                    4
+Article                                                                                                                                                                             https://doi.org/10.1038/s41467-023-36344-z
+
+
+
+                      a                                unfiltered bulk variants (coding only)
+                                                       unfiltered bulk variants (coding only) detected by Tapestri
+
+                                             14
+
+
+                                             12
+
+
+                        number of variants   10
+
+
+                                              8
+
+
+                                              6
+
+
+                                              4
+
+
+                                              2
+
+
+                                              0
+                                                  PR
+
+
+
+                                                             PR
+
+
+
+                                                                       PR
+
+
+
+                                                                                 PR
+
+
+
+                                                                                           PR
+
+
+
+                                                                                                      PR
+
+
+
+                                                                                                                PR
+
+
+
+                                                                                                                          PR
+
+
+
+                                                                                                                                    PR
+
+
+
+                                                                                                                                               PR
+
+
+
+                                                                                                                                                         PR
+
+
+
+                                                                                                                                                                   PR
+
+
+
+                                                                                                                                                                             PR
+
+
+
+                                                                                                                                                                                       PR
+
+
+
+                                                                                                                                                                                                 PR
+
+
+
+                                                                                                                                                                                                           PR
+
+
+
+                                                                                                                                                                                                                     PR
+
+
+
+                                                                                                                                                                                                                               PR
+                                                    01
+
+
+
+                                                               01
+
+
+
+                                                                         01
+
+
+
+                                                                                   02
+
+
+
+                                                                                             02
+
+
+
+                                                                                                        02
+
+
+
+                                                                                                                  02
+
+
+
+                                                                                                                            03
+
+
+
+                                                                                                                                      03
+
+
+
+                                                                                                                                                 03
+
+
+
+                                                                                                                                                           04
+
+
+
+                                                                                                                                                                     04
+
+
+
+                                                                                                                                                                               04
+
+
+
+                                                                                                                                                                                         05
+
+
+
+                                                                                                                                                                                                   05
+
+
+
+                                                                                                                                                                                                             05
+
+
+
+                                                                                                                                                                                                                       05
+
+
+
+                                                                                                                                                                                                                                 05
+                                                        -1
+
+
+
+                                                                  -2
+
+
+
+                                                                            -3
+
+
+
+                                                                                      -1
+
+
+
+                                                                                                 -2
+
+
+
+                                                                                                           -3
+
+
+
+                                                                                                                     -4
+
+
+
+                                                                                                                               -1
+
+
+
+                                                                                                                                         -2
+
+
+
+                                                                                                                                                    -3
+
+
+
+                                                                                                                                                              -1
+
+
+
+                                                                                                                                                                        -2
+
+
+
+                                                                                                                                                                                  -3
+
+
+
+                                                                                                                                                                                            -1
+
+
+
+                                                                                                                                                                                                      -2
+
+
+
+                                                                                                                                                                                                                -3
+
+
+
+                                                                                                                                                                                                                          -4
+
+
+
+                                                                                                                                                                                                                                    -5
+                      b                             filtered bulk variants
+                                                    filtered bulk variants detected by Tapestri
+
+                                             14
+
+
+                                             12
+                       number of variants
+
+
+
+
+                                             10
+
+
+                                             8
+
+
+                                             6
+
+
+                                             4
+
+
+                                             2
+
+
+                                             0
+                                                  PR
+
+
+
+                                                             PR
+
+
+
+                                                                       PR
+
+
+
+                                                                                 PR
+
+
+
+                                                                                           PR
+
+
+
+                                                                                                      PR
+
+
+
+                                                                                                                PR
+
+
+
+                                                                                                                          PR
+
+
+
+                                                                                                                                    PR
+
+
+
+                                                                                                                                               PR
+
+
+
+                                                                                                                                                         PR
+
+
+
+                                                                                                                                                                   PR
+
+
+
+                                                                                                                                                                             PR
+
+
+
+                                                                                                                                                                                       PR
+
+
+
+                                                                                                                                                                                                 PR
+
+
+
+                                                                                                                                                                                                           PR
+
+
+
+                                                                                                                                                                                                                     PR
+
+
+
+                                                                                                                                                                                                                               PR
+                                                   01
+
+
+
+                                                               01
+
+
+
+                                                                         01
+
+
+
+                                                                                   02
+
+
+
+                                                                                                02
+
+
+
+                                                                                                       02
+
+
+
+                                                                                                                 02
+
+
+
+                                                                                                                           03
+
+
+
+                                                                                                                                     03
+
+
+
+                                                                                                                                                03
+
+
+
+                                                                                                                                                          04
+
+
+
+                                                                                                                                                                    04
+
+
+
+                                                                                                                                                                              04
+
+
+
+                                                                                                                                                                                        05
+
+
+
+                                                                                                                                                                                                  05
+
+
+
+                                                                                                                                                                                                            05
+
+
+
+                                                                                                                                                                                                                      05
+
+
+
+                                                                                                                                                                                                                                05
+                                                       -1
+
+
+
+                                                                  -2
+
+
+
+                                                                            -3
+
+
+
+                                                                                      -1
+
+
+
+                                                                                                 -2
+
+
+
+                                                                                                           -3
+
+
+
+                                                                                                                     -4
+
+
+
+                                                                                                                               -1
+
+
+
+                                                                                                                                         -2
+
+
+
+                                                                                                                                                    -3
+
+
+
+                                                                                                                                                              -1
+
+
+
+                                                                                                                                                                        -2
+
+
+
+                                                                                                                                                                                  -3
+
+
+
+                                                                                                                                                                                            -1
+
+
+
+                                                                                                                                                                                                      -2
+
+
+
+                                                                                                                                                                                                                -3
+
+
+
+                                                                                                                                                                                                                          -4
+
+
+
+                                                                                                                                                                                                                                    -5
+                      c                                                                                                                    d
+
+
+
+
+                                              1 amplicon with 22 bp overlap with CDKN2A exon #2                                                       5 amplicons targeting SMAD4 exons #1, 2, 4, 5, 7
+
+Fig. 2 | SnDNA-seq can capture SNV and CNV pre-identiﬁed by bulk-sequencing                                                          (light red). Single-cell per-amplicon ploidy heatmap of select amplicons covering
+with high sensitivity. a For 18 samples of the same bulk WES sequencing cohort,                                                      chromosomes 9 (c) and 18 (d) of sample PA02-1. Each row represents one cell while
+histogram showing the number of unﬁltered (“Methods”), coding variants called by                                                     each column is one amplicon. Cells are divided into KRAS-mutated group (blue) and
+bulk (blue) and among them, the number detected by snDNA-seq (orange). b For                                                         3 normal groups (red, yellow, green) (“Methods”) and hierarchically clustered
+the same samples, histogram showing the number of ﬁltered (“Methods”) variants                                                       within group. The amplicons spanning CDKN2A and SMAD4 genes are labeled.
+called by bulk (dark red) and among them, the number detected by snDNA-seq                                                           Source data are provided as a Source Data ﬁle.
+
+
+
+
+Nature Communications | (2023)14:749                                                                                                                                                                                                     5
+Article                                                                                                                           https://doi.org/10.1038/s41467-023-36344-z
+
+
+                     a                                                                     b
+                                                                                                             PA04-1: 479 nuclei
+
+
+
+
+                                                                                                                                                                                                                       479 cells, 3 features
+                                                                                           KRAS p.G12V
+
+
+                                                                                           SMAD4 p.A39T
+
+
+                                                                                       SMAD4 p.D52Rfs*2
+
+
+
+
+                                                                                                                           Zoom in on 113 tumor cells
+                            200 μm
+
+
+
+
+                    c
+
+
+
+
+                                                                                                                                                 113 cells, 3 features
+                             KRAS p.G12V
+
+
+                           SMAD4 p.A39T                                                                                                                                              Genotype
+                                                                                                                                                                                                    Missing
+                                                                                                                                                                                                    HOM
+                     SMAD4 p.D52Rfs*2                                                                                                                                                               HET
+                                                                                                                                                                                                    WT
+
+
+                    d                                                                      e                 Bulk WES result of sample PR04-1
+                                                                                                                                           Ref                           Alt
+                                                                                                                  KRAS p.G12D             219                            1
+                                                                                                                 SMAD4 p.G508D            179                            4
+                                                                                                                  TP53 p.R136             397                            4
+                                                                                                                 RNF43 p.L109P            327                            1
+
+
+                                                                                           f              PR04-1: 3866 nuclei
+
+
+
+
+                                                                                                                                                                                                               3866 cells, 4 features
+                                                                                               KRAS p.G12D
+
+                                                                                           SMAD4 p.G508D
+
+                                                                                             TP53 p.R136H
+
+                                                                                            RNF43 p.L109P
+                            200 μm
+
+
+
+
+                                                                                                         Zoom in on 40 tumor cells
+                    g
+                                                                                                                                                                             40 cells, 4 features
+
+
+
+
+                     KRAS p.G12D
+
+                 SMAD4 p.G508D
+                                                                                                                                                                                                    Genotype
+                                                                                                                                                                                                         Missing
+                    TP53 p.R136H
+                                                                                                                                                                                                         HOM
+                                                                                                                                                                                                         HET
+                   RNF43 p.L109P
+                                                                                                                                                                                                         WT
+
+
+Fig. 3 | SnDNA-seq’s performance in limiting settings. a Representative hema-              p.G12V/SMAD4 p.39T mutation. d Representative H&E histology image of sample
+toxylin and eosin (H&E) stained histology image of sample PA04-1, a sample of              PR04-1. At least 3 representative pictures were taken per sample and yielded similar
+particularly low cellularity due to high fat content. At least 3 representative pictures   results. e Bulk WES result of sample PR04-1. f Single-cell genotype heatmap of
+were taken per sample and yielded similar results. b Single-cell genotype (HOM:            PR04-1. A total of 3866 captured single nuclei are sorted based on KRAS VAF in
+homozygous mutation; HET: heterozygous mutation; WT: wildtype) heatmap of                  ascending order from left to right. Tumor cells, deﬁned by the presence of KRAS
+sample PA04-1. A total of 479 captured single nuclei were sorted based on KRAS             p.G12D/SMAD4 p.G508D/TP53 p.R136H mutations, cluster to the right and are
+VAF in ascending order from left to right. c Single-cell genotype (HOM: homo-              barely visible. g Single-cell genotype heatmap of PR04-1, zoomed in on 40 putative
+zygous mutation; HET heterozygous mutation, WT wildtype) heatmap of sample                 tumor cells.
+PA04-1, zoomed in on 113 putative tumor cells, deﬁned by the presence of KRAS
+
+
+snDNA-seq revealed stepwise evolution during PDAC metastasis                                cancer progression. We started from observing the raw single-nucleus
+Through snDNA-seq of three multiregional samples of PDAC autopsy                            SNV genotype and per-amplicon read count data (Supplementary
+case PA04 (one primary tumor sample, two liver metastases; the two                          Figs. 9, 10), where we noticed the gene SMAD4 underwent several steps
+liver metastases each has two technical replicates) we identiﬁed                            of genomic evolution - two somatic SNV events and several asyn-
+sequential steps leading to TGF-β inactivation in association with                          chronous focal deletion events, as represented by clone 2 and clone 4
+
+
+Nature Communications | (2023)14:749                                                                                                                                                                                                           6
+Article                                                                                                              https://doi.org/10.1038/s41467-023-36344-z
+
+
+
+
+Fig. 4 | SnDNA-seq identiﬁed two mutually exclusive clones bearing two dif-            cells cluster). The KRAS p.G12D & p.G12V clone identities (above heatmaps) are
+ferent KRAS mutations in one pancreatic cancer patient. a Bulk-sequencing calls        identiﬁed as cells having “HET” or “HOM” genotype of each variant and are colored
+of KRAS variants of patient PR02’s 4 multiregional primary tumor samples. Venn         as labeled. Cells are hierarchically clustered based on the two KRAS variants’ single-
+diagram showing colocalization pattern of genetic variants TP53 p.C203Y, KRAS          cell AF. KRAS p.G12V clone size was 57 cells in PR02-3, 17 cells in PR02-4.
+p.G12D, KRAS p.G12V in single nucleus of samples PR02-3 (b), PR02-4 (c). Single-cell   f Representative H&E histology images of sample PR02-3. At least 3 representative
+genotype (HOM homozygous mutation, HET heterozygous mutation, WT wildtype)             pictures were taken per sample and yielded similar results.
+heatmap of samples PR02-3 (d), PR02-4 (e, zoomed in on 300 cells where tumor
+
+
+
+in Supplementary Fig. 9 – which eventually resulted in clone 5 with                    progression: driver SNV events occur ﬁrst, large-scale CNV events
+homozygous deletion (homdel) of all SMAD4’s genomic region that our                    follow, and focal CNV events continue as tumor cells metastasize9. The
+panel covers. Therefore, we combined the homdel (ploidy=0) status of                   presence of the intermediate clusters 5 and 6 where SMAD4 was only
+SMAD4’s 8 amplicons with the genotype of 25 SNVs validated by bulk                     partially deleted compared to its end state (homdel on 7 of 8 ampli-
+sequencing, either germline or somatic, across 8061 single cells of all                cons) in clusters 0 and 3 validated our observation of stepwise focal
+three samples and applied a previously described single-cell multi-                    deletion to SMAD4’s genomic regions (Fig. 6a, b). Absence of these
+layer, multi-state clustering method27 (Supplementary Methods).                        intermediate clones in the primary tumor (Fig. 6c) could also indicate
+Seven clusters were identiﬁed (Fig. 6a) and the inferred phylogeny                     that these intermediate clones were selected out by the environment
+(Fig. 6b) generally aligned with the most popular model of PDAC                        at the primary site or the more evolved clone 0 reseeded from the
+
+
+Nature Communications | (2023)14:749                                                                                                                                       7
+Article                                                                                                                                            https://doi.org/10.1038/s41467-023-36344-z
+
+
+
+    a                                                                                                                                              b
+
+
+
+
+                200 μm                                                               200 μm
+
+
+
+
+     c
+                                          putative normal                                      FGFR1 p.T50K                         others                             TGFBR2 double mut
+
+         FGFR1 p.T50K
+
+
+
+
+                                                                                                                                                                                              1238 cells, 7 features
+      TGFBR2 p.M450I
+     TGFBR2 p.A451G
+        ASXL2 p.S114N
+      MED12 p.Q2076*
+     DNMT1:p.Q1073H
+       FOXA2:p.H401Q
+     d
+                                                                                                                                                                                     TGFBR2 clone
+     5
+                                                                                                                                                                                     FGFR1 clone
+                                                                                                                                                                                     putative_normal
+
+     4
+
+
+
+     3
+
+
+
+     2
+
+
+
+     1
+                                                                                                                                                                                 Shared decrease
+                                                                                                                                                                                 in copy number of
+                                                                                                                                                                                 ARID1A (chr1),
+     0                                                                                                                                                                           FGFR1 (chr3),
+                                                                                                                                                                                 TGFBR2 (chr8),
+                                                                                                                                                                                 CDKN2A (chr9),
+                 chr1
+
+
+
+
+                          chr2
+
+
+
+
+                                   chr3
+
+
+                                           chr4
+
+                                                  chr5
+
+                                                         chr6
+
+
+                                                                chr7
+
+
+                                                                       chr8
+                                                                              chr9
+
+                                                                                       chr10
+
+
+                                                                                               chr11
+
+
+
+                                                                                                       chr12
+
+
+                                                                                                                 chr13
+                                                                                                                 chr14
+                                                                                                                 chr15
+                                                                                                                         chr16
+
+
+
+
+                                                                                                                                 chr17
+
+
+
+
+                                                                                                                                           chr18
+
+
+                                                                                                                                                       chr19
+
+                                                                                                                                                               chr20
+                                                                                                                                                               chr22
+
+                                                                                                                                                                       chrX
+
+
+
+
+                                                                                                                                                                                 SMAD4 (chr18)
+
+
+
+
+Fig. 5 | SnDNA-seq identiﬁed two mutually exclusive SNV clones in a PDAC                                       by bulk WES for sample PR01-3. Each cell’s clone identity (color strip above heat-
+patient without KRAS mutation. a Representative H&E histology images of PDAC                                   map) is colored as shown by the ﬁgure legend. The FGFR1 and TGFBR2 SNV clones
+regions in samples PR01-1 (left, only the TGFBR2 double mutation was present),                                 are deﬁned as cells with non-wildtype genotype of each gene. The “putative nor-
+PR01-2 (right, only the FGFR1 mutation was present). At least 2 representative                                 mal” clone is deﬁned as cells with “WT” genotype of all 7 genetic variants. Cells are
+pictures were taken per sample and yielded similar results. b For sample PR01-3                                hierarchically clustered within each clone. d Median per-amplicon ploidy of the
+(both the TGFBR2 double mutation and FGFR1 mutation were present), Venn dia-                                   TGFBR2 double mutation clone, the FGFR1 mutation clone and the putative normal
+gram showing single-cell colocalization pattern of the TGFBR2 double mutation and                              clone found PR01-3. The putative normal clone is set as diploid baseline (green);
+FGFR1 mutation. c Single-cell genotype (HOM homozygous mutation, HET het-                                      amplicons with notable copy number loss and their corresponding genes are
+erozygous mutation, WT wildtype) heatmap of 7 important variants pre-identiﬁed                                 labeled. Source data are provided as a Source Data ﬁle.
+
+
+
+metastasis sites; it could also be owing to the lower number of single                                         signaling as a critical aspect of PDAC metastasis29–32, as well as ongoing
+nuclei sampled which made the smaller clones fall below the sensitivity                                        clonal selection for survival beneﬁts25,33.
+of SCG. Interestingly, clone 5, which diverged from the main lineage (as
+assessed by clone size), was characterized by focal homdel of RREB1,                                           Discussion
+which is another important effector of the TGF-β-SMAD axis28. Unfor-                                           In this study, we used two commercially available products to assem-
+tunately, we were unable to resolve two minor yet important clones                                             ble a highly automated workﬂow to generate Tapestri snDNA-seq
+identiﬁed by observing the raw data – the one with a second SMAD4                                              libraries from snap-frozen patient tissues. The workﬂow is fast, efﬁ-
+SNV and the one with homdel of all 8 amplicons of SMAD4) (Supple-                                              cient and can be applicable for high-throughput clinical and transla-
+mentary Fig. 9, clone 4 and clone 5) – likely because their sizes were                                         tional research. Additionally, we recognized the value of storing excess
+too small for SCG to differentiate them from noise. Nonetheless, these                                         single-nuclei suspensions for later use and veriﬁed a corresponding
+results together are in keeping with inactivation of cell-intrinsic TGFβ                                       workﬂow that was free from issues such as nuclei quantity loss, nuclear
+
+
+Nature Communications | (2023)14:749                                                                                                                                                                                   8
+Article                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               https://doi.org/10.1038/s41467-023-36344-z
+
+
+     a
+           cluster size                    ID                   cluster CNV profile                                                                                                                                                                                                                                                cluster SNV profile
+
+
+                                            0
+
+
+
+
+                                            1
+
+
+
+
+                                            2
+
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     SMAD4 amplicon homdel-status
+
+                                            3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ploidy=0
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ploidy>0
+
+
+                                            4
+
+
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     SNV genotype
+                                            5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          MISSING
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       HOM
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       HET
+                                            6
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       WT
+           3000
+
+                  2000
+
+                           1000
+
+                                    0
+
+
+
+
+                                                   SMAD4--1
+                                                              SMAD4--2
+                                                                         SMAD4--3
+                                                                                    SMAD4--4
+                                                                                               SMAD4--5
+                                                                                                          SMAD4--6
+                                                                                                                     SMAD4--7
+                                                                                                                                SMAD4--8
+
+
+                                                                                                                                           PCDH15 intron
+                                                                                                                                                           MEN1 p.His433=
+                                                                                                                                                                            MEN1 p.Ser145=
+                                                                                                                                                                                             KRAS p.Gly12Val
+                                                                                                                                                                                                                                AXIN1 p.Ala609=
+                                                                                                                                                                                                                                                  CDH11 p.Pro33=
+                                                                                                                                                                                                                                                                   CDH1 intron
+                                                                                                                                                                                                                                                                                 BRCA1 p.Ser694=
+                                                                                                                                                                                                                                                                                                   TP53 intron#1
+                                                                                                                                                                                                                                                                                                                   TP53 intron#2
+                                                                                                                                                                                                                                                                                                                                    TP53 p.Pro72Arg
+                                                                                                                                                                                                                                                                                                                                                      SMAD4 p.Ala39Thr
+                                                                                                                                                                                                                                                                                                                                                                         SMAD4 p.Asp52ArgfsTer2
+                                                                                                                                                                                                                                                                                                                                                                                                  SMAD4 intron
+                                                                                                                                                                                                                                                                                                                                                                                                                 DNMT1 intron
+                                                                                                                                                                                                                                                                                                                                                                                                                                FOXA2 p.Gln402=
+                                                                                                                                                                                                                                                                                                                                                                                                                                                  PIK3CA p.Glu542Lys
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                       PBRM1 intron#1
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        PBRM1 intron#2
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ROBO1 p.Thr931=
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           KDR intron
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        RREB1 p.His338=
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          RREB1 p.Ala429=
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            PIK3CG p.Ser675=
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               RBM10 p.Ala631Pro
+     b
+
+
+                                  1 (14.58%)                                                                                                                                                                                                c
+                                  normal cells
+
+                                                                                                                                                                                                                                                                                                             479 cells                                                                                                                            5576 cells                                                                                                                                   2006 cells                         cluster ID
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       0
+                                                                                                                                                                                                                                                           100                                                                                                                                                                                                                                                                                                                                                                         1
+                                  4 (8.73%)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       2
+                           SNV-KRAS p.G12V
+                           SNV-SMAD4 p.A39T                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            3
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       4
+                                                                                                                                                                                                        percent of cells in each sample
+
+
+
+
+                                                                                                                                                                                                                                                                   80                                                                                                                                                                                                                                                                                                                                                                  5
+                                  2 (14.42%)                                                              5 (3.14%)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    6
+                             CNV-TP53 LOH
+                           CNV-KRAS, AXIN gain                                       CNV-RREB1 focal deletion
+                                  CNV- Chr3 loss                                     CNV-1X SMAD4 amp del
+
+
+                                                                                                                                                                                                                                                                   60
+
+                                  6 (0.71%)
+                           CNV-SMAD4 LOH
+                         CNV-3X SMAD4 amps del
+
+                                                                                                                                                                                                                                                                   40
+
+
+                                  0 (46.14%)
+                         CNV-4X SMAD4 amps del
+                                                                                                                                                                                                                                                                   20
+
+
+
+                                  3 (12.29%)
+
+                           CNV-PCDH15 gain
+                                                                                                                                                                                                                                                                       0
+                                                                                                                                                                                                                                                                                                                           PA04-1                                                                                                                                          PA04-2                                                                                                                                  PA04-3
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                  sample name
+
+
+
+envelope damage, or nuclei clumping. This workﬂow further illustrates                                                                                                                                                                                                                                                      combined with the added information gleaned pertaining to co-
+the ability to maintain information pertaining to relative VAFs com-                                                                                                                                                                                                                                                       occurring and mutually exclusive genetic events, suggests this tech-
+pared to matched WES data. Furthermore, while our custom panel was                                                                                                                                                                                                                                                         nology and workﬂow is ideally suited to settings in which samples sizes
+not designed for identiﬁcation of CNVs, speciﬁcally homozygous                                                                                                                                                                                                                                                             are small or limited.
+deletions, we demonstrate the proof of principle that these events                                                                                                                                                                                                                                                              A caveat of this snDNA-seq technology is that albeit its high cell
+could be identiﬁed with conﬁdence. These encouraging results,                                                                                                                                                                                                                                                              throughput, it is a targeted approach that focuses on a pre-designed
+
+
+Nature Communications | (2023)14:749                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                9
+Article                                                                                                            https://doi.org/10.1038/s41467-023-36344-z
+
+Fig. 6 | SnDNA-seq revealed stepwise evolution in a metastatic PDAC case.             4 somatic mutations (identiﬁed by bulk sequencing on the same tumor sample) are
+a Single-cell genotyper (SCG)-inferred cluster information. Left panel: histogram     colored red. b Cluster/clone phylogeny. Each cluster’s proportion in the cohort is
+showing each cluster’s size (number of nuclei) in the 3-sample cohort. Clusters are   labeled next to cluster ID. Each cluster-deﬁning genomic event is labeled on its
+sorted based on size from top to bottom and assigned random colors to maximize        corresponding cluster. SNV events, as well as CNV events that affect them, are
+heterogeneity. Middle panel: cluster CNV proﬁle, represented by the homozygous        colored pink. c Cluster composition in each of the three multiregional autopsy
+deletion (homdel) status of 8 SMAD4 amplicons. Right: cluster SNV proﬁle, repre-      samples of PA04. Technical replicates (fresh and frozen nuclei preparation) are
+sented by the genotype of 25 bulk-validated germline and somatic mutations. The       merged. Source data are provided as a Source Data ﬁle.
+
+
+panel of genes which might be insufﬁcient for certain research ques-                  samples, we were able to resolve stepwise evolution patterns in
+tions that require unbiased study of the cancer exome/genome34–37.                    metastatic PDAC, showing single-cell-level convergent evolution to
+This also implies a general challenge of single-cell research: because                inactivating the TGF-β pathway, although at a limited resolution.
+the total library size is limited by sequencing cost and data processing              Therefore, better methods need to be developed and tested to analyze
+capacities, there is always a trade-off between the total cell throughput             this new dataset further.
+and the amount of information one can extract from each single cell.
+     Sequencing depth, usually deﬁned as the mean number of times                     Methods
+any nucleotide is read, is a straightforward and critical metric for bulk             Ethics statement
+sequencing- it can be easily controlled by adjusting the total sequen-                Use of samples used in this study was approved by the institutional
+cing depth of a sample and decides the accuracy of estimating relative                review board at Memorial Sloan Kettering Cancer Center (under pro-
+clonal composition of SNVs based on variant allele frequencies (VAFs)                 tocols #15-149, #15-021) and Johns Hopkins Medicine.
+as well as the power of discovering rare SNV clones. Similarly, for
+Tapestri we calculated depth as the mean number of reads per                          Patient sample collection and preprocessing
+amplicon per cell and determined the optimal depth. However,                          Patient samples used in this study mainly consist of two categories-
+because reads need to be ﬁrst demultiplexed and assigned to indivi-                   multiregionally sampled surgical resection of primary pancreatic
+dual cell barcodes, and then undergo barcode quality control (QC or                   cancer, and multiregionally sampled autopsy of metastatic pancreatic
+“cell-calling”, “Methods”), the depth is affected by not only the total               cancer. Each participating patient provided written consent and was
+read depth, but also the number of single cells that pass QC and the                  not compensated. Detailed patient and sample information is sum-
+proportion of reads assigned to these cells, which could be panel- and                marized in Supplementary Table 1.
+sample-speciﬁc. For example, at the same total read depth, a sample                        For multiregional sampled surgical resections: treatment naïve
+with more incomplete cells/nuclei (e.g. autopsy samples with high                     patients with tumors ≥2 cm on cross-sectional imaging were identiﬁed
+necrosis rate) would have a lower percentage of reads assigned to                     preoperatively. A single cross-sectional piece of tumor was sampled
+quality cells and therefore lower depth. The among-sample variation                   sequentially using a cartesian coordinate system with 0.6 cm × 0.6 cm
+can be easily observed in the “pipeline run metadata” column of Sup-                  grid, with 3–5 samples obtained from each tumor. Adjacent normal
+plementary Table 1. Therefore, it is difﬁcult to precisely control depth              pancreas or duodenum was also collected. All samples were stored at
+through altering the total depth; it might be advisable to sequence to a              −80 °C until use.
+total read depth that is economically feasible ﬁrst, inspect the data,                     For multiregional sampled autopsy: Tissues from three patients
+and sequence more if needed.                                                          were used. All patients had a premortem diagnosis of PDAC based on
+     Another caveat, in this instance related to our computational                    pathological review of resected biopsy material and/or radiographic
+analysis, is that the current variant calling pipeline for Tapestri applied           and biomarker studies.
+GATK HaplotypeCaller and enabled default read downsampling which                           Tissue sections were cut from tissue blocks embedded in optimal
+might be suboptimal for such high-depth single-cell data in a cancer                  cutting temperature (OCT) compound, stained with hematoxylin and
+setting. We did not apply matched normal/panel of normal (PON)-                       eosin (H&E) and reviewed by a gastrointestinal pathologist (S.U.) to
+aided ﬁltering in our pipeline; a beneﬁt of this approach is that it                  estimate total cellularity, tumor purity and tissue quality. Speciﬁcally,
+enabled us to see many germline variants that can be used for quality                 tumor purity was estimated based on the ratio of tumor cell-occupying
+control or phylogeny modeling, although this beneﬁt is balanced by                    2-D area against all area, and therefore might not conform with that
+outputs containing a large number of artifacts. Ultimately, to enable                 estimated from snDNA-seq result, which was deﬁned as the ratio of
+novel somatic variant discovery a more robust variant calling pipeline                tumor nuclei (deﬁned as carrying known driver SNVs from bulk
+is needed to adapt to the noise proﬁles particular to this PCR-based                  sequencing data) of all nuclei. Normal samples were reviewed to
+high-throughput single-cell DNA sequencing technology.                                conﬁrm that no contaminating cancer cells were present.
+     The ﬁeld of single-cell transcriptomics began earlier than single
+cell genomics, and accompanying analysis methods have been ﬂour-                      Bulk WES, WGS library preparation, sequencing, and variant
+ishing in the past 5 years38,39. Single-cell transcriptome-oriented                   calling
+methods, such as clustering or gene-set enrichment analysis, are                      Genomic DNA was extracted from each tissue using the phenol-
+generally not optimal for targeted single-cell genomic data, where the                chloroform extraction protocol or QIAamp DNA Mini Kits (Qiagen).
+cell-cell difference is much smaller, often only on a small set of geno-              WGS, WES and alignment were performed by the Integrated Genomics
+mic regions. The best method would be to rely on the ancestor-                        Operation and the Bioinformatics Core at Memorial Sloan Kettering
+descendent relationship between every pair of cells’ genomic                          Cancer (New York, NY). Brieﬂy, an Illumina HiSeq 2000, HiSeq 2500,
+sequence and build single-cell phylogenies. Several models for the                    HiSeq 4000 or NovaSeq 6000 platform was used to target sequencing
+evolution of SNVs in cancer have been developed to date40–46, but only                coverages of >60× for WGS samples and >150× for WES samples.
+two45,46 have been constructed to also account for the frequent,                           Sequencing reads were analyzed in silico to assess quality, cov-
+complex aneuploidy in cancer, one of which is directly applicable to                  erage, as well as alignment to the human reference genome (hg19)
+the dataset presented in this paper46 but its accuracy is yet to be tested.           using BWA. After read de-duplication, base quality recalibration and
+From the combined SNV and CNV data of case PR01’s multiregional                       multiple sequence realignment were completed with the PICARD Suite
+samples (Supplementary Fig. 8a–c), we saw many complex clonal                         and GATK v.3.1; somatic single-nucleotide variants and
+structures than could be deﬁned by driver SNV events alone. Cluster-                  insertion–deletion mutations were detected using Mutect v.1.1.6 and
+ing single cells based on both SNV and CNV in PA04’s multiregional                    HaplotypeCaller v.2.4. Such a process generates the “ﬁltered” variant
+
+
+Nature Communications | (2023)14:749                                                                                                                                 10
+Article                                                                                                     https://doi.org/10.1038/s41467-023-36344-z
+
+
+list for every sample. Then, all variants of all samples of the same                   We estimated expected number of nuclei called as (input nuclei
+sequencing cohort were pooled as a single list. Each sample’s BAM ﬁle             concentration) * 1 µl (e.g. an input suspension of 4000 nuclei/µl will
+were used to compute “ﬁllout” values (total depth, reference allele               yield 4000 nuclei). The target depth was set at 100 reads per cell per
+counts, alternative allele counts) for each variant in the pooled list. An        amplicon. The expected percentage of reads assigned to cells was set
+alternate read > 2 ﬁlter was applied to trim down false positives. This           at 0.5. However, due to parallelizing multiple samples on the same
+process aimed to rescue variants that were detected with high con-                lane, the total read depth could not be precisely controlled and
+ﬁdence in multiregional sample #1 but with low conﬁdence in multi-                deviated from target for a few samples.
+regional sample #2 of the same patient; the output corresponded to
+the “unﬁltered” variant list.                                                     Single-nuclei DNA library quality control, cell-calling and variant
+                                                                                  calling
+Nuclei extraction from frozen tissue, counting, QC, sorting and                   FASTQ ﬁles for single-nuclei DNA libraries were processed through
+cryopreservation                                                                  Mission Bio’s Tapestri pipeline with default parameters. Brieﬂy, it trims
+Single nuclei from OCT-embedded snap-frozen primary tissue samples                adapter sequences, aligns reads to the hg19 genome (UCSC), assigns
+were extracted using the Singulator 100 machine (S2 Genomics) with                reads to cell barcodes. The CellFinder module then ﬁltered for bar-
+its extended nuclei dissociation protocol. After extraction, nuclei               codes corresponding to “complete cells/nucleus” based on total read
+solution was centrifuged at 800 × g for 5 min in a swing bucket with a            completeness (>8 * number of amplicons) and per-amplicon read
+reduced braking in a 0.25 M Nuclei PURE Sucrose solution (Sigma-                  completeness (>80% data completeness for working amplicons, which
+Aldrich) to ﬁlter out debris.                                                     are deﬁned as amplicons with > 0.2*mean of all amplicon reads per
+     Nuclei were stained with Trypan blue and manually inspected                  qualiﬁed barcode). It next used GATK HaplotypeCaller to call variants
+under a brightﬁeld microscope for clumping percentage, which was                  individually on each cell, and then GATK GenotypeGVCFs to jointly
+estimated as the number of clumped particles out of all single par-               genotype all cells using genotype likelihoods from the previous step.
+ticles within one ﬁeld of view. Nuclei concentration was estimated by             The unﬁltered VCF was parsed into an HDF5 ﬁle containing single-cell
+DAPI staining on a Countess II FL automated cell counter.                         variant and per-amplicon read count matrices compatible with
+Clumping percentage and nuclei concentration were both measured                   downstream analysis. A more detailed documentation of the pipeline
+≥ 2 times for each sample. A ﬁnal concentration of 4000 nuclei/µl                 is available at: https://support.missionbio.com/hc/en-us/categories/
+suspended in 50 µl Mission Bio cell buffer was targeted per sample                360002512933-Tapestri-Pipeline. In respect of Mission Bio’s request,
+prepared.                                                                         the pipeline code is not to be publicized because it contains proprie-
+     After up to 200,000 nuclei were taken for Tapestri library pre-              tary information per industry standard. However, the pipeline used in
+paration, the remaining nuclei were resuspended in Sigma Aldrich                  the paper that demonstrated this scDNA-seq library preparation
+Nuclei PURE storage buffer and immediately frozen on dry ice, before              technology53 is publicly available as a Github repository at https://
+being transferred to −80C freezer for long-term storage. If needed,               github.com/AbateLab/DAb-seq. Although we have not formally tested
+nuclei were thawed on ice until the solution was clear, and centrifuged           that it performs identically as the Mission Bio pipeline, we believe it is
+with the same settings as described above for pelleting and buffer                sufﬁcient to replicate our results.
+exchange.
+                                                                                  Single-cell genotyping and cell-variant pair ﬁltering
+Single-nuclei library preparation and sequencing                                  The HDF5 ﬁle output from above was analyzed mainly by Mission Bio’s
+Nuclei were suspended in Mission Bio cell buffer at a maximum con-                python-based analysis package Mosaic, with a modiﬁed genotyping
+centration of 4000 nuclei/µl, encapsulated in Tapestri microﬂuidics               and variant ﬁltering module. As shown in Supplementary Fig. 2, with a
+cartridge, lysed and barcoded. Barcoded samples were then put                     single-cell variant call matrix, we started by assigning a genotype to
+through targeted PCR ampliﬁcation with a custom 186-amplicon panel                each cell-variant pair. First, we deﬁned the minimum depth at 5 reads
+covering important PDAC mutational hotspots in our sample cohort                  and any variant in any cell with depth below the threshold in a cell
+(Supplementary Table 2).                                                          would be assigned as “missing”. Then, we used cutoffs:
+      The 186-amplicon panel was designed based on curation of bulk
+whole exome/genome sequencing data of PDAC samples collected by                                               VAFWT ∼ ½0, 20
+the Iacobuzio lab. The goal was to cover as many likely driver SNVs
+within our patient cohort as possible within a 200-amplicon limit,
+                                                                                                             VAFHET ∼ ð20, 80
+which we set considering the economic cost and the purpose being
+mostly proof of-principle for a variety of ongoing projects in our lab.
+The driver SNVs/genes of interest were determined by querying sev-                                          VAFHOM ∼ ð80, 100
+eral public databases including OncoKB, Cancer Genome Interpreter
+(CGI), cancer hotspots47, TCGA consensus driver gene list48 etc. using            to assign each variant’s genotype (WT- wildtype; HET- heterozygously
+Treeomics49 and LiFD50 that the Iacobuzio lab helped develop for                  mutated; HOM- homozygously mutated) in each cell, thus allowing
+previous studies. In addition to the driver SNVs from above, we used              20% of reads of a barcode to be false positives potentially caused by
+cBioportal51,52 to query additional frequently ampliﬁed genes in PDAC             barcode contamination. Finally, we set the threshold for the alternate
+(e.g. MYC) and added coverage for them as well.                                   (mutant) read count to 3 reads to convert low-quality heterozygous
+      PCR products were removed from individual droplets, puriﬁed                 calls back to wildtype to arrive at the ﬁnal cell-variant genotype matrix.
+with Ampure XP beads and used as templates for PCR to incorporate                 This alternate read ﬁlter was adapted from SNV ﬁltering for bulk
+Illumina i5/i7 indices. PCR products were puriﬁed again, quantiﬁed                sequencing. It was also intended to ﬁlter out SNVs with low depth and
+with an Agilent Bioanlyzer for quality control, and sequenced on an               low alternate read count, which are very likely false positives caused by
+Illumina NovaSeq. The minimum total read depth was determined by                  misalignment or homopolymer region or droplet merging. Note that
+the formula:                                                                      this genotyping method is intended to assign single-cell genotypes for
+                                                                                  bulk-validated SNVs but not for novel SNV discovery.
+                                                                                        For getting a list of high-quality variants for each library de novo
+  X = ðexpected number of nuclei calledÞ × ðnumber of ampliconsÞ                  (to compare the SNV set between fresh and frozen nuclei), we used a
+                                                                            ð1Þ
+      × ðtarget depthÞ  ðexpected proportion of reads assigned to cellsÞ         more stringent variant ﬁltering scheme than above: starting from the
+
+
+Nature Communications | (2023)14:749                                                                                                                     11
+Article                                                                                               https://doi.org/10.1038/s41467-023-36344-z
+
+
+genotype matrix output by Mission bio’s variant calling pipeline (the            For case PR01, because there was not an a priori clonal oncogenic
+default NGT matrix, output by the h5.create.dna.create_ngt() func-          driver such as a KRAS variant to be reliably used to determine a diploid
+tion), we ﬁrst genotyped each mutation call with a more stringent ﬁlter     population, we used seven (including two TGFBR2 mutations that are
+- minimum depth was set to 10 while minimum alternate read count            2-bp apart) variants pre-identiﬁed by bulk WES to set up a rule: a cell
+was set to 5. Then we discarded variants that have “missing” genotype       with “WT” genotype for all 7 variants can be called putative normal and
+in more than 75% cells (while whitelisting SNVs in certain genes that are   be used as diploid baseline.
+known to be prone to homozygous deletion in PDAC, such as SMAD4,
+CDKN2A). Through inspecting the distributions of cellular prevalence        Single-cell genotyper (SCG) setup
+of variants across different read depths and total cell numbers, we         Please see attached Supplementary Methods.
+determined that a mutational prevalence of 0.5% (an SNV needs to
+have either HET or HOM genotype in greater or equal to 0.5% of all          Reporting summary
+cells) is a feasible and effective cutoff to ﬁlter out most technical       Further information on research design is available in the Nature
+artifacts. Any variant mutated in more than 0.5% of all cells was added     Portfolio Reporting Summary linked to this article.
+to the high-quality variant list. See more details in the mosaic.dna.-
+ﬁlter_variants() function.                                                  Data availability
+                                                                            Raw and processed sequence data have been deposited at the Eur-
+Allelic dropout (ADO) calculation                                           opean Genomephenome Archive (EGA), which is hosted by the Eur-
+To calculate ADO, we used germline single-nucleotide polymorphisms          opean Bioinformatics Institute and the Centre for Genomic Regulation,
+(SNPs), which should have a heterozygous genotype and therefore             under accession number EGAS00001006024. These data include: 1.
+nonzero read count of both alleles in all nuclei detected if there were     Tapestri data for 38 unique sample runs and 2 mixing experiment runs:
+no ADO. The ADO rate was formulated as:                                     (a) FASTQ ﬁles. (b) BAM ﬁles (valid cell barcodes only) output by the
+                                                                            default Mission Bio Tapestri pipeline. (c) HDF5 ﬁles output by the
+                                                                            default Mission Bio Tapestri pipeline. 2. Matched bulk data used in the
+          number of nuclei with strictly 0 read of either allele
+                                                                      ð2Þ   paper for a subset of samples: (a) WES BAM ﬁles for 19 tumor samples
+                       total number of nuclei
+                                                                            of cases PR01 through PR05, and the matched normal sample for each
+                                                                            case. (b) MSK-IMPACT BAM ﬁles for 4 tumor samples of case PR02. (c)
+     To identify germline SNPs, we ﬁrst annotated snDNA-seq’s SNV           WGS BAM ﬁles for case PA04’s two tumor samples (PA04-1 and PA04-
+callset with bulk-sequencing variant allele frequency (VAF) of the          liver) and one matched normal sample. The above data are available
+matched normal sample, if the SNV was detected in the normal by bulk.       under restricted access, as required by the MSKCC Medical Donation
+We selected SNVs with VAF > 0.2 in the bulk normal to avoid technical       Program Data Access Agreement (MSKCC MDP DAA). Readers inter-
+artifacts. Then we calculated the mean single-nucleus VAF (not con-         ested in gaining access through EGA need to contact the data access
+sidering VAF = 0) for each SNV, and selected SNVs with 0.2 <mean            committee (DAC) of this dataset and start an application. The DAC will
+single-nucleus VAF < 0.8. This was to exclude SNVs that are homo-           try to respond within two weeks but may take longer in special con-
+zygous or associated with somatic mosaicism. The ﬁnal list was then         ditions. The MSKCC MDP DAA, to be provided by the DAC and include
+used for ADO calculation.                                                   guidelines and restrictions on data usage, must be signed. Once the
+                                                                            application is approved, an EGA account will be provided for data
+Doublet model and calculation                                               access. The time length of access to the data will be determined by the
+Please see attached Supplementary Methods.                                  DAC on a case-by-case basis. Further information about EGA can be
+                                                                            found at https://ega-archive.org and “The European Genomephenome
+Single-cell per-amplicon ploidy calculation                                 Archive of human data consented for biomedical research” (http://
+The ploidy calculation was mainly based on Mission Bio’s Mosaic             www.nature.com/ng/journal/v47/n7/full/ng.3312.html). Additionally,
+package. The per-amplicon read counts were normalized ﬁrst within           the following data are included in Supplementary Data: 1. Under folder
+the same cell across different amplicons by mean read depth, and then       “PR01-05-bulk_data”: bulk WES mutation annotation format (MAF) ﬁles
+within the same amplicon across different cells by median read depth.       for cases PR01 through PR05. Note these are already subset to our
+Note the median read depth across different cells only considered           targeted panel’s genomic region. 2. Under folder “PA04-bulk_data”:
+good-quality cells, which are deﬁned as those with at least 1/10 number     bulk WGS MAF ﬁle for case PA04’s two tumor samples. Bulk WGS
+of reads as that of the cell with the 10th rank in terms of read count.     mutant allele counts for genomic variants identiﬁed for case PA04’s
+     Then the per-amplicon ploidy was calculated by setting a group of      normal sample. Again, these are already subset to our panel’s genomic
+cells as diploid baseline based on a priori knowledge (e.g. KRAS            region. 3. Under folder “PA04-SCG_input”: immediate input ﬁles used
+mutational status) and taking the ratio of every other cell’s per-          for single-cell genotyper (SCG) run (Fig. 6). These were generated as
+amplicon read count against that group’s per-amplicon median                described in Supplementary Methods, Section 2. Any other data can be
+read count.                                                                 made available upon request. Source data are provided with this paper.
+     To test the robustness of our ploidy calculation, we picked one
+sample with known KRAS mutation and cancer-related aneuploidy               Code availability
+based on bulk sequencing and validated with DNA microarray. We              A customized version of Mission Bio’s “Mosaic” package (original:
+started by separating a snDNA-seq library into two groups- KRAS-            https://github.com/MissionBio/mosaic) used in this work for snDNA-
+mutated and KRAS-WT, with the latter assumed as mostly normal cells.        seq data analysis is available in Github (https://github.com/
+Then we divided the normal cell population randomly into 3 groups           haochenz96/mosaic) or Zenodo (https://doi.org/10.5281/zenodo.
+(norm_a, norm_b, norm_c), used one group (norm_a) as diploid base-          7236672)54. A forked version of the single-cell genotyper (SCG) pack-
+line and calculated other groups’ ploidy against it. As shown in the        age, which only reformatted the README from the original version for
+Supplementary Fig. 3, the two other putative normal cell groups had         better readability, is available at https://github.com/haochenz96/scg.
+their median per-amplicon ploidy aligning close to 2, which validates
+the diploid-deﬁning rule; the KRAS-mutated group had apparent               References
+aneuploidy across most amplicons and CDKN2A and SMAD4 loss,                 1.   Navin, N. et al. Tumour evolution inferred by single-cell sequencing.
+which validated our ploidy calculation.                                          Nature 472, 90–95 (2011).
+
+
+Nature Communications | (2023)14:749                                                                                                               12
+Article                                                                                                   https://doi.org/10.1038/s41467-023-36344-z
+
+
+2.  Tang, F. et al. mRNA-Seq whole-transcriptome analysis of a single          25. Hayashi, A., Hong, J. & Iacobuzio-Donahue, C. A. The pancreatic
+    cell. Nat. Methods 6, 377–382 (2009).                                          cancer genome revisited. Nat. Rev. Gastroenterol. Hepatol. 18,
+3. Gawad, C., Koh, W. & Quake, S. R. Dissecting the clonal origins of              469–481 (2021).
+    childhood acute lymphoblastic leukemia by single-cell genomics.            26. Fischer, C. G. et al. Intraductal papillary mucinous neoplasms arise
+    Proc. Natl Acad. Sci. USA 111, 17947–17952 (2014).                             from multiple independent clones, each with distinct mutations.
+4. Biankin, A. V. et al. Pancreatic cancer genomes reveal aberrations in           Gastroenterology 157, 1123–1137 (2019).
+    axon guidance pathway genes. Nature 491, 399–405 (2012).                   27. Roth, A. et al. Clonal genotype and population structure inference
+5. Mofﬁtt, R. A. et al. Virtual microdissection identiﬁes distinct tumor-          from single-cell tumor sequencing. Nat. Methods 13,
+    and stroma-speciﬁc subtypes of pancreatic ductal adenocarci-                   573–576 (2016).
+    noma. Nat. Genet. 47, 1168–1178 (2015).                                    28. Su, J. et al. TGF-β orchestrates ﬁbrogenic and developmental EMTs
+6. Raphael, B. J. et al. Integrated genomic characterization of                    via the RAS effector RREB1. Nature 577, 566–571 (2020).
+    pancreatic ductal adenocarcinoma. Cancer Cell 32, 185–203                  29. Iacobuzio-Donahue, C. A. et al. DPC4 gene status of the primary
+    (2017).                                                                        carcinoma correlates with patterns of failure in patients with pan-
+7. Iacobuzio-Donahue, C. A. et al. Cancer biology as revealed by the               creatic cancer. J. Clin. Oncol. 27, 1806–1813 (2009).
+    research autopsy. Nat. Rev. Cancer 19, 686–697 (2019).                     30. Boone, B. A. et al. Loss of SMAD4 staining in pre-operative cell
+8. Sakamoto, H. et al. The evolutionary origins of recurrent pancreatic            blocks is associated with distant metastases following pancreati-
+    cancer. Cancer Discov. 10, 792–805 (2020).                                     coduodenectomy with venous resection for pancreatic cancer. J.
+9. Notta, F. et al. A renewed model of pancreatic cancer evolution                 Surg. Oncol. 110, 171–175 (2014).
+    based on genomic rearrangement patterns. Nature 538,                       31. Herman, J. M. et al. Smad4 loss correlates with higher rates of local
+    378–382 (2016).                                                                and distant failure in pancreatic adenocarcinoma patients receiving
+10. Chan-Seng-Yue, M. et al. Transcription phenotypes of pancreatic                adjuvant chemoradiation. Pancreas 47, 208–212 (2018).
+    cancer are driven by genomic events during tumor evolution. Nat.           32. Massagué, J. TGFβ signalling in context. Nat. Rev. Mol. Cell Biol. 13,
+    Genet. 52, 231–240 (2020).                                                     616–630 (2012).
+11. Lim, B., Lin, Y. & Navin, N. Advancing cancer research and medicine        33. Makohon-Moore, A. & Iacobuzio-Donahue, C. A. Pancreatic cancer
+    with single cell genomics. Cancer Cell 37, 456 (2020).                         biology and genetics from an evolutionary perspective. Nat. Rev.
+12. Lan, F., Demaree, B., Ahmed, N. & Abate, A. R. Single-cell genome              Cancer 16, 553–565 (2016).
+    sequencing at ultra-high-throughput with microﬂuidic droplet               34. Zahn, H. et al. Scalable whole-genome single-cell library prepara-
+    barcoding. Nat. Biotechnol. 35, 640–646 (2017).                                tion without preampliﬁcation. Nat. Methods 14, 167–173 (2017).
+13. Pellegrino, M. et al. High-throughput single-cell DNA sequencing of        35. Laks, E. et al. Clonal decomposition and DNA replication states
+    acute myeloid leukemia tumors with droplet microﬂuidics. Genome                deﬁned by scaled single. Cell Genome Sequencing. Cell 179,
+    Res. 28, 1345–1352 (2018).                                                     1207–1221.e22 (2019).
+14. Gao, Y. et al. V211D mutation in MEK1 causes resistance to MEK             36. Salehi, S. et al. Clonal ﬁtness inferred from time-series modelling of
+    inhibitors in colon cancer. Cancer Discov. 9, 1182–1191 (2019).                single-cell cancer genomes. Nature 595, 585–590 (2021).
+15. Marin-Bejar, O. et al. Evolutionary predictability of genetic versus       37. Minussi, D. C. et al. Breast tumours maintain a reservoir of subclonal
+    nongenetic resistance to anticancer drugs in melanoma. Cancer                  diversity during expansion. Nature 592, 302–308 (2021).
+    Cell 39, 1135–1149.e8 (2021).                                              38. Satija, R., Farrell, J. A., Gennert, D., Schier, A. F. & Regev, A. Spatial
+16. Zhao, Y. et al. Diverse alterations associated with resistance to              reconstruction of single-cell gene expression data. Nat. Biotechnol.
+    KRAS(G12C) inhibition. Nature 599, 679–683 (2021).                             33, 495–502 (2015).
+17. Miles, L. A. et al. Single-cell mutation analysis of clonal evolution in   39. Butler, A., Hoffman, P., Smibert, P., Papalexi, E. & Satija, R. Inte-
+    myeloid malignancies. Nature 587, 477–482 (2020).                              grating single-cell transcriptomic data across different conditions,
+18. Mcmahon, C. M. et al. Clonal selection with RAS pathway activation             technologies, and species. Nat. Biotechnol. 36, 411–420 (2018).
+    mediates secondary clinical resistance to selective FLT3 inhibition        40. Zafar, H., Navin, N., Chen, K. & Nakhleh, L. SiCloneFit: Bayesian
+    in acute myeloid leukemia secondary resistance to selective FLT3               inference of population structure, genotype, and phylogeny of
+    inhibition in AML. Cancer Discov. 9, 1050–1063 (2019).                         tumor clones from single-cell genome sequencing data. Genome
+19. Morita, K. et al. Clonal evolution of acute myeloid leukemia revealed          Res. 29, 1847–1859 (2019).
+    by high-throughput single-cell genomics. Nat. Commun. 11,                  41. Kuipers, J., Tuncel, M. A., Ferreira, P., Jahn, K. & Beerenwinkel, N.
+    5327 (2020).                                                                   Single-cell copy number calling and event history reconstruction.
+20. Leighton, J., Hu, M., Sei, E., Meric-Bernstam, F. & Navin, N. E.               Preprint at bioRxiv. https://doi.org/10.1101/2020.04.28.
+    Reconstructing mutational lineages in breast cancer by multi-                  065755 (2020).
+    patient-targeted single cell DNA sequencing. Cell Genomics 3,              42. Singer, J., Kuipers, J., Jahn, K. & Beerenwinkel, N. Single-cell
+    100215 (2023).                                                                 mutation identiﬁcation via phylogenetic inference. Nat. Commun.
+21. Slyper, M. et al. A single-cell and single-nucleus RNA-Seq                     9, 1–8 (2018).
+    toolbox for fresh and frozen human tumors. Nat. Med. 26,                   43. Kuipers, J., Jahn, K., Raphael, B. J. & Beerenwinkel, N. Single-cell
+    792–802 (2020).                                                                sequencing data reveal widespread recurrence and loss of muta-
+22. Jovanovich, S., Chear, K., Pereira, N., Zaugg, F. & Mcintosh, R.               tional hits in the life histories of tumors. Genome Res. 27,
+    WO2018102471A1 - Method and apparatus for processing tissue                    1885–1894 (2017).
+    samples - Google Patents (2018).                                           44. Malikic, S., Jahn, K., Kuipers, J., Sahinalp, S. C. & Beerenwinkel, N.
+23. Mission Bio. Performance of the Tapestri ® Platform for Single-Cell            Integrative inference of subclonal tumour evolution from single-
+    Targeted DNA Sequencing. Tapestri White Paper https://                         cell and bulk sequencing data. Nat. Commun. 10, 1–12 (2019).
+    missionbio.com/wp-content/uploads/2019/10/WhitePaper_                      45. Satas, G., Zaccaria, S., Mon, G. & Raphael, B. J. SCARLET: single-cell
+    MissionBio_TapestriPlatform_RevA.pdf (2019).                                   tumor phylogeny inference with copy-number constrained muta-
+24. Jones, S. et al. Core signaling pathways in human pancreatic can-              tion losses. Cell Syst. 10, 323–332.e8 (2020).
+    cers revealed by global genomic analyses. Science 321,                     46. Sollier, E., Kuipers, J., Takahashi, K., Beerenwinkel, N. & Jahn, K. Joint
+    1801–1806 (2008).                                                              copy number and mutation phylogeny reconstruction from single-
+
+
+
+Nature Communications | (2023)14:749                                                                                                                      13
+Article                                                                                                https://doi.org/10.1038/s41467-023-36344-z
+
+
+    cell amplicon sequencing data. Preprint at bioRxiv. https://doi.org/     Author contributions
+    10.1101/2022.01.06.475205 (2022).                                        H.Z. and C.A.I-D. designed the study; R.C., I.M., H.Z., E-R.K. optimized the
+47. Chang, M. T. et al. Identifying recurrent mutations in cancer reveals    frozen tissue nuclei extraction workﬂow; S.U., A.H., C.A.I-D. performed
+    widespread lineage diversity and mutational speciﬁcity. Nat. Bio-        pathology review; E-R.K., C.A.M., A.H., A.Z., K.M. collected, processed
+    technol. 34, 155–163 (2016).                                             and sequenced all primary samples; H.Z. C.A.M., A.H., K.M. analyzed
+48. Bailey, M. H. et al. Comprehensive characterization of cancer driver     bulk-sequencing data; J. H. designed the Tapestri panel; H.Z., P.S., A.M-
+    genes and mutations. Cell 173, 371–385.e18 (2018).                       M., C.A.I-D. analyzed snDNA-seq data; H.Z., P.S. built the doublet model
+49. Reiter, J. G. et al. Reconstructing metastatic seeding patterns of       and performed calculation; H.Z. and C.A.I-D. wrote the manuscript; all
+    human cancers. Nat. Commun. 8, 1–10 (2017).                              authors reviewed and edited the ﬁnal manuscript.
+50. Reiter, J. G. et al. An analysis of genetic heterogeneity in untreated
+    cancers. Nat. Rev. Cancer 19, 639–650 (2019).                            Competing interests
+51. Cerami, E. et al. The cBio cancer genomics portal: an open platform      The authors declare no competing interests.
+    for exploring multidimensional cancer genomics data. Cancer Dis-
+    cov. 2, 401–404 (2012).                                                  Additional information
+52. Gao, J. et al. Integrative analysis of complex cancer genomics           Supplementary information The online version contains
+    and clinical proﬁles using the cBioPortal. Sci. Signal. 6, pl1           supplementary material available at
+    (2013).                                                                  https://doi.org/10.1038/s41467-023-36344-z.
+53. Demaree, B. et al. Joint proﬁling of DNA and proteins in single cells
+    to dissect genotype-phenotype associations in leukemia. Nat.             Correspondence and requests for materials should be addressed to
+    Commun. 12, 1583 (2021).                                                 Christine A. Iacobuzio-Donahue.
+54. Zhang, H. Application of high-throughput single-nucleus DNA
+    sequencing in pancreatic cancer, mosaic, https://doi.org/10.5281/        Peer review information Nature Communications thanks Salem Malikic,
+    zenodo.7236672 (2022).                                                   Xianlu Peng and the other anonymous reviewer(s) for their contribution
+55. Crowdis, J., He, M. X., Reardon, B. & van Allen, E. M. CoMut: visua-     to the peer review of this work. Peer reviewer reports are available.
+    lizing integrated molecular information with comutation plots.
+    Bioinformatics 36, 4348–4349 (2020).                                     Reprints and permissions information is available at
+                                                                             http://www.nature.com/reprints
+Acknowledgements
+This work was funded by the NIH/NCI grant R35 (CA220508-03) and              Publisher’s note Springer Nature remains neutral with regard to jur-
+U2C (CA233284-03) awarded to C.A.I-D. Cycle for Survival for David           isdictional claims in published maps and institutional afﬁliations.
+Rubenstein Center for Pancreatic Cancer Research. The Alan and Sandra
+Gerry Metastasis and Tumor Ecosystems Center for R.C. and I.M. The           Open Access This article is licensed under a Creative Commons
+Daiichi-Sankyo Foundation of Life Science Fellowship and the Mochida         Attribution 4.0 International License, which permits use, sharing,
+Memorial Foundation for Medical and Pharmaceutical Research Fel-             adaptation, distribution and reproduction in any medium or format, as
+lowship to A.H. The NIH/NCI Ruth L. Kirschstein T32 M.D./Ph.D. Training      long as you give appropriate credit to the original author(s) and the
+Grant (GM141938-01) for A.Z. NIH/NCI K99/R00 (CA229979-01A1) to              source, provide a link to the Creative Commons license, and indicate if
+A.M-M. and F31 (CA260796-01) to K.M. We are grateful to the Single Cell      changes were made. The images or other third party material in this
+Research Initiative (SCRI), Integrated Genomics Operations (IGO), and        article are included in the article’s Creative Commons license, unless
+the bioinformatics core at MSKCC for their excellent technical support.      indicated otherwise in a credit line to the material. If material is not
+We thank the Mission Bio ﬁeld scientist team for their technical support.    included in the article’s Creative Commons license and your intended
+We thank Drs. Robert Bowman and Linde Miles (Ross Levine lab at              use is not permitted by statutory regulation or exceeds the permitted
+MSKCC) for sharing their experience with Tapestri. We thank Dr. Andrew       use, you will need to obtain permission directly from the copyright
+Roth (University of British Columbia, Canada) for sharing insights on        holder. To view a copy of this license, visit http://creativecommons.org/
+single-cell genotyper. The ﬂowchart in Fig. 1a was created with BioR-        licenses/by/4.0/.
+ender.com. The sample technical and genetic proﬁle plot was created
+with CoMut55.                                                                © The Author(s) 2023
+
+
+
+
+Nature Communications | (2023)14:749                                                                                                                  14
+

@@ -1,0 +1,642 @@
+                                                                                                       Bioinformatics, 38, 2022, i125–i133
+                                                                                          https://doi.org/10.1093/bioinformatics/btac253
+                                                                                                                          ISCB/ISMB 2022
+
+
+
+
+Reconstructing tumor clonal lineage trees incorporating
+single-nucleotide variants, copy number alterations and
+structural variations
+Xuecong Fu1, Haoyun Lei2, Yifeng Tao2 and Russell Schwartz                                                                   1,2,
+                                                                                                                                  *
+1
+ Department of Biological Sciences, Carnegie Mellon University, Pittsburgh, PA 15213, USA and 2Computational Biology Department,
+Carnegie Mellon University, Pittsburgh, PA 15213, USA
+*To whom correspondence should be addressed.
+
+Abstract
+Motivation: Cancer develops through a process of clonal evolution in which an initially healthy cell gives rise to pro-
+geny gradually differentiating through the accumulation of genetic and epigenetic mutations. These mutations can
+take various forms, including single-nucleotide variants (SNVs), copy number alterations (CNAs) or structural varia-
+tions (SVs), with each variant type providing complementary insights into tumor evolution as well as offering dis-
+tinct challenges to phylogenetic inference.
+Results: In this work, we develop a tumor phylogeny method, TUSV-ext, which incorporates SNVs, CNAs and SVs
+into a single inference framework. We demonstrate on simulated data that the method produces accurate tree infer-
+ences in the presence of all three variant types. We further demonstrate the method through application to real pros-
+tate tumor data, showing how our approach to coordinated phylogeny inference and clonal construction with all
+three variant types can reveal a more complicated clonal structure than is suggested by prior work, consistent with
+extensive polyclonal seeding or migration.
+Availability and implementation: https://github.com/CMUSchwartzLab/TUSV-ext.
+Contact: russells@andrew.cmu.edu
+Supplementary information: Supplementary data are available at Bioinformatics online.
+
+
+
+1 Introduction                                                                          Kebir et al., 2015; Roth et al., 2014; Yuan et al., 2015). It has be-
+                                                                                        come increasingly apparent that copy number alterations (CNAs)
+Cancer is widely understood as an evolutionary process (Nowell,                         are of at least comparable importance to SNVs in tumor evolution,
+1976), in which gradual accumulation of somatic genetic alterations                     however, prompting increasing numbers of methods for CNAs
+occurs in parallel with selection for mutations promoting tumor                         (Oesper et al., 2013; Zaccaria et al., 2018; Zaccaria and Raphael,
+growth or other aspects of disease progression. The evolutionary his-                   2020) or combined SNV and CNA data (Deshwar et al., 2015; El-
+tory is reflected in various kinds of genetic or epigenetic variations                  Kebir et al., 2016; Li and Xie, 2015; Sashittal et al., 2021). More re-
+tumor cell lineages might accumulate (Davis et al., 2017). The sto-                     cently, it has also been shown to be possible to infer phylogenies
+chastic nature of the evolutionary process typically results in high                    incorporating structural variations (SVs) (Eaton et al., 2018) such as
+genetic and epigenetic heterogeneity both between distinct tumors                       large deletions or translocations, which are more complicated to re-
+(inter-tumor heterogeneity) and between cell lineages in single                         solve phylogenetically but often key events in driving tumor
+tumors (intra-tumor heterogeneity). A vibrant field of ‘tumor phylo-                    evolution.
+genetics’ (Desper et al., 1999) has arisen with the goal of using such                       Attention in the field has increasingly turned to single-cell data
+variations to reconstruct the history of single tumors in order to bet-                 (Gao et al., 2016; Navin et al., 2011), which can greatly improve on
+ter understand the evolutionary landscapes of tumor cell lineages                       the limited accuracy and resolution of computational deconvolution
+and how individual tumors navigate them.                                                in resolving intratumor heterogeneity and clonal progression
+    The general idea of tumor phylogenetics has spawned numerous                        (Kuipers et al., 2017). Single-cell sequencing also has substantial
+variants devoted to distinct kinds or combinations of genetic data or                   drawbacks, however. Single-cell tumor phylogeny methods (e.g.
+variation type (Schwartz and Schäffer, 2017). To date, most such                       Satas et al., 2020; Zafar et al., 2019) must contend with technical
+methods have been developed to work with bulk sequencing, in                            artifacts, such as allelic dropouts (Wang et al., 2012). Furthermore,
+which one has mixed samples of genomic data from many tumor                             single-cell data, particularly single-cell DNA-seq (scDNA-seq),
+cells and must computationally deconvolve them to infer distinct                        remains costly to gather and thus all large tumor data resources are
+cell lineages that can be resolved into a phylogeny (Schwartz and                       still based on bulk sequence. Some methods have been proposed to
+Shackney, 2010). Methods for deconvolutional phylogenetics of                           combine bulk and single-cell sequence (Lei et al., 2020; Malikic
+bulk genomic data have been developed predominantly for inference                       et al., 2019) or other heterogeneous data combinations (Fu et al.,
+of genetic variation from single-nucleotide variant (SNV) data (El-                     2021; Lei et al., 2021), but major sequencing efforts to date have
+
+C The Author(s) 2022. Published by Oxford University Press.
+V                                                                                                                                                                   i125
+This is an Open Access article distributed under the terms of the Creative Commons Attribution License (https://creativecommons.org/licenses/by/4.0/), which permits unre-
+stricted reuse, distribution, and reproduction in any medium, provided the original work is properly cited.
+i126                                                                                                                                                           X.Fu et al.
+
+
+not been designed to take advantage of such methods. Furthermore,                        SNVs; (ii) a Dollo parsimony model of both breakpoints and SNVs,
+single-cell data so far has limited ability to capture SVs as well as                    in which SNVs or breakpoints can be acquired once but potentially
+limited resolution for CNAs. As a result, deconvolutional methods                        lost or duplicated multiple times only through copy number change;
+remain important particularly for studies of variations other than                       and (iii) a subsampling and assignment mechanism for productively
+SNVs.                                                                                    managing larger number of variants. Extensions (i) and (ii) are espe-
+    To date, there has been no method that integrates all major vari-                    cially helpful for integrated inference of SNVs and CNAs due to
+ant types (SNVs, SVs and CNAs) into a single clonal lineage tree in-                     improvements in estimation of VAF of SNVs with current tools. We
+ference. This is particularly problematic as these variants typically                    demonstrate on simulated data that the method shows generally su-
+occur together and offer complementary advantages for understand-                        perior performance in practice in comparison to the prior art at
+ing tumor evolution. SNVs are the simplest to handle phylogenetic-                       common subtasks, in addition to accommodating a broader set of
+ally and are often relatively numerous. CNAs are likely more                             variant types than any prior methods in this space. We further apply
+important to understanding functional adaptation in cancers (Zack                        TUSV-ext to a published prostate cancer dataset (Gundem et al.,
+et al., 2013) and can be a confounding factor in interpreting SNVs                       2015) where it yields results consistent with prior findings and re-
+correctly, but they are more challenging to interpret phylogenetical-                    vealing of novel insight into how these variant types are complemen-
+ly, particularly in deconvolutional settings. SVs can also have pro-                     tary in reconstructing evolution of a single tumor.
+found effects on genome function and can confound interpretation
+of other variant types (Li et al., 2020). SVs may also be particularly
+useful as phylogenetic markers because they are comparatively rare,                      2 Materials and methods
+but this rarity also means they are poorly suited for phylogenetic in-
+ference on their own. So far, TUSV (Eaton et al., 2018) has been the                     Figure 1 provides a high-level overview of our method. Our method
+only sequencing-based tumor phylogeny method capturing SVs,                              aims to infer genetic variation profiles (SNVs, CNAs and SVs) of
+which it did in conjunction with CNAs. However, it used a limited                        multiple tumor clones and the distributions of these clones across
+model of CNAs, for example in neglecting information on allelic                          samples from bulk DNA sequencing data. Each SV is described by a
+specific copy number changes that are important for interpreting                         pair of breakpoints with chromosomal, positional and directional
+other variants. Most importantly, it did not incorporate SNVs, thus                      information, showing an abnormal junction compared with normal
+omitting a great deal of information that may be informative about                       genome, which is often identified from discordant and split reads.
+both phylogenies and functional adaptation.                                              Each CNA is described as a copy number of a genome segment,
+    In this work, we develop a next generation tool we call TUSV-                        showing the level of aneuploidy of tumor sample. Each SNV is
+ext: the first tumor phylogeny software to accommodate SNVs,                             described by a location in the genome and a variant allele frequency
+CNAs and SVs within a single phylogenetic framework and resolve                          (VAF) as estimated by the ratio of sequencing reads of alternate and
+all three together as markers of tumor evolution. It accomplishes                        reference alleles. Using the aforementioned variant types as input,
+this by extending the TUSV integer linear programming (ILP) frame-                       we seek to assign variants to a set of inferred tumor clones and sim-
+work. Major improvements over the prior work include (i) allelic                         ultaneously infer a tumor phylogenetic tree representing the evolu-
+segmental copy numbers and joint phasing of breakpoints and                              tionary history of these clones.
+
+
+
+
+Fig. 1. Overview of the tumor evolution reconstruction method of TUSV-ext. (1) Multi-regional samples are collected from one or more tumor sites or progressions stages,
+assumed to contain different compositions of a common set of clones, which we assume have been sequenced and from which various variant types have been called. (2) We
+subsample the structural variants and SNVs as needed and preprocess the variant information into three matrices: a variants copy number matrix F, a positional encoding ma-
+trix Q, and a breakpoints pairing matrix G. (3) We then apply the TUSV-ext algorithm to deconvolve the mixed samples into a set of clones each defined by a variant set, copy
+number profile, and frequency in each sample, as well as an inferred phylogeny on the clones. (4) By using the inferred frequencies and segmental copy number information of
+each clone, we assign unsampled breakpoints and SNVs to the inferred phylogeny to obtain a comprehensive evolutionary trajectory
+TUSV-ext                                                                                                                                                       i127
+
+
+2.1 Problem statement                                                             the complete problem statement as an ILP is provided in
+Our method takes as input processed variant calls with paired                     Supplementary Methods S1. In the remainder of this section, we
+breakpoint ends and their estimated mean copy numbers describing                  provide a summary of the main components of the ILP, highlighting
+SVs, allelic mean copy numbers of genome segments describing                      novel extensions compared with our prior work (Eaton et al., 2018).
+CNAs, and estimated mean copy numbers of SNVs in Variant Call
+Format (VCF) format. We encode these variations in three matrices,                2.2 Algorithm: coordinate descent
+F, Q and G, which contain mean variant copy numbers (F), pos-
+                                                                                  We use coordinate descent to solve for matrices U and C given input
+itional relationships between breakpoints/SNVs and copy number
+                                                                                  matrices F, Q and G as in Eaton et al. (2018). We P first initialize the
+segments (Q), and pairing information for genomic breakpoints
+                                                                                  U matrix randomly under the constraint that N        k¼1 up;k ¼ 1; 8p 2
+identifying which genome segments are involved in SVs for a set of
+                                                                                  f1 . . . mg and solve for C with fixed U. We then fix C and solve for
+genomic samples (G). Mathematical details of the matrices can be
+                                                                                  U. These steps alternate iteratively until convergence or a maximum
+found in Table 1. Our goal is to deconvolve the mixed samples by
+                                                                                  number of iterations are reached. Random starts are optionally
+minimizing an objective function:
+                                                                                  allowed to reduce risk of solutions being stuck in local optima. Each
+                      minU;C jF  UCj þ k1 R þ k2 S;                    (1)       step of the coordinate descent algorithm is posed in terms of an ILP
+                                                                                  optimization problem as described in more detail in the
+to solve for a matrix of variant copy number profiles for each clone              Supplementary Methods S1. Descriptions of all major parameters or
+C and a matrix of clonal frequencies U with constraints from phylo-               variables are found in Table 1.
+genetic trees and relationships among different variants. An L1 loss
+function between the reconstructed mixed profiles of variant copy
+                                                                                  2.2.1 Estimating clonal frequency matrix U
+numbers (UC) and real bulk sample(s) (F) defines the main term of
+                                                                                  As described in Eaton et al. (2018), we construct an ILP describing
+the objective, which ensures that deconvolved clonal profiles and
+                                                                                  the element-wise absolute distance between F and UC. U can be
+compositions are as similar as possible when they are mixed together
+                                                                                  solved in terms of F and C by minimizing only the first term of the
+under the inferred frequencies. Q and G are used in setting the con-
+                                                                                  objective function, jF  UCj, as the two penalty terms do not depend
+straints and but not in the objective function.
+                                                                                  on U, under the constraint that the sum of the frequencies of all
+    The model uses two regularization terms, R and S, to establish
+                                                                                  clones in each sample is one (see Supplementary Method S1
+penalties corresponding to an evolutionary distance measure used to
+                                                                                  Equation (S27)–(S30) for detailed ILP formulation).
+favor minimum-evolution phylogenies and consistency between
+                                                                                      To allow compatibility with other methods for purposes of
+variant types, respectively. The term R is an L1 distance of the clonal
+                                                                                  comparison, we also provide a leaf-only version of the ILP where
+copy number profiles summed over edges of the inferred phylogeny,
+                                                                                  non-leaf nodes (except the root node representing the normal cell
+where we seek to penalize for large evolutionary distance that would
+                                                                                  population) are constrained to have zero fractions and only the leaf
+suggest an unlikely phylogeny. This term is equivalent to implicitly
+                                                                                  nodes are allowed to have non-zero estimated frequencies.
+assuming that copy numbers evolve by gain or loss of single copies
+of single genome segments with uniform rate. The term S aims to
+penalize for large discrepancies between the inferred frequencies of              2.2.2 Estimating copy number matrix C
+variants and their empirically observed frequencies. The problem                  The method next fixes U and solves for C given input matrices F, G
+statement is at a high level similar to that of the original TUSV                 and Q. Because C encodes the variant copy number profile of each
+(Eaton et al., 2018), although the formulation of each term is sub-               subclone, it is related to the underlying evolutionary tree structure
+stantially extended to handle SNV markers and allele-specific copy                and can be used to constrain possible trees as described in the next
+numbers of all variants, among other changes. Due to space limits,                section.
+
+Table 1. Essential parameters and variables
+
+Notation                                       Meaning
+     mðlþgþ2rÞ
+F 2 R0                                        fp;v Average copy number of variant v in sample p
+          ðlþgÞr
+Q 2 f0; 1g                                     qb;s ¼ 1 iff breakpoint or SNV b is in segment s, else 0
+G 2 f0; 1gll                                  gb1 ;b2 ¼ 1 iff breakpoint b1 and b2 are paired breakpoints deriving from the same SV
+l                                              The number of breakpoints
+g                                              The number of SNVs
+r                                              The number of haploid copy number segments
+n                                              The number of leaves in the phylogenetic tree
+N                                              The number of total clones in the phylogenetic tree, N ¼ 2n  1
+m                                              The number of samples
+cmax                                           The maximum allowed copy number for each segment
+      nðlþgþ2rÞ
+C 2 Z 0                                       ck;v is the copy number of variants in clone k. When v 2 f1; . . . ; lg, it represents the copy number of
+                                                   breakpoint v. When v 2 fl þ 1; . . . ; l þ gg, it represents the copy number of SNV v. When v 2
+                                                   fl þ g þ 1; . . . ; l þ g þ rg or v 2 fl þ g þ r þ 1; . . . ; l þ g þ 2rg, it represents the copy number of seg-
+                                                   ment v from one allele or another
+      mk
+U 2 R0                                        up;k is the frequency of clone k in sample p
+E 2 f0; 1gNN                                  ei;j ¼ 1 iff there is a directed edge from clone i to clone j in the phylogenetic tree, else 0
+A 2 f0; 1gNN                                  ai;j ¼ 1 iff clone i is an ancestor of clone j in the phylogenetic tree, else 0
+W 2 f0; 1gNNðlþgÞ                            wi;j;b is a 0–1 binary indicator, 1 iff breakpoint or SNV b occur at edge from node i to j else 0
+D 2 f0; 1gðlþgÞ2                              db ¼ 1 indicates that the breakpoint b is in the first allele and db ¼ 0 indicates the second allele
+      NðlþgÞ2
+C 2 Z 0                                       ci;b;0 is the segment copy number of node i at the position where breakpoint b locate in the first allele
+                                                   and ci;b;1 the second allele
+      mðlþgÞ
+W 2 Z 0                                       wp;b is the mixed copy number of segment in sample p for both allele that contains the breakpoint or
+                                                   SNV b
+i128                                                                                                                                                    X.Fu et al.
+
+
+    Phylogenetic constraints: As in Eaton et al. (2018), in order to re-          or SNV occurs, where wi;j;b ¼ 1 if variant b occurs at the edge from
+late the copy number profiles to the phylogenetic tree T, we define               node i to j and 0 otherwise (Supplementary Equation (S44)–(S45)).
+an edge matrix ENN describing parent-child relationships in T,                       We first define a binarization operator, as described in Zaccaria
+where ei;j ¼ 1 indicates clone i is the direct parent of clone j, as well         et al. (2018) and Eaton et al. (2018), as follows.
+as an ancestor matrix to describe ancestor-descendent relationships                                                (
+in the tree, where ai;j ¼ 1 indicates clone i is an ancestor of clone j.                                             1 x>0
+                                                                                                             x¼
+We assume the phylogenetic tree T is a binary tree without loss of                                                   0 x¼0
+generality. We impose basic phylogenetic constraints on the root, in-
+ternal and leaf nodes to ensure the tree is binary (see Supplementary             and then define an auxiliary variable X to help define W (see
+Method S1 Equations (S31)–(S39) for details).                                     Supplementary Method S1 Equations (S42) and (S43) for detail of
+    Beyond the common constraints, we add new constraints to break                how the binarization operator is defined and Supplementary
+cycles, which we enforce by requiring that for any two nodes i and j, ei-         Equation (S44)–(S46) for Dollo phylogeny constraints on both
+ther i is the ancestor of j, j is the ancestor of i or neither is the other’s     SNVs and breakpoints).
+ancestor, and that a node cannot be its own ancestor or descendent:                   In addition, we assume it to be very unlikely that one variant, es-
+                                                                                  pecially a structural variant defined at base resolution, can revert so
+                    ai;j þ aj;i < ¼ 1; 8i; j 2 f1; . . . ; Ng              (2)    that the variant is lost autonomously. Rather, we assume losses will
+                                                                                  occur only by copy number change resulting in loss of the allele con-
+                          ai;i ¼ 0; 8i 2 f1; . . . ; Ng                    (3)
+                                                                                  taining the variant. Therefore, we impose constraints that every loss
+    Subclone variant copy number constraints: The tree describes                  of a breakpoint or SNV should co-occur with an allele-specific seg-
+somatic variations accumulating after descent from the root node                  ment copy number loss for the segment in which the breakpoint or
+and so we assume that the root has no breakpoints or SNVs                         SNV lies. Similarly, we also constrain a breakpoint or SNV to be
+(Equation (5)) and has a single copy of each allele in each genomic               duplicated only if its corresponding genome segment is duplicated.
+segment (Equation (6)). For algorithmic convenience, we also re-                      Allele-specific variation is a novel extension of this work and
+strict copy numbers to a maximum value cmax (Equation (4)).                       requires additional constraints. In order to assign variants to alleles,
+                                                                                  we introduce a new binary variable matrix D 2 f0; 1gðlþgÞ2 where
+         ck;s  cmax ; 8k 2 f1; . . . ; Ng; s 2 f1; . . . ; l þ g þ 2rg    (4)    db ¼ 1 indicates that the breakpoint b is in the first allele and db ¼ 0
+                                                                                  indicates the second allele. Since the two alleles can have different
+                       cN;b ¼ 0; 8b 2 f1; . . . ; l þ gg                   (5)    copy numbers and it is important to identify common alleles in dif-
+                                                                                  ferent samples, we further assume that the first segment shares a
+                       cN;lþgþs ¼ 1; 8s 2 f1; . . . ; 2rg                  (6)
+                                                                                  common allele in each sample on the assumption that there is un-
+       In contrast to the original TUSV, we use two temporary variables           likely to be duplication and loss simultaneously in one segment.
+x1i;j;s and x2i;j;s corresponding to two original alleles, instead of one vari-   Therefore, during preprocessing, we compare the copy numbers of
+able xi;j;s , to define the absolute changes in copy numbers of segment s         all alleles and order alleles so that the larger copy number corre-
+of two alleles on edge (vi, vj), where eij ¼ 1 and xi;j;s will define the         sponds to the first allele and the smaller copy number to the second
+                                                                                                                                                 NðlþgÞ2
+exact absolute allelic copy number change from node i to j. In the other          allele for all samples. We therefore define matrix C 2 Z0               ,
+scenario, where eij ¼ 0, the temporary variables are set to be 0.                 where ci;b;0 is the segment copy number of node i at the position
+                                                                                  where a breakpoint or SNV b is located in the first allele and ci;b;1
+                   0  x1i;j;s  cmax ei;j ; 8s 2 f1; . . . ; rg           (7)    correspondingly for the second allele. We further constrain that for
+                                                                                  any existing breakpoint or SNV in the clone (excluding newly devel-
+                 x1i;j;s  ci;sþlþg  cj;sþlþg  cmax ð1  ei;j Þ          (8)    oped breakpoints in this branch), the breakpoint copy number
+                                                                                  change should be smaller than or equal to the corresponding copy
+                x1i;j;s  ci;sþlþg þ cj;sþlþg  cmax ð1  ei;j Þ          (9)    number change at the breakpoint’s or SNV’s position.
+
+                            0  x2i;j;s  cmax ei;j                       (10)      cj;b;0  ci;b;0  cj;b  ci;b  ð2  ei;j  db þ wi;j;b Þð2cmax þ 1Þ;     (15)
+
+               x2i;j;s  ci;sþlþgþr  cj;sþlþgþr  cmax ð1  ei;j Þ       (11)      cj;b;0  ci;b;0  cj;b  ci;b þ ð2  ei;j  db þ wi;j;b Þð2cmax þ 2Þ (16)
+
+                                                                                    cj;b;1  ci;b;1  cj;b  ci;b  ð1  ei;j þ db þ wi;j;b Þð2cmax þ 1Þ;     (17)
+              x2i;j;s  ci;sþlþgþr þ cj;sþlþgþr  cmax ð1  ei;j Þ       (12)
+                                                                                    cj;b;1  ci;b;1  cj;b  ci;b þ ð1  ei;j þ db þ wi;j;b Þð2cmax þ 2Þ
+   We add these two copy numbers together through all segments                                                                                           (18)
+                                                                                                    8i; j 2 f1; . . . ; Ng; b 2 f1; . . . ; l þ gg
+and all edges to form a copy number evolutionary distance used in
+regularization term R:                                                                Structural variant and segment consistency: The copy number of a
+                                                                                  breakpoint or SNV for each clone should not exceed the copy number
+                                   X
+                                   r                 X
+                                                     r
+                          qi;j ¼         x1i;j;s þ          x2i;j;s       (13)    of the segment in which it is found. However, in order to integrate allel-
+                                   s¼1               s¼1                          ic information, we only constrain the copy number of a breakpoint to
+                                                                                  be at most the copy number of the segment of its corresponding alleles.
+                                         N X
+                                         X N
+                               R¼                    qi;j                 (14)                                           X
+                                                                                                                         r
+                                         i¼1 j¼1                                    ck;b  ck;b;0 þ ð1  db Þcmax ¼           qb;s ck;sþlþg þ ð1  db Þcmax (19)
+                                                                                                                          s¼1
+    Perfect phylogeny on breakpoints and SNVs: We constrain each                                                           Xr
+
+pair of breakpoints so that they must appear on a common edge in                           ck;b  ck;b;1 þ db cmax ¼             qb;s ck;sþlþgþr þ db cmax    (20)
+                                                                                                                           s¼1
+the tree and impose a Dollo phylogeny constraint on SV breakpoints
+to ensure that each variant can only appear once as described in                                                                                         mðlþgÞ
+                                                                                      For copy numbers of mixed samples, we define W 2 Z0          so
+Eaton et al. (2018).                                                              that wp;b is the mixed copy number of the segment accounting for
+    As a new feature, we add SNVs with the same Dollo assumption                  both alleles in sample p that contain the loci of a given breakpoint
+(Supplementary Equation (S46)). The assumption of no homoplasy                    or SNV b.
+is more dubious for SNVs than for SVs and may be a source of error,
+but one we permit out of algorithmic necessity. Therefore we define                                           X
+                                                                                                              r
+                                                                                                     wp;b ¼         qb;s ðfp;sþlþg þ fp;sþlþgþr Þ             (21)
+W 2 f0; 1gNNðlþgÞ to describe the edge on which each breakpoint                                             s¼1
+TUSV-ext                                                                                                                                                                                 i129
+
+
+   We calculate the ratio of mixed copy numbers of a breakpoint or                          tree on the variant subset, including a tree topology and copy num-
+SNV and mixed copy number of segments as pp;b (also known as                                ber profile and clonal frequency of each inferred clone. We then
+variant allele frequency VAF):                                                              map the remaining breakpoints and SNVs to edges of the tree given
+                                                                                            their estimated copy numbers. We do not know in which allele the
+                                             fp;b                                           remaining SNVs or breakpoints lies, but the number of possibilities
+                                  pp;b ¼                                             (22)
+                                             wp;b                                           is generally small. We therefore identify the most plausible edge in
+                                                                                            the tree at which each variant individually could have first been
+   We bias toward minimizing the distance between the estimated                             acquired by enumerating over all tree edges and choosing the one
+and actual ratios (Equation (23)) by adding a regularization term                           that yields the best match to the estimated copy number of that
+that sums the absolute differences between the two ratios for sample                        variant.
+p and variant b (breakpoint or SNV) among all samples and var-                                  If there were no copy number changes then the VAF implied by a
+iants, represented by auxiliary variable zp;b (Equations (24)–(26)):                        given edge would be half the sum of the clonal frequencies of all
+                                       P
+                                       N                                                    nodes below that edge. To account for CNAs, we consider two pos-
+                                            up;k ck;b                                     sibilities when a variant is acquired on the same edge as a CNA: (i)
+                                                              
+                                      k¼1                                                 the variant was acquired before the copy number change, which
+                   pp;b  N                                                        (23)
+                          P                                                               results in the actual copy number of the variant being equal to the
+                                     up;k ðck;b;0 þ ck;b;1 Þ
+                               k¼1                                                          copy number of its corresponding segment. (ii) the variant is
+                                                                                            acquired after the copy number change, which results in that the ac-
+                           X
+                           N                                   X
+                                                               N                            tual copy number of the variant in that clone being one. To account
+         () zp;b  pp;b          up;k ðck;b;0 þ ck;b;1 Þ                up;k ck;b   (24)   for further copy number changes after the acquisition of a given
+                           k¼1                                     k¼1                      variant, we estimate the copy number of the variant to be the expect-
+                                                                                            ation over possible copy numbers of its allele in descendant nodes.
+                         X
+                         N                                 X
+                                                           N                                    The method is captured more formally in the following
+          zp;b  pp;b         up;k ðck;b;0 þ ck;b;1 Þ þ            up;k ck;b ;      (25)   pseudocode:
+                                                                                                                                                  m^
+                                                                                                                                                    g
+                         k¼1                               k¼1                                  Input: Mixed sample copy number matrix F^             , tree T (pre-
+                                                                                                                          nn
+                                                                                            sented as ancestry matrix A       where Ai;j ¼ 1 if node i is the ances-
+                           8b 2 f1; . . . ; l þ gg                                          tor of node j and edge matrix Enn where Ei;j ¼ 1 if node i is the
+                                 Xm X lþg                                                   direct parent of node j), mapping matrix Q      ^ g^r which maps the
+                                                                                     (26)
+                             S¼             zp;b                                            unsampled SNVs to segments, frequency matrix Umn and compo-
+                                      p¼1 b¼1
+                                                                                            nent matrix Cnðlþgþ2rÞ including g sampled SNVs.
+                                                                                                Output: An assignment list AssignList1^g , which shows the opti-
+                                                                                            mal assignment of nodes for g^ unsampled SNVs (or breakpoints).
+2.2.3 Choice of k1 and k2                                                                       Pseudocode:
+We set the regularization parameters k1 ¼ 12 lþgþ2r m        1 lþgþ2r
+                                               2r N and k2 ¼ 2 lþg
+by simple formulas meant to approximately normalize for the                                                             ^ ¼ C:;ðlþgþd rÞ:ðlþgþðd þ1ÞrÞ Q
+                                                                                                                        C                               ^T
+                                                                                                                                      j          j
+
+expected scales of R and S. In this, we follow the original TUSV                                                                                          ^T
+                                                                                                                      C ¼ C:;ðlþgþð1d ÞrÞ:ðlþgþð2d ÞrÞ Q
+                                                                                                                                           j           j
+work (Eaton et al., 2018), which further established that that                                                                  ^ parent ¼ E> C^
+                                                                                                                               C
+method was not greatly sensitive to the selection of penalty                                                        (U  C^                 ^          ^ i;j ¼ 1 or
+                                                                                                                      :;i   i;j þ UAi;:  C :;j   if C
+parameters.                                                                                             i;j;1
+                                                                                                                                                           ^ parent > 1
+                                                                                                    F           ¼                               ^
+                                                                                                                                                C i;j  C    i;j
+                                                                                                                 (            1                       otherwise
+2.2.4 Estimating the number of clones                                                                                    ^               ^ ^                  ^
+                                                                                                                ¼ U:;i  C i;j þ UAi;:  C :;j =C i;j if C i;j > 1
+                                                                                                          i;j;2
+Determining the number of subclones is a hard problem for which                                         F
+                                                                                                                                 1                       otherwise
+we provide an optional heuristic. The user can preset a maximum                                                                                                 i;j;1        i;j;2
+                                                                                                          opt       opt
+number of tree nodes and the method will infer a tree with the given                                    dj ; ij           ¼ argmindj 2f0;1g;i2f1;...;ng minfF           ;F           g
+maximum size then collapse nodes inferred to have zero frequency                                                                AssignListj ¼ iopt   j
+when they only have one child and collapse child nodes with zero
+branch length before counting the final number of uncollapsed
+clones. We also allow the user to predefine the subclone number dir-
+ectly. In practice, the method can handle clone numbers up to ap-                           3 Results
+proximately 9 before run time becomes excessive.
+                                                                                            3.1 Validation on simulated data
+                                                                                            For validation, we first used simulated data including SVs, SNVs
+2.3 Mapping unsampled SNVs or breakpoints to                                                and CNAs based on a pre-defined random evolutionary tree and
+identified nodes                                                                            mutation rate. We mutate whole genome profiles for subclones of a
+The full algorithm in principle provides a problem formulation that                         single patient by randomly applying structural variations with
+we can optimize for any dataset. However, the ILP framework can                             lengths sampled from a Poisson distribution with parameter
+scale poorly to large numbers of variants, as may occur in highly                           5 745 000 bp, which is the empirical average length for the TCGA-
+mutable cancers. We therefore introduce a variation on the method                           BRCA cohort with WGS available (Eaton et al., 2018), as well as
+in which we subsample the full set of variants for phylogeny infer-                         single-nucleotide variations at uniformly random locations. We
+ence and then map the remaining variants to the identified subclonal                        simulate allele-specific duplications from 2 to 6, deletions, transloca-
+populations derived from the subsampled data. The intuition behind                          tions and inversions with relative probabilities of 2:2:1:1 to ensure a
+this alternative is that many variants will provide redundant infor-                        relatively high rate of copy number changes. CNAs occur as conse-
+mation about the phylogeny and so we should not need a large num-                           quences of SVs in our model (e.g. from segmental duplications and
+ber of variants for the computationally costly step of inferring the                        losses) and are not separately simulated. We also uniformly random-
+correct topology for the phylogeny. We can thus solve the phylogeny                         ly simulate clonal frequencies for each mixed tumor sample from the
+more quickly on a subset of variants and then efficiently map the                           same patient. We calculate the theoretical mean copy number for
+remaining variants to their most likely positions on the phylogeny.                         each variant in each sample as a weighted mixture of the copy num-
+    With this alternate method, we first subsample SNVs and break-                          ber of that variant in each sample and its clonal frequency. A theor-
+point pairs up to a user-defined maximum of each, while keeping all                         etical VAF is then calculated for each breakpoint and SNV, as well
+CNAs. We then solve the ILP as in Section 2 to obtain an inferred                           as a theoretical B-Allele Frequency (BAF) for each CNA. In order to
+i130                                                                                                                                                         X.Fu et al.
+
+
+test robustness to noisy sequencing data, we model the read counts                      methods improve substantially although TUSV-ext yields notably
+rc for each segment using a Poisson random variable with parameter                      higher accuracy than CNT-MD and the original TUSV (Fig. 3).
+of a given read depth 100, then we use a binomial random variable
+to randomly simulate the read counts that contain a certain copy                        3.1.2 Task 2: validation on SVs, SNVs and numbers of clones
+number alteration, breakpoint or SNV with the probability param-
+                                                                                        In task 2, we validate the deconvolution of SNVs and SVs as well as
+eter derived from the calculated theoretical VAF and number of tri-                     determination of number of clones. We sample the SNVs by setting
+als of rc in the corresponding segment.                                                 an upper bound on the number of breakpoints and SNVs in total to
+    We conduct a series of experiments to test robustness of the
+                                                                                        be 120. We use the average precision of the co-clustering matrix to
+method to parameter variations, simulating 10 cases for each experi-                    evaluate the deconvolution performance of both breakpoints and
+ment. We simulate with different structural mutation rates ktotal,                      SNVs, as well as the breakpoint-SNVs co-clustering. To determine
+which is the parameter of a Poisson distribution for the total number                   the correct number of clones, we set the maximum nodes to be 9
+of structural variants. The SNV mutation rate is set to 100ktotal . For                 when running the program and collapse nodes. We use the relative
+each simulation, we generate 1, 5 or 10 samples. We simulate the                        distance ðktrue  kestimate Þ=ktrue as the evaluation metric. We compare
+frequency of each clone for each sample uniformly at random under                       our method with PyClone (Roth et al., 2014), which is a popular
+the frequency constraint and simulate final mixed samples as a                          method for inferring subclonal populations from single or multiple
+weighted sum of the profiles of each clone. We set a maximum run                        samples, as well as with the original TUSV. We examined the per-
+time of 1000 s per iteration and a maximum of 10 iterations, except                     formance among different sample numbers and clone numbers with
+where specially mentioned below. Each case was run with five ran-                       a fixed mutation rate per branch.
+dom initializations to minimize the risk of solutions being trapped in                      We test on sample sizes 1, 5 and 10 with mutation rate ktotal ¼
+local optima.                                                                           30 and clone number 5. PyClone performs better than TUSV-ext
+    Since there is no other method to our knowledge that integrates                     when the sample number is small. When the sample number is 5 or
+all three variant types, direct comparison to alternative methods is                    10, TUSV-ext shows better result in terms of SNVs and breakpoints.
+challenging. We therefore split validation into two tasks—one                           PyClone is prone to overestimate the clone number, whereas our
+assessing performance on CNAs and one on how CNAs contribute                            method is able to identify the clone number more accurately (Fig. 4).
+to reconstruction from SVs and SNVs—through which we can com-                           The determination of clone number is also improved when the sam-
+pare to other work in the literature.                                                   ple number is larger.
+                                                                                            We then fix the mutation rate per branch to be k ¼ 5 and sample
+3.1.1 Task 1: validation on segment copy numbers, subclonal                             number to be 5 and test for different clone numbers of 5 and 7. For
+frequencies and tree estimation                                                         larger clone numbers, resulting in larger number of total variants
+Here, we assume that the clone number is known and compare our                          including breakpoints, we found that TUSV-ext performance not-
+method with CNT-MD (Zaccaria et al., 2018). We also compare                             ably degraded when using the same setting. We suspected that this
+with original TUSV to evaluate the improvement specifically from                        was caused by poor convergence due to the larger number of var-
+                                                                                        iants. To test this hypothesis, we increased maximum run time per
+the advances of the present method. Since CNT-MD also uses linear
+                                                                                        iteration to 5000 for this case, which resulted in improved perform-
+programming for optimization but only utilizes segmental copy
+                                                                                        ance relative to Pyclone (Fig. 5). This result confirmed that the dis-
+numbers, we only compare the estimated copy numbers and clonal
+                                                                                        crepancy is due to poor convergence and that more iterations may
+frequencies. For fair comparison with CNT-MD, we assumed in our
+                                                                                        be needed for scenarios yielding larger numbers of variants.
+simulations that only leaf nodes and normal clones can have non-
+zero frequency, setting our method to the leaf-only mode to match
+the assumptions of CNT-MD.                                                              3.2 Robustness analysis
+    We test on different structural mutation rates from 20 to 40 with                   In order to explore the robustness of the program, we further exam-
+four leaf clones, and evaluate the performance by the root mean                         ined a simulation instance with 7 clones, ktotal ¼ 40, and sequencing
+square error of the U and C matrices including only leaf node pro-                      depth 100 with respect to four issues: subsample size, subsample,
+files and frequencies. The results show that our method can con-                        initialization and number of iterations. We ran the scenario with 5
+verge faster with the assistance of other variants like SVs and SNVs,                   random subsamples, with the upper bound of breakpoints set to 80
+showing higher accuracy in estimating both C and U matrices and                         and 120 and with the upper bound of sum of breakpoints and SNVs
+phylogenies (Fig. 2). The advantage is larger when the mutation rate                    to be 120 and 180, respectively. We tested three time limits of 500,
+is small, which we expect may be more of an issue for CNT-MD be-                        1000 and 5000 s per iteration for each subsample. For each sub-
+cause fewer mutations would leave it comparatively less signal from                     sample and each time per iteration, we ran 5 different random starts
+which to deconvolve. Our method also shows superior performance                         for 12 iterations in total and recorded the performance for each start
+over the original TUSV method, demonstrating the power of taking                        after each iteration (Supplementary Figs S1 and S2).
+SNVs and allele-specific variants into account.                                             The result shows that in general, different random starts can
+    All methods have relatively poor performance for sample size 1                      yield different results (Supplementary Figs S1 and S2). Picking the
+compared with sample size 5, suggesting the need for multiple bulk                      best of five random starts appears effective in eliminating some trap-
+samples for accurate clonal deconvolution. For five samples, all                        ping of solutions in local minima, as suggested by the low variance
+
+
+ (a)                      (b)                       (c)                                  (a)                     (b)                      (c)
+
+
+
+
+Fig. 2. Results on task 1 with varying mutation rates. (a) The root mean square error   Fig. 3. Results on task 1 with varying sample numbers. (a) The root mean square
+(RMSE) of estimate C. (b) The root mean square error (RMSE) of estimate U. (c)          error (RMSE) of estimate C. (b) The root mean square error (RMSE) of estimate U.
+Normalized Roubinson-Foulds distance of estimated trees and true tree. All the          (c) Normalized Roubinson-Foulds distance of estimated trees and true tree. All the
+experiments were run with 1000 s time limit per iteration. Boxes show two quartiles     experiments were run with 1000 s time limit per iteration. Boxes show two quartiles
+and whiskers show the rest of the distribution except for outliers                      and whiskers show the rest of the distribution except for outliers
+TUSV-ext                                                                                                                                                           i131
+
+
+ (a)                              (b)                                                  (a)                                (b)
+
+
+
+
+ (c)                              (d)                                                  (c)                                (d)
+
+
+
+
+Fig. 4. Results on task 2 with different samples size. (a) Accuracy of determining
+number of clones. The upper dashed line shows the best performance of accurately      Fig. 6. Evaluation of model robustness using simulated data with mutation rate
+predict the number of clones, and the lower dashed line shows the lower bound of      ktotal ¼ 40, 7 clones and 5 random subsamples, with an upper bound on the number
+the relative distance when it reaches the maximum clone number. (b) Average preci-    of breakpoints of 80 or 120 and an upper bound on the sum of breakpoints and
+sion of breakpoints. (c) Average precision of SNVs. (d) Average precision of break-   SNVs of 120 or 180, respectively. Time limits of 500, 1000 and 5000 s per iteration
+points-SNVs co-clustering. Boxes show two quartiles and whiskers show the rest of     were tested for each subsample. Five different random starts were conducted in each
+the distribution except for outliers                                                  setting with 12 iterations. (a) Accuracy of determining number of clones. (b)
+                                                                                      Average precision of breakpoints. (c) Average precision of SNVs. (d) Average preci-
+                                                                                      sion of breakpoints-SNVs co-clustering. Boxes show two quartiles and whiskers
+                                                                                      show the rest of the distribution except for outliers
+ (a)                             (b)
+                                                                                      number (Fig. 6a). Allowing a longer time limit per iteration seems to
+                                                                                      boost the performance significantly as well as the tree consistency
+                                                                                      (Supplementary Fig. S6) when there are larger numbers of variants
+                                                                                      to accommodate. Yet the best result with more variants seems to be
+                                                                                      equivalent to the result derived from fewer variants (Fig. 6b–d). It
+                                                                                      thus appears that one may not need a large number of variants to
+                                                                                      identify the phylogeny accurately and using more variants may lead
+                                                                                      to a need for more run time without any improvement in the final re-
+                                                                                      sult, although we cannot rule out the possibility that increasing run
+ (c)                             (d)                                                  time further could yield improvement with larger numbers of
+                                                                                      variants.
+
+                                                                                      3.3 Application to real prostate cancer data
+                                                                                      Gundem et al. (2015) performed whole-genome sequencing on 51
+                                                                                      tumor samples from 10 patients and provided variant calls of SVs,
+                                                                                      CNAs, SNVs and Indels. We selected one case from this study, pa-
+                                                                                      tient A32, to demonstrate our method on real data. For this patient,
+                                                                                      the study included samples from five tumor regions: (A) right rib me-
+                                                                                      tastasis, (C) primary tumor from prostate, (D) left cervical lymph
+                                                                                      node metastasis, (E) left subclavicular lymph node metastasis and
+                                                                                      (F) right humerus metastasis.
+Fig. 5. Results on task 2 with different clone numbers (or different total mutation
+rate) when the mutation rate per branch remains k ¼ 5 (a) Accuracy of determining         Since there are many more rearrangements than SNVs, we sub-
+number of clones. The upper dashed line shows the best performance of accurately      sampled both SVs and SNVs for eight runs (approximately 80 break-
+predict the number of clones, and the lower dashed lines show the lower bound of      points and 40 SNVs for each run) and mapped the unsampled
+the relative distance when it reaches the maximum clone number. (b) Average preci-    variants to nodes in the phylogenetic tree. For each run, we set the
+sion of breakpoints. (c) Average precision of SNVs. (d) Average precision of break-   maximal node count to be 9 and set 10 iterations with time limit of
+points-SNVs co-clustering. Boxes show two quartiles and whiskers show the rest of     4000 s per iteration. Each run was performed with two random initi-
+the distribution except for outliers
+                                                                                      alizations. We also subsampled copy number segments to retain
+                                                                                      only those with breakpoints or SNVs lying inside them to reduce the
+of accuracy from different random subsamples (Fig. 6). When the                       time complexity. We used the two most similar runs, according to
+subsampling size is 120 with at most 80 breakpoints, we see no sig-                   the CASet and DISC metrics (DInardo et al., 2020), to identify a
+nificant difference between different random subsamples                               consensus solution for subsequent analysis.
+(Supplementary Fig. S4), with performance similarly good for each                         We compare the tree inference (Fig. 7a) with that of Gundem
+subsample (Fig. 6). When the subsampling size is increased to 180                     et al. (2015). Both show branching evolution, yet with distinct tra-
+with at most 120 breakpoints (which should include all the break-                     jectories. Clone 0 identified by our method only occurs in samples C
+points), we see a slight improvement in determining the clone                         and E with relatively low frequencies, while no comparable separate
+i132                                                                                                                                                       X.Fu et al.
+
+
+                                                                                      can be complementary, yielding superior accuracy to competing
+ (a)                                                                                  methods that make use of only subsets of these variants. We further
+                                                                                      demonstrate effectiveness of the method on a real prostate cancer
+                                                                                      dataset involving primary and metastatic samples from a single pa-
+                                                                                      tient. One of the main challenges to the inference is scalability, as
+                                                                                      the method so far can accommodate relatively limited numbers of
+                                                                                      variants and potentially requires long convergence time. We offer a
+                                                                                      heuristic solution for variant subsampling and subsequent mapping,
+                                                                                      but the method would benefit from more principled solutions for
+                                                                                      directly handling large variant sets as well as for estimating uncer-
+                                                                                      tainty of tree inferences. Furthermore, even with more accurate clo-
+                                                                                      nal reconstruction and assignment, some aspects of tumor evolution
+                                                                                      are not fully resolvable from phylogenetics alone. Incorporating
+                                                                                      insights from alternative approaches that capture clonal migration
+                                                                                      (El-Kebir et al., 2018) might be needed to explain data better than is
+                                                                                      possible by a purely phylogenetic approach such as is presented
+                                                                                      here.
+
+
+ (b)                                                                                  Acknowledgements
+                                                                                      The authors thank the AWS ML Research Awards program for providing
+                                                                                      cloud computing support for this work.
+
+
+
+                                                                                      Funding
+                                                                                      Portions of this work was funded by Pennsylvania Department of Health
+                                                                                      award FP00003273. Research reported in this publication was supported by
+                                                                                      the National Human Genome Research Institute of the National Institutes of
+                                                                                      Health under award number R01HG010589. The content is solely the re-
+                                                                                      sponsibility of the authors and does not necessarily represent the official views
+                                                                                      of the National Institutes of Health. The Pennsylvania Department of Health
+                                                                                      specifically disclaims responsibility for any analyses, interpretations or
+                                                                                      conclusions.
+Fig. 7. Results for prostate cancer A32 patient data. (a) Inferred consensus tree     Conflict of Interest: none declared.
+structure with a subset of variants/mutations. (b) Comparison of proportions of all
+9 clones across samples
+
+                                                                                      Data availability
+branch is identified in the prior work. Mutations of TP53 (K132N)
+                                                                                      Simulated data created for this study are provided with the source code at
+and TBLIXR (essential splice) and chr8p deletion are inferred as                      https://github.com/CMUSchwartzLab/TUSV-ext.
+early events in both inferences. Clone 6 was found to contain
+CTNNB1 substitution. Clones 7 and 2 were inferred to have PTEN
+and CDKN1B loss respectively, unlike the inferences in the prior
+                                                                                      References
+work where both PTEN and CDKN1B loss of heterozygosity were
+inferred to occur early in clonal evolution.                                          Davis,A. et al. (2017) Tumor evolution: linear, branching, neutral or punctu-
+    We further examined estimated frequencies of inferred cell popu-                    ated? Biochim. Biophys. Acta. Rev. Cancer, 1867, 151–161.
+lations in each sample (Fig. 7b). The primary tumor (sample C)                        Deshwar,A.G. et al. (2015) PhyloWGS: reconstructing subclonal composition
+shows notably higher clonal heterogeneity than the metastases, as                       and evolution from whole-genome sequencing of tumors. Genome Biol., 16,
+we would expect, with evidence for most clones having been present                      1–20.
+in the primary tumor rather than evolving de novo in the metastases.                  Desper,R. et al. (1999) Inferring tree models for oncogenesis from comparative
+                                                                                        genome hybridization data. J. Comput. Biol., 6, 37–51.
+Furthermore, samples A and E are inferred to have small propor-
+                                                                                      DInardo,Z. et al. (2020) Distance measures for tumor evolutionary trees.
+tions of normal cells (clone 8) while samples C, D and F have no
+                                                                                        Bioinformatics, 36, 2090–2097.
+normal cell population. Internal nodes (clone 5, 6 and 7) exhibit low
+                                                                                      Eaton,J. et al. (2018) Deconvolution and phylogeny inference of structural
+frequencies in all samples. Most leaf nodes (clone 0–5) exhibit                         variations in tumor genomic samples. Bioinformatics, 34, i357–i365.
+higher frequencies in samples C and E and lower in samples A, D                       El-Kebir,M. et al. (2015) Reconstruction of clonal trees and tumor compos-
+and F, or vice versa. Clone 0, the closest child to the diploid normal                  ition from multi-sample sequencing data. Bioinformatics, 31, i62–i70.
+clone, is not inferred in Gundem et al. (2015). Only primary sample                   El-Kebir,M. et al. (2016) Inferring the mutational history of a tumor using
+C and metastasis E contain this clone and it is expanded in sample                      multi-state perfect phylogeny mixtures. Cell Syst., 3, 43–53.
+C. Clone 4 shows higher proportion in samples C and E than A, D                       El-Kebir,M. et al. (2018) Inferring parsimonious migration histories for meta-
+and E, while clones 2 and 3 show the opposite pattern, perhaps sug-                     static cancers. Nat. Genet., 50, 718–726.
+gestive of distinct polyclonal seeding events. Our model overall sug-                 Fu,X. et al. (2021) Joint clustering of single-cell sequencing and fluorescence in
+gests a more complex pattern of polyclonal origins, whether through                     situ hybridization data for reconstructing clonal heterogeneity in cancers. J.
+polyclonal seeding or subsequent cell migration, than is suggested in                   Comput. Biol., 28, 1035–1051.
+the prior work.                                                                       Gao,R. et al. (2016) Punctuated copy number evolution and clonal stasis in
+                                                                                        triple-negative breast cancer. Nat. Genet., 48, 1119–1130.
+                                                                                      Gundem,G. et al.; ICGC Prostate UK Group. (2015) The evolutionary history
+4 Conclusion                                                                            of lethal metastatic prostate cancer. Nature, 520, 353–357.
+                                                                                      Kuipers,J. et al. (2017) Advances in understanding tumour evolution through
+In this work, we develop a tumor phylogeny method, TUSV-ext, to                         single-cell sequencing. Biochim. Biophys. Acta. Rev. Cancer, 1867, 127–138.
+incorporate SNVs, CNAs and SVs into a single clonal lineage tree re-                  Lei,H. et al. (2020) Tumor copy number deconvolution integrating bulk and
+construction. We show on simulated data how these variant types                         single-cell sequencing data. J. Comput. Biol., 27, 565–598.
+TUSV-ext                                                                                                                                                     i133
+
+
+Lei,H. et al. (2021) Tumor heterogeneity assessed by sequencing and fluores-       Satas,G. et al. (2020) SCARLET: single-Cell tumor phylogeny inference with
+  cence in situ hybridization (FISH) data. Bioinformatics, 37, 4704–4711.            copy-number constrained mutation losses. Cell Syst., 10, 323–332.
+Li,Y. and Xie,X. (2015) MixClone: a mixture model for inferring tumor sub-         Schwartz,R. and Schäffer,A.A. (2017) The evolution of tumour phylogenetics:
+  clonal populations. BMC Genomics, 16, S1.                                          principles and practice. Nat. Rev. Genet., 18, 213–229.
+Li,Y. et al.; PCAWG Consortium. (2020) Patterns of somatic structural vari-        Schwartz,R. and Shackney,S.E. (2010) Applying unmixing to gene expression
+  ation in human cancer genomes. Nature, 578, 112–121.                               data for tumor phylogeny inference. BMC Bioinformatics, 11, 42–20.
+Malikic,S. et al. (2019) PhISCS: a combinatorial approach for subperfect           Wang,C. et al. (2012) A maximum-likelihood method to correct for allelic dropout
+  tumor phylogeny reconstruction via integrative use of single-cell and bulk         in microsatellite data with no replicate genotypes. Genetics, 192, 651–669.
+  sequencing data. Genome Res., 29, 1860–1877.                                     Yuan,K. et al. (2015) BitPhylogeny: a probabilistic framework for reconstruct-
+Navin,N. et al. (2011) Tumour evolution inferred by single-cell sequencing.          ing intra-tumor phylogenies. Genome Biol., 16, 1–16.
+  Nature, 472, 90–94.                                                              Zaccaria,S. and Raphael,B.J. (2020) Accurate quantification of copy-number
+Nowell,P. (1976) The clonal evolution of tumor cell populations. Science,            aberrations and whole-genome duplications in multi-sample tumor sequenc-
+  194, 23–28.                                                                        ing data. Nat. Commun., 11, 1–13.
+Oesper,L. et al. (2013) THetA: inferring intra-tumor heterogeneity from            Zaccaria,S. et al. (2018) Phylogenetic copy-number factorization of multiple
+  high-throughput DNA sequencing data. Genome Biol., 14, R80.                        tumor samples. J. Comput. Biol., 25, 689–708.
+Roth,A. et al. (2014) PyClone: statistical inference of clonal population struc-   Zack,T.I. et al. (2013) Pan-cancer patterns of somatic copy number alteration.
+  ture in cancer. Nat. Methods., 11, 396–398.                                        Nat. Genet., 45, 1134–1140.
+Sashittal,P. et al. (2021) Parsimonious clone tree reconciliation in cancer. In:   Zafar,H. et al. (2019) SiCloneFit: Bayesian inference of population structure,
+  Leibniz International Proceedings in Informatics, LIPIcs, Vol. 201. Schloss        genotype, and phylogeny of tumor clones from single-cell genome sequenc-
+  Dagstuhl–Leibniz-Zentrum für Informatik, p. 9.                                    ing data. Genome Res., 29, 1847–1859.
+
