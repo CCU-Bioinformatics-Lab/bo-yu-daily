@@ -23,6 +23,6 @@
 
 PMC 的舊 `oa.fcgi` API 與 FTP `oa_package` 在本次均回 404。這是分發服務退役，不能據此判定論文沒有開放 PDF。NCBI 官方 [Cloud Service](https://pmc.ncbi.nlm.nih.gov/tools/cloud/) 與 [Accessing PMC Article Datasets Using Amazon Web Services](https://pmc.ncbi.nlm.nih.gov/tools/pmcaws/) 說明：legacy FTP/API/cloud files 已於 2026 年 8 月移除，新版使用 `pmc-oa-opendata` bucket，以 PMCID.version prefix 組織。依此官方說明列出本 PMCID 的公開 objects，再取得上述 PDF。
 
-Publisher download 回 403，PMC viewer download 回傳「Preparing to download」HTML 的先前結果，保留為 `paper.download_challenge.html` 和 `supplement.download_challenge.html` 供稽核；已不把它們當 PDF。EPMC render 亦未成功。本次成功來源為官方 AWS，與這些失敗路徑無關。
+Publisher download 回 403，PMC viewer download 回傳「Preparing to download」HTML 的先前結果，曾保留為 `paper.download_challenge.html` 和 `supplement.download_challenge.html` 供稽核，已在 2026-10-17 刪除（git 歷史仍可取回）；它們不是 PDF。EPMC render 亦未成功。本次成功來源為官方 AWS，與這些失敗路徑無關。
 
 資料來源致謝：NIH NLM NCBI PubMed Central (PMC) Article Datasets — Full-Text Biomedical and Life Sciences Journal Articles on AWS，accessed 2026-10-15，資料集入口 [AWS Open Data Registry](https://registry.opendata.aws/ncbi-pmc)。論文內容授權仍以原作者/期刊 CC BY-NC 條款為準；沒有暗示 NIH/NLM 認可本研究報告。
