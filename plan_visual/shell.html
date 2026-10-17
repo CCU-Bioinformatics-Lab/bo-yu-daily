@@ -1,0 +1,202 @@
+<title>PhyClone × longphase-s HP 計畫</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: 左側固定目錄（桌機）＋ 單欄閱讀區；IGV 式淡色面板承載 SVG。HP 語意色全頁一致。 */
+:root{
+  --bg:#f3f6f6; --surface:#ffffff; --surface2:#e8eeee; --fg:#14211f; --muted:#56686a; --line:#cbd6d6;
+  --accent:#0d7a80; --accent-soft:#d8eded;
+  --hp1:#2c6bcf; --hp2:#cc7417; --hp11:#17428f; --hp21:#94480a; --hp3:#8540b0; --un:#8b9799;
+  --alt:#d42f68; --snp:#25914a; --bad:#c42b2b; --good:#25843b;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --display:"Bricolage Grotesque","Noto Sans TC",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1416; --surface:#142023; --surface2:#1a2a2d; --fg:#e2ecec; --muted:#93a6a8; --line:#2b3d40;
+  --accent:#4cc2c8; --accent-soft:#143639;
+  --hp1:#6fa3f2; --hp2:#f0a258; --hp11:#a9c6ff; --hp21:#ffc78c; --hp3:#c88cf2; --un:#7b898b;
+  --alt:#ff6b9b; --snp:#5ed68b; --bad:#ff6b6b; --good:#6bdb7f; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0d1416; --surface:#142023; --surface2:#1a2a2d; --fg:#e2ecec; --muted:#93a6a8; --line:#2b3d40;
+  --accent:#4cc2c8; --accent-soft:#143639;
+  --hp1:#6fa3f2; --hp2:#f0a258; --hp11:#a9c6ff; --hp21:#ffc78c; --hp3:#c88cf2; --un:#7b898b;
+  --alt:#ff6b9b; --snp:#5ed68b; --bad:#ff6b6b; --good:#6bdb7f; color-scheme:dark;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15.5px;line-height:1.7}
+.wrap{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;max-width:1240px;margin:0 auto;
+  padding-block:32px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start;font-size:13.5px}
+nav.toc p{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px;border-left:1px solid var(--line)}
+nav.toc a{display:block;padding:4px 0 4px 12px;color:var(--muted);text-decoration:none;margin-left:-1px;border-left:2px solid transparent}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--fg);border-left-color:var(--accent);outline:none}
+nav.toc .mk{font-family:var(--mono);font-size:11px;color:var(--accent);margin-right:6px}
+main{min-width:0;display:grid;gap:72px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:clamp(28px,4.2vw,42px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(22px,3vw,29px);font-weight:700}
+h3{font-size:18px;font-weight:600;margin-top:8px}
+p{margin:0}
+.sec{display:grid;gap:20px;min-width:0}
+.sec > *{min-width:0}
+.sec-head{display:grid;gap:8px;max-width:72ch}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.lede{color:var(--muted);font-size:16.5px}
+.note{color:var(--muted);font-size:13.5px}
+.sec p,.sec li{max-width:75ch}
+code,.mono{font-family:var(--mono);font-size:.88em}
+code{background:var(--surface2);padding:1px 5px;border-radius:4px}
+pre.code{font-family:var(--mono);font-size:13px;line-height:1.6;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:0;white-space:pre}
+pre.code code{background:none;padding:0}
+.tag-impl,.tag-doc,.tag-infer{font-family:var(--mono);font-size:11px;padding:1px 6px;border-radius:3px;white-space:nowrap;vertical-align:1px;border:1px solid}
+.tag-impl{color:var(--accent);border-color:var(--accent)}
+.tag-doc{color:var(--hp3);border-color:var(--hp3)}
+.tag-infer{color:var(--hp2);border-color:var(--hp2)}
+.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:10px;min-width:0}
+.fig-scroll{overflow-x:auto;min-width:0}
+.fig-scroll svg{display:block;min-width:640px;width:100%;height:auto}
+.fig figcaption{font-size:13.5px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
+.callout{background:var(--accent-soft);border-radius:6px;padding:14px 16px;display:grid;gap:6px}
+.callout.warn{background:var(--surface);border:1px solid var(--hp2)}
+.callout.warn::before{content:"注意";font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--hp2)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;font-size:12.5px;color:var(--muted);background:var(--surface2);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td{font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font-family:var(--mono);font-size:12px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.chip.hp1{color:var(--hp1);border-color:var(--hp1)} .chip.hp2{color:var(--hp2);border-color:var(--hp2)}
+.chip.hp11{color:var(--hp11);border-color:var(--hp11)} .chip.hp21{color:var(--hp21);border-color:var(--hp21)}
+.chip.hp3{color:var(--hp3);border-color:var(--hp3)} .chip.un{color:var(--un);border-color:var(--un)}
+.chip.mod{color:var(--accent);border-color:var(--accent)}
+ul,ol{padding-left:1.3em;margin:0;display:grid;gap:4px}
+input[type=range]{accent-color:var(--accent)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* hero */
+.hero{display:grid;gap:16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.hero .meta{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.two-ways{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.two-ways .card h3{display:flex;gap:10px;align-items:baseline}
+.two-ways .where{font-family:var(--mono);font-size:12.5px;color:var(--accent)}
+.phase{display:grid;grid-template-columns:96px minmax(0,1fr);gap:4px 16px;padding:14px 0;border-top:1px solid var(--line)}
+.phase:first-child{border-top:none}
+.phase .ph{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:600}
+.phase .done{grid-column:2;font-size:13.5px;color:var(--muted)}
+.risk{counter-reset:r;list-style:none;padding:0;display:grid;gap:10px}
+.risk li{counter-increment:r;display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px}
+.risk li::before{content:counter(r);font-family:var(--mono);font-size:12px;color:var(--hp2);border:1px solid var(--hp2);border-radius:50%;width:22px;height:22px;display:grid;place-items:center;margin-top:2px}
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:24px}
+  nav.toc{position:static}
+  nav.toc ol{grid-auto-flow:row}
+  .grid3{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:640px){
+  .grid2,.two-ways{grid-template-columns:minmax(0,1fr)}
+  .phase{grid-template-columns:minmax(0,1fr)} .phase .done{grid-column:1}
+  body{font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="目錄">
+  <p>目錄</p>
+  <ol>
+    <li><a href="#top"><span class="mk">00</span>摘要</a></li>
+    <li><a href="#arch"><span class="mk">M</span>PhyClone 架構</a></li>
+    <li><a href="#hp"><span class="mk">F</span>HP 標籤與特徵</a></li>
+    <li><a href="#c2c3"><span class="mk">C2</span>C2 / C3</a></li>
+    <li><a href="#c4"><span class="mk">C4</span>read 共現</a></li>
+    <li><a href="#map"><span class="mk">C</span>改動對照表</a></li>
+    <li><a href="#phases"><span class="mk">P</span>實作階段</a></li>
+    <li><a href="#risks"><span class="mk">!</span>風險</a></li>
+  </ol>
+</nav>
+
+<main>
+<section id="top" class="hero">
+  <p class="eyebrow">研究計畫 · tumor phylogeny</p>
+  <h1>在 PhyClone 中加入 longphase-s 的 haplotype 資訊</h1>
+  <p class="lede">PhyClone 目前只看每個 SNV 的 ref / alt read 數與 segment 的 major / minor CN。這份計畫把 longphase-s 打在 long read 上的 <code>HP</code> 與 <code>PS</code> 標籤轉成兩類觀測，分別接進 PhyClone 的兩個位置。</p>
+  <div class="two-ways">
+    <div class="card">
+      <h3>單一 SNV 的 haplotype 觀測 <span class="where">→ M2</span></h3>
+      <p>SNV 在哪條 haplotype、該 haplotype 有幾個 copy、只在該 haplotype 上算 VAF。只改 likelihood grid 的數值，後面的 tree 邊際化、SMC、MCMC 都不用改。</p>
+    </div>
+    <div class="card">
+      <h3>兩個 SNV 在同一條 read 上 <span class="where">→ M5</span></h3>
+      <p>同一條 read 來自同一個細胞的同一個 copy，可以直接排除祖先或分支關係。這個新因子只依賴 topology，加在 joint distribution 上，所有 sampler 自動使用。</p>
+    </div>
+  </div>
+  <div class="legend" aria-label="HP 顏色圖例">
+    <span class="chip hp1">HP:1</span><span class="chip hp11">HP:1-1</span><span class="chip hp2">HP:2</span><span class="chip hp21">HP:2-1</span><span class="chip hp3">HP:3</span><span class="chip un">未 tag</span>
+    <span class="tag-impl">程式實作</span><span class="tag-doc">longphase-s 文件</span><span class="tag-infer">分析推論</span>
+  </div>
+  <p class="meta"><span>來源 plan.md</span><span>PhyClone submodule @ 2738324</span><span>所有改動皆未實作、未驗證</span><span>圖中 read 與座標為示意資料</span></p>
+</section>
+
+<!--PART:arch-->
+<!--PART:hp-->
+<!--PART:c2c3-->
+<!--PART:c4-->
+
+<section id="map" class="sec">
+  <header class="sec-head"><p class="eyebrow">改動對照</p><h2>C0–C6 各改哪裡</h2>
+  <p class="lede">七個改動中，真正碰到模型的是 C2、C3、C4。M4（卷積邊際化）與 M6（推理）完全不改。</p></header>
+  <div class="tbl"><table>
+    <thead><tr><th>變更</th><th>模組</th><th>檔案 / 函式</th><th>特徵</th><th>內容</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip mod">C0</span></td><td>PhyClone 外部</td><td><code>tools/hp_feature_extract.py</code>（pysam）</td><td>F1–F5</td><td>tagged BAM＋SNV VCF＋ASCAT segment → 擴充 INPUT.tsv＋PAIRS.tsv</td></tr>
+      <tr><td><span class="chip mod">C1</span></td><td>M1</td><td><code>PhyClone_schema.json</code>、<code>create_sample_data_point</code></td><td>F1–F3</td><td>新增選用欄位；沒有這些欄位時走原本的路徑</td></tr>
+      <tr><td><span class="chip mod">C2</span></td><td>M2</td><td><code>pyclone.py:325 get_major_cn_prior</code></td><td>F2、F3</td><td>multiplicity 上限從 <code>major_cn</code> 改成 <code>C<sub>h</sub></code>；π(h) 取代均勻先驗</td></tr>
+      <tr><td><span class="chip mod">C3</span></td><td>M2</td><td><code>SampleDataPoint</code>、<code>math_utils.py:180/216</code>、<code>to_likelihood_grid</code></td><td>F1、F2、F4</td><td>phased read 用 haplotype 層級模型，unphased read 用原模型，兩者相乘</td></tr>
+      <tr><td><span class="chip mod">C4</span></td><td>M5</td><td><code>tree/distributions.py:124 TreeJointDistribution</code></td><td>F5</td><td>新增 <code>log_p_link(tree)</code>，只依賴 topology</td></tr>
+      <tr><td><span class="chip mod">C5</span></td><td>M3</td><td><code>_create_clustered_data_point_list</code></td><td>F1–F5</td><td>grid 加總自動繼承 C3；用 F5 檢查同 cluster 內的矛盾 pair</td></tr>
+      <tr><td><span class="chip mod">C6</span></td><td>M7</td><td><code>process_trace/</code></td><td>F2、F3</td><td>輸出 haplotype / multiplicity 後驗、<code>link_conflicts.tsv</code>、退回原模型的 SNV 數</td></tr>
+      <tr><td><span class="chip">不改</span></td><td>M4、M6</td><td><code>tree/</code>、<code>smc/</code>、<code>mcmc/</code></td><td>—</td><td>C3 只改 grid 數值；C4 經由 <code>TreeJointDistribution</code> 傳到所有 sampler</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid2">
+    <div class="card"><h3>C5 Cluster 層</h3><p>上游的 PyClone-VI 預分群看不到 HP。如果它把不同 multiplicity 的 SNV 分在同一群，PhyClone 修正不了。第一版同時跑「無 cluster file」與「PyClone-VI cluster」，並用 F5 找出同一 cluster 內 <code>n10</code>、<code>n01</code> 都大於 0 的 pair。</p></div>
+    <div class="card"><h3>C6 輸出與診斷</h3><p>clone table 加上每個 SNV 的 <code>h<sub>i</sub></code> 後驗和 multiplicity 的 MAP 值；<code>link_conflicts.tsv</code> 列出 MAP tree 下禁止格仍有大量計數的 pair；記錄因 <code>C<sub>h</sub>=0</code> 退回原模型的 SNV 數。</p></div>
+  </div>
+</section>
+
+<section id="phases" class="sec">
+  <header class="sec-head"><p class="eyebrow">實作順序</p><h2>五個階段</h2>
+  <p class="lede">先用 Phase 0 的數字確認 HCC1395 上有沒有足夠的 phased read 與 informative pair，再決定後面要做多少。程式改動都在 PhyClone submodule 的獨立分支上。</p></header>
+  <div>
+    <div class="phase"><span class="ph">Phase 0</span><div><strong>資料可行性。</strong>對 HCC1395 跑 C0，統計 phased alt 比例、能判定 major HP 的 segment 比例、F5 informative pair 數量、tagging 是否和 allele 有關。</div><p class="done">完成條件：有數字證明 C3、C4 有足夠資訊量；pair 太少就延後 C4。</p></div>
+    <div class="phase"><span class="ph">Phase 1</span><div><strong>C1＋C2。</strong>schema 加選用欄位，以及 phase-aware genotype 空間。</div><p class="done">完成條件：沒有 HP 欄位時 grid 和原版逐位相同；3:1 區域 minor-hap 上的 SNV 只剩 x=1。</p></div>
+    <div class="phase"><span class="ph">Phase 2</span><div><strong>C3。</strong>haplotype-specific likelihood。</div><p class="done">完成條件：C<sub>h1</sub>=C<sub>h2</sub> 且 π 均勻時和原版一致或差異可解釋；在注入 minor CN ±1 誤差的模擬中，CCF 與 multiplicity 估計比原版穩健。</p></div>
+    <div class="phase"><span class="ph">Phase 3</span><div><strong>C4。</strong>topology link 因子。</div><p class="done">完成條件：只有 link 項時，n11&gt;0 的 pair 不會被放在 branching；<code>link_data</code> 為空時既有的 PG 測試不受影響。</p></div>
+    <div class="phase"><span class="ph">Phase 4</span><div><strong>C5、C6 與評估。</strong>ablation：baseline → +C2 → +C2+C3 → +C2+C3+C4，固定 cluster、seed、chain 數。</div><p class="done">HCC1395 golden tree 只當候選樹比 topology；模擬資料用 V-measure 與 AD F-score；多個 <code>tX_nY</code> subsample 當多 sample，tumour_content 用實測 purity。</p></div>
+  </div>
+<pre class="code">cd research/phyclone_research/PhyClone
+python -m unittest discover -s phyclone/tests/unit_tests</pre>
+</section>
+
+<section id="risks" class="sec">
+  <header class="sec-head"><p class="eyebrow">待決問題</p><h2>風險</h2></header>
+  <ol class="risk">
+    <li><div><strong>Tagging bias（C3）。</strong>alt read 走 somatic 分類、ref read 走 germline 分類，tag rate 可能不同，會讓 haplotype VAF 產生偏差。Phase 0 要量化。</div></li>
+    <li><div><strong>PS block 太短或在 CN 斷點附近。</strong>判定不出 major HP 時退回原模型，並記錄比例。</div></li>
+    <li><div><strong>Subclonal CN。</strong>PhyClone 和 C2 都假設 segment CN 是 clonal，而且 reference tumor population 的 CN 是 normal。HP 資訊沒有解決這個假設。</div></li>
+    <li><div><strong>C4 在 amplified 區域。</strong>先限制在 C<sub>h</sub>=1 的區域。</div></li>
+    <li><div><strong>HP:3 read。</strong>第一版放進 unphased alt；比例偏高代表 germline phasing 有問題。</div></li>
+    <li><div><strong><code>t00_n25</code> 純 normal。</strong>只用來估 error rate 與 tagging bias，不放進 tree inference。</div></li>
+    <li><div><strong>論文主張和本計畫要分開。</strong>PhyClone 論文和程式碼都沒有 haplotype 設計。C2–C6 都是新的分析推論，Phase 0–4 驗證完成之前不能寫成「已改善 PhyClone」。</div></li>
+  </ol>
+</section>
+</main>
+</div>

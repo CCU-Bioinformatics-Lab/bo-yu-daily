@@ -1,0 +1,239 @@
+<section id="arch" class="sec">
+<header class="sec-head"><p class="eyebrow">§1 PhyClone 整體架構</p><h2>PhyClone 架構：資料怎麼流到一棵樹</h2><p class="lede">PhyClone 只在 M2 碰 read count，之後一路傳遞的都是每個 SNV／cluster 的 <code>[S × G]</code> CCF likelihood grid；tree 狀態本身只有 topology 與 assignment。HP 特徵因此只需要接在兩個位置：M2（per-SNV）與 M5（pairwise）。</p></header>
+<figure class="fig"><div class="fig-scroll">
+<svg viewBox="0 0 960 940" width="100%" role="img" aria-labelledby="arch-main-title" style="min-width:760px">
+<title id="arch-main-title">PhyClone M1 到 M7 資料流，以及 HP 特徵（C0–C6）的進入點</title>
+<defs><marker id="arch-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="arch-arr-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+<rect x="20" y="20" width="280" height="72" rx="8" style="fill:var(--surface2);stroke:var(--accent);stroke-width:1.5;stroke-dasharray:6 4"/>
+<text x="34" y="42" font-size="13" font-family="var(--sans)" text-anchor="start" style="fill:var(--accent)" font-weight="600">C0 前處理（PhyClone 外部）</text>
+<text x="34" y="61" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">tools/hp_feature_extract.py（pysam）</text>
+<text x="34" y="79" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">tagged BAM＋VCF＋ASCAT → F1–F5</text>
+<path d="M300,56 H326" style="fill:none;stroke:var(--accent);stroke-width:1.6" marker-end="url(#arch-arr-acc)"/>
+<rect x="330" y="20" width="310" height="72" rx="8" style="fill:var(--surface2);stroke:var(--line);stroke-width:1.2"/>
+<text x="344" y="42" font-size="12.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">INPUT.tsv（＋選用 HP 欄位）· CLUSTERS.tsv</text>
+<text x="344" y="61" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--muted)">mutation × sample：ref / alt counts</text>
+<text x="344" y="79" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--muted)">major / minor / normal CN、tumour_content</text>
+<rect x="676" y="24" width="26" height="14" rx="3" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/>
+<text x="710" y="35" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">HP 特徵進入點</text>
+<rect x="676" y="48" width="26" height="14" rx="3" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3"/>
+<text x="710" y="59" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">不改（自動繼承）</text>
+<rect x="676" y="72" width="26" height="14" rx="3" style="fill:var(--surface2);stroke:var(--accent);stroke-width:1.5;stroke-dasharray:6 4"/>
+<text x="710" y="83" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">PhyClone 外部</text>
+<path d="M430,92 V126" style="fill:none;stroke:var(--muted);stroke-width:1.4" marker-end="url(#arr)"/>
+<text x="442" y="116" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">mutation × sample 表</text>
+<rect x="220" y="130" width="420" height="68" rx="8" style="fill:var(--surface);stroke:var(--line);stroke-width:1.2"/>
+<text x="234" y="152" font-size="14" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">M1 輸入驗證與清理</text>
+<text x="234" y="171" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">cli.py:448 run → data/pyclone.py:17 load_data</text>
+<text x="234" y="188" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">必要欄位檢查；移除 major_cn = 0、重複或缺 sample 的 SNV</text>
+<rect x="672" y="130" width="268" height="68" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.4"/>
+<line x1="640" y1="164.0" x2="672" y2="164.0" style="stroke:var(--accent);stroke-width:1.4"/>
+<text x="684" y="152" font-size="13" font-family="var(--sans)" text-anchor="start" style="fill:var(--accent)" font-weight="600">C1 · 輸入 schema</text>
+<text x="684" y="171" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">新增選用欄位（F1–F3）</text>
+<text x="684" y="188" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">沒有這些欄位時退回原行為</text>
+<path d="M430,198 V238" style="fill:none;stroke:var(--muted);stroke-width:1.4" marker-end="url(#arr)"/>
+<text x="442" y="225" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">SampleDataPoint(a, b, cn, mu, log_pi, t)</text>
+<rect x="220" y="242" width="420" height="68" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/>
+<text x="234" y="264" font-size="14" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">M2 單 SNV 觀測模型（likelihood grid）</text>
+<text x="234" y="283" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">data/pyclone.py:325, :371 · math_utils.py:180/216</text>
+<text x="234" y="300" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">列舉 genotype 假設，在 101 個 CCF 格點算 log P(b | f)</text>
+<rect x="672" y="242" width="268" height="68" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/>
+<line x1="640" y1="276.0" x2="672" y2="276.0" style="stroke:var(--accent);stroke-width:2"/>
+<text x="684" y="264" font-size="13" font-family="var(--sans)" text-anchor="start" style="fill:var(--accent)" font-weight="600">HP 進入點 ① · C2 / C3</text>
+<text x="684" y="283" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">per-SNV HP 觀測（F1–F4）</text>
+<text x="684" y="300" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">只改 grid 數值，不改 grid 形狀</text>
+<path d="M430,310 V350" style="fill:none;stroke:var(--muted);stroke-width:1.4" marker-end="url(#arr)"/>
+<text x="442" y="337" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">每個 SNV 一個 [S × G] grid（G = 101）</text>
+<rect x="220" y="354" width="420" height="68" rx="8" style="fill:var(--surface);stroke:var(--line);stroke-width:1.2"/>
+<text x="234" y="376" font-size="14" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">M3 Cluster 聚合與 outlier</text>
+<text x="234" y="395" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">data/pyclone.py:82 · data/base.py:34</text>
+<text x="234" y="412" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">同 cluster 的 SNV grid 直接相加（條件獨立）→ 一個 DataPoint</text>
+<rect x="672" y="354" width="268" height="68" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4"/>
+<line x1="640" y1="388.0" x2="672" y2="388.0" style="stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 3"/>
+<text x="684" y="376" font-size="13" font-family="var(--sans)" text-anchor="start" style="fill:var(--muted)" font-weight="600">不改（自動繼承）</text>
+<text x="684" y="395" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">C5：grid 相加即帶入 C3 的資訊</text>
+<text x="684" y="412" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--muted)">F5 可另拿來檢查 cluster</text>
+<path d="M430,422 V462" style="fill:none;stroke:var(--muted);stroke-width:1.4" marker-end="url(#arr)"/>
+<text x="442" y="449" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">data = [DataPoint(value=[S × G]) …]</text>
+<rect x="220" y="466" width="420" height="68" rx="8" style="fill:var(--surface);stroke:var(--line);stroke-width:1.2"/>
+<text x="234" y="488" font-size="14" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">M4 Tree 結構＋CCF 卷積邊際化</text>
+<text x="234" y="507" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">tree/tree_node.py:59 · tree/utils.py:8, :28</text>
+<text x="234" y="524" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">log_R(v) = log_p(v) + log_S(children)；children 以卷積合併</text>
+<rect x="672" y="466" width="268" height="68" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4"/>
+<line x1="640" y1="500.0" x2="672" y2="500.0" style="stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 3"/>
+<text x="684" y="488" font-size="13" font-family="var(--sans)" text-anchor="start" style="fill:var(--muted)" font-weight="600">不改（自動繼承）</text>
+<text x="684" y="507" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">仍是每個 node 一條 CCF grid</text>
+<text x="684" y="524" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--muted)">卷積邊際化結構完整保留</text>
+<path d="M430,534 V574" style="fill:none;stroke:var(--muted);stroke-width:1.4" marker-end="url(#arr)"/>
+<text x="442" y="561" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">root.log_R：[S × G]（各 node CCF 已積分）</text>
+<rect x="220" y="578" width="420" height="68" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/>
+<text x="234" y="600" font-size="14" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">M5 TreeJointDistribution</text>
+<text x="234" y="619" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">tree/distributions.py:124</text>
+<text x="234" y="636" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">FS-CRP prior + outlier prior + Σ_s logsumexp(root.log_R[s])</text>
+<rect x="672" y="578" width="268" height="68" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/>
+<line x1="640" y1="612.0" x2="672" y2="612.0" style="stroke:var(--accent);stroke-width:2"/>
+<text x="684" y="600" font-size="13" font-family="var(--sans)" text-anchor="start" style="fill:var(--accent)" font-weight="600">HP 進入點 ② · C4</text>
+<text x="684" y="619" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">read 共現 topology 因子（F5）</text>
+<text x="684" y="636" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">+ log_p_link(tree)，只看 topology</text>
+<path d="M430,646 V686" style="fill:none;stroke:var(--muted);stroke-width:1.4" marker-end="url(#arr)"/>
+<text x="442" y="673" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">log P(tree, data)、log_p_one(tree)</text>
+<rect x="220" y="690" width="420" height="68" rx="8" style="fill:var(--surface);stroke:var(--line);stroke-width:1.2"/>
+<text x="234" y="712" font-size="14" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">M6 推理：PG / Gibbs / PruneRegraph</text>
+<text x="234" y="731" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">run.py:187 run_phyclone_chain · smc/ · mcmc/</text>
+<text x="234" y="748" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">只動 topology 與 assignment，不碰 read count</text>
+<rect x="672" y="690" width="268" height="68" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4"/>
+<line x1="640" y1="724.0" x2="672" y2="724.0" style="stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 3"/>
+<text x="684" y="712" font-size="13" font-family="var(--sans)" text-anchor="start" style="fill:var(--muted)" font-weight="600">不改（自動繼承）</text>
+<text x="684" y="731" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">所有 sampler 的分數都來自 M5</text>
+<text x="684" y="748" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--muted)">C4 加入後自動生效</text>
+<path d="M430,758 V798" style="fill:none;stroke:var(--muted);stroke-width:1.4" marker-end="url(#arr)"/>
+<text x="442" y="785" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">TRACE.h5</text>
+<rect x="220" y="802" width="420" height="68" rx="8" style="fill:var(--surface);stroke:var(--line);stroke-width:1.2"/>
+<text x="234" y="824" font-size="14" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">M7 後處理：MAP / consensus</text>
+<text x="234" y="843" font-size="11" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">process_trace/process_trace.py · map.py</text>
+<text x="234" y="860" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">在 grid 上 max-product 回溯出 CCF 與 clonal prevalence</text>
+<rect x="672" y="802" width="268" height="68" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.4"/>
+<line x1="640" y1="836.0" x2="672" y2="836.0" style="stroke:var(--accent);stroke-width:1.4"/>
+<text x="684" y="824" font-size="13" font-family="var(--sans)" text-anchor="start" style="fill:var(--accent)" font-weight="600">C6 · 輸出與診斷</text>
+<text x="684" y="843" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">SNV haplotype／multiplicity 後驗</text>
+<text x="684" y="860" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">F5 與 MAP tree 的衝突清單</text>
+<path d="M430,870 V898" style="fill:none;stroke:var(--muted);stroke-width:1.4" marker-end="url(#arr)"/>
+<text x="430" y="916" font-size="11.5" font-family="var(--mono)" text-anchor="middle" style="fill:var(--fg)">tree.nwk · mutation→clone table · sample prevalence table</text>
+<path d="M60,92 V600 H216" style="fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:6 4" marker-end="url(#arch-arr-acc)"/>
+<text x="68" y="300" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--accent)" font-weight="600">F5 pair 檔</text>
+<text x="68" y="317" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--accent)">→ C4</text>
+<path d="M220,724 H180 V628 H216" style="fill:none;stroke:var(--muted);stroke-width:1.3" marker-end="url(#arr)"/>
+<text x="172" y="702" font-size="11" font-family="var(--sans)" text-anchor="end" style="fill:var(--muted)">每步都向 M5</text>
+<text x="172" y="717" font-size="11" font-family="var(--mono)" text-anchor="end" style="fill:var(--muted)">查 log_p(tree)</text>
+</svg></div>
+<figcaption>主流程（由上而下）：箭頭旁是傳給下一個模組的資料型態；右欄是本計畫 C0–C6 在各模組的位置。左側虛線：C0 產生的 F5 pair 檔直接供 M5 的 C4 使用（示意，載入方式待實作決定）；左側實線：M6 所有 sampler 的分數都回頭查 M5。模組與檔案位置依 PhyClone commit <code>2738324</code>。</figcaption></figure>
+<figure class="fig"><div class="fig-scroll">
+<svg viewBox="0 0 960 330" width="100%" role="img" aria-labelledby="arch-m4-title" style="min-width:760px">
+<title id="arch-m4-title">M4 概念：node 的 CCF grid 與 children 卷積合併成 parent（示意）</title>
+<defs><marker id="arch-arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs>
+<text x="30" y="32" font-size="12" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">child A 的 log_R（101 格）</text>
+<rect x="30" y="40" width="190" height="84" rx="6" style="fill:var(--surface);stroke:var(--line);stroke-width:1"/>
+<line x1="40" y1="110" x2="210" y2="110" style="stroke:var(--line);stroke-width:1"/>
+<line x1="40.0" y1="110" x2="40.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="57.0" y1="110" x2="57.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="74.0" y1="110" x2="74.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="91.0" y1="110" x2="91.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="108.0" y1="110" x2="108.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="125.0" y1="110" x2="125.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="142.0" y1="110" x2="142.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="159.0" y1="110" x2="159.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="176.0" y1="110" x2="176.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="193.0" y1="110" x2="193.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="210.0" y1="110" x2="210.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<polyline points="40.0,110.0 41.7,110.0 43.4,110.0 45.1,110.0 46.8,110.0 48.5,110.0 50.2,110.0 51.9,110.0 53.6,109.9 55.3,109.9 57.0,109.8 58.7,109.6 60.4,109.3 62.1,108.8 63.8,108.2 65.5,107.2 67.2,105.8 68.9,103.9 70.6,101.3 72.3,98.1 74.0,94.0 75.7,89.2 77.4,83.7 79.1,77.6 80.8,71.2 82.5,64.8 84.2,58.8 85.9,53.5 87.6,49.5 89.3,46.9 91.0,46.0 92.7,46.9 94.4,49.5 96.1,53.5 97.8,58.8 99.5,64.8 101.2,71.2 102.9,77.6 104.6,83.7 106.3,89.2 108.0,94.0 109.7,98.1 111.4,101.3 113.1,103.9 114.8,105.8 116.5,107.2 118.2,108.2 119.9,108.8 121.6,109.3 123.3,109.6 125.0,109.8 126.7,109.9 128.4,109.9 130.1,110.0 131.8,110.0 133.5,110.0 135.2,110.0 136.9,110.0 138.6,110.0 140.3,110.0 142.0,110.0 143.7,110.0 145.4,110.0 147.1,110.0 148.8,110.0 150.5,110.0 152.2,110.0 153.9,110.0 155.6,110.0 157.3,110.0 159.0,110.0 160.7,110.0 162.4,110.0 164.1,110.0 165.8,110.0 167.5,110.0 169.2,110.0 170.9,110.0 172.6,110.0 174.3,110.0 176.0,110.0 177.7,110.0 179.4,110.0 181.1,110.0 182.8,110.0 184.5,110.0 186.2,110.0 187.9,110.0 189.6,110.0 191.3,110.0 193.0,110.0 194.7,110.0 196.4,110.0 198.1,110.0 199.8,110.0 201.5,110.0 203.2,110.0 204.9,110.0 206.6,110.0 208.3,110.0 210.0,110.0" style="fill:none;stroke:var(--fg);stroke-width:1.6"/>
+<text x="40" y="124" font-size="10" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">0</text>
+<text x="210" y="124" font-size="10" font-family="var(--mono)" text-anchor="end" style="fill:var(--muted)">1</text>
+<text x="125.0" y="124" font-size="10" font-family="var(--mono)" text-anchor="middle" style="fill:var(--muted)">CCF f</text>
+<text x="30" y="182" font-size="12" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">child B 的 log_R（101 格）</text>
+<rect x="30" y="190" width="190" height="84" rx="6" style="fill:var(--surface);stroke:var(--line);stroke-width:1"/>
+<line x1="40" y1="260" x2="210" y2="260" style="stroke:var(--line);stroke-width:1"/>
+<line x1="40.0" y1="260" x2="40.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="57.0" y1="260" x2="57.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="74.0" y1="260" x2="74.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="91.0" y1="260" x2="91.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="108.0" y1="260" x2="108.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="125.0" y1="260" x2="125.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="142.0" y1="260" x2="142.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="159.0" y1="260" x2="159.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="176.0" y1="260" x2="176.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="193.0" y1="260" x2="193.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="210.0" y1="260" x2="210.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<polyline points="40.0,260.0 41.7,260.0 43.4,259.9 45.1,259.8 46.8,259.6 48.5,259.3 50.2,258.7 51.9,257.8 53.6,256.4 55.3,254.3 57.0,251.3 58.7,247.3 60.4,242.2 62.1,236.0 63.8,228.8 65.5,221.2 67.2,213.5 68.9,206.5 70.6,200.9 72.3,197.3 74.0,196.0 75.7,197.3 77.4,200.9 79.1,206.5 80.8,213.5 82.5,221.2 84.2,228.8 85.9,236.0 87.6,242.2 89.3,247.3 91.0,251.3 92.7,254.3 94.4,256.4 96.1,257.8 97.8,258.7 99.5,259.3 101.2,259.6 102.9,259.8 104.6,259.9 106.3,260.0 108.0,260.0 109.7,260.0 111.4,260.0 113.1,260.0 114.8,260.0 116.5,260.0 118.2,260.0 119.9,260.0 121.6,260.0 123.3,260.0 125.0,260.0 126.7,260.0 128.4,260.0 130.1,260.0 131.8,260.0 133.5,260.0 135.2,260.0 136.9,260.0 138.6,260.0 140.3,260.0 142.0,260.0 143.7,260.0 145.4,260.0 147.1,260.0 148.8,260.0 150.5,260.0 152.2,260.0 153.9,260.0 155.6,260.0 157.3,260.0 159.0,260.0 160.7,260.0 162.4,260.0 164.1,260.0 165.8,260.0 167.5,260.0 169.2,260.0 170.9,260.0 172.6,260.0 174.3,260.0 176.0,260.0 177.7,260.0 179.4,260.0 181.1,260.0 182.8,260.0 184.5,260.0 186.2,260.0 187.9,260.0 189.6,260.0 191.3,260.0 193.0,260.0 194.7,260.0 196.4,260.0 198.1,260.0 199.8,260.0 201.5,260.0 203.2,260.0 204.9,260.0 206.6,260.0 208.3,260.0 210.0,260.0" style="fill:none;stroke:var(--fg);stroke-width:1.6"/>
+<text x="40" y="274" font-size="10" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">0</text>
+<text x="210" y="274" font-size="10" font-family="var(--mono)" text-anchor="end" style="fill:var(--muted)">1</text>
+<text x="125.0" y="274" font-size="10" font-family="var(--mono)" text-anchor="middle" style="fill:var(--muted)">CCF f</text>
+<circle cx="270" cy="152" r="18" style="fill:var(--surface2);stroke:var(--muted);stroke-width:1.2"/>
+<text x="270" y="157" font-size="16" font-family="var(--sans)" text-anchor="middle" style="fill:var(--fg)">⊛</text>
+<text x="270" y="190" font-size="11" font-family="var(--sans)" text-anchor="middle" style="fill:var(--muted)">卷積</text>
+<path d="M220,82 L254,140" style="fill:none;stroke:var(--muted);stroke-width:1.3" marker-end="url(#arch-arr2)"/>
+<path d="M220,232 L254,166" style="fill:none;stroke:var(--muted);stroke-width:1.3" marker-end="url(#arch-arr2)"/>
+<text x="330" y="32" font-size="12" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">parent v 自己的 log_p(v)</text>
+<rect x="330" y="40" width="190" height="84" rx="6" style="fill:var(--surface);stroke:var(--line);stroke-width:1"/>
+<line x1="340" y1="110" x2="510" y2="110" style="stroke:var(--line);stroke-width:1"/>
+<line x1="340.0" y1="110" x2="340.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="357.0" y1="110" x2="357.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="374.0" y1="110" x2="374.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="391.0" y1="110" x2="391.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="408.0" y1="110" x2="408.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="425.0" y1="110" x2="425.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="442.0" y1="110" x2="442.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="459.0" y1="110" x2="459.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="476.0" y1="110" x2="476.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="493.0" y1="110" x2="493.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<line x1="510.0" y1="110" x2="510.0" y2="113" style="stroke:var(--line);stroke-width:1"/>
+<polyline points="340.0,110.0 341.7,110.0 343.4,110.0 345.1,110.0 346.8,110.0 348.5,110.0 350.2,110.0 351.9,110.0 353.6,110.0 355.3,110.0 357.0,110.0 358.7,110.0 360.4,110.0 362.1,110.0 363.8,110.0 365.5,110.0 367.2,110.0 368.9,110.0 370.6,110.0 372.3,110.0 374.0,110.0 375.7,110.0 377.4,110.0 379.1,110.0 380.8,110.0 382.5,110.0 384.2,110.0 385.9,110.0 387.6,110.0 389.3,110.0 391.0,110.0 392.7,110.0 394.4,109.9 396.1,109.9 397.8,109.9 399.5,109.8 401.2,109.7 402.9,109.5 404.6,109.3 406.3,109.0 408.0,108.5 409.7,108.0 411.4,107.2 413.1,106.2 414.8,104.9 416.5,103.3 418.2,101.3 419.9,99.0 421.6,96.2 423.3,92.9 425.0,89.2 426.7,85.1 428.4,80.7 430.1,76.0 431.8,71.2 433.5,66.4 435.2,61.7 436.9,57.4 438.6,53.5 440.3,50.3 442.0,48.0 443.7,46.5 445.4,46.0 447.1,46.5 448.8,48.0 450.5,50.3 452.2,53.5 453.9,57.4 455.6,61.7 457.3,66.4 459.0,71.2 460.7,76.0 462.4,80.7 464.1,85.1 465.8,89.2 467.5,92.9 469.2,96.2 470.9,99.0 472.6,101.3 474.3,103.3 476.0,104.9 477.7,106.2 479.4,107.2 481.1,108.0 482.8,108.5 484.5,109.0 486.2,109.3 487.9,109.5 489.6,109.7 491.3,109.8 493.0,109.9 494.7,109.9 496.4,109.9 498.1,110.0 499.8,110.0 501.5,110.0 503.2,110.0 504.9,110.0 506.6,110.0 508.3,110.0 510.0,110.0" style="fill:none;stroke:var(--fg);stroke-width:1.6"/>
+<text x="340" y="124" font-size="10" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">0</text>
+<text x="510" y="124" font-size="10" font-family="var(--mono)" text-anchor="end" style="fill:var(--muted)">1</text>
+<text x="425.0" y="124" font-size="10" font-family="var(--mono)" text-anchor="middle" style="fill:var(--muted)">CCF f</text>
+<text x="330" y="182" font-size="12" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">log_S(children)：Σ child ≤ f</text>
+<rect x="330" y="190" width="190" height="84" rx="6" style="fill:var(--surface);stroke:var(--line);stroke-width:1"/>
+<line x1="340" y1="260" x2="510" y2="260" style="stroke:var(--line);stroke-width:1"/>
+<line x1="340.0" y1="260" x2="340.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="357.0" y1="260" x2="357.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="374.0" y1="260" x2="374.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="391.0" y1="260" x2="391.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="408.0" y1="260" x2="408.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="425.0" y1="260" x2="425.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="442.0" y1="260" x2="442.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="459.0" y1="260" x2="459.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="476.0" y1="260" x2="476.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="493.0" y1="260" x2="493.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<line x1="510.0" y1="260" x2="510.0" y2="263" style="stroke:var(--line);stroke-width:1"/>
+<polyline points="340.0,260.0 341.7,260.0 343.4,260.0 345.1,260.0 346.8,260.0 348.5,260.0 350.2,260.0 351.9,260.0 353.6,260.0 355.3,260.0 357.0,260.0 358.7,260.0 360.4,260.0 362.1,260.0 363.8,260.0 365.5,260.0 367.2,260.0 368.9,260.0 370.6,260.0 372.3,260.0 374.0,260.0 375.7,260.0 377.4,260.0 379.1,260.0 380.8,260.0 382.5,259.9 384.2,259.9 385.9,259.9 387.6,259.8 389.3,259.7 391.0,259.6 392.7,259.4 394.4,259.2 396.1,258.9 397.8,258.5 399.5,258.0 401.2,257.3 402.9,256.5 404.6,255.5 406.3,254.3 408.0,252.8 409.7,251.2 411.4,249.2 413.1,247.0 414.8,244.6 416.5,241.9 418.2,239.1 419.9,236.0 421.6,232.9 423.3,229.6 425.0,226.4 426.7,223.1 428.4,220.0 430.1,216.9 431.8,214.1 433.5,211.4 435.2,209.0 436.9,206.8 438.6,204.8 440.3,203.2 442.0,201.7 443.7,200.5 445.4,199.5 447.1,198.7 448.8,198.0 450.5,197.5 452.2,197.1 453.9,196.8 455.6,196.6 457.3,196.4 459.0,196.3 460.7,196.2 462.4,196.1 464.1,196.1 465.8,196.1 467.5,196.0 469.2,196.0 470.9,196.0 472.6,196.0 474.3,196.0 476.0,196.0 477.7,196.0 479.4,196.0 481.1,196.0 482.8,196.0 484.5,196.0 486.2,196.0 487.9,196.0 489.6,196.0 491.3,196.0 493.0,196.0 494.7,196.0 496.4,196.0 498.1,196.0 499.8,196.0 501.5,196.0 503.2,196.0 504.9,196.0 506.6,196.0 508.3,196.0 510.0,196.0" style="fill:none;stroke:var(--fg);stroke-width:1.6"/>
+<text x="340" y="274" font-size="10" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">0</text>
+<text x="510" y="274" font-size="10" font-family="var(--mono)" text-anchor="end" style="fill:var(--muted)">1</text>
+<text x="425.0" y="274" font-size="10" font-family="var(--mono)" text-anchor="middle" style="fill:var(--muted)">CCF f</text>
+<path d="M288,156 L326,220" style="fill:none;stroke:var(--muted);stroke-width:1.3" marker-end="url(#arch-arr2)"/>
+<circle cx="580" cy="152" r="16" style="fill:var(--surface2);stroke:var(--muted);stroke-width:1.2"/>
+<text x="580" y="157" font-size="16" font-family="var(--sans)" text-anchor="middle" style="fill:var(--fg)">+</text>
+<path d="M520,82 L566,140" style="fill:none;stroke:var(--muted);stroke-width:1.3" marker-end="url(#arch-arr2)"/>
+<path d="M520,232 L566,164" style="fill:none;stroke:var(--muted);stroke-width:1.3" marker-end="url(#arch-arr2)"/>
+<path d="M596,152 L626,152" style="fill:none;stroke:var(--muted);stroke-width:1.3" marker-end="url(#arch-arr2)"/>
+<text x="630" y="107" font-size="12" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)" font-weight="600">parent 的 log_R(v)</text>
+<rect x="630" y="115" width="190" height="84" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/>
+<line x1="640" y1="185" x2="810" y2="185" style="stroke:var(--line);stroke-width:1"/>
+<line x1="640.0" y1="185" x2="640.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="657.0" y1="185" x2="657.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="674.0" y1="185" x2="674.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="691.0" y1="185" x2="691.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="708.0" y1="185" x2="708.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="725.0" y1="185" x2="725.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="742.0" y1="185" x2="742.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="759.0" y1="185" x2="759.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="776.0" y1="185" x2="776.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="793.0" y1="185" x2="793.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<line x1="810.0" y1="185" x2="810.0" y2="188" style="stroke:var(--line);stroke-width:1"/>
+<polyline points="640.0,185.0 641.7,185.0 643.4,185.0 645.1,185.0 646.8,185.0 648.5,185.0 650.2,185.0 651.9,185.0 653.6,185.0 655.3,185.0 657.0,185.0 658.7,185.0 660.4,185.0 662.1,185.0 663.8,185.0 665.5,185.0 667.2,185.0 668.9,185.0 670.6,185.0 672.3,185.0 674.0,185.0 675.7,185.0 677.4,185.0 679.1,185.0 680.8,185.0 682.5,185.0 684.2,185.0 685.9,185.0 687.6,185.0 689.3,185.0 691.0,185.0 692.7,185.0 694.4,185.0 696.1,185.0 697.8,185.0 699.5,185.0 701.2,185.0 702.9,185.0 704.6,184.9 706.3,184.9 708.0,184.8 709.7,184.7 711.4,184.5 713.1,184.2 714.8,183.7 716.5,183.0 718.2,182.0 719.9,180.7 721.6,178.8 723.3,176.5 725.0,173.5 726.7,169.9 728.4,165.7 730.1,160.9 731.8,155.7 733.5,150.1 735.2,144.5 736.9,138.9 738.6,133.8 740.3,129.3 742.0,125.6 743.7,122.9 745.4,121.4 747.1,121.0 748.8,121.8 750.5,123.7 752.2,126.6 753.9,130.3 755.6,134.6 757.3,139.4 759.0,144.3 760.7,149.4 762.4,154.2 764.1,158.9 765.8,163.2 767.5,167.0 769.2,170.4 770.9,173.4 772.6,175.9 774.3,178.0 776.0,179.6 777.7,181.0 779.4,182.0 781.1,182.9 782.8,183.5 784.5,183.9 786.2,184.3 787.9,184.5 789.6,184.7 791.3,184.8 793.0,184.9 794.7,184.9 796.4,184.9 798.1,185.0 799.8,185.0 801.5,185.0 803.2,185.0 804.9,185.0 806.6,185.0 808.3,185.0 810.0,185.0" style="fill:none;stroke:var(--accent);stroke-width:1.6"/>
+<text x="640" y="199" font-size="10" font-family="var(--mono)" text-anchor="start" style="fill:var(--muted)">0</text>
+<text x="810" y="199" font-size="10" font-family="var(--mono)" text-anchor="end" style="fill:var(--muted)">1</text>
+<text x="725.0" y="199" font-size="10" font-family="var(--mono)" text-anchor="middle" style="fill:var(--muted)">CCF f</text>
+<text x="630" y="240" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">再往上一層當作 child，</text>
+<text x="630" y="257" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">一路遞迴到 root；</text>
+<text x="630" y="274" font-size="11.5" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">M5 對 root.log_R 做 logsumexp</text>
+<text x="830" y="40" font-size="11" font-family="var(--sans)" text-anchor="start" style="fill:var(--muted)">示意</text>
+<text x="30" y="316" font-size="12" font-family="var(--sans)" text-anchor="start" style="fill:var(--fg)">tree 狀態沒有連續 CCF 參數：每個 node 只帶一條 101 格的 grid，CCF 在遞迴中被積分掉，sampler 只需提出 topology 與 assignment。</text>
+</svg></div>
+<figcaption>M4 概念（示意曲線，以機率尺度畫出，實作在 log 空間）：<code>tree/tree_node.py:59 update_node_from_child_r_vals</code> 計算 <code>log_R(v) = log_p(v) + log_S(children)</code>；<code>tree/utils.py:8 compute_log_S</code>、<code>:28 compute_log_D</code> 以卷積合併 children 並累加，表達「children CCF 總和 ≤ parent」。</figcaption></figure>
+<div class="grid2">
+<div class="card"><p><strong>M1 輸入驗證與清理</strong> <span class="tag-impl">[程式實作]</span></p>
+<ul><li><code>cli.py:448 run</code> → <code>run.py</code> <code>run()</code> → <code>data/pyclone.py:17 load_data</code>；欄位定義在 <code>data/validator/PhyClone_schema.json</code>。</li><li>必要欄位 <code>ref_counts, alt_counts, major_cn, minor_cn, normal_cn</code> 等；<code>tumour_content</code> 缺時設為 1.0。移除 <code>major_cn == 0</code>、重複或未出現在所有 sample 的 SNV。</li><li>目前完全沒有 haplotype 或 read-level 欄位。</li></ul></div>
+<div class="card"><p><strong>M2 單 SNV 觀測模型</strong> <span class="tag-impl">[程式實作]</span></p>
+<ul><li><code>data/pyclone.py:325 get_major_cn_prior</code> 列舉 genotype 假設：SNV 在 CN 變化前（<code>x = 1..major_cn</code>）或之後（<code>mu = 1/total</code>），均勻先驗。</li><li><code>utils/math_utils.py:180 / 216 log_pyclone_{beta_}binomial_pdf</code>：三個 population 權重 <code>(1−t, t(1−f), t·f)</code>，對假設做 logsumexp。</li><li><code>data/pyclone.py:371 to_likelihood_grid</code> 產生 <code>[S × G]</code>；multiplicity 與時序在此被 marginalize 掉。</li></ul></div>
+<div class="card"><p><strong>M3 Cluster 聚合與 outlier</strong> <span class="tag-impl">[程式實作]</span></p>
+<ul><li><code>data/pyclone.py:82 _create_clustered_data_point_list</code>：同 cluster 的 SNV grid 直接相加（條件獨立），成為一個 <code>DataPoint</code>。</li><li><code>DataPoint.outlier_marginal_prob</code>（<code>data/base.py:34</code>）在 CCF 上均勻積分；<code>compute_outlier_prob</code>（<code>pyclone.py:184</code>）給 outlier 先驗。</li><li>有 cluster file 時，推理單位是 cluster。</li></ul></div>
+<div class="card"><p><strong>M4 Tree 結構與 CCF 邊際化</strong> <span class="tag-impl">[程式實作]</span></p>
+<ul><li><code>tree/tree_node.py</code> 每個 node 存 <code>log_p</code>、<code>log_r</code>；<code>:59 update_node_from_child_r_vals</code> 算 <code>log_R(v)</code>。</li><li><code>tree/utils.py:8 compute_log_S</code>、<code>:28 compute_log_D</code> 以卷積合併 children；<code>tree/tree.py:77 data_log_likelihood</code> 回傳 root 的 <code>log_r</code>。</li><li>tree 狀態沒有連續 CCF 參數，只有 topology 與 assignment。</li></ul></div>
+<div class="card"><p><strong>M5 TreeJointDistribution</strong> <span class="tag-impl">[程式實作]</span></p>
+<ul><li><code>tree/distributions.py:124</code>：<code>log_p(tree)</code> = FS-CRP prior + outlier prior + <code>Σ_s logsumexp(root.log_R[s])</code> + outlier marginal；<code>log_p_one</code> 取 root CCF = 1。</li><li>所有 sampler 的分數都從這裡來（<code>smc/swarm/tree_holder.py:74</code>、<code>smc/kernels/base.py:79</code>、<code>mcmc/gibbs_mh.py:60,90</code>、<code>run.py:354</code>）。</li></ul></div>
+<div class="card"><p><strong>M6 推理</strong> <span class="tag-impl">[程式實作]</span></p>
+<ul><li><code>run.py:187 run_phyclone_chain</code>、<code>:242 _run_main_sampler</code>：每輪依序 Particle Gibbs（tree 或 subtree）→ <code>DataPointSampler</code>（<code>mcmc/gibbs_mh.py:7</code>）→ <code>PruneRegraphSampler</code> → α 更新。</li><li>SMC kernel 可選 bootstrap、semi-adapted（預設）、fully-adapted；只操作 topology 與 assignment，不碰 read count。</li></ul></div>
+<div class="card"><p><strong>M7 後處理</strong> <span class="tag-impl">[程式實作]</span></p>
+<ul><li><code>process_trace/process_trace.py</code>、<code>process_trace/map.py</code>：選出 MAP tree 或建 consensus tree；CCF 與 clonal prevalence 由 grid 上 max-product 回溯得到。</li><li>輸出 newick tree、mutation→clone table、sample prevalence table。</li></ul></div>
+</div>
+<p class="note">路徑相對於 <code>research/phyclone_research/PhyClone/phyclone/</code>（submodule commit <code>2738324</code>）。</p>
+<div class="callout"><p><strong>架構對 HP 特徵的含意</strong> <span class="tag-infer">[分析推論]</span></p><ul><li><strong>per-SNV 特徵 → M2。</strong>給定 SNV 所在 node 的 CCF 後，與其他 SNV 條件獨立，形如 <code>P(obs_i | f_node(i))</code>，可以直接寫進 grid；M3–M7 自動繼承（C2、C3）。</li><li><strong>pairwise 特徵 → M5。</strong>同一條 read 的共現觀測 <code>P(obs_ij | relation(node_i, node_j))</code> 無法拆成單一 node 的 CCF 函數，所以不能放進 grid，而是在 <code>TreeJointDistribution</code> 加一個 topology 因子（C4）。</li><li>因為 M4 的卷積邊際化只接受「每個 node 一條 CCF grid」，C4 <strong>刻意只依賴 topology 關係、不依賴 CCF</strong>，才不會破壞 M4 的積分結構；也因此 M4、M6 不需要修改。</li></ul></div>
+</section>
