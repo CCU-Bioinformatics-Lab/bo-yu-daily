@@ -1,0 +1,928 @@
+                                    Article                                                                                              https://doi.org/10.1038/s41467-023-36202-y
+
+
+                                    Reconstructing clonal tree for
+                                    phylo-phenotypic characterization of
+                                    cancer using single-cell transcriptomics
+                                    Received: 17 June 2021                            Seong-Hwan Jun 1,8, Hosein Toosi1, Jeff Mold2, Camilla Engblom                    2
+                                                                                                                                                                            ,
+                                                                                      Xinsong Chen 3, Ciara O’Flanagan4, Michael Hagemann-Jensen                       2
+                                                                                                                                                                        ,
+                                    Accepted: 20 January 2023
+                                                                                      Rickard Sandberg 2, Samuel Aparicio 4,5, Johan Hartman 3,6,
+                                                                                      Andrew Roth 4,5,7 & Jens Lagergren 1
+
+                                        Check for updates
+                  1234567890():,;
+1234567890():,;
+
+
+
+
+                                                                                      Functional characterization of the cancer clones can shed light on the evolu-
+                                                                                      tionary mechanisms driving cancer’s proliferation and relapse mechanisms.
+                                                                                      Single-cell RNA sequencing data provide grounds for understanding the
+                                                                                      functional state of cancer as a whole; however, much research remains to
+                                                                                      identify and reconstruct clonal relationships toward characterizing the chan-
+                                                                                      ges in functions of individual clones. We present PhylEx that integrates bulk
+                                                                                      genomics data with co-occurrences of mutations from single-cell RNA
+                                                                                      sequencing data to reconstruct high-ﬁdelity clonal trees. We evaluate PhylEx
+                                                                                      on synthetic and well-characterized high-grade serous ovarian cancer cell line
+                                                                                      datasets. PhylEx outperforms the state-of-the-art methods both when com-
+                                                                                      paring capacity for clonal tree reconstruction and for identifying clones. We
+                                                                                      analyze high-grade serous ovarian cancer and breast cancer data to show that
+                                                                                      PhylEx exploits clonal expression proﬁles beyond what is possible with
+                                                                                      expression-based clustering methods and clear the way for accurate inference
+                                                                                      of clonal trees and robust phylo-phenotypic analysis of cancer.
+
+
+
+                                    Cancer is an evolutionary process with ongoing mutational processes         using only the bulk method is well documented in the literature (e.g.,
+                                    coupled with selection and drift leading to genetic diversity within the    refs. 10,11). Recent advances in single-cell DNA sequencing (scDNA-seq)
+                                    tumor cell populations. Though each cell is fundamentally distinct in       technologies have prompted the development of approaches better
+                                    cancer, there typically exist groups of cells that are genomically nearly   tailored to these data types12–14 as well as methods that integrate
+                                    identical, so-called clonal populations1. The evolutionary relationship     scDNA-seq data with the bulk data for joint analysis for improved
+                                    between clones can be represented by a phylogenetic tree or clonal          accuracy15,16.
+                                    tree. Inferring clonal population structure, genotypes, and trees from            Though the aforementioned methods can resolve clonal popula-
+                                    sequence data has been an active area of research in the past decade        tion structure, they cannot identify functional differences that result
+                                    with implications for cancer treatment2–4. Early approaches used bulk       from the genomic heterogeneity. The increasing availability of single-
+                                    sequence data coupled with computational deconvolution to address           cell RNA sequencing (scRNA-seq) data provides an approach to par-
+                                    the admixed nature of bulk data5–9. The limitations of clonal analysis      tially address this problem. Recent methods that seek to assign gene
+
+
+                                    1
+                                    SciLifeLab, School of EECS, KTH Royal Institute of Technology, Stockholm, Sweden. 2Department of Cell and Molecular Biology, Karolinska Institutet,
+                                    Solna, Sweden. 3Department of Oncology and Pathology, Karolinska Institutet, Solna, Sweden. 4Department of Molecular Oncology, BC Cancer, Van-
+                                    couver, BC, Canada. 5Department of Pathology and Laboratory Medicine, University of British Columbia, Vancouver, Canada. 6Department of Clinical
+                                    Pathology and Cytology, Karolinska University Laboratory, Stockholm, Sweden. 7Department of Computer Science, University of British Columbia,
+                                    Vancouver, Canada. 8Present address: Department of Biostatistics and Computational Biology, University of Rochester Medical Center, Rochester, USA.
+                                       e-mail: aroth@bccrc.ca; jens.lagergren@scilifelab.se
+
+
+                                    Nature Communications | (2023)14:982                                                                                                             1
+Article                                                                                                              https://doi.org/10.1038/s41467-023-36202-y
+
+
+expression proﬁles to clones have treated the problem as a two-step                   demonstrate that integration of bulk DNA and scRNA allows for the
+procedure whereby the clonal population structure is identiﬁed and                    identiﬁcation of clonal population structure with high ﬁdelity. Finally,
+then scRNA data is aligned to clonal genotypes17,18. However, the two-                we apply PhylEx to breast cancer data along with HGSOC cell line to
+step approach does not fully utilize the available data as information in             characterize patterns of cancer progression using the clonal expres-
+the scRNA data cannot be used to improve clonal population structure.                 sion proﬁles.
+Hence, there is an unmet need for an integrative approach to simul-
+taneously identify clonal population structure and the associated                     Results
+clonal genotypes from bulk DNA- and scRNA-seq data towards iden-                      Method overview
+tifying intra-tumor heterogeneity in clonal gene expression proﬁles.                  PhylEx is a Bayesian statistical method that simultaneously recon-
+      In this work, we introduce a Bayesian probabilistic method called               structs a clonal tree and assigns single-cells, as well as genotypes, to
+PhylEx (Phylo Expression) that integrates bulk DNA- and scRNA-seq                     the clones for a tumor characterized by bulk DNA-seq and scRNA-seq
+data to meet this need. PhylEx leverages information about the single-                data (Fig. 1a). Standard bulk data processing is performed, including
+nucleotide variants (SNVs) observed within a single cell to identify                  variant and copy number calls to identify loci with SNVs and their copy
+clones, improve clonal tree reconstruction, and facilitate highly accu-               number proﬁles. The bulk data consists of the number of reads map-
+rate mapping of RNA expression proﬁles to clones. Thus, PhylEx                        ping to the variant allele and the total number of reads mapping to
+unlocks the potential for phylo-phenotypic analysis, to discover and                  each locus. Similarly, standard scRNA-seq data processing is applied to
+characterize tumor’s progression and relapse mechanisms at gene and                   align and map the reads for each cell, yielding data that consists of the
+functional (pathway) levels of individual clones in relation to clonal                total depth and the number of reads mapping to the variant allele for
+genotypes, within an evolutionary context. We systematically bench-                   each locus (“Methods” section).
+mark PhylEx using synthetic data and compare it to existing state-of-                      The underlying statistical model is based on the tree-structured
+the-art clone reconstruction methods. We then evaluate the perfor-                    stick breaking (TSSB) process, a ﬂexible prior distribution over the
+mance of PhylEx on high-grade serous ovarian cancer (HGSOC) cell                      clonal tree structure20, and an inﬁnite site model that deﬁne a dis-
+lines, which were thoroughly investigated using the direct library                    tribution over clonal genotypes. The model has an observational
+preparation (DLP) scDNA approach in ref. 19. The experimental results                 component for the read counts from bulk DNA-seq and scRNA-seq
+
+
+
+
+Fig. 1 | Overview of PhylEx. a Schematic diagram describing the bulk DNA-seq and      cellular prevalences using bulk DNA-seq. e The heatmap of the variant read counts
+scRNA-seq data input. The output of PhylEx includes the tree and assignment of        of single-cells across loci and f. the heatmap of the variant read counts of single cells
+SNVs and cells to clones. b The cherry shaped tree used in the illustrative example   after co-clustering of cells and SNVs using PhylEx. All the cells share common set of
+for identifying branching structure from scRNA-seq. The true values of the cellular   ancestral SNVs and we can see two clusters of cells based on their clonal mem-
+prevalences are indicated for each clone. c Inferred tree and cellular prevalences    bership. Source data for e, f are provided as a Source Data ﬁle.
+from integrated analysis of bulk DNA-seq and scRNA-seq. d Inferred tree and
+
+
+
+Nature Communications | (2023)14:982                                                                                                                                         2
+Article                                                                                                  https://doi.org/10.1038/s41467-023-36202-y
+
+
+data, conditional on the clonal tree and the genotypes associated with       and ﬁxed throughout inference procedure. Furthermore, clonealign
+the clones. The observed variant read counts from the bulk data follow       requires that there is sufﬁcient copy number variability between clones
+a binomial distribution parameterized by the read depth and prob-            to uniquely correlate scRNA expression to genotypes. Thus clonealign
+ability of success parameterized by an unobserved cellular prevalence        is not applicable to cancers without signiﬁcant copy number variation.
+and an estimated clonal copy-number. The observed variant read               Cardelino is another method for mapping scRNA-seq to clones; like
+counts from the scRNA-seq data are modeled using a mixture of two            PhylEx, Cardelino maps scRNA data to clones using SNVs18. Because
+Beta-Binomial distributions, one for the mono-allelic and one for the        both PhylEx and Cardelino uses the SNVs to facilitate mapping of
+bi-allelic expression. To sufﬁciently model the stochasticity in the         scRNA-seq data to clones, the two methods can easily be mistaken as
+scRNA-seq data, we have classiﬁed the biological processes that              competitors. The primary goal of Cardelino is to infer the mapping of
+underlie scRNA-seq data into ﬁve categories: (1) zero expression (2)         cells to clones and a clonal conﬁguration matrix (i.e., assignment of
+mono-allelic expression of the reference allele; (3) mono-allelic            SNVs to clones), given an initial clonal conﬁguration matrix obtained
+expression of the variant allele; (4) bi-allelic expression; and (5) no      from bulk DNA-seq data. Speciﬁcally, Cardelino represents clonal
+mutation and provided examples of each of the ﬁve categories in              conﬁguration by a binary matrix C ∈ {0, 1}N×K, where N denotes the
+Supplementary Fig. 7h. The zero expression arises when no read maps          number of SNVs, K denotes the number of clones and the entries
+to a locus. The scRNA-seq data is generally sparse and we expect a large     cnk ∈ {0, 1} indicates presence of mutation n = 1, ..., N in clone k = 1, ..., K.
+number of zero expression (see for example, ref. 21, for a recent dis-       Cardelino gains some ﬂexibility from a poorly constructed initial clonal
+cussion on zeros in scRNA-seq data). The mono-allelic expression may         conﬁguration matrix by re-assigning SNVS to clones; nonetheless, the
+arise due to bursty expression22, where a cell may express only the          mapping of cells to clones is sensitive to the initial clonal conﬁguration
+reference allele or the variant allele but not both. The bi-allelic          matrix, which is noisy if inferred purely from bulk DNA-seq data as we
+expression arises when both alleles are expressed. Finally, expression       demonstrate in this paper. In contrast, the primary goal of PhylEx is to
+of variant allele depends on the clonality of the cell. If a cell does not   infer a clonal tree to reveal an evolutionary process underlying cancer
+harbor a mutation at a locus, then a variant will only be observed in        progression. As the clonal tree yields clonal conﬁguration matrix,
+error be it at the stage of sequencing or bioinformatics processing. Our     PhylEx also provides high ﬁdelity clonal conﬁguration matrix to facil-
+exploratory analyses of the real sequencing data shown in Supple-            itate the mapping of cells to the clones. Note that workﬂow presented
+mentary Fig. 7a–g demonstrate that the scRNA-seq read counts arising         by Cardelino represents a two-step approach to mapping scRNA-seq
+from the aforementioned stochastic processes can be sufﬁciently              data: ﬁrst step involves inferring the clonal structure using bulk DNA-
+modeled by a mixture Beta-Binomial distributions.                            seq, followed by the second step of mapping scRNA-seq data to the
+      The inference machinery takes advantage of slice sampling to           discovered clones. We show that inaccuracies from the ﬁrst step pro-
+explore the space of clonal trees23 and Metropolis-Hastings for              pagate to the second step, resulting in an inaccurate mapping (Sup-
+exploring the clone fractions6,7. PhylEx marginalizes over all possible      plementary Fig. 2) and that PhylEx alleviates this inefﬁciency by
+cell-to-clone assignments to evaluate the likelihood of the single-cell      integrating bulk DNA and scRNA data likelihoods to infer clonal trees.
+data as marginalization has the positive effect of removing uncertainty           Finally, some methods perform de novo reconstruction of clonal
+in scoring the clonal tree due to latent cell-to-clone membership            conﬁguration matrix or single-cell phylogeny from scRNA-seq data
+variables. PhylEx generates samples from the posterior distribution          alone. Two methods that we are aware of are Cardelino-free and
+over the clonal tree as well as a maximum a posteriori (MAP) tree. The       DENDRO18,24. Carlino-free appears to function similarly to Cardelino (a
+output also includes clonal genotypes and cell-to-clone assignments.         detailed method description is missing in the original publication): for
+The clone analysis conducted by PhylEx then facilitates a range of           a given number of clones, K, Cardelino-free reconstructs the clonal
+differential expression investigations on the otherwise inaccessible         conﬁguration matrix by assigning each of N SNVs and single cells to to
+tumor clones.                                                                one of the K pre-speciﬁed clones. This procedure does not involve bulk
+                                                                             data likelihood nor an initial clonal conﬁguration matrix inferred from
+Related methods                                                              bulk DNA-seq data. The authors only recommend using Cardelino-free
+There have been several approaches that have considered integrating          when bulk data is missing as the performance of Cardelino-free is
+single-cell and bulk sequencing data. The method most closely related        found to be inferior to Cardelino (p. 416 of ref. 18). It is important to
+to PhylEx is ddClone, which performs Bayesian inference of clonal            note that (i) Cardelino-free serves a different use case than that of
+structure using an integrated likelihood for bulk and single-cell data15.    PhylEx, and (ii) the target of inference is a clonal conﬁguration matrix
+In contrast to our method, ddClone uses scDNA-seq data and as such,          as opposed to a clonal tree. DENDRO also differs from PhylEx in two
+ddClone cannot infer clonal gene expression proﬁles; furthermore,            ways. First, it reconstructs a single cell phylogeny. Second, it uses only
+ddClone does not infer a clonal tree. B-SCITE also performs integrated       scRNA-seq data (i.e., it does not involve an integrative data likelihood
+analysis of bulk DNA- and scDNA-seq data but it targets mutation             for bulk DNA and scRNA data). De novo reconstruction of single-cell
+trees16; a post-processing step needs to be applied to convert mutation      phylogeny from scRNA-seq data is inherently challenging due to high
+trees to (sub)clonal trees. As the two methods are tailored to work with     levels of sparsity and missingness. By directly targetting clonal trees
+scDNA-seq, they are not well suited to handle the stochasticity in           and integrating bulk DNA-seq data likelihood, PhylEx aims to alleviate
+scRNA-seq data, necessitating the development of a specialized               these concerns.
+method tailored for scRNA-seq. Namely, PhylEx is better equipped to
+account for sparse nature of the scRNA-seq data due to both biological       Integrating scRNA with bulk DNA data improves clonal tree
+and technical reasons and elevated false negative rates due to mono-         reconstruction
+allelic expression (Supplementary Fig. 7h).                                  We begin with an illustrative example to test the strength of the co-
+      Also closely related to PhylEx are approaches that consider the        occurrence signal in single-cell data. We simulated bulk and scRNA-seq
+problem of mapping scRNA-seq data to clones. The earliest approach           data for 100 SNVs and 20 single-cells over a cherry shaped tree (Fig. 1b)
+we are aware of is clonealign, which maps the gene expression proﬁles        under an evolutionary model devoid of copy-number aberrations. We
+in scRNA-seq data to clonal copy number proﬁles17. In the original           analyzed this data using PhylEx and compared it to bulk-based clonal
+publication, the copy number proﬁles were inferred from scDNA data,          tree reconstruction method PhyloWGS7. Figure 1c, d show the MAP
+though in principle they could also be inferred from bulk sequencing         trees from PhylEx and PhyloWGS respectively. Both methods infer the
+data. In contrast to PhylEx, clonealign does not infer a phylogeny as it     cellular prevalences correctly, but the tree inferred by PhyloWGS is
+assumes clonal tree along with clonal copy number proﬁles as given           linear as the observed bulk variant allele frequencies (VAFs) are equally
+
+
+Nature Communications | (2023)14:982                                                                                                                        3
+Article                                                                                                 https://doi.org/10.1038/s41467-023-36202-y
+
+
+well explained by the linear tree. In contrast, PhylEx correctly infers the   may not be feasible. In particular, multi-regional sampling is difﬁcult to
+cherry shaped tree by taking advantage of the co-occurrence of                perform without prior surgical tumor removal, preventing it from
+mutations in the single-cell data and performs co-clustering of the           impacting pre-surgical treatment decisions. We evaluated the perfor-
+SNVs and cells (Fig. 1e, f). This example highlights that estimating          mance of PhylEx on simulated data consisting of a single-region bulk
+clonal trees from bulk DNA data alone is an unidentiﬁable problem.            DNA-seq combined with scRNA-seq data against bulk methods sup-
+     We performed a comprehensive study of simulated data on larger           plied with multi-region DNA data.
+trees and a model of evolution involving copy-number changes. As the               We used a multifurcating tree and simulated the bulk DNA data
+cancer evolution can involve multifurcating events25, we simulated the        with and without copy number variation. Devoid of copy number
+data using multifurcating trees as well as a binary tree (Supplementary       evolution and given multi-region data, the bulk methods achieved high
+Section 2.1). Recall that copy-number variation obfuscate the VAFs,           accuracy (Supplementary Fig. 1c, d): for example, PhyloWGS and TSSB
+which renders bulk data-based clonal tree reconstruction an under-            achieved 0.85 in the V-measure metric on multifurcating trees.
+determined problem. We compared PhylEx to clonal tree reconstruc-             Nevertheless, when supplied with single-cell data, PhylEx performed
+tion methods PhyloWGS and Canopy. PhyloWGS requires subclonal                 better, achieving a V-measure metric upwards of 0.95 using 400 cells
+copy number calls as an input; since such data is not available for           (Supplementary Fig. 1e, f). With data simulated under a copy-number
+simulated data, we implemented the methodology underlying Phy-                evolution model, bulk clonal tree reconstruction methods struggled
+loWGS, which we refer to as TSSB, to investigate the performance of           even when supplied with multi-region data. On the contrary, PhylEx
+the PhyloWGS methodology. Canopy9 is a Bayesian clonal tree recon-            improved the accuracy given only a single-region bulk DNA-seq inte-
+struction software that takes advantage of clonal copy-number infor-          grated with scRNA-seq data in the analysis (Fig. 2c, d). This investiga-
+mation. Canopy has previously been used for single-cell gene                  tion shows that PhylEx reconstructs high-quality clonal trees using
+expression analyses that require a clonal tree as input (e.g.,                single region bulk DNA and scRNA sequencing, increasing applicability
+Cardelino18). We used V-measure and the ancestral reconstruction              of clonal tree reconstruction methods to various research and clinical
+error given in Eq. (14) as evaluation metrics. We found that for both         settings that are limited to single-region sequencing.
+binary and multifurcating trees, PhylEx outperformed Canopy and
+PhyloWGS/TSSB (Fig. 2a, b and Supplementary Fig. 1a, b)). The per-            Investigation on synthetic data reveals that a specialized
+formance of PhylEx improves progressively with the number of cells,           method to integrate bulk and scRNA-seq is necessary to over-
+as hoped. Comparing PhylEx to bulk-based clonal tree reconstruction           come the limitations of existing bulk and scDNA-seq integration
+methods further demonstrates that scRNA-seq data can mitigate the             methods
+impact of (subclonal) copy-number changes on clonal tree recon-               Next, we compared PhylEx to two methods that integrate bulk geno-
+struction accuracy.                                                           mics data with scDNA-seq data, B-SCITE and ddClone15,16, on synthetic
+     We conducted additional analyses to illustrate the potential pitfall     data. One of the challenges of using these methods is that they require
+of mapping scRNA-seq data to clones using a two stage approach. We            cell genotyping as a pre-processing step, i.e., to determine the pre-
+follow the two stage approach proposed in ref. 18 where a clonal tree is      sence or absence of mutation for each cell at each of the identiﬁed SNV
+inferred using Canopy using bulk sequencing data alone, and used as           loci. Although cell genotyping is an active ﬁeld of research, it remains a
+an input to Cardelino, which we refer to as CanopyCardelino. We               challenging problem with the potential for high false positive (FP) and
+inferred a clonal tree using PhylEx and inputted the inferred clones to       false-negative (FN) rates, especially when applied to scRNA-seq data as
+Cardelino and PhylEx’s own mapping algorithm, respectively referred           the expression proﬁle is inherently sparse, bursty, with frequent mono-
+to as PhylExCardelino and PhylEx. Recall that mapping of cells to             allelic expression. One of the key features of PhylEx is that it works with
+clones admits calling the genotypes of each cell (i.e., the presence and      the raw read counts and does not require cell genotyping.
+absence of SNVs in each individual cell). Hence, we compared expec-                 We found that PhylEx outperformed ddClone and B-SCITE on
+ted loss, which roughly translates as an average number of SNVs               synthetic data generated from both binary and multifurcating trees,
+incorrectly predicted for each cell (deﬁned in Eq. (16)). The experiment      under evolutionary models with and without copy numbers aberra-
+was performed on simulated data from binary trees with and without            tions (Fig. 2a, b, e, f and Supplementary Fig. 1a, b, e, f). Importantly,
+copy number evolution (Supplementary Fig. 2). The results are poor            PhylEx exhibited an increase in performance with an increasing num-
+for the two stage method – that even a sophisticated mapping algo-            ber of cells. In contrast, the other methods did not beneﬁt from having
+rithm such as Cardelino cannot overcome poorly constructed clonal             more cells, likely because having more cells implies a higher incidence
+tree. However, given a high ﬁdelity clonal tree, PhylEx’s mapping             of FP and FN variant calls. Our results suggest that specialized methods
+algorithm does well and more importantly, the performance improves            for integrating bulk genomics with single-cell transcriptomics are
+as more cells are added. Also note from the results that Cardelino            needed to extract the signal from scRNA-seq data and that given data
+achieves the state-of-the-art performance – this is unsurprising as           for sufﬁciently many cells, PhylEx reconstructs the correct clonal tree.
+mentioned in the Related methods section, that Cardelino reﬁnes
+clonal genotype conﬁguration matrix to achieve the best possible              PhylEx reconstructs the lineage of high-grade serous ovarian
+mapping of scRNA-seq data to clones. In contrast, PhylEx’s mapping            cancer clones
+algorithm does not reﬁne clonal conﬁguration matrix. Our recom-               To assess the performance of PhylEx on real data, we analyzed a related
+mendation is to use PhylEx to infer the clonal trees and hence, the           set of high-grade serous ovarian cancer cell-lines27. The cell-lines are
+clonal conﬁguration matrix coupled with Cardelino to map cells to             derived from the same patient, one from the primary tumor (OV2295)
+clones.                                                                       and two from relapse specimens (OV2295R2 and TOV2295R). These
+                                                                              cell-lines have been assayed using the direct library preparation (DLP)
+PhylEx reconstructs high ﬁdelity clonal trees from single-region              scDNA-seq technology28 and analyzed by some of the leading experts
+bulk DNA-seq integrated with scRNA-seq evaluated on syn-                      in the ﬁeld of computational oncology using multiple genomic char-
+thetic data                                                                   acteristics, e.g., copy-numbers, breakpoints, and SNVs, to reconstruct
+Multi-region sequencing is a standard approach to improve the accu-           a clonal tree, which we call DLP clonal tree (Fig. 3h in ref. 19). Since
+racy of the clonal tree reconstruction, e.g., to resolve branching3,5–7,26.   their evidence-based analysis was supported by multiple genomic
+For solid tumors, spatial samples are taken as statistical replicates with    characteristics, DLP clonal tree must be considered very solid, pro-
+common evolutionary history but possibly with different cellular pre-         viding a fertile opportunity to assess performance of PhylEx on real
+valences. However, depending on the type of tumor, spatial sampling           sequencing data. To that end, we performed Smart-Seq3 scRNA-seq29
+
+
+Nature Communications | (2023)14:982                                                                                                                   4
+Article                                                                                                          https://doi.org/10.1038/s41467-023-36202-y
+
+
+
+
+Fig. 2 | Simulated data analysis results with 20 data replicates generated with    reconstruction error and V-measure. e, f Comparison of PhylEx on multi-region
+100 SNVs in each replicate from multifurcating tree with copy number evo-          bulk DNA and scRNA data to the competitors. The box plot shows the median and
+lution. a, b Compared PhylEx to competitors on tree reconstruction error and on    inter-quantile range (IQR) at the 1st and the 3rd quantiles; the top (bottom) whisker
+V-measure. c, d Comparison of PhylEx using single-region bulk DNA-seq and scRNA-   indicates the maximal (minimal) point no further than 1.5 × IQR from the third (ﬁrst)
+seq to bulk-based methods supplied with multi-region DNA-seq using tree            quantile. Source data are provided as a Source Data ﬁle.
+
+
+
+
+Nature Communications | (2023)14:982                                                                                                                                  5
+Article                                                                                                https://doi.org/10.1038/s41467-023-36202-y
+
+
+on OV2295 and OV2295R2 (TOV2295R was difﬁcult to grow and we                 time. It was ﬁrst applied in developmental biology studies32, but is
+could not use it).                                                           increasingly being used in cancer studies33. An open question in the
+     We constructed a single-region pseudo-bulk data by combining            cancer context is whether pseudo-time trajectories reﬂect evolu-
+the scDNA-seq data from the two cell-lines OV2295 and OV2295R2. We           tionary history. As pseudo-time analysis is based purely on gene
+obtained 360 scRNA-seq cells passing quality control and identiﬁed 67        expression, this is not guaranteed. We applied the pseudo-time
+SNVs with coverage in the scRNA data. Of the 67 SNVs, 21 SNVs were           method Slingshot34 on the 2-dimensional representation obtained by
+removed from evaluation, but not the PhylEx analysis, due to incom-          ZINB-WaVE with the cells clustered using (i) PhylEx and (ii) mclust
+patible annotation in the original publication19. To elaborate, an SNV is    based on gene expression data35. Trajectories inferred by slingshot did
+removed from evaluation only based on whether the authors of the             not reﬂect the evolutionary histories: (i) the parent-child clones ABCD
+original publication made consistent annotation with the tree that they      and CD appear as siblings (Fig. 3c) and (ii) the gene expression based
+inferred (Fig. 3h of ref. 19); inferred PhylEx tree was not used in deter-   clustering using mclust deviated signiﬁcantly from the DLP cancer
+mining which SNVs to remove. The annotation for each of the SNVs             clones (Fig. 3d). These results suggest that phylo-phenotypic analysis
+from ref. 19 is given in Supplementary Data 1 along with indication of       will lead to accurate interpretations of the scRNA-seq data than ones
+which SNVs are excluded from evaluation. Alternative was to manually         based purely on gene expression and that trajectory analysis may not
+correct the inconsistent annotations and use all 67 SNVs in the eva-         reﬂect evolutionary history of cancer.
+luation; however, we deemed this process would be subject to bias.                 We performed differential gene expression analysis (DGE) using
+     There is a strong concordance between DLP clonal tree and the           edgeR36,37 to compare the three major clones: the Ancestral clone, the
+PhylEx MAP clonal tree. First, when disregarding a node of DLP clonal        ABCD clone (primary tumor), and the EF clone (relapse tumor). The
+tree with a single SNV (labeled EFGHI in Fig. 3a), the trees have the        ancestral clone is represented by the cells assigned to the root node
+identical topology (Fig. 3a, b). PhylEx correctly assigned 23 of 24          (161 cells), the ABCD clone is represented by the cells assigned to the
+ancestral mutations. One SNV in ABCD clone was assigned to the CD            left child of the root and its descendants (152 cells), and the EF clone is
+clone. The clones EF and EFGHI were clumped together, thereby also           represented by the cells assigned to the right child of the root (47 cells)
+clustering the lone SNV in EFGHI clone with the SNVs in EF clone. We         in the tree given in Fig. 3b. The resulting volcano plots reveal an
+compared the results of PhylEx to those inferred with Canopy, TSSB,          abundance of differentially expressed genes between the Ancestral/
+ddClone, and B-SCITE6,7,9,15,16 on three clustering metrics and ancestral    ABCD dominant in the primary tumor, and the EF clone dominant in
+reconstruction metric. PhylEx signiﬁcantly outperformed all of the           the relapse (Fig. 3e, f). There appears to be an evidence of immuno-
+other methods (Table 1). We have repeated the experiment under               editing in the relapse clone, manifested by a substantial number of
+different parameter settings for PhylEx to demonstrate the robustness        down-regulated immune system genes. To verify this, we performed
+of the conclusion (Supplementary Table 3).                                   gene set enrichment analysis (GSEA) using Correlation Adjusted MEan
+     To demonstrate a potential problem of two-step approach, we             RAnk gene set test available in limma package38,39 on the set MSigDB C5
+applied Cardelino to assign cells to the clones inferred from Canopy.        (gene ontology)40. Several pathways related to the immune system
+The mutations that Canopy identiﬁed as exclusive to Clones 6 and 8           were signiﬁcantly down-regulated in the EF clone compared to the
+are marked in Supplementary Fig. 4e. However, we found cells                 ABCD clone (Table 2 and Supplementary Table 1) suggesting evasion of
+assigned to other clones frequently carried mutations on these loci          immune surveillance as the primary relapse mechanism.
+(Supplementary Fig. 3a). This is in a stark contrast to cells assigned by          Taken together, these results demonstrate that insights obtained
+PhylEx (Supplementary Fig. 3b) with clear partition of cells by clones       by comparing expression proﬁles in the context of PhylEx clones
+and their genotypes.                                                         provide the capacity for phylo-phenotypic analysis which can be used
+                                                                             to dissect the tumor gene expression patterns beyond what is possible
+Phylo-phenotypic analysis reveals immunoediting in metastases                with current single-cell expression analysis methods.
+To demonstrate PhylEx’s ability to perform phylo-phenotypic analysis,
+we performed gene expression analysis on clones discovered by Phy-           Comparison of 10X and Smart-Seq3 scRNA-seq for clonal tree
+lEx on the HGSOC Smart-Seq3 scRNA-seq data. We cannot evaluate the           reconstruction
+correctness of cell-to-clone assignment as ground truth does not exist.      Next, we investigate the applicability of PhylEx on widely available 10X
+However, the co-clustering of SNVs and the cells to clones indicates its     Genomics scRNA-seq data (referred to as 10X for brevity). Smart-Seq3,
+correctness (Supplementary Fig. 3b). Namely, we observed that all cells      like its predecessor Smart-Seq2, is a plate-based, full-length transcript
+shared the ancestral SNVs (Ancestral clone) while the cells assigned to      sequencing technology offering improved sensitivity to detect tran-
+the clone in the relapse tumor did not express the SNVs in the primary       scripts over its predecessor29. 10X on the other hand is a droplet based
+tumor and vice versa.                                                        technology, which allows sequencing of large number of cells. While a
+     We selected 1000 genes with the most variable expression pattern        comprehensive study comparing Smart-Seq3 to 10X is unavailable, the
+for differential gene analysis. We used a zero-inﬂated negative bino-        general understanding is that Smart-Seq3 offers better coverage and
+mial model (ZINB-WaVE)30 to reduce the dimensionality of the gene            possibly depth on a smaller number of cells and 10X allows sequencing
+expressions data to 2-dimensions. There was a clear separation               of a much larger number of cells at lower coverage41,42.
+between the expression of the EF clade (OV2295R) and the primary                   We obtained a total of 6616 cells sequenced using 10X 3′
+ABCD clade (OV2295) (Fig. 3c and Supplementary Fig. 4a–d). Addi-             sequencing of the HGSOC cell-lines. We computed sample statistics on
+tionally, cells assigned to CD subclone exhibited separation from the        the coverage of mutations across cells where we deﬁne a cell to cover a
+parental ABCD clone (Supplementary Fig. 3c). We repeated this ana-           mutation at a loci if the read count at the loci contains at least one
+lysis using t-SNE31, another dimensionality reduction technique. A           variant read. On average, cells sequenced using 10X platform had
+subset of the cells assigned to the ancestral clone, and cells assigned to   coverage of mutations for 0.4527 loci with the median of 0; in com-
+the EF clone, were well separated (Supplementary Fig. 3d). The               parison, a cell acquired using Smart-Seq3 had coverage of mutations
+observation of cluster-speciﬁc phenotypes, obtained through two              for 3.253 loci with median of 3 (Table 3). The low mutation coverage is a
+independent methods, provides biological evidence of the capacity of         direct consequence of shallow read depth (Supplementary Fig. 8a, c)
+PhylEx for phylo-phenotypic analysis.                                        and the 3′ bias of the 10X data. The average depth at any given loci for
+     We next sought to explore the relationship between pseudo-time          10X data was 1.403, conditional on having a minimum of one read. The
+trajectories and evolutionary history. Pseudo-time is a popular              average variant depth, deﬁned as the number of reads mapping to the
+approach for looking at dynamic changes in gene expression over              variant allele at a loci was 0.1427 conditional on the loci being
+
+
+Nature Communications | (2023)14:982                                                                                                                  6
+Article                                                                                                                https://doi.org/10.1038/s41467-023-36202-y
+
+
+
+
+Fig. 3 | Analysis of HGSOC cell line. a DLP clonal tree with the number of SNVs          clone speciﬁed as the starting cluster; d clustering of cells using mclust with the
+assigned to each clone indicated beside the clone name. b The inferred tree from         trajectory analysis with starting cluster unspeciﬁed. The visualization of differential
+PhylEx; the number of SNVs attached to each node is obtained from the DLP clonal         gene expression analysis using volcano plots: e the EF clone to the Ancestral clone,
+tree annotation in a. The plot of the gene expressions for cells on ZINB-WaVE            and f the EF clone to the ABCD clone. Source data for a is provided as Supple-
+dimensions: c. cells are color-coded after assigning to the clonal tree output from      mentary Data 1. Source data for b–f are provided as a Source Data ﬁle.
+PhylEx, and the trajectory analysis result is overlaid on the ﬁgure with the ancestral
+
+
+
+
+Nature Communications | (2023)14:982                                                                                                                                          7
+Article                                                                                                                            https://doi.org/10.1038/s41467-023-36202-y
+
+
+Table 1 | Performance metric comparing PhylEx to Canopy, TSSB, B-SCITE, and ddClone on HGSOC data supplied with Smart-
+Seq3 scRNA-seq
+ Method                      V-Measure                                 Adj. Rand Index                        Adj. Mut Info                           Anc. Recon Err
+ Canopy                      0.494                                     0.386                                  0.327                                   0.178
+ ddClone                     0.571                                     0.240                                  0.254                                   NA
+ B-SCITE                     0.445                                     0.108                                  0.238                                   0.259
+ TSSB                        0.237 ± 0.068                             0.283 ± 0.077                          0.180 ± 0.075                           0.204 ± 0.032
+ PhylEx                      0.870 ± 0.0132                            0.888 ± 0.0164                         0.839 ± 0.0175                          0.0379 ± 0.0077
+Used 20 runs for PhylEx and TSSB. Canopy and B-SCITE were ran with four MCMC chains. The ﬁrst column lists the name of the methods. The second to fourth columns are clustering metrics used for
+comparison. The last column is the ancestral reconstruction error metric. The boldface indicates the best performing method. Source data are provided as a Source Data ﬁle.
+
+
+
+
+Table 2 | Gene set enrichment analysis results comparing the ABCD clone to the EF clone
+ Gene ontology                                                                                                 P-value                                  FDR
+ MHC protein complex                                                                                           4.85e-15                                 1.32e-11
+ Antigen processing and presentation of endogenous antigen                                                     6.40e-15                                 1.32e-11
+ MHC class I protein complex                                                                                   6.57e-14                                 8.08e-11
+ Response to type I interferon                                                                                 2.86e-11                                 1.60e-08
+ Antigen processing and presentation of endogenous peptide antigen                                             2.61e-10                                 1.14e-07
+ Positive regulation of T cell mediated cytotoxicity                                                           7.96e-09                                 2.51e-06
+ Interferon Gamma mediated signaling pathway                                                                   2.08e-08                                 5.72e-06
+ Regulation of T cell mediated cytotoxicity                                                                    2.37e-08                                 6.07e-06
+ Positive regulation of antigen processing and presentation                                                    4.99e-07                                 9.59e-05
+ Detection of other organism                                                                                   6.87e-07                                 1.28e-04
+Top 10 most signiﬁcantly down regulated pathways are shown (ﬁrst column) along with p-value (middle column) and false discovery rates (third column). The Correlation Adjusted MEan RAnk gene
+set test is used, which performs a 2-sided test and uses Benjamini–Hochberg algorithm to produce false discovery rate (FDR) accounting for multiple comparisons38.
+
+
+
+
+Table 3 | Coverage statistics for 10X vs Smart-Seq3 on                                            using birth-death process (Supplementary Section 2.2-2.3). As expec-
+HGSOC data                                                                                        ted, the performance improved as the coverage increased (Supple-
+                                                                                                  mentary Fig. 8d, e). Note that at 0.02, we have very few cells which co-
+ Method             1st Quantile       Median        Mean          3rd Quantile        Max
+                                                                                                  express variants (Supplementary Fig. 8f) and hence, the performance
+ Smart-Seq3         1                  3             3.253         5                   14
+                                                                                                  of PhylEx is indistinguishable from bulk deconvolution methods.
+ 10X                0                  0             0.4527        1                   4          These results suggest that using full-length transcript sequencing and
+Source data are provided as a Source Data ﬁle.                                                    higher sequencing depth can dramatically improve the clonal recon-
+                                                                                                  struction accuracy. Note that our study involving 10X 3′ technology
+                                                                                                  elected shallow sequencing depth to accommodate sequencing of
+expressed. With shallow depth, combined with possibility of mono-                                 thousands of cells. We expect coverage of mutation and PhylEx’s
+allelic expression, detecting mutations using 10X 3’ sequencing or                                performance to improve at greater sequencing depth.
+similar approaches is challenging. In contrast, the Smart-Seq3 mean
+total depth was 19.37 and mean variant depth was 2.962.                                           Deciphering phenotypic evolution in HER2+ breast cancer
+      We compared PhylEx supplied with 10X scRNA-seq data to the                                  We generated Smart-Seq3 scRNA-seq and bulk whole-exome DNA
+bulk deconvolution methods TSSB and Canopy. We identiﬁed 93 SNVs                                  sequencing data for ﬁve spatially distinct regions of an untreated
+for analysis and 540 cells that harbored variant reads on at least one of                         HER2+ breast cancer tumor. We applied PhylEx to 369 cells and 418
+these SNVs using a ﬁltering strategy similar to that applied to the                               SNVs that were available after pre-processing. The PhylEx MAP tree was
+Smart-Seq3 data (see “Methods” section). PhylEx outperformed the                                  a linear expansion, i.e., a path (Fig. 4a), after restriction to clones that
+bulk deconvolution methods (Tables 4); however, the improvement in                                contained more than 1 SNV and at least one cell assigned (Supple-
+performance was not as signiﬁcant as when supplied with Smart-Seq3                                mentary Fig. 6b). We also applied TSSB on the data without scRNA-seq
+scRNA-seq data (Table 1). As PhylEx relies on co-occurrence of muta-                              data. The TSSB tree infers a linear expansion until the end where we see
+tions to resolve temporal ordering of mutations as well as branching, it                          two clones branching (Clones 5 and 6 in Supplementary Fig. 6a). After
+is critical that cells have as high coverage to achieve good perfor-                              assigning cells to this tree, we see that mutual exclusivity of the
+mance. Computing the statistic on the selected 540 10X cells, we found                            mutations are violated (Supplementary Fig. 6d). In contrast, we see
+that 428 cells had coverage of 2 mutations, 99 cells had coverage of 3                            that cells assigned on PhylEx tree form clear partitions with minimal
+mutations, and 13 cells with coverage of 4 mutations. However, many                               violation (Supplementary Fig. 6e); this ﬁgure shows single-cell data
+of these had shallow coverage – once we restricted the deﬁnition of                               support for the linear evolution.
+coverage to include at least two variant reads, the coverage statistic                                 The clone fraction appeared to be well-mixed in each region
+were 399 cells with 0 coverage, 129 with 1 mutation, and 11 cells with 2                          (Fig. 4d). The clone fraction of regions D, E differed from the other
+mutations, and only 1 cell with 3 mutations.                                                      regions; this is perhaps explained by the fact that these regions were
+      We have conducted simulation study to further corroborate our                               relatively far away from the other regions (Supplementary Fig. 5g).
+ﬁndings. We measured the performance of PhylEx on simulated                                            We retrieved the NanoString PanCancer human pathway panel
+scRNA-seq dataset with the coverage probability at {0.1, 0.05, 0.02} on                           gene list of 770 curated genes (NanoString Technologies, Seattle, WA)
+a binary tree and bulk data generated with copy number variation                                  for the downstream analysis. Focusing on this set of genes helps to
+
+
+Nature Communications | (2023)14:982                                                                                                                                                          8
+Article                                                                                                                       https://doi.org/10.1038/s41467-023-36202-y
+
+
+Table 4 | Performance metric comparing PhylEx on HGSOC data supplied with 10X scRNA-seq data to bulk-based deconvo-
+lution methods
+ Method                       V-Measure                              Adj. Rand Index                        Adj. Mut Info                          Anc. Recon Err
+ Canopy                       0.305                                  0.176                                  0.168                                  0.245
+ TSSB                         0.203 ± 0.0431                         0.154 ± 0.0490                         0.156 ± 0.0495                         0.238 ± 0.0252
+ PhylEx                       0.360 ± 0.0418                         0.206 ± 0.0323                         0.266 ± 0.0376                         0.233 ± 0.0129
+Used 20 runs for PhylEx and TSSB. Canopy was executed with four MCMC chains. The ﬁrst column lists the name of the methods. The second to fourth columns are clustering metrics used for
+comparison. The last column is the ancestral reconstruction error metric. The boldface indicates the best performing method. Source data are provided as a Source Data ﬁle.
+
+
+
+identify driver mutations for each clone. Among the SNVs used in our                               Furthermore, PhylEx opens the avenue for future extension to
+analysis, 24 overlapped the NanoString list (Fig. 4b and Supplementary                        characterize clones by somatic mutations as well as copy number
+Table 2). We identiﬁed a mutation in CDC6 in the progenitor clone                             proﬁles. In particular, inferring subclonal copy numbers is inherently
+(Clone 1), implicating changes to the cell replication mechanism, and                         challenging to achieve using only the bulk sequencing data. It is cur-
+identiﬁed a mutation in TP53 and MAP3K8 in Clone 2, hinting at the                            rently feasible using specialized single-cell sequencing techniques
+proliferation of cancer beginning at Clone 2. In Clone 3, we noted                            such as DLP19,28,44. There exist methods that perform copy number
+mutations to genes involved in PI3K and MAPK pathways (PIK3R3,                                inference from scRNA-seq data such as InferCNV, HoneyBADGER, and
+CACNA2D2) and to MDC1 (DNA repair). Clone 4 appears to be char-                               CopyKAT45–47; however, these methods do not consider copy number
+acterized by changes to the RAS pathway as evidenced by mutations to                          variation in the context of evolution. For example, CopyKAT, relies on
+ETS2. Overall, the clonal tree provides a vital context in which to ana-                      hierarchical clustering on the expression data. While InferCNV and
+lyze and inspect mutations in cancer.                                                         HoneyBADGER allow subclonal copy number inference, they are lim-
+      We performed gene set enrichment analysis on the MSigDB                                 ited to bifurcating trees. With evidence for multifurcation in cancer
+Hallmark gene sets to compare the parent-child clones (Fig. 4c). GSEA                         evolution (e.g., ref. 25) as well as linear evolution48, coupled with a lack
+revealed a signiﬁcant increase of PI3K AKT MTOR signaling pathway                             of resolution to detecting binary branching from scRNA-seq data, this
+expression in Clone 2 compared to Clone 1. The PI3K AKT MTOR                                  is potentially a severe limitation. The performances of these methods
+pathway is a commonly activated therapeutic target in breast cancer43.                        also depend on having a set of normal reference cells as CNV inference
+An in-depth inspection of the expression revealed an upregulation of                          from scRNA-seq data require reference expression levels of the normal
+PI3K AKT MTOR signaling pathway in all clones descending from Clone                           cells. As such, CNV clones did not have high concordance with SNV
+1 (Fig. 4e). We then performed DGE to compare the clones (Fig. 4f and                         clones when applied to HER2+ scRNA-seq data (Supplementary Fig. 6c,
+Supplementary Fig. 5a–f). We conﬁrmed an overexpression of ERBB2 in                           f) where we did not have normal reference cells.
+Clone 2 compared to Clone 1 (FDR < 0.1). Clone 1 had a mutation in                                 PhylEx, as is the case with other methods, has limitations. A full-
+CDC6 and only two other mutations, perhaps indicating that its cells                          length single-cell transcript sequencing technology with sufﬁcient
+more closely resemble normal cells than the cancer cells.                                     coverage and depth of sequencing is necessary to attain accurate
+      Overall, the PhylEx analysis identiﬁes the driver mutations                             inference of clonal trees. Although the algorithmic complexity is linear
+(Fig. 4b), elucidates spatial distribution of the clones (Fig. 4d), and                       in the number of cells, it also depends on the size of the clonal tree. As
+facilitates a downstream analysis of scRNA expression data that sheds                         the size of the clonal tree may grow for cancers with complex evolu-
+light on the clones’ functional characteristics (Fig. 4c, e, f).                              tionary process, we recommend the users to carefully select SNVs to
+                                                                                              include in the analysis, e.g., tumor suppressor genes, oncogenes, and
+Discussion                                                                                    deleterious mutations. We noted that Cardelino’s mapping algorithm
+In this work, we have presented PhylEx, for integrating bulk genomic                          performs slightly better than PhylEx as shown in Supplementary Fig. 2;
+and single-cell transcriptomic data to reconstruct clonal trees, which                        therefore, recommended workﬂow is to infer clonal tree using PhylEx
+paves the road for characterizing the functional state of individual                          and map cells on PhylEx clones using Cardelino. Finally, PhylEx uses
+clones via phylo-phenotypic analysis. We have shown how PhylEx                                copy number proﬁles inferred from bulk genomics data. While esti-
+enhances downstream analysis by providing a clonal tree and the                               mating CNV from bulk is a well-established technology and our
+opportunity to compare the clones’ functional states – revealing the                          approach can mitigate the effects of approximation error via margin-
+interplay between the evolutionary process and the clones’                                    alization (Methods), PhylEx can beneﬁt from integrating copy number
+phenotypes.                                                                                   information in the bulk as well as in scRNA-seq data. We identify that
+     We established that specialized methods for integrating bulk with                        the next challenge is to perform joint inference of clonal tree, clonal
+single-cell transcriptomics are necessary. By modeling read counts,                           genotypes including SNVs and copy numbers via integration of scRNA-
+PhylEx bypasses the need for performing cell genotyping and hence,                            seq with bulk DNA-seq data. This calls for a statistical model that
+avoids compounding of errors stemming from dichotomizing counts                               captures the dependence between the copy numbers and the
+into binary values. PhylEx, using only a single region bulk sequencing                        observed read counts in the scRNA-seq as well as the bulk data, and
+combined with scRNA-seq, outperforms state-of-the-art bulk-based                              tractable computational algorithms to cope with potentially large
+methods supplied with multi-region data. We expect these ﬁndings to                           computational cost associated with hidden Markov model operating
+shift the paradigm from multi-region sequencing to single-region                              over tree on the evolving copy number proﬁles. PhylEx represents an
+sequencing accompanied by scRNA-seq. This approach will simulta-                              important ﬁrst step and a substantial progress in reconstructing the
+neously reduce the effort required for data acquisition, improve the                          entire evolutionary trajectory of cancer towards accomplishing
+accuracy of the clonal reconstruction, and allow for functional analysis                      this goal.
+of individual clones. Moreover, many researchers will realize that the
+single-cell RNA data they already possess should be exploited for                             Methods
+clonal analysis or, even, to perform supplementary single-cell RNA                            Ethics statement on collection of clinical material for breast
+sequencing for this purpose. With the prevalence of bulk DNA                                  cancer samples
+sequencing and rapidly growing studies conducting scRNA-seq, we                               Fresh primary tumor resections were obtained from a breast cancer
+expect that PhylEx will prove proﬁtable to cancer researchers studying                        patient at Karolinska University Hospital and Stockholm South General
+the functional implications of cancer evolution.                                              Hospital. Experimental procedures and protocols were approved by
+
+
+Nature Communications | (2023)14:982                                                                                                                                                   9
+Article                                                                                                            https://doi.org/10.1038/s41467-023-36202-y
+
+
+
+
+Fig. 4 | Multi-region HER2+ breast cancer analysis. a PhylEx inferred tree with the   pathway by clone; the 1st, 2nd, and 3rd quantiles are shown with the top (bottom)
+number of cells assigned to each clone shown under the clone label. b Mutation        whisker indicates the maximal point no further than 1.5 × IQR from the third (ﬁrst)
+absence/presence heatmap. c Heatmap of gene set enrichment analysis on Hall-          quantile. f Differential gene expression analysis to compare progenitor cells
+mark pathways to compare parent-child clones. d Clone (cellular) fraction plot for    assigned to Clone 2 to the cells to Clone 1. Source data are provided as a Source
+each clone by region. e Box-plot of expression levels for PI3K AKT MTOR signaling     Data ﬁle.
+
+
+
+
+Nature Communications | (2023)14:982                                                                                                                                 10
+Article                                                                                             https://doi.org/10.1038/s41467-023-36202-y
+
+
+the regional ethics review board (Etikprövningsnämnden) in Stock-        libraries (22 cycles PCR). Final library concentrations were determined
+holm, with reference numbers 2016/957-31 and 2017/742-32. Biobank        and normalized for each cell using Picogreen. Diluted cDNA of 100 pg
+approval was obtained from the Stockholm medical biobank. Before         per sample was used for tagmentation (Nextera Library Preparation
+surgery, informed consent in accordance with the Declaration of Hel-     Kit, Illumina, ATM at 0.1 μL per cell). The ﬁnal samples were analyzed
+sinki was given to the patient for signature. The patient was not        using a Bioanalyzer (Hi-Sensitivity Kit, Agilent) and sent for sequencing
+compensated since our study did not include any extra steps other        on a Novaseq S Prime lane, PE 2x150bp (Illumina). Library quality was
+than the standard treatment procedures for the disease.                  compared to index sorting results to conﬁrm that negative wells yiel-
+                                                                         ded low complexity libraries. The list of oligonucleotides are available
+Whole-exome sequencing for breast cancer samples                         at https://doi.org/10.17504/protocols.io.bcq4ivyw and provided as
+Tumor resections and matching dermal biopsies from 4 individual          Supplementary Data 3.
+breast cancer patients were freshly collected. Tissues were manually
+homogenized and genomic DNA samples were isolated by using the           PhylEx probabilistic model
+QIAamp DNA mini kit (QIAGEN). The library was prepared by using          PhylEx performs Bayesian posterior inference over the clonal tree,
+Twist Bioscience Human Core Exome kit (Twist Bioscience) according       assignment of SNVs to clones, cellular prevalences by integrating bulk
+to the manufacture protocol. The bulk DNA samples were then              DNA- and scRNA-seq data. The graphical model for PhylEx is provided
+sequenced in a S4 ﬂow cell lane by the NovaSeq 6000 platform (Illu-      in Supplementary Fig. 9 and the table of notation along with brief
+mina) at the National Genomics Infrastructure, Science for Life          description for each variable is given in Supplementary Table 4.
+Laboratory, Uppsala.
+                                                                         Model overview. We deﬁne the latent clonal tree T as a rooted tree
+Breast cancer sample preparation for single-cell RNA                     with the nodeset denoted by V. The nodeset represents the set of
+sequencing                                                               clones; we will use the term node and clone interchangeably. The root
+Tissues were homogenized and cells were released by using the            node r represents healthy cells and has exactly one child; the lone child
+gentleMACS™ Octo Dissociator with Heaters and the human                  of the root represents the cancer progenitor clone. Each non-root
+tumor dissociation kit (both from Miltenyi Biotec), according to         node v has one parent, denoted ρ(v) but each non-root node may have
+the manufacturer protocols. Afterwards, the cells were washed            any number of children (zero or more), the set of children of v is
+two times with F12-DMEM medium (Gibco) and collected by                  denoted κ(v). We achieve ﬂexibility in modeling the number of chil-
+centrifugation at 300g for 5 minutes. The single-cell suspensions        dren by using tree-structured stick-breaking process (TSSB) prior20,
+were further generated by passing the resuspended cells through          which is a prior over arbitrary tree depth and width, particularly useful
+the 70 mm cell strainers. The single cell suspensions were then          in modeling clonal trees where the number of branching events is
+further stained with the Zombie Aqua Fixable viability dye (1:100,       unknown in advance. We denote the number of SNVs under con-
+Biolegend, 423101) at room temperature for 20 min, then washed           sideration by N. The clonal membership of SNVs is represented by
+with phosphate-buffered saline (PBS). The cells were incubated           z = (z1, …, zN), where zn ∈ V for n = 1, …, N. The aforementioned TSSB
+with Human TruStain Fc block (1:100, Biolegend, 422302) for              deﬁnes a joint distribution over T, z, which we denote P0(z, T).
+10 min to limit unspeciﬁc antibody binding, then stained for                   Each node of the tree is associated with cellular prevalence
+20 min with anti-EPCAM (1:40, Biolegend, 324206) and anti-CD45           parameter denoted ϕ = ðϕv Þv2V . Note that we can associate cellular
+(1:40, Biolegend, 304021) in FACS buffer (PBS + 0.5% Bovine              prevalence parameter to each SNV n = 1, ..., N as follows: ϕn = ϕz n (i.e.,
+Serum Albumin). The cells were subsequently washed and resus-            the cellular prevalence parameters are shared by SNVs given the latent
+pended in FACS buffer. Fluorescence-activated cell sorting (FACS)        clonal membership). The prior distribution over the cellular pre-
+using an inﬂux ﬂow cytometer (BD Biosciences) was performed to           valences is given by hierarchical priors conditional on T, z, ﬁrst intro-
+sort live EPCAM+CD45- single-cells into 384 well plates for Smart-       duced in PhyloSub and PhyloWGS6,7, which we denote as P0(ϕ∣z, T).
+Seq3 analysis. The list of antibodies is provided in Supplemen-          The hierarhical priors enforce the following restrictions on the cellular
+tary Data 2.                                                             prevalence parameters: (1) ∑u∈κ(v) ϕu ≤ ϕv and (2) 0 ≤ ϕv ≤ 1. The cellular
+                                                                         prevalence of a clone represents the proportion of cell population that
+Ovarian cancer cell lines preparation for Smart-Seq3                     inherit the genomic proﬁles of the clone (in our case, SNVs). Therefore,
+Culture of ovarian cancer cell lines OV2295, TOV2295, and OV2295R        one important property that must be satisﬁed is the sum of the cellular
+cells were cultured in a 1:1 mix of Media 199 (Sigma Aldrich) and MCDB   prevalence of the descendants of a clone v to not exceed its own
+105 (Sigma Aldrich) supplemented with 10% FBS in a humidiﬁed             cellular prevalence ϕv. The ﬁrst restriction enforces this property. The
+environment at 37C. For single-cell RNA sequencing, all cells used in    second restriction enforces the fact that we are dealing with the pro-
+this study were sorted on a BD Inﬂux into 384 well plates using index-   portion of cell population (i.e., a number between 0 and 1).
+sorting and single-cell purity mode directly into lysis buffer(6,67%           From the bulk data, we assume clonal copy number information is
+Polyethylene Glycol, 0.1% Triton X-100, RNAse Inhibitor (Takara),        available along with the number of reads mapping to the variant and
+dNTPs (0.67 mM/each), and Oligo-dT (0.67uM)). Sorted plates were         reference alleles. The clonal copy number can be obtained using a wide
+stored at −80 °C and thawed immediately prior to library generation.     range of public software (e.g., refs. 49–52); we use TitanCNA51, from
+The cell line originates from ref. 27.                                   which we obtain major and minor copy numbers, (Mn, mn), for each
+                                                                         SNV, n = 1, ..., N. Hence, we denote the bulk data by
+                                                                                                         N
+Smart-Seq3 library preparation and sequencing                            B = fðbn , d n , M n , mn Þgn = 1 , where bn, dn denote the variant reads and
+For single-cell RNAseq libraries, the Smart-Seq3 method was used         read depth at locus n. The scRNA-seq data is denoted by
+                                                                                             N
+according to the published protocol (PMID: 32518404). In brief, plates   S = ffbc,n , d c,n gn = 1 gCc= 1 , where C denotes the number of cells and
+were quickly centrifuged before reverse transcription (25 mM Tris-HCl    bc,n, dc,n denote the variant reads and read depth at locus n for cell c.
+pH 8.3 (Sigma), 30 mM NaCl (ThermoFisher), 2.5 mM MgCl2 (Ther-                 The likelihood of the bulk and single-cell data is assumed to be
+moFisher), 1 mM GTP (ThermoFisher), 8 mM DTT (ThermoFisher),             conditionally independent given T, z, ϕ:
+0.5 μ/μl RNase inhibitor (Takara), 2 μM TSO (IDT), 2 μ/μl Maxima
+H-minus reverse transcriptase (ThermoFisher)), and ampliﬁed using                          ‘ðB, S∣T, z, ϕÞ = ‘ðB∣T, z, ϕÞ‘ðS∣T, z, ϕÞ:             ð1Þ
+KAPA HiFI Hotstart polymerase (Roche) to generate full-length cDNA
+
+
+
+Nature Communications | (2023)14:982                                                                                                               11
+Article                                                                                                                                 https://doi.org/10.1038/s41467-023-36202-y
+
+
+The posterior distribution over the latent variables, T, z, ϕ is expressed                               genotypes, i.e., Pðg n Þ = 1=∣GðM n , mn Þ∣. A detailed description of the
+in terms of this likelihood and the prior distributions as follows:                                      marginalization process over the genotypes is provided in the Sup-
+                                                                                                         plementary Text in ref. 5, under section heading The PyClone model
+        PðT, z, ϕ∣B, SÞ / ‘ðB∣T, z, ϕÞ‘ðS∣T, z, ϕÞP 0 ðϕ∣T, zÞP 0 ðz, TÞ,                         ð2Þ    description; we also provide an example to illustrate the margin-
+                                                                                                         alization process in the Supplementary Section 1.1. The probability
+where P0(z, T) is given by tree-structured stick-breaking process                                        distribution for the observed variant read at each site is given by
+(TSSB) prior20 and P0(ϕ∣T, z) is adopted from ref. 6.                                                    Binomial distribution:
+
+Prior distributions. The tree structured stick breaking (TSSB) process                                                   bn ∣d n , g n , ϕz n ∼ Binomial ðd n , θðg n , ϕz n , ϵÞÞ,              ð6Þ
+is a Bayesian non-parametric prior deﬁned on inﬁnite trees where a
+unit length stick is recursively partitioned by nodes of the tree. The                                   with θðg n , ϕz n , ϵÞ being the probability of success given as a function of
+TSSB process has proven to be useful in cancer phylogenetics, e.g.,                                      the genotype, cellular prevalence of clone zn, and sequencing error
+refs. 6–8. In PhylEx, TSSB is used as a prior distribution over the SNV                                  probability, ϵ. Note that ϕz n is the cellular prevalence of the clone
+assignment and the tree topology, P0(T, z∣λ0, λ, γ) with hyperpara-                                      where the n-th SNV is assigned since zn ∈ V denotes the assignment of
+meters λ0 > 0, λ ∈ (0, 1], γ > 0. We brieﬂy summarize the role of                                        SNV n to a clone (recall that all SNVs assigned to the same clone share
+hyperparameters on the shape of the tree topology as described                                           the same cellular prevalence). Letting v(g), c(g) be the number of var-
+in ref. 20.                                                                                              iant copies and total copy numbers for a genotype g, the success
+      TSSB prior deﬁnes partition of unit length stick to the nodes of the                               probability is given by,
+tree, where this partitioning is determined by ν-sticks and ψ-sticks. The                                                            8
+ν sticks are used to allocate the size of the stick assigned to the nodes                                                            >
+                                                                                                                                     > ϵ                                 if vðg n Þ = 0
+                                                                                                                                     <
+while the ψ sticks determine the size of the sticks to be allocated to the                                       θðg n , ϕz n , ϵÞ =   ϕ z n ð1  ϵÞ + ð1  ϕz n Þϵ      if vðg n Þ = cðg n Þ    ð7Þ
+children. Let υu denote the portion of the stick available to be broken                                                              >
+                                                                                                                                     >
+                                                                                                                                     : ϕz n vðg  nÞ
+up by node u and πu denote the portion of the unit length stick                                                                               cðg Þ + ð1  ϕz n Þϵ
+                                                                                                                                              n
+                                                                                                                                                                         otherwise :
+assigned to node u. To determine πu, we ﬁrst sample νu ~ Beta(1, λ0λ∣u∣),                                Modeling the scRNA-seq data. We assume that the scRNA-seq like-
+where ∣u∣ denotes the height of node u in the tree. Then, we set                                         lihood is conditionally independent over cell and locus given T, z and
+πu = νuυu to determine the portion of the unit-stick assigned to node u.                                 cell-to-clone membership, ζ = ðζ c ÞCc= 1 :
+The remaining stick, (1 − πu)υu, is allocated to the children of u in the
+following manner: sample ψu,k ~ Beta(1, γ) for children k = 1, 2, ... of u                                                                      Y
+                                                                                                                                                C Y
+                                                                                                                                                  N
+and then setting υu,k = (1−πu)υuψk ∏j<k(1−ψu,j).                                                                         ‘ðS∣T, z, ϕ, ζ Þ /               Pðbc,n ∣T, z, ζ c , d c,n Þ:           ð8Þ
+      The prior probability of an SNV being assigned to node u is pro-                                                                          c=1 n=1
+
+portional to πu, hence, the height of the tree is closely related to the
+size of the ν-stick. The larger the ν-sticks broken by an ancestral nodes,                               The cell-to-clone membership variable completely determines the
+smaller the stick length available for the descendant nodes. Therefore,                                  SNVs harbored by cells: for a cell assigned to node u, it inherits all of
+the hyperparameters λ0, λ govern the height of the tree. It is straight-                                 the SNVs assigned to ancestral nodes of u. We denote the mutation
+forward to see that the width of the tree depends on γ. We found that                                    status of cell c for locus n by μc,n ∈ {0, 1}, which can be seen as a
+setting γ ≤ 1 makes the most sense for cancer phylogenetics applica-                                     function of T, z, ζc (i.e., can be read off from these quantities).
+tions since the number of branches in a clonal tree is relatively small;                                      As a ﬁrst step to modeling the number of variant reads, we plotted
+note that γ = 1 ⇒ ψu,k ~ Uniform(0, 1). We provide details on setting the                                the histogram of the ratio of variant reads to depth over all sites and
+hyperparameters to control the TSSB parameters in Supplementary                                          cells i.e., bc,n/dc,n for HGSOC data (Supplementary Fig. 7d) and HER2+
+Section 3.                                                                                               scRNA-seq data (Supplementary Fig. 7e). These plots clearly depict the
+      The prior distribution on the cellular prevalences, P0(ϕ∣z, T), is                                 mono-allelic nature of the expression data, with inﬂation at 0 and 1.
+adopted from ref. 6. In essence, this amounts to converting the cellular                                 Note that zero-inﬂation is pronounced because there are two cases
+prevalences to clone fractions,                                                                          that can lead to non-expression of variant: (1) mono-allelic expression
+                                                    X                                                    of reference allele and (2) absence of variant allele or no mutation
+                                ηu = ϕ u                    ϕu0 :                                ð3Þ
+                                                                                                         (Supplementary Fig. 7h). We plotted the bi-allelic sites by selecting a
+                                                  u0 2κðuÞ                                               subset of the data such that bc,n > 0 and bc,n/dc,n < 1 (Supplementary
+                                                                                                         Fig. 7f, g). These plots point towards a mixture of distributions as a
+Note that ∑uηu = 1 for a ﬁxed tree T and hence, we can place a Dirichlet                                 suitable model for the scRNA-seq read counts as the mixture can
+distribution on ηu as a prior distribution, conditioned on tree T.                                       account for stochastic nature of scRNA-seq, in particular, we need one
+                                                                                                         distribution to model mono-allelic expression and another for bi-allelic
+Modeling the bulk DNA-seq data. The bulk data likelihood assumes                                         distribution. Similar techniques are employed in refs. 18,24,53.
+site independence conditional on T, z:                                                                        For cell c that does not harbor mutation at locus n, we have a
+                                                                                                         simple error model:
+                                      Y
+                                      N
+                  ‘ðB∣T, z, ϕÞ /            Pðbn ∣T, z, ϕ, d n , M n , mn Þ:                      ð4Þ                      bc,n ∣d c,n , ϵ ∼ BetaBinomial ðd c,n , ϵ, 1  ϵÞ:                    ð9Þ
+                                      n=1
+
+All possible copy number proﬁles is marginalized to compute the                                          The error distribution uses sequencing error probability ϵ (Supple-
+likelihood of the observed reads                                                                         mentary Fig. 7c). For cell c that harbors the mutation at locus n, we
+                                            X                                                            assume the following generative process:
+  Pðbn ∣T, z, ϕ, d n , M n , mn Þ =                       Pðbn ∣d n , g n , ϕz n ÞPðg n ∣M n , mn Þ,
+                                      g n 2GðM n , mn Þ                                                              δ c,n ∼ Bernoulliðδ 0n Þ
+                                                                                                   ð5Þ               χ c,n ∣δ c,n ∼ δ c,n Betaðα n , βn Þ + ð1  δ c,n ÞBetaðα 0 , β0 Þ         ð10Þ
+                                                                                                                     bc,n ∣d c,n , χ c,n ∼ Binomialðd c,n , χ c,n Þ
+where GðM n , mn Þ are possible genotypes compatible with a given major
+and minor copy number proﬁle. We use uniform prior over all possible
+
+
+Nature Communications | (2023)14:982                                                                                                                                                             12
+Article                                                                                                                                 https://doi.org/10.1038/s41467-023-36202-y
+
+           0
+where δ n is the prior probability of bi-allelic expression at locus n and                              of SNVs for cells as:
+δc,n ∈ {0, 1} is an indicator variable denoting bi-allelic (δc,n = 1) or mono-
+allelic (δc,n = 0) expression, and χc,n as the probability of expressing the
+variant allele for cell c at locus n. The parameters of the Beta                                                                     ^ ðζ c , z, TÞÞ = #½μc ≠ μ
+                                                                                                                              Lðμc , μ                        ^ ðζ c , z, TÞ,                 ð15Þ
+distribution, α0, β0, αn, βn are hyperparameters of the model. For small
+values of α0, β0, the Beta distribution places most of the probability
+                                                                                                        where μc = ðμc,n ÞNn = 1 is a vector of length N denoting the true mutation
+mass at the two ends as shown in Supplementary Fig. 7a, b, making it
+                                                                                                        status for cell c, μ ^ ðζ c , z, TÞ is a vector of length N denoting the pre-
+suitable for modeling mono-allelic distribution; setting α0 = β0 makes
+                                                                                                        dicted mutation status for cell c, and #[a ≠ b] denotes the number of
+the distribution symmetric. We use α0 = β0 = 0.01 for HGSOC and
+                              0                                                                         entries where vectors a, b disagree. The expected loss marginalizing
+HER2+ analysis and set δ n = 0:5 for n = 1, ..., N. The parameters αn, βn
+                                                                                                        over the cell-to-clone assignment is then deﬁned as,
+determine the levels of bi-allelic expression and are estimated as part
+of data pre-processing step (Supplementary Section 1.2). The above
+                                                                                                                                                   X
+generative model can be combined into Beta-Binomial mixture so as to                                                          ^ ðζ c , z, TÞÞ =
+                                                                                                                 Eζ c ½Lðμc , μ                                              ^ ðζ c ,z, TÞ:
+                                                                                                                                                         Pðζ c = vÞ × #½μc ≠ μ
+suppress explicit dependence on χc,n:                                                                                                                                                          ð16Þ
+                                                                                                                                                   v2V
+
+
+ bc,n ∣d c,n , δ c,n , ϵ ∼
+ (
+   ð1  δ c,n ÞBetaBinomialðd c,n , α 0 , β0 Þ + δ c,n BetaBinomialðd c,n , α n ,βn Þ if μc,n = 1
+   BetaBinomialðd c,n , ϵ, 1  ϵÞ                                                         otherwise:    Processing of bulk DNA sequencing data
+                                                                                                 ð11Þ   The bulk tumor and matching normal samples are to be pre-processed
+                                                                                                        following standard guidelines as per GATK standard practice55. For
+In the computation of the likelihood, we marginalize out δc,n as well.                                  variant calling, we used Strelka v2.9.2 and Mutect2 as part of GATK
+     The prior probability of cell assignment to clone u can be given by                                v4.1.4.056,57. We processed the VCF ﬁle using vcfR v1.12.058 to obtain for
+the clone fraction, ηu. However, such an assumption may not hold as                                     each SNV (i) position in the genome (loci), (ii) the variant and reference
+cells with certain characteristics may be preferentially selected for                                   alleles, (iii) the number of reads mapping to variant and reference
+sequencing. Therefore, we use Uniform distribution:                                                     alleles. We used the PASS ﬁlter to select the high-conﬁdence SNVs.
+                                                                                                        PhylEx requires major and minor copy number proﬁles for the SNVs;
+                                      Pðζ c ∣z, T, ϕÞ / 1:                                       ð12Þ   we used TitanCNA v1.24.051. Given these input data, we provide func-
+                                                                                                        tionalities to prepare the input data for running PhylEx in the code
+In evaluating the single-cell component of the likelihood for a given                                   repository: https://github.com/junseonghwan/PhylExAnalysis. We
+tree, we marginalize over the cell-to-clone assignments,                                                used Falcon v0.252 to obtain copy number proﬁles needed for running
+                                                                                                        Canopy9.
+                                   Y
+                                   C XY
+                                      N
+                ‘ðS∣T, z, ϕÞ =                      Pðbc,n ∣T, z, ζ c , d c,n ÞPðζ c Þ:          ð13Þ   Processing of single-cell RNA sequencing ﬁles
+                                   c = 1 ζc n = 1
+                                                                                                        Individual fastq ﬁles for the cells are obtained using Illumina bcl2fq
+                                                                                                        tool, then converted to ubam format with cell and UMI tags using a
+Runtime analysis                                                                                        script that detect Smart-Seq 3 speciﬁc pattern at the beginning of reads
+Inference is performed using slice sampling as described in ref. 20 and                                 with UMI. STAR v2.7.359 with GRCh37 version of Human Genome and
+MH sampler is as described in ref. 6. One iteration considers re-                                       Ensembl version 75 annotations were used to align the reads60. UMI-
+assignment of each of the SNVs in some predetermined order much                                         tools v1.1.161 was then used to correct the UMI and group UMI reads. An
+like Gibbs sampling. After re-assignment of all SNVs, MH sampler is                                     in-house script was used to intersect the reads with bam ﬁles and
+invoked to update the cellular prevalences. As the original slice sam-                                  obtain read and UMI counts for each gene; we used Rsamtools v2.2.362
+pler only requires bulk likelihood computation, the runtime for re-                                     to obtain the reads mapping to the variant and the reference alleles
+assigning an SNV is O(1). One iteration of the slice sampler for PhylEx                                 from the BAM ﬁle needed for running PhylEx and used Rsubread
+requires computation of bulk data likelihood as well as the single cell                                 v2.0.163 to generate feature counts for downstream gene expression
+data likelihood. As we marginalize over the clone assignment of the                                     analysis. For 10X Chromium data 10X Genomics CellRanger v6.0.1 was
+single cells, the computational cost requires O(C ⋅ ∣V∣).                                               used to generate BAM ﬁles and the count matrix64.
+
+Evaluation metrics                                                                                      Data processing steps speciﬁc to the high-grade serous ovarian
+We used V-measure, adjusted rand index, and adjusted mutual infor-                                      cancer cell-line
+mation as implemented in scikit-learn (version 0.23.1)54. To evaluate                                   The pseudobulk DNA-seq data are obtained by combining scDNA data
+the reconstruction accuracy, we use an ancestral reconstruction error,                                  analyzed in19 using samtools v1.965. The copy number proﬁles are
+deﬁned on a pair of SNVs as follows. For two nodes u, v in the tree, we                                 obtained from the bulk samples using TitanCNA and the scRNA-seq is
+say u < v to mean that u is ancestral to v. We can extend this deﬁnition                                aligned using STAR aligner. A list of SNVs are provided in the data
+to SNVs i, j. We will say i < j if and only if i is assigned to node u and j to v                       repository provided in ref. 19; therefore, we did not need to make
+such that u < v. We formulate an ancestral matrix of dimension N × N,                                   variant calls. Among the list of SNVs provided in ref. 19, 634 SNVs were
+where the (i, j)-th is set to 1 if i < j. We denote the ancestral matrix for                            found to be exonic. We further ﬁltered these set of SNVs using scRNA-
+the ground truth SNV-to-clone assignment by A*, then we can compute                                     seq data. For each loci n = 1, …, 634, we selected it for analysis if there
+the absolute error (AE) of an ancestral matrix A by summing over                                        were at least two cells such that bc,n ≥ 2, which resulted in 67 SNVs.
+unique pairs:                                                                                           Including SNVs that do not have sufﬁcient single-cell coverage does
+                                                X                                                       not help to evaluating different methods and their capacities for
+                                AEðA* , AÞ =            ∣A*i,j  Ai,j ∣:                         ð14Þ
+                                                                                                        inferring the branching events and the ancestral relationship. We
+                                                ði,jÞ                                                   retrieved the reads at each of these 67 loci for each cell using Rsam-
+                                                                                                        tools v2.2.3. A similar approach was adopted for 10X analysis, however,
+The mean absolute error is given by dividing AE by the number of                                        due to shallow depth, we used bc,n ≥ 1 as using a more stringent con-
+unique pairs. We deﬁne the loss function on predicted mutation status                                   dition resulted in dropping most of the SNVs from the analysis.
+
+
+Nature Communications | (2023)14:982                                                                                                                                                            13
+Article                                                                                               https://doi.org/10.1038/s41467-023-36202-y
+
+
+Software used for data analysis                                             4.  McGranahan, N. & Swanton, C. Biological and therapeutic impact of
+We ran ddClone v0.2, B-SCITE v2.0, PhyloWGS v1.0, Canopy v1.3.0, and            intratumor heterogeneity in cancer evolution. Cancer Cell 27,
+Cardelino v0.6.4 for benchmarking7,9,15,16,18. The downstream gene              15–26 (2015).
+expression analyis was performed in R v3.6.3 (also tested on v4.0.3)66.     5. Roth, A. et al. PyClone: statistical inference of clonal population
+We used biomaRt v2.46.3 for converting and unifying gene names67.               structure in cancer. Nat. Methods 11, 396–398 (2014).
+We used SingleCellExperiment v1.12.0 for ﬁltering and processing of         6. Jiao, W., Vembu, S., Deshwar, A. G., Stein, L. & Morris, Q. Inferring
+feature counts matrix from scRNA-seq data68. We used edgeR v.3.32.1             clonal evolution of tumors from single nucleotide somatic muta-
+and limma v3.46.0 for differential gene expression and gene set                 tions. BMC Bioinformatics 15, 35 (2014).
+enrichment analysis36,39. We used zinbwave v1.12.030 and Rtsne v0.1569      7. Deshwar, A. G. et al. PhyloWGS: reconstructing subclonal compo-
+for dimension reduction, slingshot v1.8.034 for trajectory analysis, and        sition and evolution from whole-genome sequencing of tumors.
+mclust v5.4.735 for cluster analysis in the reduced dimensions. The             Genome Biol. 16, 35 (2015).
+plots were generated using ggplot v3.3.370.                                 8. Yuan, K., Sakoparnig, T., Markowetz, F. & Beerenwinkel, N. Bitphy-
+                                                                                logeny: a probabilistic framework for reconstructing intra-tumor
+Reporting summary                                                               phylogenies. Genome Biol. 16, 36 (2015).
+Further information on research design is available in the Nature           9. Jiang, Y., Qiu, Y., Minn, A. J. & Zhang, N. R. Assessing intratumor
+Portfolio Reporting Summary linked to this article.                             heterogeneity and tracking longitudinal and spatial clonal evolu-
+                                                                                tionary history by next-generation sequencing. Proc. Natl Acad. Sci.
+Data availability                                                               USA 113, E5528–E5537 (2016).
+The simulation data and results, processed bulk DNA-seq and scRNA-          10. Dentro, S. C., Wedge, D. C. & Van Loo, P. Principles of recon-
+seq data for HGSOC and HER2+ data along with the results are available          structing the subclonal architecture of cancers. Cold Spring Harb.
+at [https://doi.org/10.5281/zenodo.4950446]. The novel Smart-Seq3               Perspect. Med. 7, a026625 (2017).
+sequencing data for HGSOC have been deposited in the European               11. Kuipers, J., Jahn, K. & Beerenwinkel, N. Advances in understanding
+Genome-Phenome archive (EGA) under accession number                             tumour evolution through single-cell sequencing. Biochim. Bio-
+EGAS00001006868. The DLP scDNA-seq data used for forming the                    phys. Acta Rev. Cancer 1867, 127–138 (2017).
+pseudo-bulk data for HGSOC are available at the European Genome-            12. Roth, A. et al. Clonal genotype and population structure inference
+Phenome archive with accession EGAS00001003190. The 10X single-                 from single-cell tumor sequencing. Nat. Methods 13,
+cell RNA-seq data used for HGSOC are available at the European                  573–576 (2016).
+Genome-Phenome archive with accession EGAD00001004552. The                  13. Jahn, K., Kuipers, J. & Beerenwinkel, N. Tree inference for single-cell
+novel Smart-Seq3 and whole-exome DNA sequencing HER2+ data are                  data. Genome Biol. 17, 86 (2016).
+hosted on the federated EGA node in Sweden (EGA-SE) with accession          14. Ross, E. M. & Markowetz, F. OncoNEM: inferring tumor evolution
+number EGAS00001006851. The novel sequencing data have restric-                 from single-cell sequencing data. Genome Biol. 17, 1–14 (2016).
+ted access in line with the general data protection regulations (GDPR)      15. Salehi, S. et al. ddclone: joint statistical inference of clonal popu-
+of the European Union, which considers human sequencing data as                 lations from single cell and bulk tumour sequencing data. Genome
+sensitive personal information. The application for access will be              Biol. 18, 44 (2017).
+granted if the subject of the applicants’ study where the data will be      16. Malikic, S., Jahn, K., Kuipers, J., Sahinalp, S. C. & Beerenwinkel, N.
+used is covered by the informed consent given by the individuals                Integrative inference of subclonal tumour evolution from single-
+sequenced, and if there is ethical permission that covers the research          cell and bulk sequencing data. Nat. Commun. 10, 2750 (2019).
+project. Once the access is granted, the applicant may download and         17. Campbell, K. R. et al. clonealign: statistical integration of indepen-
+use the data as long as needed to complete the research. The                    dent single-cell RNA and DNA sequencing data from human can-
+remaining data are available within the Article, Supplementary Infor-           cers. Genome Biol. 20, 54 (2019).
+mation or Source Data ﬁle. The source data are provided with this           18. McCarthy, D. J. et al. Cardelino: computational integration of
+article. The GRCh37 of Human Genome release 75 is available for                 somatic clonal substructure and single-cell transcriptomes. Nat.
+download from Ensembl [https://grch37.ensembl.org/info/data/ftp/                Methods 17, 414–421 (2020).
+index.html]. Source data are provided with this paper.                      19. Laks, E. et al. Clonal decomposition and DNA replication states
+                                                                                deﬁned by scaled Single-Cell genome sequencing. Cell 179,
+Code availability                                                               1207–1221.e22 (2019).
+The PhylEx software is implemented in C++ and its accompanying gene         20. Adams, R. P., Ghahramani, Z. & Jordan, M. I. Advances in Neural
+expression analysis code along with installation instructions and               Information Processing Systems, pages 19–27 (Curran Associates,
+guides for conducting the analysis are available on Github at https://          Inc., 2010).
+github.com/junseonghwan/PhylExAnalysisand version of the software           21. Jiang, R., Sun, T., Song, D. & Li, JingyiJessica Statistics or biology:
+used for analysis is available at https://zenodo.org/badge/latestdoi/           the zero-inﬂation controversy about scRNA-seq data. Genome Biol.
+335060186. The code for running other software is also provided in the          23, 31 (2022).
+above Github repository, with the settings used described in Supple-        22. Larsson, AntonJ. M. et al. Genomic encoding of transcriptional burst
+mentary Section 3.                                                              kinetics. Nature 565, 251–254 (2019).
+                                                                            23. Neal, R. M. Slice sampling. Ann. Stat. 31, 705–767 (2003).
+                                                                            24. Zhou, Z., Xu, B., Minn, A. & Zhang, N. R. DENDRO: genetic hetero-
+References                                                                      geneity proﬁling and subclone detection by single-cell RNA
+1.   Nowell, P. C. The clonal evolution of tumor cell populations. Sci-         sequencing. Genome Biol. 21, 1–15 (2020).
+     ence 194, 23–28 (1976).                                                25. Nik-Zainal, S. et al. The life history of 21 breast cancers. Cell 149,
+2.   Ding, L. et al. Clonal evolution in relapsed acute myeloid leukaemia       994–1007 (2012).
+     revealed by whole-genome sequencing. Nature 481,                       26. Schwartz, R. & Schäffer, A. A. The evolution of tumour phyloge-
+     506–510 (2012).                                                            netics: principles and practice. Nat. Rev. Genet. 18, 213–229 (2017).
+3.   Gerlinger, M. et al. Intratumor heterogeneity and branched evolu-      27. Létourneau, I. J. et al. Derivation and characterization of matched
+     tion revealed by multiregion sequencing. N. Engl. J. Med. 366,             cell lines from primary and recurrent serous ovarian cancer. BMC
+     883–892 (2012).                                                            Cancer 12, 379 (2012).
+
+
+Nature Communications | (2023)14:982                                                                                                                14
+Article                                                                                                 https://doi.org/10.1038/s41467-023-36202-y
+
+
+28. Zahn, H. et al. Scalable whole-genome single-cell library prepara-        52. Chen, H., Bell, J. M., Zavala, N. A., Ji, H. P. & Zhang, N. R. Allele-
+    tion without preampliﬁcation. Nat. Methods 14, 167–173 (2017).                speciﬁc copy number proﬁling by next-generation dna sequencing.
+29. Hagemann-Jensen, M. et al. Single-cell RNA counting at allele and             Nucleic Acids Res. 43, e23–e23 (2015).
+    isoform resolution using Smart-Seq3. Nat. Biotechnol. 38,                 53. Jiang, Y., Zhang, N. R. & Li, M. SCALE: modeling allele-speciﬁc gene
+    708–714 (2020).                                                               expression by single-cell RNA sequencing. Genome Biol. 18,
+30. Risso, D., Perraudeau, F., Gribkova, S., Dudoit, S. & Vert, Jean-             74 (2017).
+    Philippe A general and ﬂexible method for signal extraction from          54. Pedregosa, F. et al. Scikit-learn: machine learning in Python. J.
+    single-cell RNA-seq data. Nat. Commun. 9, 1–17 (2018).                        Machine Learn. Res. 12, 2825–2830 (2011).
+31. van der Maaten, L. & Hinton, G. Visualizing data using t-SNE. J.          55. Poplin, R. et al. Scaling accurate genetic variant discovery to tens of
+    Machine Learn. Res. 9, 2579–2605 (2008).                                      thousands of samples. bioRxiv https://doi.org/10.1101/
+32. Trapnell, C. et al. Pseudo-temporal ordering of individual cells              201178 (2018).
+    reveals dynamics and regulators of cell fate decisions. Nat. Bio-         56. Saunders, C. T. et al. Strelka: accurate somatic small-variant calling
+    technol. 32, 381 (2014).                                                      from sequenced tumor-normal sample pairs. Bioinformatics 28,
+33. Fan, J., Slowikowski, K. & Zhang, F. Single-cell transcriptomics in           1811–1817 (2012).
+    cancer: computational challenges and opportunities. Exp. Mol.             57. Benjamin, D. et al. Calling somatic SNVs and indels with mutect2.
+    Med. 52, 1452–1465 (2020).                                                    bioRxiv https://doi.org/10.1101/861054 (2019).
+34. Street, K. et al. Slingshot: cell lineage and pseudotime inference for    58. Knaus, B. J. & Grünwald, N. J. VCFR: a package to manipulate and
+    single-cell transcriptomics. BMC Genom. 19, 477 (2018).                       visualize variant call format data in R. Mol. Ecol. Resour. 17,
+35. Scrucca, L., Fop, M., Murphy, T. B. & Raftery, A. E. mclust 5: clus-          44–53 (2017).
+    tering, classiﬁcation and density estimation using Gaussian ﬁnite         59. Dobin, A. et al. STAR: ultrafast universal RNA-seq aligner. Bioinfor-
+    mixture models. R J. 8, 289–317 (2016).                                       matics 29, 15–21 (2013).
+36. Robinson, M. D., McCarthy, D. J. & Smyth, G. K. edgeR: a bio-             60. Church, D. M. et al. Modernizing reference genome assemblies.
+    conductor package for differential expression analysis of digital             PLoS Biol. 9, e1001091 (2011).
+    gene expression data. Bioinformatics 26, 139–140 (2010).                  61. Smith, T., Heger, A. & Sudbery, I. UMI-tools: modeling sequencing
+37. McCarthy, D. J., Chen, Y. & Smyth, G. K. Differential expression              errors in unique molecular identiﬁers to improve quantiﬁcation
+    analysis of multifactor RNA-Seq experiments with respect to bio-              accuracy. Genome Res. 27, 491–499 (2017).
+    logical variation. Nucleic Acids Res. 40, 4288–4297 (2012).               62. Morgan, M., Pagès, H., Obenchain, V. & Hayden, N. Rsamtools:
+38. Wu, D. & Smyth, G. K. Camera: a competitive gene set test accounting          Binary alignment (BAM), FASTA, variant call (BCF), and tabix ﬁle
+    for inter-gene correlation. Nucleic Acids Res. 40, e133 (2012).               import, (2020). R package version 2.2.3.
+39. Ritchie, M. E. et al. limma powers differential expression analyses       63. Liao, Y., Smyth, G. K. & Shi, W. The R package rsubread is easier,
+    for RNA-sequencing and microarray studies. Nucleic Acids Res. 43,             faster, cheaper and better for alignment and quantiﬁcation of RNA
+    e47 (2015).                                                                   sequencing reads. Nucleic Acids Res. 47, e47 (2019).
+40. Liberzon, A. et al. Molecular signatures database (MSigDB) 3.0.           64. Zheng, GraceX. Y. et al. Massively parallel digital transcriptional
+    Bioinformatics 27, 1739–1740 (2011).                                          proﬁling of single cells. Nat. Commun. 8, 14049 (2017).
+41. Wang, X., He, Y., Zhang, Q., Ren, X. & Zhang, Z. Direct comparative       65. Li, H. et al. The sequence alignment/map format and samtools.
+    analyses of 10X genomics chromium and smart-seq2. Genomics                    Bioinformatics 25, 2078–2079 (2009).
+    Proteomics Bioinformatics 19, 253–266 (2021).                             66. R Core Team. R: A Language and Environment for Statistical Com-
+42. Hagemann-Jensen, M., Ziegenhain, C. & Sandberg, R. Scalable                   puting (R Foundation for Statistical Computing, 2020).
+    single-cell RNA sequencing from full transcripts with Smart-              67. Durinck, S., Spellman, P. T., Birney, E. & Huber, W. Mapping iden-
+    seq3xpress. Nat. Biotechnol. 40, 1452–1457 (2022).                            tiﬁers for the integration of genomic datasets with the r/bio-
+43. Mayer, I. A. & Arteaga, C. L. The PI3K/AKT pathway as a target for            conductor package biomart. Nat. Protoc. 4, 1184–1191 (2009).
+    cancer treatment. Annu. Rev. Med. 67, 11–28 (2016).                       68. Amezquita, R. et al. Orchestrating single-cell analysis with bio-
+44. Dorri, F et al. Efﬁcient Bayesian inference of phylogenetic trees from        conductor. Nat. Methods 17, 137–145 (2020).
+    large scale, low-depth genome-wide single-cell data. bioRxiv              69. Krijthe, J. H. Rtsne: T-Distributed Stochastic Neighbor Embedding
+    https://doi.org/10.1101/2020.05.06.058180 (2020).                             using Barnes-Hut Implementation. R package version 0.15 (2015).
+45. Tickle, T., Tirosh, I., Georgescu, C., Brown, M. & Haas, B. inferCNV of   70. Wickham, H. ggplot2: Elegant Graphics for Data Analysis (Springer-
+    the Trinity CTAT Project (Klarman Cell Observatory, Broad Institute           Verlag New York, 2016).
+    of MIT and Harvard, 2019).
+46. Fan, J. et al. Linking transcriptional and genetic tumor hetero-          Acknowledgements
+    geneity through allele analysis of single-cell RNA-seq data. Genome       S.-H.J. was supported by Postdoctoral Fellowship from the Natural Sci-
+    Res. 28, 1217–1227 (2018).                                                ences and Engineering Research Council of Canada. The computations
+47. Gao, R. et al. Delineating copy number and clonal substructure in         were enabled by resources provided by the Swedish National Infra-
+    human tumors from single-cell transcriptomes. Nat. Biotechnol. 39,        structure for Computing (SNIC) at Uppsala University and Linköping
+    599–608 (2021).                                                           University partially funded by the Swedish Research Council through
+48. Davis, A., Gao, R. & Navin, N. Tumor evolution: Linear, branching,        grant agreement no. 2018-05973. This project was made possible
+    neutral or punctuated? Biochim. Biophys. Acta Rev. Cancer 1867,           through funding by the Michael Smith Foundation for Health Research
+    151–161 (2017).                                                           Scholar Award [18245 to A.R.] and by generous support from the
+49. Van Loo, P. et al. Allele-speciﬁc copy number analysis of tumors.         Swedish Foundation for Strategic Research grant BD15-0043 as well as
+    Proc. Natl Acad. Sci. USA 107, 16910–16915 (2010).                        Swedish Research Council Projekt 2018-06217VR. The exome sequen-
+50. Boeva, V. et al. Control-FREEC: a tool for assessing copy number          cing was performed by the SNP&SEQ Technology Platform in Uppsala.
+    and allelic content using next-generation sequencing data. Bioin-         The facility is part of the National Genomics Infrastructure (NGI) Sweden
+    formatics 28, 423–425 (2012).                                             and Science for Life Laboratory. The SNP&SEQ Platform is also sup-
+51. Ha, G. et al. TITAN: inference of copy number architectures in clonal     ported by the Swedish Research Council and the Knut and Alice Wal-
+    cell populations from tumor whole-genome sequence data. Gen-              lenberg Foundation. For Smart-Seq sequencing, the authors
+    ome Res. 24, 1881–1893 (2014).                                            acknowledge support from the National Genomics Infrastructure in
+
+
+Nature Communications | (2023)14:982                                                                                                                  15
+Article                                                                                               https://doi.org/10.1038/s41467-023-36202-y
+
+
+Stockholm funded by Science for Life Laboratory, the Knut and Alice          Peer review information Nature Communications thanks Salem Malikic
+Wallenberg Foundation and the Swedish Research Council, and SNIC/            and the other anonymous reviewer(s) for their contribution to the peer
+Uppsala Multidisciplinary Center for Advanced Computational Science          review of this work.
+for assistance with massively parallel sequencing and access to the
+UPPMAX computational infrastructure.                                         Reprints and permissions information is available at
+                                                                             http://www.nature.com/reprints
+Author contributions
+S-H.J.: computational model development, software implementation,            Publisher’s note Springer Nature remains neutral with regard to jur-
+bioinformatics, and data analysis; H.T.: bioinformatics algorithm devel-     isdictional claims in published maps and institutional afﬁliations.
+opment for bulk DNA- and scRNA-seq data processing and data analysis;
+J.M., C.E., M.H.J., and R.S.: Smart-Seq3 sequencing; X.C. and J.H.: breast   Open Access This article is licensed under a Creative Commons
+cancer specimen collection and sequencing; C.O. and S.A.: ovarian            Attribution 4.0 International License, which permits use, sharing,
+cancer cell-line culture preparation; A.R. and J.L.: computational model     adaptation, distribution and reproduction in any medium or format, as
+development, project conception, and oversight; S-H.J, H.T., A.R., and       long as you give appropriate credit to the original author(s) and the
+J.L.: manuscript writing.                                                    source, provide a link to the Creative Commons license, and indicate if
+                                                                             changes were made. The images or other third party material in this
+Competing interests                                                          article are included in the article’s Creative Commons license, unless
+The authors declare no competing interests.                                  indicated otherwise in a credit line to the material. If material is not
+                                                                             included in the article’s Creative Commons license and your intended
+Additional information                                                       use is not permitted by statutory regulation or exceeds the permitted
+Supplementary information The online version contains                        use, you will need to obtain permission directly from the copyright
+supplementary material available at                                          holder. To view a copy of this license, visit http://creativecommons.org/
+https://doi.org/10.1038/s41467-023-36202-y.                                  licenses/by/4.0/.
+
+Correspondence and requests for materials should be addressed to             © The Author(s) 2023
+Andrew Roth or Jens Lagergren.
+
+
+
+
+Nature Communications | (2023)14:982                                                                                                                16
+

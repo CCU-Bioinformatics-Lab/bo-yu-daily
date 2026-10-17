@@ -1,0 +1,3 @@
+# 原始論文與補充材料檔不進 git（本機保留；manifest.tsv 記錄 SHA-256 與來源）
+*.pdf
+*.xlsx
