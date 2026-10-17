@@ -330,6 +330,8 @@ repo/
 
 # 9. Agent Workspace
 
+> 狀態（2026-10-17）：本輪分析已完成，`.agent_workspace/` 已刪除，結論在 `notes/`。原件保存在 commit `2a48b80`。下次重跑分析時，依本節重新建立。
+
 建立：
 
 ```text
