@@ -17,6 +17,14 @@
   - `COLO829/ONT_PAO/subsample/t33_n00/COLO829_t33_n00.bam{,.bai}`（指向 `../../PAO29420.bam`，該檔已不存在）
 - 上面這些失效檔案，對應的 CRAM 在 `/big8_disk/Google_somatic_data/bams/<line>/<line>_{Tumor,Normal}_ONT.GRCh38.sorted.cram`。只有 COLO829 PAO t33_n00 的對應檔在 `/big8_disk/data/COLO829/ONT_PAO/PAO29420.cram`。
 
+## 資料來源（2026-10-17 核對）
+
+- HCC1395、H1437、H2009、HCC1937、HCC1954 的 ONT CRAM 來自 [CASTLE panel](https://github.com/CASTLE-Panel/castle) Release 1（SRA BioProject PRJNA1086849）。
+  - 下載來源是 Google mirror `brain-genomics-public/publications/park2024_deepsomatic`，見 `/big8_disk/Google_somatic_data/urls.txt`。
+  - H1437／H2009 的 header 顯示是 R10.4.1、Guppy sup；tumor run 日期是 2023-01-17。它們對應 SRR28305180 和 SRR28305173。
+  - 本機沒有 CASTLE Release 2 的 semi-UL E821 資料。
+- COLO829 不屬於 CASTLE。本機的 ONT_R10 和 ONT_PAO 的來源尚未核對。
+
 ## 純度標籤口徑
 
 `tX_nY` 表示 tumor/normal 的 target-depth components；下表的百分比是
@@ -139,4 +147,31 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 | p3 | `adnexa_site_1`、`omentum_site_1`、`right_ovary_site_1/2`（4） | 2882 |
 | p9 | `left_ovary_site_1/2`、`omentum_site_1/2`、`right_ovary_site_1`（5） | 2014 |
 
-`_wgs` 與 `_wgs_t` 的 mutation 和 sample 集合相同，但 `data.tsv` 內容不同。推測 `_wgs_t` 的 read counts 來自 targeted deep sequencing，這點尚未逐欄比對確認。真實腫瘤資料沒有真正的演化樹，所以 `ground_truth/` 裡的樹應該是論文採用的 reference tree，來源要再回論文確認。
+`_wgs` 與 `_wgs_t` 的 mutation 和 sample 集合相同，但 `data.tsv` 內容不同。推測 `_wgs_t` 的 read counts 來自 targeted deep sequencing，這點尚未逐欄比對確認。
+
+#### HGSOC `ground_truth/` 的來源（已確認）
+
+結論：這棵樹是**單細胞資料加 bulk 資料推論出來的 reference tree**。PhyClone 論文把它當真值用，但它不是觀測到的細胞譜系。來源是 McPherson 2016（PhyClone 主文 §2.4.1.5、Fig.6），只涵蓋病人 2、3、9。細節見 `research/tumor_phylogeny_2026/references/R01_mcpherson_hgsoc_2016/README.md`。
+
+**Single-nucleus targeted PCR 做了什麼**
+
+- 用 FACS 把細胞核一顆一顆分到不同孔，不做全基因組擴增。
+- 每顆細胞核只對 48–96 個事先挑好的位點做 PCR，再用 MiSeq 定序。位點包含：
+  - 區分 clone 的 SNV：從 bulk 推出的 PyClone cluster 中抽。
+  - ancestral SNV：標示腫瘤細胞。
+  - germline 異型合子 SNP：標示正常細胞。
+  - breakpoint：人工挑選。
+- 它提供的資訊：**每顆細胞核在這幾十個位點上，有沒有帶突變**。SCG 依這些 genotype 把細胞核分成 clone。
+
+**為什麼不能說「真值樹來自單細胞定序」**
+
+1. **位點少，而且是用 bulk 挑的。** 單細胞只測了 47–95 個可用位點，大部分 truth SNV 從沒在單細胞中測過。位點挑選條件是「bulk 推論為 informative 的 cluster」，所以樹天生偏向 bulk 已經看得到的結構。
+2. **樹是模型推出來的，不是直接讀出來的。**
+   - SCG 先分群。
+   - 再把 SNV 併回 bulk 的 PyClone cluster，二值化成 cluster 層級的有無。
+   - 用 WGS 的 bulk SNV 數加權 stochastic Dollo likelihood，選出最佳樹。
+   - 最後人工標註 germline SNP 與 breakpoint。
+3. **truth SNV 的節點歸屬由 bulk 決定。** 每個 SNV 掛在哪個節點，由 bulk deep-seq 的 PyClone cluster 加上單細胞的 cluster-level genotype 共同決定。PhyClone 對 HGSOC 又使用同源的 cluster 當輸入，所以評估不完全獨立。
+4. **只看得到大 clone。** 只有 ≥10 顆細胞核的 clone 進入建樹，rare clone 看不到。單細胞 PCR 的 allelic dropout 由 SCG 的模型吸收，沒有獨立量化。
+
+正確說法：「樹由單細胞定序加 bulk 資料推論，論文拿來當真值用。」

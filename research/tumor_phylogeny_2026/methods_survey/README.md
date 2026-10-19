@@ -169,7 +169,7 @@ W5 也查了 deep learning／generative 型方法（2023–2026），沒有找�
 |---|---|---|---|
 | **TreeClone** | 2019 Ann Appl Stat | [18-AOAS1224](https://doi.org/10.1214/18-AOAS1224) | short-read 相鄰 SNV pair 的 4 類 haplotype read count 進 Bayesian tree likelihood（8 類 read multinomial，含 partially missing reads；pair 間未互相 phase，genotype 以鏡像對稱縮為 10 類）；CN=2 寫死在 likelihood 的「0.5×兩條 allele」項；沒有 multiplicity；程式碼目前連不上。只讀到 arXiv v2，見 [M02](papers/M02_treeclone_2019/README.md) |
 
-這一類只有 1 篇正式發表。最接近的另一項是 **Donmez & Kolmogorov, AACR 2026 Abstract 6912**（[10.1158/1538-7445.AM2026-6912](https://doi.org/10.1158/1538-7445.AM2026-6912)，Crossref 已核；作者只有 Donmez 與 Kolmogorov 兩人）：用 bulk ONT 上的 point-mutation pair 關係建樹，資料是 **H2009／H1437**（CASTLE，一般與 ultra-long ONT）。摘要未提 copy number、multiplicity、purity、multi-sample，只提 phasing 可區分 duplicated chromosome copies；結果只有描述統計，沒有正確率評估。到 2026-10-17 沒有 preprint 或公開程式碼。它只是會議摘要，不計主選，但它是最直接的同期競爭者，見 [M03](papers/M03_donmez_aacr2026/README.md)。經典先例：BitPhylogeny（2015）。
+這一類只有 1 篇正式發表。最接近的另一項是 **Donmez & Kolmogorov, AACR 2026 Abstract 6912**（[10.1158/1538-7445.AM2026-6912](https://doi.org/10.1158/1538-7445.AM2026-6912)，Crossref 已核；作者只有 Donmez 與 Kolmogorov 兩人）：用 bulk ONT 上的 point-mutation pair 關係建樹，資料是 **H2009／H1437**（CASTLE，一般與 ultra-long ONT）。摘要未提 copy number、multiplicity、purity、multi-sample，只提 phasing 可區分 duplicated chromosome copies；結果只有描述統計，沒有正確率評估。到 2026-10-17 沒有 preprint；公開程式在作者個人帳號的 [atabeerk/cancer_phasing](https://github.com/atabeerk/cancer_phasing)（無 license，開發中）。它只是會議摘要，不計主選，但它是最直接的同期競爭者，見 [M03](papers/M03_donmez_aacr2026/README.md)。經典先例：BitPhylogeny（2015）。
 
 ## 邊界與近似（不計主選）
 
@@ -254,7 +254,7 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
 |---|---|---|---|
 | [M01](papers/M01_phyclone_2025/README.md) | PhyClone | 出版社正式版 10 頁＋補充 28 頁；另存 bioRxiv v1 對照 | 正式版與 preprint 差異、multiplicity 邊際化、outlier model、PG／SMC |
 | [M02](papers/M02_treeclone_2019/README.md) | TreeClone | arXiv v2 30 頁（期刊版未取得） | mutation-pair read likelihood、CN=2 寫死之處、推廣到 long read 的方式 |
-| [M03](papers/M03_donmez_aacr2026/README.md) | Donmez AACR 2026 | 摘要全文（無 PDF） | 與本研究的重疊與差異；無 preprint、無程式碼 |
+| [M03](papers/M03_donmez_aacr2026/README.md) | Donmez AACR 2026 | 摘要全文（無 PDF） | 與本研究的重疊與差異；無 preprint；程式 [atabeerk/cancer_phasing](https://github.com/atabeerk/cancer_phasing) |
 | [M04](papers/M04_pharming_2026/README.md) | Pharming | bioRxiv v1 29 頁 | (x,y,w,z) 狀態空間、JCTI、與 HP＋multiplicity 的接點 |
 | [M05](papers/M05_tusv_ext_2022/README.md) | TUSV-ext（附 Sc-TUSV-ext、TUSV-int） | 出版社正式版 9 頁 | ILP、latent allele phasing、改用觀測 HP 的簡化 |
 | [M06](papers/M06_phylex_2023/README.md) | PhylEx | 出版社正式版 16 頁＋補充 19 頁 | bulk × scRNA likelihood 合成、改成 read 層級共現要改的項 |

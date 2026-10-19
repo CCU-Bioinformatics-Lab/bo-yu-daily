@@ -739,7 +739,7 @@ _原文定位_：[A01 L37](tumor_phylogeny_2026/papers/A01_ovarian_cfDNA_2025/RE
 實驗設計指定的腫瘤與正常來源混合比例。
 
 _別名與對照_：nominal purity; design tumor fraction; target-depth mixture。
-_用詞界線_：tX_nY 是設計標籤；不是實測細胞純度或 DNA 比例。
+_用詞界線_：tX_nY 是設計標籤；不是實測細胞純度或 DNA 比例。同一細胞株的各 tX_nY 只是同一腫瘤 DNA 的稀釋，CCF 相同；不要當成多部位樣本。
 _原文定位_：[HCC L103](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)。
 
 **T062 參考與替代等位支持數（reference and alternate allele counts）**

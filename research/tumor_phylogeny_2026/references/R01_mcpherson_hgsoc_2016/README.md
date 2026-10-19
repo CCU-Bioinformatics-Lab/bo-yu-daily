@@ -175,7 +175,13 @@ S18 每個樣本的 nucleus 孔數加總，恰好等於 S3 的定序數（588／
 
 - PhyClone 整理過的 HGSOC 輸入與 truth：`/big8_disk/boyu114/phyclone_dataset/HGSOC/`，含 `data.tsv`、`results.tsv`、`tree.json`、`ground_truth_coloured.png`，以及各方法的輸入與輸出。
 - 原始單核 read count、primer、clone genotype 與 prevalence：本目錄的 `supplementary_tables.xlsx`（S8、S9、S16–S19）。
-- 原始 WGS 的 accession 不在 supplement 裡，主文未讀，所以這裡沒有列 raw data 位置。
+- 原始 reads（查核日期 2026-10-17）：**EGA study EGAS00001000547**，controlled access，policy EGAP00001000044。
+  - 出處：ReMixT 論文（Genome Biol 2017，PMC5530528）的 Availability 寫明，引用的 McPherson 2016 資料「under accession number EGA:S00001000547」[論文]。McPherson 2016 主文是 closed access，本次仍未讀。
+  - 該 study 的標題與 pubmed_ids 屬於較早的 Bashashati 2013 研究（PMID 23780408、25060187），沒有列 27182968 [repo]。McPherson 2016 的資料是 2016-08-13 追加到同一個 study 的 [推論]。
+  - **EGAD00001000978**「High grade serous ovarian carcinoma sample」：WGS、Illumina HiSeq 2000、48 個 BAM，每個 48–113 GB [repo]。依大小推論是約 30x 的 WGS discovery 樣本 [推論]。
+  - **EGAD00001000974**：Amplicon + WGS、Illumina HiSeq 2000 + MiSeq、131 個 BAM，大小從 0.5 MB 到 250 GB [repo]。推論含 targeted deep-seq 與單核 amplicon 資料 [推論]。
+  - EGAD00001000669（Illumina Genome Analyzer）屬於 2013 的 exome 研究，不是本資料。
+  - 所有檔案都是 short-read BAM，沒有 ONT／PacBio [repo]。
 
 ## 對本 repo 的用處（尚未實作）
 
