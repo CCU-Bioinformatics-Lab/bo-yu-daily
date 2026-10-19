@@ -1,3 +1,28 @@
+---
+paper_id: R01
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_patient_sc_reference"
+sc_truth_strength: "reference_tree"
+title: "McPherson 2016: Divergent modes of clonal spread and intraperitoneal mixing in high-grade serous ovarian cancer"
+year: 2016
+doc_type: "reference_truth_source"
+material: "human_patient"
+platform_class: "short_or_unspecified"
+platform_detail: ["Illumina HiSeq WGS", "targeted amplicon MiSeq", "single-nucleus targeted PCR"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "patient_scdna_reference_tree"
+single_cell_tech: ["single-nucleus targeted PCR (Fluidigm Access Array, MiSeq)", "SCG genotyper"]
+input_is_single_cell: true
+tree_type: ["clone_tree", "sample_tree"]
+cross_tags: ["phyclone_truth_source", "mutation_loss", "multi_region", "roth_lab"]
+keywords_en: ["high-grade serous ovarian cancer", "single-nucleus sequencing", "targeted deep sequencing", "scg", "pyclone", "stochastic dollo", "infinite sites with loss", "multi-region wgs", "clone tree", "phyclone truth tree", "intraperitoneal spread"]
+keywords_zh: ["卵巢癌", "單核定序", "真值樹", "多區域取樣", "突變流失"]
+summary_zh: "病人單核 PCR 建樹；是 PhyClone HGSOC 真值樹來源。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # R01 — McPherson 2016 HGSOC：PhyClone 真實資料真值樹的來源
 
 McPherson, A. et al. **Divergent modes of clonal spread and intraperitoneal mixing in high-grade serous ovarian cancer.** *Nature Genetics* **48**, 758–767 (2016). DOI: [10.1038/ng.3573](https://doi.org/10.1038/ng.3573)。PMID 27182968。

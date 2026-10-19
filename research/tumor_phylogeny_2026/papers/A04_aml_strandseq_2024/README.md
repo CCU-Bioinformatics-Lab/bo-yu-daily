@@ -1,3 +1,28 @@
+---
+paper_id: A04
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_patient_sc_reference"
+sc_truth_strength: "reference_tree"
+title: "Single-cell multiomics analysis reveals dynamic clonal evolution and targetable phenotypes in acute myeloid leukemia with complex karyotype"
+year: 2024
+doc_type: "application"
+material: "mixed"
+platform_class: "short_or_unspecified"
+platform_detail: ["Strand-seq scTRIP (Illumina NextSeq)", "OGM validation"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "patient_scdna_reference_tree"
+single_cell_tech: ["Strand-seq scTRIP", "CITE-seq"]
+input_is_single_cell: true
+tree_type: ["clone_tree", "cn_event_tree"]
+cross_tags: ["haplotype_specific_cn", "structural_variant", "strand_seq_phasing", "pdx"]
+keywords_en: ["ck-aml", "acute myeloid leukemia", "strand-seq", "sctrip", "chromosome-length haplotype", "structural variants", "chromothripsis", "bfb", "optical genome mapping", "pdx", "haplotype-aware copy number"]
+keywords_zh: ["急性骨髓性白血病", "複雜核型", "單細胞結構變異", "染色體長度單倍型", "染色體碎裂", "人工整理樹"]
+summary_zh: "Strand-seq 單細胞 SV+單倍型建 CK-AML 人工 clone 樹。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # A04 — CK-AML 的 chromosome-length haplotype 與單細胞 SV 樹
 
 Leppä, A.-M., Grimes, K., Jeong, H. et al. **Single-cell multiomics analysis reveals dynamic clonal evolution and targetable phenotypes in acute myeloid leukemia with complex karyotype.** *Nature Genetics* **56**, 2790–2803 (2024). DOI: [10.1038/s41588-024-01999-x](https://doi.org/10.1038/s41588-024-01999-x)。2024-11-25 online；保存正式期刊版。

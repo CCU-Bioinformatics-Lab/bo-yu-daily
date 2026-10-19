@@ -1,3 +1,28 @@
+---
+paper_id: M06
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_sc_benchmark_truth"
+sc_truth_strength: "benchmark_truth"
+title: "PhylEx: Reconstructing clonal tree for phylo-phenotypic characterization of cancer using single-cell transcriptomics"
+year: 2023
+doc_type: "method"
+material: "mixed"
+platform_class: "short_or_unspecified"
+platform_detail: ["bulk WGS/WES", "Smart-seq3 and 10x scRNA", "DLP pseudobulk"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "sc_derived_benchmark_truth"
+single_cell_tech: ["DLP scDNA (reference tree, OV2295 cell lines)", "Smart-seq3", "10x scRNA"]
+input_is_single_cell: true
+tree_type: ["clone_tree"]
+cross_tags: ["single_cell_input", "cell_level_cooccurrence", "roth_lab", "cell_line_truth"]
+keywords_en: ["phylex", "tssb", "slice sampler", "bulk plus scrna", "cell-level snv co-occurrence", "smart-seq3", "10x", "dlp", "pyclone likelihood", "high-grade serous ovarian cancer", "her2 breast cancer"]
+keywords_zh: ["單細胞轉錄體", "共現", "克隆樹", "卵巢癌", "貝氏推論"]
+summary_zh: "bulk+scRNA 共現建樹；以 DLP scDNA 樹為真值。"
+category_index: "../../../../PAPER_CATEGORIES.md"
+---
+
 # M06 PhylEx（Jun et al., Nat Commun 2023）閱讀筆記
 
 ## 書目、版本與檔案

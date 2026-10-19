@@ -56,6 +56,8 @@
 |---|---|---|
 | R01／2016 | [McPherson et al., HGSOC clonal spread](references/R01_mcpherson_hgsoc_2016/README.md) | PhyClone HGSOC 病人 2/3/9 真值樹的來源：single-nucleus targeted PCR＋SCG＋stochastic Dollo。主文 closed access，只讀 supplement 與 tables |
 
+> **2026-10-18 分類**：本目錄與 `methods_survey/` 的論文已依「定序平台 × single-cell 真值」重新分類，見 [論文分類索引](../PAPER_CATEGORIES.md)。每篇 README 頂端有 YAML front-matter（`category`、`long_read_role`、`cross_tags`、`keywords_en`／`keywords_zh`），可直接 grep。
+
 ## 關鍵詞入口
 
 | 關鍵詞 | 優先論文 | 對本 repo 的意義 |

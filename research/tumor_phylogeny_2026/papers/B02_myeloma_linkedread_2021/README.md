@@ -1,3 +1,28 @@
+---
+paper_id: B02
+category: "C1"
+category_label: "短讀或未說平台（無 single-cell 真值）"
+subtype: "c1_read_cooccurrence_short"
+sc_truth_strength: "none"
+title: "Co-evolution of tumor and immune cells during progression of multiple myeloma"
+year: 2021
+doc_type: "application"
+material: "human_patient"
+platform_class: "short_or_unspecified"
+platform_detail: ["10x linked-read WGS (Illumina)", "bulk WGS/WES", "10x scRNA-seq"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "scrna_only"
+single_cell_tech: ["10x scRNA-seq", "inferCNV"]
+input_is_single_cell: false
+tree_type: ["clone_tree"]
+cross_tags: ["linked_read", "read_cooccurrence_model", "haplotype_assignment", "longitudinal"]
+keywords_en: ["multiple myeloma", "linked-read", "10x genomics", "long ranger", "scrna-seq", "sciclone", "fishplot", "nras", "haplotype assignment", "mutation co-occurrence", "longitudinal", "immune microenvironment"]
+keywords_zh: ["多發性骨髓瘤", "連鎖讀段", "單細胞轉錄體", "縱向樣本", "單倍型指派", "克隆演化"]
+summary_zh: "linked-read 分子判定 NRAS 雙突變屬獨立分支。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # B02｜真實 multiple myeloma：scRNA 加 linked reads 限制 clonal relationship
 
 ## 論文與定位

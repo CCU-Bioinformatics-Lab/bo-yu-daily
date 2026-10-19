@@ -1,3 +1,28 @@
+---
+paper_id: A05
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_patient_sc_reference"
+sc_truth_strength: "reference_tree"
+title: "Multiomic single cell sequencing identifies stemlike nature of mixed phenotype acute leukemia"
+year: 2024
+doc_type: "application"
+material: "human_patient"
+platform_class: "short_or_unspecified"
+platform_detail: ["DAb-seq (Tapestri) amplicon", "Illumina NovaSeq"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "patient_scdna_reference_tree"
+single_cell_tech: ["DAb-seq scDNA+protein", "CITE-seq"]
+input_is_single_cell: true
+tree_type: ["mutation_tree", "clone_tree"]
+cross_tags: ["amplicon_panel", "phenotype"]
+keywords_en: ["mpal", "mixed phenotype acute leukemia", "dab-seq", "tapestri", "scdna", "scite", "mutation tree", "cite-seq", "surface protein", "flt3 itd", "leukemia gene panel"]
+keywords_zh: ["混合表型急性白血病", "單細胞DNA", "突變樹", "表面蛋白", "克隆表型", "基因面板"]
+summary_zh: "DAb-seq 單細胞 DNA 以 SCITE 建 MPAL 突變樹。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # A05 — MPAL 的 single-cell DNA mutation tree 與 phenotype
 
 Peretz, C. A. C., Kennedy, V. E. et al. **Multiomic single cell sequencing identifies stemlike nature of mixed phenotype acute leukemia.** *Nature Communications* **15**, 8191 (2024). DOI: [10.1038/s41467-024-52317-2](https://doi.org/10.1038/s41467-024-52317-2)。2024-09-18 online；保存正式期刊版。

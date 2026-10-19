@@ -1,3 +1,28 @@
+---
+paper_id: B06
+category: "C2"
+category_label: "long-read 特徵輔助建樹（無 single-cell 真值）"
+subtype: "c2_sample_tree_sv"
+sc_truth_strength: "none"
+title: "Multisite long-read sequencing reveals the early contributions of somatic structural variations to HBV-related hepatocellular carcinoma tumorigenesis"
+year: 2025
+doc_type: "application"
+material: "human_patient"
+platform_class: "long_read_feature"
+platform_detail: ["ONT WGS ~37x", "Illumina WGS"]
+long_read_role: "sample_tree"
+long_read_features: ["read-spanned SV breakpoints", "HBV-host chimeric reads", "long-read SV VAF for timing"]
+single_cell_truth: "none"
+single_cell_tech: []
+input_is_single_cell: false
+tree_type: ["sample_tree"]
+cross_tags: ["structural_variant", "multi_region", "sv_timing"]
+keywords_en: ["oxford nanopore", "structural variants", "sniffles2", "jasmine", "hbv integration", "hepatocellular carcinoma", "multi-region sequencing", "neighbor joining", "sample phylogeny", "svclone", "mutationtimer", "facets", "sv timing"]
+keywords_zh: ["長讀定序", "結構變異", "B型肝炎病毒嵌入", "肝細胞癌", "多區域採樣", "樣本演化樹"]
+summary_zh: "ONT SV 建多區域 sample tree；沒有 single-cell 真值。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # B06 — 多部位肝癌：ONT SV sample tree 與 CN-aware SV timing
 
 Zeng T, Liao H, Xia L, et al. **Multisite long-read sequencing reveals the early contributions of somatic structural variations to HBV-related hepatocellular carcinoma tumorigenesis.** *Genome Research* 35(4), 671–685 (2025)，2025-03-04 online。DOI：[10.1101/gr.279617.124](https://doi.org/10.1101/gr.279617.124)。

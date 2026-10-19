@@ -1,3 +1,28 @@
+---
+paper_id: A01
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_patient_sc_reference"
+sc_truth_strength: "reference_tree"
+title: "Tracking clonal evolution during treatment in ovarian cancer using cell-free DNA"
+year: 2025
+doc_type: "application"
+material: "human_patient"
+platform_class: "short_or_unspecified"
+platform_detail: ["DLP+ scWGS (Illumina)"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "patient_scdna_reference_tree"
+single_cell_tech: ["DLP+ scWGS"]
+input_is_single_cell: true
+tree_type: ["cell_tree", "clone_tree", "cn_event_tree"]
+cross_tags: ["haplotype_specific_cn", "structural_variant", "longitudinal", "cfdna"]
+keywords_en: ["hgsoc", "ovarian cancer", "cfdna", "scwgs", "dlp+", "medicc2", "signals", "allele-specific copy number", "structural variants", "ccf calibration", "longitudinal", "wgd"]
+keywords_zh: ["卵巢癌", "游離DNA", "單細胞DNA", "等位基因特異拷貝數", "縱向追蹤", "結構變異"]
+summary_zh: "病人 scWGS 建 MEDICC2 樹；cfDNA 追蹤抗藥 clone。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # A01 — 病人 single-cell DNA 參考樹與 cfDNA 演化追蹤
 
 Williams, M. J. et al. **Tracking clonal evolution during treatment in ovarian cancer using cell-free DNA.** *Nature* **647**, 757–765 (2025). DOI: [10.1038/s41586-025-09580-0](https://doi.org/10.1038/s41586-025-09580-0)。2025-10-01 online；本目錄保存正式期刊版，非 preprint。

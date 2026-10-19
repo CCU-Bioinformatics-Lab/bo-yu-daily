@@ -1,3 +1,28 @@
+---
+paper_id: B08
+category: "C2"
+category_label: "long-read 特徵輔助建樹（無 single-cell 真值）"
+subtype: "c2_molecular_history"
+sc_truth_strength: "none"
+title: "Intratumoral Heterogeneity and Clonal Evolution Induced by HPV Integration"
+year: 2023
+doc_type: "application"
+material: "mixed"
+platform_class: "long_read_feature"
+platform_detail: ["ONT WGS (>=20 kb reads)", "PacBio HiFi", "Illumina WGS"]
+long_read_role: "molecular_history"
+long_read_features: ["read-spanned virus-host SV junctions", "same-read breakpoint patterns", "ecDNA structure"]
+single_cell_truth: "none"
+single_cell_tech: []
+input_is_single_cell: false
+tree_type: ["local_order"]
+cross_tags: ["structural_variant", "ecdna", "manual_parsimony"]
+keywords_en: ["hpv integration", "heterocateny", "oxford nanopore", "pacbio hifi", "structural variants", "ecdna", "virus-host concatemer", "oropharyngeal cancer", "hela", "myc amplification", "molecular history", "local event order"]
+keywords_zh: ["HPV嵌入", "長讀定序", "結構變異", "染色體外DNA", "口咽癌", "局部分子歷史"]
+summary_zh: "long read 排出 HPV 局部 SV 分子史；不是完整 clone tree。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # B08｜HPV heterocateny：long reads 重建局部 SV molecular history
 
 ## 論文、版本與定位

@@ -1,3 +1,28 @@
+---
+paper_id: B07
+category: "C1"
+category_label: "短讀或未說平台（無 single-cell 真值）"
+subtype: "c1_single_cell_input_no_truth"
+sc_truth_strength: "none"
+title: "Haplotype-aware analysis of somatic copy number variations from single-cell transcriptomes (Numbat)"
+year: 2022
+doc_type: "method"
+material: "mixed"
+platform_class: "short_or_unspecified"
+platform_detail: ["10x scRNA-seq (short read)", "Eagle2 population phasing reference"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "scrna_only"
+single_cell_tech: ["10x scRNA-seq", "NCI-N87 paired scDNA (CN check only)"]
+input_is_single_cell: true
+tree_type: ["cell_tree", "cn_event_tree"]
+cross_tags: ["single_cell_input", "haplotype_specific_cn", "population_phasing"]
+keywords_en: ["numbat", "scrna-seq", "haplotype-aware hmm", "allele-specific copy number", "cnloh", "eagle2 population phasing", "perfect phylogeny", "scistree", "multiple myeloma", "anaplastic thyroid cancer", "single-cell cnv", "clonal architecture"]
+keywords_zh: ["單細胞轉錄體", "單倍型感知", "拷貝數變異", "族群相位", "中性拷貝數LOH", "細胞演化樹"]
+summary_zh: "scRNA 加族群 phasing 推 CNV 細胞樹；不是 long read。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # B07 — Numbat：把 haplotype／allele-specific CN 與 LOH 用於 single-cell 樹
 
 ## 書目與實際閱讀版本

@@ -1,3 +1,28 @@
+---
+paper_id: B01
+category: "C2"
+category_label: "long-read 特徵輔助建樹（無 single-cell 真值）"
+subtype: "c2_long_read_data_only"
+sc_truth_strength: "none"
+title: "Long-read sequencing of single cell-derived melanoma sublines reveals divergent and parallel genomic and epigenomic evolutionary trajectories"
+year: 2026
+doc_type: "application"
+material: "mouse"
+platform_class: "long_read_data_only"
+platform_detail: ["ONT R10.4 PromethION bulk WGS per subline"]
+long_read_role: "tree_input"
+long_read_features: ["ONT SNV genotypes (tree)", "Severus SV and 5mC DMR placed on fixed tree"]
+single_cell_truth: "single_cell_derived_lines"
+single_cell_tech: ["single-cell cloning to sublines", "scRNA-seq (phenotype only)"]
+input_is_single_cell: false
+tree_type: ["clone_tree"]
+cross_tags: ["single_cell_derived_lines", "treeharmonizer", "methylation", "structural_variant", "mouse"]
+keywords_en: ["scistree", "treeharmonizer", "oxford nanopore", "long-read wgs", "single cell-derived sublines", "mouse melanoma", "b2905", "structural variants", "severus", "wakhan", "methylation dmr", "variant placement"]
+keywords_zh: ["長讀定序", "單細胞衍生亞株", "小鼠黑色素瘤", "結構變異", "甲基化", "變異放置"]
+summary_zh: "ONT SNV 建樹；SV／甲基化只事後放上固定樹。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # B01｜23 個單細胞衍生小鼠 melanoma sublines 的 ONT 演化樹
 
 ## 論文與定位

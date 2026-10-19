@@ -1,3 +1,28 @@
+---
+paper_id: B04
+category: "C3b"
+category_label: "single-cell 真值樹 × long-read 特徵"
+subtype: "c3b_topology_constraint_sc_partial"
+sc_truth_strength: "partial"
+title: "Phasing analysis of lung cancer genomes using a long read sequencer"
+year: 2022
+doc_type: "application"
+material: "human_patient"
+platform_class: "long_read_feature"
+platform_detail: ["ONT PromethION bulk WGS (pair order)", "Illumina WGS (VAF, FACETS -> PyClone-VI -> ClonEvol)"]
+long_read_role: "topology_constraint"
+long_read_features: ["same-read somatic SNV co-occurrence (pair order)", "WhatsHap germline phasing/haplotag", "long-read SV", "methylation", "RNA"]
+single_cell_truth: "sc_partial_validation"
+single_cell_tech: ["10x Chromium scDNA-seq (NovaSeq 150bp PE), cases S8/S20"]
+input_is_single_cell: false
+tree_type: ["clone_tree", "local_order"]
+cross_tags: ["read_cooccurrence_model", "haplotag", "topology_selection", "priority_intersection"]
+keywords_en: ["nsclc", "lung cancer", "oxford nanopore", "promethion", "whatshap", "haplotype phasing", "mutation pair order", "read co-occurrence", "clonevol", "pyclone-vi", "facets", "scdna-seq", "10x chromium", "topology selection"]
+keywords_zh: ["肺癌", "長讀定序", "單倍型定相", "突變先後順序", "單細胞DNA驗證", "拓樸篩選"]
+summary_zh: "long read 同 read 排序選出 S14 線性樹；scDNA 局部驗證。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # B04｜真實肺癌病人：long-read mutation partial order、候選 topology 篩選與 scDNA 驗證
 
 ## 論文與分類結論

@@ -1,3 +1,28 @@
+---
+paper_id: A02
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_patient_sc_reference"
+sc_truth_strength: "reference_tree"
+title: "Characterizing the evolutionary dynamics of cancer proliferation in single-cell clones with SPRINTER"
+year: 2025
+doc_type: "method"
+material: "human_patient"
+platform_class: "short_or_unspecified"
+platform_detail: ["DLP+ scWGS (Illumina)"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "patient_scdna_reference_tree"
+single_cell_tech: ["DLP+ scWGS"]
+input_is_single_cell: true
+tree_type: ["clone_tree", "cn_event_tree"]
+cross_tags: ["cell_cycle", "metastasis", "wgd"]
+keywords_en: ["sprinter", "nsclc", "scwgs", "dlp+", "cell cycle", "s-phase", "huntress", "medicc2", "machina", "metastatic seeding", "ctdna shedding", "copy number"]
+keywords_zh: ["單細胞DNA", "細胞週期", "肺癌", "轉移播種", "拷貝數", "循環腫瘤DNA"]
+summary_zh: "SPRINTER 校正 S 期 CN；病人 scDNA 樹連結增殖與轉移。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # A02 — SPRINTER：病人單細胞樹、細胞週期與轉移
 
 Lucas, O. et al. **Characterizing the evolutionary dynamics of cancer proliferation in single-cell clones with SPRINTER.** *Nature Genetics* **57**, 103–114 (2025). DOI: [10.1038/s41588-024-01989-z](https://doi.org/10.1038/s41588-024-01989-z)。2024-11-29 online，2025 年卷期；目錄使用卷期年份。保存官方正式期刊 PDF。

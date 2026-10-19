@@ -1,3 +1,28 @@
+---
+paper_id: B03
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_patient_sc_reference"
+sc_truth_strength: "reference_tree"
+title: "Single-cell genomic variation induced by mutational processes in cancer"
+year: 2022
+doc_type: "application"
+material: "mixed"
+platform_class: "short_or_unspecified"
+platform_detail: ["DLP+ scDNA-seq (Illumina)", "ONT PromethION for SV validation only"]
+long_read_role: "validation_only"
+long_read_features: ["ONT read-spanned SV support (validation)", "WhatsHap haplotag (validation)"]
+single_cell_truth: "patient_scdna_reference_tree"
+single_cell_tech: ["DLP+ scDNA-seq", "scRNA-seq"]
+input_is_single_cell: true
+tree_type: ["cell_tree", "cn_event_tree"]
+cross_tags: ["haplotype_specific_cn", "long_read_validation_only", "parallel_evolution", "pdx", "roth_lab"]
+keywords_en: ["signals", "dlp+", "scdna-seq", "sitka", "haplotype-specific copy number", "hgsc", "tnbc", "pdx", "184-htert", "parallel evolution", "cnloh", "hlamp", "oxford nanopore validation", "mutational processes"]
+keywords_zh: ["單細胞DNA", "單倍型特異拷貝數", "卵巢癌", "三陰性乳癌", "平行演化", "長讀驗證"]
+summary_zh: "scDNA total-CN 建細胞樹；ONT 只驗證 SV。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # B03｜SIGNALS：真實／PDX scDNA 的 haplotype-specific CN 演化，ONT 為正交驗證
 
 ## 論文與分類
