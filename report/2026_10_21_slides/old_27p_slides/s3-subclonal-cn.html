@@ -1,0 +1,38 @@
+<section id="s3-subclonal-cn" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">3 · 輸入與輸出　補充頁</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">subclonal CN 讓 VAF 不能唯一換算 CCF</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:40px;align-items:flex-start">
+<div style="width:520px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px 32px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;line-height:1.4;color:#1F2A37">情境（推論例子）</h3>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">purity=1；SNV 是 clonal。</p>
+<div style="display:flex;width:456px;height:64px;border-radius:8px">
+<div style="width:274px;height:64px;background:#4A5568;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#F7F6F2">60% 細胞　1:1</p></div>
+<div style="width:182px;height:64px;background:#C96A1B;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#FDFDFB">40% 細胞　2:1</p></div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">若 CN 照 <span style="color:#2F6DB5">1:1</span> 輸入：</p>
+<table style="font-size:26px;color:#1F2A37">
+<tr style="background:#E3E8EF"><th style="width:32%">SNV 位置</th><th style="width:18%">實際 VAF</th><th style="width:20%">推出 CCF</th><th style="width:30%">結果</th></tr>
+<tr><td>被複製的 allele</td><td><b>0.583</b></td><td><b>約 1.17</b></td><td><span style="color:#B4442F">超過 1</span></td></tr>
+<tr><td>未複製的 allele</td><td><b>0.417</b></td><td><b>約 0.83</b></td><td><span style="color:#B4442F">像假 subclone</span></td></tr>
+</table>
+</div>
+</div>
+<ul style="font-size:30px;line-height:1.4;color:#1F2A37;display:flex;flex-direction:column;gap:8px">
+<li>PhyClone 每個 SNV 只接受一組 major/minor CN。</li>
+<li>minor allele 比例 0.417 有兩種解釋：40% 細胞 2:1，或 clonal 2:1＋purity 0.4。</li>
+<li>HCC1395 已知有 subclonal CNA；SMC-Het T2 有 6／26 區段是 subclonal。</li>
+</ul>
+<div style="background:#FDFDFB;border:1px solid #2F6DB5;border-radius:16px;padding:20px 32px;display:flex;gap:20px;align-items:center">
+<x-icon name="Lightbulb" style="color:#2F6DB5;width:40px;height:40px"></x-icon>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37"><b><span style="color:#2F6DB5">推論：</span></b>HP 拆分能看出變的是哪條 haplotype；帶 CNA 的細胞比例仍要另外估。</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">16 / 27</p>
+</div>
+<aside>這頁補上 subclonal CN 的問題：同一個 clonal SNV，會因為在哪條 allele 上而有兩種 VAF。PhyClone 只吃一組 clonal major/minor CN，所以 0.583 會被截到 1，0.417 會變成假 subclone。在單一區段內，subclonal 比例與 purity 給出相同的 minor allele 比例，要全基因體一起看才能分開；因此不要直接用 nominal tX_nY 當 purity。HP 拆分能分開兩種情況，但帶 CNA 的細胞比例仍要另外估，這是分析推論。來源：2026-10-18 session 紀錄 s5908_text.md（subclonal CNA 段、SMC-Het T2 區段檢查），PhyClone 限制見 M01 筆記。</aside>
+</section>

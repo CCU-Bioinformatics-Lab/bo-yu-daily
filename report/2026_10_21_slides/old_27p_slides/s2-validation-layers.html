@@ -1,0 +1,62 @@
+<section id="s2-validation-layers" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">2 · 資料狀況　補充頁</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">每一層驗證只支持一種結論</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<table style="font-size:26px;color:#1F2A37">
+<tr style="background:#E3E8EF">
+<th style="width:8%;text-align:left;padding:12px 16px">層</th>
+<th style="width:28%;text-align:left;padding:12px 16px">資料</th>
+<th style="width:11%;text-align:left;padding:12px 16px">真值樹</th>
+<th style="width:15%;text-align:left;padding:12px 16px">long read 觀測</th>
+<th style="width:38%;text-align:left;padding:12px 16px">能支持的結論</th>
+</tr>
+<tr>
+<td style="padding:12px 16px;font-family:'JetBrains Mono', 'Courier New', monospace;font-weight:700">L0</td>
+<td style="padding:12px 16px">PhyClone benchmark＋HGSOC</td>
+<td style="padding:12px 16px">有</td>
+<td style="padding:12px 16px">無</td>
+<td style="padding:12px 16px">無 long read 時，不比原 PhyClone 差</td>
+</tr>
+<tr style="background:#FDFDFB">
+<td style="padding:12px 16px;font-family:'JetBrains Mono', 'Courier New', monospace;font-weight:700">L1</td>
+<td style="padding:12px 16px">參數式模擬</td>
+<td style="padding:12px 16px">有</td>
+<td style="padding:12px 16px">生成</td>
+<td style="padding:12px 16px">指定模擬情境下支持改善</td>
+</tr>
+<tr>
+<td style="padding:12px 16px;font-family:'JetBrains Mono', 'Courier New', monospace;font-weight:700">L1-B</td>
+<td style="padding:12px 16px">論文真值樹＋原始 counts</td>
+<td style="padding:12px 16px">有</td>
+<td style="padding:12px 16px">生成</td>
+<td style="padding:12px 16px">外部真值樹上支持改善</td>
+</tr>
+<tr style="background:#FDFDFB">
+<td style="padding:12px 16px;font-family:'JetBrains Mono', 'Courier New', monospace;font-weight:700">L2</td>
+<td style="padding:12px 16px">read-level 模擬＋spike-in</td>
+<td style="padding:12px 16px">有</td>
+<td style="padding:12px 16px">模擬或 spike-in</td>
+<td style="padding:12px 16px">L1 效果經過真實 read 流程仍存在</td>
+</tr>
+<tr style="background:#FBEFE6">
+<td style="padding:12px 16px;font-family:'JetBrains Mono', 'Courier New', monospace;font-weight:700;color:#C96A1B">L3</td>
+<td style="padding:12px 16px">HCC1395 細胞株</td>
+<td style="padding:12px 16px">無</td>
+<td style="padding:12px 16px">真實</td>
+<td style="padding:12px 16px">資料可行性、候選樹相容性<br><b><span style="color:#B4442F">不宣稱真樹準確率</span></b></td>
+</tr>
+</table>
+<div style="background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;gap:24px;align-items:flex-start">
+<x-icon name="Warning" style="color:#C96A1B;width:40px;height:40px"></x-icon>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;line-height:1.4">L0 沒有 long read 觀測，不能宣稱改善。</p>
+<p style="font-size:30px;line-height:1.4">L1-B 的 HP 與 pair 是生成的，結論範圍同 L1，要由 L2 檢查。</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">12 / 27</p>
+</div>
+<aside>這頁說明驗證分四層，每層只能支持一種結論。L0 到 L2 有真值樹，但 long read 觀測是沒有或生成的；L3 是真實 HCC1395 long read，但沒有真值樹。所以 L3 只談資料可行性與候選樹相容性，不宣稱真樹準確率。L2 的真值樹來自生成器（T-gen）或 scDNA 參考樹（T-sc），T-sc 只作描述。來源：plan.md §0 驗證層表。</aside>
+</section>

@@ -1,0 +1,12 @@
+<section id="cover" style="background:#1F2A37;color:#F7F6F2;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<div style="display:flex;gap:0px;width:480px;height:12px">
+<div style="width:120px;height:12px;background:#2C5F9E"></div>
+<div style="width:120px;height:12px;background:#8FB3E0"></div>
+<div style="width:120px;height:12px;background:#D9772B"></div>
+<div style="width:120px;height:12px;background:#F2B880"></div>
+</div>
+<h1 style="font-family:'Noto Serif TC', Georgia, serif;font-size:96px;font-weight:700;line-height:1.25;color:#F7F6F2">腫瘤演化樹重建：<br>long read 特徵與驗證資料盤點</h1>
+<p style="font-size:40px;color:#BFD0E0">用 long read 的染色體資訊改良建樹程式：研究進度</p>
+<p style="font-size:30px;color:#BFD0E0;font-family:'JetBrains Mono', 'Courier New', monospace">2026-10-21</p>
+<aside>大家好，今天報告腫瘤演化樹重建的進度。腫瘤演化樹就是把腫瘤裡不同的細胞群，依照誰從誰長出來排成一棵樹。我們的做法是拿一個現成的建樹程式 PhyClone 當起點，再加入 long read 才有的資訊。long read 是一次能讀很長一段 DNA 的定序方式，它能看出一條 read 來自兩份同源染色體的哪一份。上面這四個顏色，代表後面圖上四種被分到不同染色體的 read，後面會解釋。我們想知道，這些新資訊能不能讓樹排得更準。今天分五段：先看文獻，再看資料，接著釐清建樹程式的輸入輸出，然後介紹 long read 特徵，最後用公開競賽拆解問題與評分。</aside>
+</section>

@@ -1,0 +1,95 @@
+<section id="s4-pair-patterns" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">4 · Long read 特徵</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">同一條 read 上兩個 SNV 的組合指出祖先關係</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:40px">
+<div style="width:560px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:16px">
+<p style="width:160px;font-size:24px;color:#4A5568">同 HP reads</p>
+<div style="position:relative;width:320px;height:34px">
+<p style="position:absolute;left:70px;top:0px;width:36px;font-size:24px;font-weight:700;color:#1F2A37;text-align:center;font-family:'JetBrains Mono', 'Courier New', monospace">a</p>
+<p style="position:absolute;left:214px;top:0px;width:36px;font-size:24px;font-weight:700;color:#1F2A37;text-align:center;font-family:'JetBrains Mono', 'Courier New', monospace">b</p>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:16px">
+<div style="width:160px">
+<p style="font-size:24px;font-weight:700;color:#1F2A37">alt-alt</p>
+<p style="font-size:24px;color:#4A5568;font-family:'JetBrains Mono', 'Courier New', monospace">n11</p>
+</div>
+<div style="position:relative;width:320px;height:40px">
+<div style="position:absolute;left:0px;top:14px;width:320px;height:12px;background:#2C5F9E;border-radius:6px"></div>
+<div style="position:absolute;left:70px;top:2px;width:36px;height:36px;background:#D23A2E;border-radius:18px"></div>
+<div style="position:absolute;left:214px;top:2px;width:36px;height:36px;background:#D23A2E;border-radius:18px"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:16px">
+<div style="width:160px">
+<p style="font-size:24px;font-weight:700;color:#1F2A37">一端 alt</p>
+<p style="font-size:24px;color:#4A5568;font-family:'JetBrains Mono', 'Courier New', monospace">n10／n01</p>
+</div>
+<div style="position:relative;width:320px;height:40px">
+<div style="position:absolute;left:0px;top:14px;width:320px;height:12px;background:#2C5F9E;border-radius:6px"></div>
+<div style="position:absolute;left:70px;top:2px;width:36px;height:36px;background:#D23A2E;border-radius:18px"></div>
+<div style="position:absolute;left:214px;top:2px;width:36px;height:36px;background:#FDFDFB;border:3px solid #1F2A37;border-radius:18px"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:16px">
+<div style="width:160px">
+<p style="font-size:24px;font-weight:700;color:#1F2A37">ref-ref</p>
+<p style="font-size:24px;color:#4A5568;font-family:'JetBrains Mono', 'Courier New', monospace">n00 不計</p>
+</div>
+<div style="position:relative;width:320px;height:40px">
+<div style="position:absolute;left:0px;top:14px;width:320px;height:12px;background:#2C5F9E;border-radius:6px"></div>
+<div style="position:absolute;left:70px;top:2px;width:36px;height:36px;background:#FDFDFB;border:3px solid #1F2A37;border-radius:18px"></div>
+<div style="position:absolute;left:214px;top:2px;width:36px;height:36px;background:#FDFDFB;border:3px solid #1F2A37;border-radius:18px"></div>
+</div>
+</div>
+<p style="font-size:24px;color:#4A5568">紅點＝ALT，白點＝REF</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:700;color:#C96A1B">推論／設計提案（plan.md §4.5）</p>
+<table style="font-size:26px;color:#1F2A37">
+<tr style="background:#E3E8EF">
+<th style="width:34%;padding:8px 16px;text-align:left">關係</th>
+<th style="width:22%;padding:8px 16px">n11<br>alt-alt</th>
+<th style="width:22%;padding:8px 16px">n10<br>a alt、b ref</th>
+<th style="width:22%;padding:8px 16px">n01<br>a ref、b alt</th>
+</tr>
+<tr>
+<td style="padding:8px 16px">同一 clone</td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#2E7D4F">有</span></td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#B4442F">無</span></td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#B4442F">無</span></td>
+</tr>
+<tr>
+<td style="padding:8px 16px">a 是 b 的祖先</td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#2E7D4F">有</span></td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#2E7D4F">有</span></td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#B4442F">無</span></td>
+</tr>
+<tr>
+<td style="padding:8px 16px">b 是 a 的祖先</td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#2E7D4F">有</span></td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#B4442F">無</span></td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#2E7D4F">有</span></td>
+</tr>
+<tr>
+<td style="padding:8px 16px">分支（不同 clade）</td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#B4442F">無</span></td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#2E7D4F">有</span></td>
+<td style="padding:8px 16px;text-align:center"><span style="color:#2E7D4F">有</span></td>
+</tr>
+</table>
+</div>
+</div>
+<div style="background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;color:#1F2A37"><b>使用條件：</b>同 PS、同 HP、該 HP 的 C_h=1、不跨 CN breakpoint。</p>
+<p style="font-size:30px;color:#1F2A37"><b>n11=0 不能硬判分支：</b>coverage 低時本來就看不到，要用 soft score。</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">19 / 27</p>
+</div>
+<aside>這頁說明同一條 read 上兩個 SNV 的 allele 組合可以限制祖先關係。每種關係各有一種無錯誤時不會出現的 pattern：同一 clone 不出現 10、01；a 是祖先不出現 01；b 是祖先不出現 10；分支不出現 11。這只在同 PS、同 HP、該 HP 的 C_h=1、不跨 CN breakpoint 時成立。n11=0 可能只是 coverage 不足，所以設計成帶 error ε 的 soft score，不做硬判。這是設計提案，不是已驗證結果。來源：plan.md §4.5.1–4.5.3、research/SYNTHESIS_phyclone_longphase.md K2–K3。</aside>
+</section>

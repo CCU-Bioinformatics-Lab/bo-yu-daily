@@ -1,0 +1,110 @@
+<section id="s4-hp" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">4 · 解法</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">HP 計數看出改變的是哪一份同源染色體 → 幫助陷阱 2</h2>
+<div style="flex:1;display:flex;gap:40px;align-items:flex-start">
+<div style="width:1000px;display:flex;flex-direction:column;gap:20px">
+<div style="position:relative;width:1000px;height:340px">
+<svg aria-label="兩份同源染色體上的異型合子 SNP、兩個腫瘤突變、五種 read 與兩段 phase block" width="1000" height="340" viewBox="0 0 1000 340" style="position:absolute;left:0px;top:0px;width:1000px">
+<rect x="150" y="14" width="180" height="14" rx="7" fill="#2C5F9E"/>
+<rect x="680" y="14" width="200" height="14" rx="7" fill="#2C5F9E"/>
+<rect x="270" y="42" width="200" height="14" rx="7" fill="#8FB3E0"/>
+<circle cx="360" cy="49" r="8" fill="#D23A2E"/>
+<rect x="320" y="70" width="190" height="14" rx="7" fill="#8FB3E0"/>
+<circle cx="360" cy="77" r="8" fill="#D23A2E"/>
+<rect x="535" y="70" width="105" height="14" rx="7" fill="#9AA3AE"/>
+<rect x="130" y="106" width="390" height="22" rx="11" fill="#2C5F9E"/>
+<rect x="520" y="112" width="130" height="10" fill="#D9DDE3"/>
+<rect x="650" y="106" width="340" height="22" rx="11" fill="#2C5F9E"/>
+<rect x="130" y="150" width="390" height="22" rx="11" fill="#D9772B"/>
+<rect x="520" y="156" width="130" height="10" fill="#D9DDE3"/>
+<rect x="650" y="150" width="340" height="22" rx="11" fill="#D9772B"/>
+<g fill="#FFFFFF" stroke="#1F2A37" stroke-width="2">
+<rect x="174" y="100" width="12" height="34" rx="3"/>
+<rect x="284" y="100" width="12" height="34" rx="3"/>
+<rect x="424" y="100" width="12" height="34" rx="3"/>
+<rect x="694" y="100" width="12" height="34" rx="3"/>
+<rect x="824" y="100" width="12" height="34" rx="3"/>
+<rect x="934" y="100" width="12" height="34" rx="3"/>
+</g>
+<g fill="#1F2A37">
+<rect x="174" y="144" width="12" height="34" rx="3"/>
+<rect x="284" y="144" width="12" height="34" rx="3"/>
+<rect x="424" y="144" width="12" height="34" rx="3"/>
+<rect x="694" y="144" width="12" height="34" rx="3"/>
+<rect x="824" y="144" width="12" height="34" rx="3"/>
+<rect x="934" y="144" width="12" height="34" rx="3"/>
+</g>
+<circle cx="360" cy="117" r="11" fill="#D23A2E" stroke="#FFFFFF" stroke-width="3"/>
+<circle cx="770" cy="161" r="11" fill="#D23A2E" stroke="#FFFFFF" stroke-width="3"/>
+<rect x="690" y="194" width="210" height="14" rx="7" fill="#F2B880"/>
+<circle cx="770" cy="201" r="8" fill="#D23A2E"/>
+<rect x="730" y="222" width="230" height="14" rx="7" fill="#F2B880"/>
+<circle cx="770" cy="229" r="8" fill="#D23A2E"/>
+<rect x="150" y="250" width="300" height="14" rx="7" fill="#D9772B"/>
+<path d="M130 280 L130 294 L520 294 L520 280" fill="none" stroke="#2F6DB5" stroke-width="3"/>
+<path d="M650 280 L650 294 L990 294 L990 280" fill="none" stroke="#2F6DB5" stroke-width="3"/>
+</svg>
+<p style="position:absolute;left:0px;top:100px;width:110px;font-size:24px;font-weight:700;color:#1F2A37">第一份</p>
+<p style="position:absolute;left:0px;top:144px;width:110px;font-size:24px;font-weight:700;color:#1F2A37">第二份</p>
+<p style="position:absolute;left:130px;top:302px;width:390px;font-size:24px;font-weight:700;text-align:center;color:#2F6DB5">phase block 1</p>
+<p style="position:absolute;left:520px;top:302px;width:130px;font-size:24px;font-weight:700;text-align:center;color:#B4442F">缺口</p>
+<p style="position:absolute;left:650px;top:302px;width:340px;font-size:24px;font-weight:700;text-align:center;color:#2F6DB5">phase block 2</p>
+</div>
+<div style="display:flex;gap:20px">
+<div style="width:490px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;gap:12px;align-items:center"><div style="width:56px;height:14px;background:#2C5F9E;border-radius:7px"></div><p style="width:422px;font-size:24px;line-height:1.4"><b>HP1</b>：分到第一份的 read</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:56px;height:14px;background:#D9772B;border-radius:7px"></div><p style="width:422px;font-size:24px;line-height:1.4"><b>HP2</b>：分到第二份的 read</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:56px;height:14px;background:#9AA3AE;border-radius:7px"></div><p style="width:422px;font-size:24px;line-height:1.4"><b>unphased</b>：分不出哪一份</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:56px;display:flex;gap:8px"><div style="width:10px;height:30px;background:#FFFFFF;border:2px solid #1F2A37;border-radius:3px"></div><div style="width:14px;height:34px;background:#1F2A37;border-radius:3px"></div></div><p style="width:422px;font-size:24px;line-height:1.4"><b>異型合子 SNP</b>：兩份在這裡天生不同</p></div>
+</div>
+<div style="width:490px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;gap:12px;align-items:center"><div style="width:56px;height:14px;background:#8FB3E0;border-radius:7px"></div><p style="width:422px;font-size:24px;line-height:1.4"><b>HP1-1</b>：第一份上、帶腫瘤突變的 read</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:56px;height:14px;background:#F2B880;border-radius:7px"></div><p style="width:422px;font-size:24px;line-height:1.4"><b>HP2-1</b>：第二份上、帶腫瘤突變的 read</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:56px;display:flex;justify-content:center"><div style="width:22px;height:22px;background:#D23A2E;border-radius:11px"></div></div><p style="width:422px;font-size:24px;line-height:1.4"><b>紅點</b>：腫瘤突變</p></div>
+<div style="display:flex;gap:12px;align-items:center"><div style="width:50px;height:12px;border:3px solid #2F6DB5;border-top:0px solid #2F6DB5"></div><p style="width:422px;font-size:24px;line-height:1.4"><b>phase block</b>：能連續分辨兩份的一段區域</p></div>
+</div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px">
+<div style="background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px">
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">HP 是染色體標籤，不是 clone 標籤。</p>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37"><span style="color:#D23A2E">腫瘤突變</span>只在其中一份。</p>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">每個突變的 read 數再拆成 HP1、HP2、分不出來三類。</p>
+<div style="display:flex;gap:8px">
+<div style="flex:1;height:36px;background:#2C5F9E;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#FFFFFF">HP1</p></div>
+<div style="flex:1;height:36px;background:#D9772B;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#1F2A37">HP2</p></div>
+<div style="flex:1;height:36px;background:#9AA3AE;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#1F2A37">分不出來</p></div>
+</div>
+</div>
+<div style="background:#FDFDFB;border:2px solid #C96A1B;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:center"><p style="font-size:24px;font-weight:700;color:#1F2A37">回到陷阱 2</p><p style="font-size:24px;font-weight:700;color:#FDFDFB;background:#C96A1B;border-radius:8px;padding:2px 16px">幫助陷阱 2</p></div>
+<div style="position:relative;width:580px;height:76px">
+<svg aria-label="左邊細胞有一份 HP1 與一份 HP2；右邊細胞有兩份 HP1 與一份 HP2" width="270" height="76" viewBox="0 0 270 76" style="position:absolute;left:0px;top:0px;width:270px">
+<ellipse cx="62" cy="38" rx="58" ry="35" fill="#F7F6F2" stroke="#4A5568" stroke-width="3"/>
+<rect x="22" y="22" width="80" height="11" rx="5" fill="#2C5F9E"/>
+<rect x="22" y="43" width="80" height="11" rx="5" fill="#D9772B"/>
+<ellipse cx="198" cy="38" rx="66" ry="35" fill="#F7F6F2" stroke="#4A5568" stroke-width="3"/>
+<rect x="154" y="14" width="88" height="11" rx="5" fill="#2C5F9E"/>
+<rect x="154" y="32" width="88" height="11" rx="5" fill="#2C5F9E"/>
+<rect x="154" y="50" width="88" height="11" rx="5" fill="#D9772B"/>
+</svg>
+<p style="position:absolute;left:286px;top:2px;width:294px;font-size:24px;color:#1F2A37">左：60% 細胞 1:1</p>
+<p style="position:absolute;left:286px;top:40px;width:294px;font-size:24px;font-weight:700;color:#2C5F9E">右：40% 細胞多一份 HP1</p>
+</div>
+<div style="display:flex;gap:12px;align-items:center;height:34px">
+<div style="position:relative;width:150px;height:30px"><div style="position:absolute;left:0px;top:8px;width:150px;height:14px;background:#F2B880;border-radius:7px"></div><div style="position:absolute;left:61px;top:1px;width:28px;height:28px;background:#D23A2E;border-radius:14px"></div></div>
+<p style="width:418px;font-size:24px;color:#1F2A37">都在 <b><span style="color:#C96A1B">HP2</span></b> → 解釋一，CCF＝0.8</p>
+</div>
+<div style="display:flex;gap:12px;align-items:center;height:34px">
+<div style="position:relative;width:150px;height:30px"><div style="position:absolute;left:0px;top:8px;width:150px;height:14px;background:#8FB3E0;border-radius:7px"></div><div style="position:absolute;left:61px;top:1px;width:28px;height:28px;background:#D23A2E;border-radius:14px"></div></div>
+<p style="width:418px;font-size:24px;color:#1F2A37">都在 <b><span style="color:#2C5F9E">HP1</span></b> → 解釋二，CCF＝0.4</p>
+</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">7 / 10</p>
+</div>
+<aside>結論是：HP 計數看得出改變的是哪一份同源染色體，可以幫助陷阱 2。大家看左邊。兩份同源染色體在一些位置天生不同，叫異型合子 SNP。long read 跨過這些位置，就能分到 HP1 或 HP2；沒跨過的叫 unphased。HP1、HP2 只是標號，不代表父或母。phase block 是能連續分辨兩份的一段區域，標號只在同一段內有意義，段內也可能偶爾接錯。右下回到第 5 頁的陷阱 2：多一份的是 HP1。帶突變的 read 都在 HP2，就是解釋一；都在 HP1，就是解釋二。在沒增加的那份，multiplicity 一定是 1；在增加的那份，有時還要配合細胞比例或發生先後才分得出，這是推論。只剩一份同源染色體的區段分不出兩份；HCC1395 腫瘤細胞比例約 0.99，正常細胞的 read 太少，救不回來。</aside>
+</section>

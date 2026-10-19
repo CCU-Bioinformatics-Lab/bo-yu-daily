@@ -1,0 +1,51 @@
+<section id="s3-papers-io" style="background:#EEF2F6;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">3 · 輸入與輸出</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">各論文的輸出分成三種，只有三篇同時用 reads、purity、CN 輸出 clone tree</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;gap:24px">
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;gap:16px;align-items:center">
+<svg aria-label="clone tree 示意：root 節點分出兩個 clone 節點" width="72" height="56" viewBox="0 0 72 56"><line x1="36" y1="10" x2="16" y2="44" stroke="#4A5568" stroke-width="3"/><line x1="36" y1="10" x2="56" y2="44" stroke="#4A5568" stroke-width="3"/><circle cx="36" cy="10" r="8" fill="#2F6DB5"/><circle cx="16" cy="44" r="8" fill="#2F6DB5"/><circle cx="56" cy="44" r="8" fill="#2F6DB5"/></svg>
+<h3 style="font-size:40px;font-weight:700;color:#2F6DB5">clone tree</h3>
+</div>
+<p style="font-size:24px;color:#4A5568">節點＝SNV cluster</p>
+<p style="font-size:24px;font-weight:700;color:#1F2A37">PhyClone、TreeClone、PhylEx、Pharming、TUSV-ext</p>
+</div>
+<div style="flex:1.3;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;gap:16px;align-items:center">
+<svg aria-label="cell 或 sample tree 示意：分支末端是方形葉子" width="72" height="56" viewBox="0 0 72 56"><line x1="36" y1="6" x2="36" y2="20" stroke="#4A5568" stroke-width="3"/><line x1="12" y1="20" x2="60" y2="20" stroke="#4A5568" stroke-width="3"/><line x1="12" y1="20" x2="12" y2="40" stroke="#4A5568" stroke-width="3"/><line x1="36" y1="20" x2="36" y2="40" stroke="#4A5568" stroke-width="3"/><line x1="60" y1="20" x2="60" y2="40" stroke="#4A5568" stroke-width="3"/><rect x="5" y="40" width="14" height="14" fill="#C96A1B"/><rect x="29" y="40" width="14" height="14" fill="#C96A1B"/><rect x="53" y="40" width="14" height="14" fill="#C96A1B"/></svg>
+<h3 style="font-size:40px;font-weight:700;color:#C96A1B">cell／sample tree</h3>
+</div>
+<p style="font-size:24px;color:#4A5568">葉＝細胞、樣本或 subline</p>
+<p style="font-size:24px;font-weight:700;color:#1F2A37">A01–A05、B01、B03、B05、B06、B07</p>
+</div>
+<div style="flex:0.85;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;gap:16px;align-items:center">
+<svg aria-label="局部關係圖示意：三個點以兩條邊相連，沒有 root" width="72" height="56" viewBox="0 0 72 56"><line x1="12" y1="40" x2="36" y2="16" stroke="#9AA3AE" stroke-width="3"/><line x1="36" y1="16" x2="60" y2="40" stroke="#9AA3AE" stroke-width="3" stroke-dasharray="5 4"/><circle cx="12" cy="40" r="8" fill="#4A5568"/><circle cx="36" cy="16" r="8" fill="#4A5568"/><circle cx="60" cy="40" r="8" fill="#4A5568"/></svg>
+<h3 style="font-size:40px;font-weight:700;color:#4A5568">局部關係圖</h3>
+</div>
+<p style="font-size:24px;color:#4A5568">沒有完整的樹</p>
+<p style="font-size:24px;font-weight:700;color:#1F2A37">M03、B08、B02</p>
+</div>
+</div>
+<table style="font-size:26px;color:#1F2A37">
+<tr style="background:#E3E8EF"><th style="width:12%">purity</th><th style="width:18%">外部給定</th><th style="width:18%">當參數推論</th><th style="width:32%">當 root normal clone 比例</th><th style="width:20%">沒有 purity 參數</th></tr>
+<tr style="background:#FDFDFB"><td><span style="color:#4A5568">方法</span></td><td>PhyClone</td><td>TreeClone</td><td>TUSV-ext</td><td>PhylEx、single-cell 方法</td></tr>
+</table>
+<div style="background:#FDFDFB;border:2px solid #C96A1B;border-radius:16px;padding:20px 24px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;font-weight:700;color:#C96A1B">同時用 ref/alt、purity、CN，並輸出 clone tree：只有三篇</p>
+<div style="display:flex;gap:24px">
+<p style="font-size:30px;font-weight:700;color:#2F6DB5">PhyClone</p>
+<p style="font-size:30px;color:#9AA3AE">｜</p>
+<p style="font-size:30px;font-weight:700;color:#2F6DB5">B04：PyClone-VI → ClonEvol</p>
+<p style="font-size:30px;color:#9AA3AE">｜</p>
+<p style="font-size:30px;font-weight:700;color:#2F6DB5">HCC1395：PhyloWGS</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">14 / 27</p>
+</div>
+<aside>這頁比較各論文的輸出型態。輸出分三種：clone tree、cell 或 sample tree、局部關係圖。purity 有外部給定、當參數推論、當 root normal clone 比例三種處理；PhylEx 沒有 purity 參數（M06 README），所以不放在 root normal clone 欄；single-cell 方法也沒有 purity。同時用 ref/alt、purity、CN 並輸出 clone tree 的只有 PhyClone、B04 的 PyClone-VI→ClonEvol 流程、HCC1395 的 PhyloWGS。這是論文筆記的整理，不是程式驗證。來源：2026-10-18 session 紀錄 s5908_text.md 第一題，以及 research/tumor_phylogeny_2026 各篇 README。</aside>
+</section>
