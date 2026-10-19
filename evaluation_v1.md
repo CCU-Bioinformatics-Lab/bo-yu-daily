@@ -18,6 +18,8 @@
 
 第一版先不要求 RRE、LPR、RF／GRF、posterior calibration、CCF interval coverage 或 held-out predictive log score。這些列為後續擴充；目前 MAP CCF 輸出沒有區間，不能據此計算 interval coverage。
 
+2026-10-18 新增：**SMC-Het 相容分數**（sc1A–sc3B，§2.7）列為附加驗證。它用來和 SMC-Het DREAM Challenge 的 31 個方法放在同一尺度比較，不取代上表的主要指標。
+
 ## 2. 共同評分母體與計算方式
 
 ### 2.1 評分母體
@@ -95,6 +97,89 @@ informative_given_eligible = n_informative_pairs / n_eligible_pairs
 
 每項比例同報 numerator／denominator；分母為 0 時為 `NA`。排除流程固定順序並逐階計數，將無 phase、HP 不確定、CN 不合格、跨 breakpoint、coverage 不足等原因保留下來。
 
+### 2.7 SMC-Het 相容分數（附加驗證）
+
+**目的。** 用 SMC-Het 的官方定義計分，讓 PhyClone 和本 repo 的新增特徵能和 SMC-Het 的受測方法直接比較（[M07 筆記](research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md)）。PhyClone 不在 SMC-Het 的受測方法中。本節是附加驗證；§2.2–2.6 仍是主要結果。
+
+**依據。** 公式依官方評分程式 [uclahs-cds/tool-SMCHet-scoring](https://github.com/uclahs-cds/tool-SMCHet-scoring)（commit `fa67302`，2025-07-14，Apache-2.0，Python 2）的 `smc_het_eval/SMCScoring.py`。論文 Methods 只有摘要；兩者不一致時以程式為準，並在下表註明。
+
+#### 2.7.1 七項分數與 PhyClone 輸出的對應
+
+| 項目 | 評估什麼 | 分數（官方程式） | PhyClone 要提供的輸出 |
+|---|---|---|---|
+| sc1A | purity | `1 − |truth − pred|`（`calculate1A`） | **PhyClone 不推論 purity**，只把它當輸入。記為 `NA: purity_not_inferred`。若改報上游 purity 估計器的分數，`method` 欄寫該估計器，不寫 PhyClone |
+| sc1B | clone 數 | `(L + 1 − min(L + 1, |pred − L|)) / (L + 1)`（`calculate1B`） | MAP 樹的非空 node 數。計數規則（是否含 clonal node）以官方 truth 檔的定義對齊後固定 |
+| sc1C | CP 分布 | 依 SNV 數展開兩邊的 CP 後排序比對，取 `1 − mean|Δ|`；原始版與縮放版取較大值（`calculate1C`）。論文稱為 `1 − EMD` | 每個 node 一列：`cluster_id, n_snv, CP`。官方 validator 最多接受 10 列 |
+| sc2A | 硬分群 | normalized JS divergence 和 normalized AUPR 的平均，加 pseudo count（`om_calculate2A`、`calculate2`） | MAP 樹的 SNV→node 指派，cluster ID 從 1 連續編號 |
+| sc2B | 軟分群 | 同 sc2A，但輸入是 co-clustering 機率矩陣 | posterior trace 中 burn-in 之後，i、j 同 node 的樣本比例 |
+| sc3A | 硬 phylogeny | 見 §2.7.2 | MAP 樹的 `node, parent` 表；root 寫 0 |
+| sc3B | 軟 phylogeny | 見 §2.7.2 | 同 sc2B 的 co-clustering 矩陣，加上 AD 機率矩陣：i 所在 node 是 j 所在 node 祖先的樣本比例 |
+
+**sc1C 的 CP 尺度。** CP 是 CCF，還是 purity×CCF，要先用官方 truth 檔確認，確認後寫進 manifest。未確認前，sc1C 記為 `NA: cp_scale_unverified`。不可用 VAF 代替。
+
+**sc1C 超過 10 群。** 官方 validator 會拒收。記為 `invalid: too_many_clusters`，不自行合併 node。本 repo 的重新實作可以另算不設上限的版本，但要標成 `non_official`，不能和 SMC-Het 排名混在一起。
+
+**多 sample。** SMC-Het 是 single-sample 設計。sc1A、sc1C 依 sample 分開計分。sc1B、sc2、sc3 只看 SNV 指派和樹，不依 sample 重複計分。
+
+**forest。** PhyClone 可能輸出多個 root。每個 root 的 parent 都寫 0。
+
+#### 2.7.2 sc3 的計算
+
+每一對 SNV `(i, j)` 建四個 N×N 矩陣：
+
+```text
+CCM[i,j] = 1  若 i、j 在同一 node
+AD[i,j]  = 1  若 i 所在 node 是 j 所在 node 的祖先（含跨多層）
+ADᵀ      = AD 的轉置
+C        = 1 − CCM − AD − ADᵀ          # cousin：不同 node 且互不為祖先
+M        = [CCM | AD | ADᵀ | C]        # 橫向串接成 N × 4N
+```
+
+軟版本（sc3B）用 posterior 機率代替 0/1。官方 validator 要求 `CCM` 對角線為 1、`AD` 對角線為 0、`AD + ADᵀ + CCM ≤ 1`。
+
+```text
+raw   = Pearson(M_pred, M_truth)
+worst = min(Pearson(M_truth, M_one), Pearson(M_truth, M_n))
+        # M_one：所有 SNV 同一群（CCM=1, AD=0）
+        # M_n：每個 SNV 自成一群、互為 cousin（CCM=I, AD=0）
+score = max(0, ((raw − worst) / (1 − worst) + 1) / 2)
+```
+
+**解讀。**
+- 完美預測的 score=1。
+- 兩個極端解中**較差的那一個** score 正好是 0.5，另一個 ≥0.5。所以 score 的有效下限約 0.5，不是 0。比 0.5 低表示比最差的極端解還差。
+- **sc3 對 topology 錯誤不敏感。** 在 10 個 SNV、三個 node 的手算例子中，真樹是 A→B、A→C（branching）。預測成 A→B→C（linear）時，score 仍有 0.875；單一 cluster 解是 0.542（2026-10-18 以臨時腳本依上式重算，不是官方程式輸出；腳本未存入 repo）。原因是 same 和多數 ancestor 配對仍然正確，只有 B、C 之間的配對錯。
+- 因此 branching 和 linear 的區分不能只看 sc3，必須同時看 §2.2 的 AD F-score 和 §2.5 的 branch 列。論文表中的分數又做了跨方法 min–max 正規化（每個 {tumor, subchallenge} 內，最差的方法為 0、最好的方法為 1）。本 repo 主要報上式的原始 score；只有和一組固定方法同時比較時，才另報 min–max 版本，並列出參與正規化的方法清單。
+
+**與 §2.5 的關係。** `CCM`、`AD`、`ADᵀ`、`C` 分別對應 same、ancestor、descendant、branch。差別有兩點：
+- sc3 用**全部** SNV pair，並把結果壓成一個相關係數。
+- §2.5 只用合格 pair，並保留四乘四的計數。
+
+兩者分開報告，不互相替代。
+
+#### 2.7.3 評分母體：採用 SMC-Het 的 FN／FP 規則
+
+本節是 §2.1「缺少預測記為 NA」的明確例外，目的是和 SMC-Het 的結果可比：
+- **false negative**：truth 有、預測沒有的 SNV，加進一個額外 cluster，`CP=0`，parent 為 0（官方規則）。PhyClone 會移除 `major_cn=0` 的 SNV，以及沒有出現在所有 sample 的 SNV，這些都屬於此類。
+- **outlier**：PhyClone 判為 outlier 的 SNV 不在樹上，也用同一個額外 cluster 處理。
+- **false positive**：預測有、truth 沒有的 SNV，在計分前排除。
+
+每個 trial 同報 `n_fn_added`、`n_outlier_added`、`n_fp_removed`。主要母體（§2.1）的 AD／V 結果仍依原規則記 NA，不因本節而改變。
+
+#### 2.7.4 規模與數值
+
+- N 個 SNV 的 `M` 有 4N² 個元素。N=10,000 時，單一 float64 矩陣約 3.2 GB。
+- N 太大時，使用官方的 `--approx <fraction> <iterations>` 子抽樣，並把 fraction、iteration 數和 `--approx_seed` 寫進 manifest。子抽樣的分數標成 `approx`。
+- hard 版本的矩陣在 cluster 區塊內是常數，可以用區塊計數精確算出 Pearson，不必展開 N×N（推論）。若本 repo 自行實作這個算法，必須先通過 §5 的一致性驗收。
+
+#### 2.7.5 適用資料
+
+| 資料 | 能否計分 | 說明 |
+|---|---|---|
+| SMC-Het 公開資料（Synapse syn2813581） | 可以 | 用官方 truth 檔和官方程式。參考基因組是 hs37d5（GRCh37） |
+| 本 repo 自建模擬 | 可以 | truth 由生成器輸出，轉成官方格式。計分可以用官方程式或通過驗收的重新實作 |
+| HCC1395 等真實資料 | 不可以 | 沒有完整 SNV assignment 真值，記為 `NA: truth_unavailable` |
+
 ## 3. 第一版比較實驗
 
 主要設定：`baseline`、`+C2`、`+C3`、`+C4`、`+C2+C3+C4`。另外保留既有計畫的 `+C2+C3`，以接續 C4 的增量比較。
@@ -127,8 +212,16 @@ HCC1395 golden tree 缺少完整 SNV assignment，且不是獨立完整真樹。
 | `metrics.tsv` | trial、seed、方法、分層、metric、value、numerator／denominator（適用時）、評分／缺失／invalid 數、完整性與 NA 原因 |
 | `relation_confusion.tsv` | trial、seed、方法、分層、truth_relation、predicted_relation、count；即使 count=0 仍輸出四乘四格 |
 | `pair_qc.tsv` | sample、候選／合格／informative pair 數、各階段排除數、三項比例與有效深度分布 |
+| `smchet_scores.tsv` | trial、seed、方法、sample（sc1A／sc1C）、subchallenge、raw score、min–max score（有時）、`official`／`non_official`／`approx` 標記、評分程式 commit、`n_fn_added`、`n_outlier_added`、`n_fp_removed`、NA／invalid 原因 |
 
 完成條件：各方法能以相同母體產出上述四類評估；完整預測且與已知真值一致時，AD／V 為 1（AD 有有效分母時）、CCF MAE 為 0、confusion matrix 僅有對角線計數；空母體與缺失真值依規格回報 `NA`。Multiplicity 的候選情況仍參與 likelihood，沒有 HP 欄位時須保留原本行為。這些是未來實作的驗收條件，不是已通過的測試。
+
+SMC-Het 相容分數（§2.7）另有三項驗收條件：
+- 完美預測的 sc1A／sc1B／sc1C／sc2A／sc3A 都是 1。
+- 單一 cluster 解和 N-cluster 解中，較差的那一個 sc3A 是 0.5，另一個 ≥0.5。
+- 若本 repo 重新實作評分，對同一組 SMC-Het 預測檔的分數必須和官方程式一致，差異在 1e-6 以內。
+
+一致性驗收要用官方程式的測試資料（`smc_het_eval/test_SMCScoring.py`）和至少一個 SMC-Het 公開腫瘤。
 
 ## 6. 來源
 
@@ -136,4 +229,6 @@ HCC1395 golden tree 缺少完整 SNV assignment，且不是獨立完整真樹。
 - [PhyClone 評估指標](research/phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)：§「指標與統計方法」，AD／V 的原文依據。
 - [文獻對本 repo 的改進方案](research/tumor_phylogeny_2026/REPO_IMPROVEMENTS.md)：§4–6，分層評估、ablation 與資訊洩漏。
 - [B04 肺癌 long-read phasing](research/tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md)：局部 mutation partial order 的研究動機，不提供本規格全部指標的既有實作。
+- [M07 SMC-Het benchmark](research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md)：§2.7 的論文依據（Salcedo et al., *Nat Biotechnol* 2024，Methods「Scoring metrics」「Scoring and ranking」）。
+- [SMC-Het 官方評分程式](https://github.com/uclahs-cds/tool-SMCHet-scoring)：commit `fa67302`；`SMCScoring.py` 的 `calculate1A`、`calculate1B`、`calculate1C`、`calculate2`、`calculate3Final`、`validate3A`、`validate3B`，以及 `scoring_harness_optimized.py` 的 `om_calculate2A`。
 - [實驗室依輸出類型驗證規範](/big8_disk/liaoyoyo2001/Knowledge/06_workflows/validation-by-output-type.md)：L30–46、L86–96、L138–154，分母、HP 語意與獨立驗證；`status: lab-canonical`。
