@@ -87,13 +87,39 @@ category_index: "../../../../PAPER_CATEGORIES.md"
 
 ## 程式碼與可取得性
 
-- 沒有公開程式、沒有 preprint（見上方搜尋表）。
+- 沒有 preprint（見上方搜尋表）。
+- **程式：[atabeerk/cancer_phasing](https://github.com/atabeerk/cancer_phasing)**（使用者於 2026-10-17 提供，已核對）。
+  - 判定為作者 repo 的依據：
+    - README 標題是「Phasing Tumor Clones By Timing Somatic Mutations In Bulk Long-Read Sequencing」，幾乎和摘要標題相同 [repo]。
+    - 帳號 bio 是「CS PhD student @ UMD」，並 fork 了 Kolmogorov 的 Flye [repo]。
+    - 帳號不在 KolmogorovLab org 名下 [repo]。
+  - 狀態：建立於 2024-12-19，最後 push 是 2026-10-16。沒有 license，README 寫明「actively developed」[repo]。
+  - **輸入**：somatic-only VCF，加上 haplotagged tumor BAM。HP tag 用來標註每個 SNV 的 HP1/HP2 alt reads [repo]。
+  - **pair 計數**：同時覆蓋兩個 SNV 的 read，依兩點的 ref/alt 分成 ALT_ALT、ALT_REF、REF_ALT、REF_REF 四格（`evo/snv_analysis.cpp` 的 `compareSNVs`）[repo]。
+  - **關係判定**（`evo/process_snv_output.cpp`）[repo]：
+    - 關係類型有 7 種：`snp1_before_snp2`、`snp2_before_snp1`、`cooccurring`、`divergent`，以及 timing 和 cooccurring 的 `_loss` 版本。
+    - 每種關係都規定「必須出現」和「禁止出現」的格子，例如 divergent 必須有 A/R 和 R/A，禁止 R/R 和 A/A。
+    - 必須出現的格子要達到 `minReads`。分數 = 觀測比例 ÷ VAF 推出的期望比例，取最小值，再扣掉禁止格的 penalty。
+  - **建圖**（`evo/graph_ops/builder.py`）[repo]：
+    - cooccurring 邊用 union–find 合併成 cluster。
+    - 加入 timing 或 divergent 邊之前，先檢查和既有 cluster 關係的遞移一致性；有衝突就拒收並記錄。
+  - **輸出**：每 10 Mb 一張 mutation graph（JSON，可用 Cytoscape 看），以及 genome 層級的 component 摘要 [repo]。
+  - **和本 repo 的差異** [推論]：
+    - 它沒有 CN 或 multiplicity 模型，也沒有 purity 校正。期望比例直接由 VAF 推得。
+    - 它不產出 clone tree 或 CCF，也沒有接 PhyClone。
+    - 它的 pair 規則可以當 C4 的 rule-based baseline 和實作對照。
+- 先前在 KolmogorovLab org 和同名帳號 `atadn` 都沒找到程式。原因是 repo 放在作者個人帳號 `atabeerk`。
 - 資料來源是公開的 CASTLE panel（[CASTLE-Panel/castle](https://github.com/CASTLE-Panel/castle)：HCC1954、HCC1937、H1437、H2009、Hs578T、HCC1395 六對 tumor/normal，含 ONT R10 與 H1437／H2009／HCC1937 的「semi-UL」E821 資料）。
 
 ## 與本研究的重疊與差異
 
 **重疊**（摘要描述＋推論）：
-- 相同資料：H2009、H1437 都在本 repo 的樣本清單中（`tumor_sample.md`）；本 repo 的 CRAM 位於 `/big8_disk/Google_somatic_data/`，推測同屬 DeepSomatic／CASTLE 這批 ONT 資料（推論，未核對 SRA 編號）。
+- 相同資料（2026-10-17 核對）：本 repo 的 H1437、H2009 ONT CRAM 是 CASTLE Release 1 的標準 ONT R10 資料。
+  - 本機 CRAM 下載自 `brain-genomics-public/publications/park2024_deepsomatic`（`/big8_disk/Google_somatic_data/urls.txt`）。CASTLE README 寫明這個 bucket 是它的 Google mirror [repo]。
+  - header 的來源檔是 `01_17_23_R1041_CancerProject_H1437_{1,2,3}_Guppy_6.3.9_prom_sup` 和 `..._H2009_{1,2}_...`，即 R10.4.1、Guppy 6.3.9 sup。對應 SRA 的 SRR28305180（H1437）和 SRR28305173（H2009），library 名為 `*_ONT` [repo]。
+  - `/big8_disk/data/<line>/ONT/subsample/` 的 header 也帶相同來源檔 [repo]。
+  - **本機沒有** Release 2 的 semi-UL E821 資料（SRR31537476、SRR31537473，library `*_ONT_UL`）。M03 同時用 regular 和 ultra-long reads，所以只有 regular 部分和本機相同 [推論]。
+  - 讀取數和鹼基數沒有逐一比對。
 - 相同核心訊號：同一 long read 上兩個 somatic SNV 的 ref/alt 共現，用來判定 sequential／co-occurring／divergent，等同本研究「read pair → ancestor/descendant/sibling」的想法。
 - 同一生態系：Kolmogorov 組的 Lumos 流程使用 longphase 做 phasing，Wakhan 產出 haplotype-specific CN；他們若把這些接起來，就會走到本研究的方向。
 
