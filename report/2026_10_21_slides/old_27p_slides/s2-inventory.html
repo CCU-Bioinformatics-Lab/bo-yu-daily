@@ -1,0 +1,62 @@
+<section id="s2-inventory" style="background:#EEF2F6;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">2 · 資料狀況</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">五組資料沒有一組同時有 long read 與真值</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<table style="font-size:26px;color:#1F2A37">
+<tr style="background:#E3E8EF">
+<th style="width:22%">資料</th>
+<th style="width:31%">內容</th>
+<th style="width:13%">真值樹</th>
+<th style="width:11%">long read</th>
+<th style="width:10%">HP tag</th>
+<th style="width:13%">用途</th>
+</tr>
+<tr>
+<td>PhyClone benchmark<br>（Zenodo 15065504）</td>
+<td>7 組模擬＋HGSOC，共 2532 trials</td>
+<td><span style="color:#2E7D4F">有</span></td>
+<td><span style="color:#B4442F">無</span></td>
+<td><span style="color:#B4442F">無</span></td>
+<td>L0 不退步、L1-B 藍圖</td>
+</tr>
+<tr>
+<td>SMC-Het<br>（Synapse，已下載）</td>
+<td>51 個模擬腫瘤，Battenberg CN 含 subclonal CN</td>
+<td><span style="color:#2E7D4F">有</span></td>
+<td><span style="color:#B4442F">無</span></td>
+<td><span style="color:#B4442F">無</span></td>
+<td>單樣本 baseline、評分</td>
+</tr>
+<tr>
+<td>CASTLE ONT 5 株<br>＋COLO829</td>
+<td>CRAM，tX_nY 稀釋 subsample</td>
+<td><span style="color:#B4442F">無</span></td>
+<td><span style="color:#2E7D4F">有</span></td>
+<td><span style="color:#B4442F">無</span></td>
+<td>L3 可行性</td>
+</tr>
+<tr>
+<td>HCC1395 tagged BAM<br>（old tagging）</td>
+<td>單一 sample，只有候選樹；longphase-s purity 0.992</td>
+<td><span style="color:#B4442F">無</span></td>
+<td><span style="color:#2E7D4F">有</span></td>
+<td><span style="color:#2E7D4F">有</span></td>
+<td>C0 前處理輸入</td>
+</tr>
+<tr>
+<td>Liu 2026 小鼠 subline<br>（未下載）</td>
+<td>23 個 ONT subline，樹是推論的</td>
+<td><span style="color:#2E7D4F">有</span></td>
+<td><span style="color:#2E7D4F">有</span></td>
+<td><span style="color:#B4442F">無</span></td>
+<td>L2 pseudo-bulk 候選</td>
+</tr>
+</table>
+<p style="font-size:24px;color:#4A5568">tX_nY 是 nominal 稀釋比例，不是實測 purity。CASTLE 要先跑 somatic_haplotag；Liu 2026 要重新 phasing。</p>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">9 / 27</p>
+</div>
+<aside>這頁盤點手上的五組資料。重點是：有真值樹的資料沒有 long read，有 long read 的資料沒有真值。PhyClone benchmark 與 SMC-Het 用來做不退步驗證與評分；CASTLE 與 HCC1395 用來測 long read 特徵的可行性；Liu 2026 是唯一同時有 ONT 與 subline 樹的候選，但樹本身是推論的。tX_nY 是 nominal 稀釋比例，不是實測 purity。來源：tumor_sample.md、data_input.md、research/tumor_phylogeny_2026/methods_survey/workers/W8_benchmark_update_2026-10-18.md。</aside>
+</section>

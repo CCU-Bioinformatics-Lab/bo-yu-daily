@@ -1,0 +1,80 @@
+<section id="s5-metrics" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">5 · Benchmark 拆解</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">主指標看祖先關係，sc3 只當附加分數</h2>
+<div style="flex:1;display:flex;gap:40px">
+<div style="width:880px;display:flex;flex-direction:column;gap:16px">
+<table style="font-size:26px;color:#1F2A37">
+<tr style="background:#E3E8EF">
+<th style="width:40%;padding:10px 16px;text-align:left">指標</th>
+<th style="width:44%;padding:10px 16px;text-align:left">量什麼</th>
+<th style="width:16%;padding:10px 16px;text-align:center">角色</th>
+</tr>
+<tr>
+<td style="padding:10px 16px;font-weight:700">AD F-score</td>
+<td style="padding:10px 16px">祖先–後代關係</td>
+<td style="padding:10px 16px;text-align:center"><span style="color:#2F6DB5">主</span></td>
+</tr>
+<tr>
+<td style="padding:10px 16px;font-weight:700">V-measure</td>
+<td style="padding:10px 16px">SNV 分群</td>
+<td style="padding:10px 16px;text-align:center"><span style="color:#2F6DB5">主</span></td>
+</tr>
+<tr>
+<td style="padding:10px 16px;font-weight:700">CCF MAE</td>
+<td style="padding:10px 16px">CCF 誤差</td>
+<td style="padding:10px 16px;text-align:center"><span style="color:#2F6DB5">主</span></td>
+</tr>
+<tr>
+<td style="padding:10px 16px;font-weight:700">四類關係 confusion matrix</td>
+<td style="padding:10px 16px">same／ancestor／descendant／branch</td>
+<td style="padding:10px 16px;text-align:center"><span style="color:#2F6DB5">主</span></td>
+</tr>
+<tr>
+<td style="padding:10px 16px;font-weight:700">pair 可用比例</td>
+<td style="padding:10px 16px">合格 pair／候選 pair</td>
+<td style="padding:10px 16px;text-align:center"><span style="color:#2F6DB5">主</span></td>
+</tr>
+<tr>
+<td style="padding:10px 16px;font-weight:700">SMC-Het sc3</td>
+<td style="padding:10px 16px">四矩陣 Pearson 相關</td>
+<td style="padding:10px 16px;text-align:center"><span style="color:#C96A1B">附加</span></td>
+</tr>
+</table>
+<p style="font-size:24px;color:#4A5568">sc3 的四矩陣＝same、ancestor、descendant、branch，但壓成一個相關係數。</p>
+</div>
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;align-items:center;gap:16px">
+<x-icon name="Warning" style="color:#B4442F;width:40px;height:40px"></x-icon>
+<h3 style="font-size:40px;font-weight:700;color:#1F2A37">分支錯成線性，sc3 仍高</h3>
+</div>
+<div style="position:relative;width:680px;height:200px">
+<div style="position:absolute;left:0px;top:52px;width:56px;height:56px;border-radius:28px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">A</p></div>
+<div style="position:absolute;left:180px;top:0px;width:56px;height:56px;border-radius:28px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">B</p></div>
+<div style="position:absolute;left:180px;top:104px;width:56px;height:56px;border-radius:28px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">C</p></div>
+<x-connector x1="56" y1="80" x2="180" y2="28" head="end" route="straight" style="color:#1F2A37;border-width:3px"></x-connector>
+<x-connector x1="56" y1="80" x2="180" y2="132" head="end" route="straight" style="color:#1F2A37;border-width:3px"></x-connector>
+<div style="position:absolute;left:360px;top:52px;width:56px;height:56px;border-radius:28px;background:#C96A1B;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">A</p></div>
+<div style="position:absolute;left:492px;top:52px;width:56px;height:56px;border-radius:28px;background:#C96A1B;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">B</p></div>
+<div style="position:absolute;left:624px;top:52px;width:56px;height:56px;border-radius:28px;background:#C96A1B;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">C</p></div>
+<x-connector x1="416" y1="80" x2="492" y2="80" head="end" route="straight" style="color:#1F2A37;border-width:3px"></x-connector>
+<x-connector x1="548" y1="80" x2="624" y2="80" head="end" route="straight" style="color:#1F2A37;border-width:3px"></x-connector>
+<p style="position:absolute;left:0px;top:168px;width:260px;font-size:24px;font-weight:700;color:#2F6DB5">真樹：分支</p>
+<p style="position:absolute;left:360px;top:168px;width:320px;font-size:24px;font-weight:700;color:#C96A1B">預測：線性</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<p style="font-size:96px;font-weight:700;line-height:1.1;color:#B4442F;font-family:'Noto Serif TC', Georgia, serif">0.875</p>
+<div style="display:flex;flex-direction:column">
+<p style="font-size:30px;color:#1F2A37">線性預測的 sc3</p>
+<p style="font-size:30px;color:#1F2A37">sc3 下限約 0.5</p>
+</div>
+</div>
+<p style="font-size:30px;font-weight:700;color:#1F2A37">分支或線性：看 AD F-score 與 branch 列。</p>
+<p style="font-size:24px;color:#6B7480">依官方公式自行重算，不是官方程式輸出</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">25 / 27</p>
+</div>
+<aside>這頁說明評估指標的主從關係。主要結果是 AD F-score、V-measure、CCF MAE、四類關係 confusion matrix 與 pair 可用比例；SMC-Het sc3 只當附加分數，用來和 SMC-Het 受測方法比較。驗算例中，真樹是 A→B、A→C，預測成線性 A→B→C，sc3 仍有 0.875；兩個極端解中較差者正好 0.5，所以 sc3 的有效下限約 0.5。這個數字來自 2026-10-18 依官方公式寫的臨時腳本，不是官方程式輸出。因此 C4 若主要改善分支判斷，要看 AD F-score 與四類關係的 branch 列。來源：evaluation_v1.md §2.2–2.7、scratchpad s5908_text.md。</aside>
+</section>

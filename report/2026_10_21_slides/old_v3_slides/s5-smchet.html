@@ -1,0 +1,61 @@
+<section id="s5-smchet" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">5 · Benchmark 拆解</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">SMC-Het 把建樹拆成五個子任務，long read 最可能幫後三個</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:stretch;width:1664px">
+<div style="width:292px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">purity</p>
+<svg aria-label="藍色腫瘤細胞與灰色正常細胞混在一起" width="248" height="56" viewBox="0 0 248 56"><circle cx="16" cy="28" r="12" fill="#2F6DB5"/><circle cx="52" cy="28" r="12" fill="#9AA3AE"/><circle cx="88" cy="28" r="12" fill="#2F6DB5"/><circle cx="124" cy="28" r="12" fill="#2F6DB5"/><circle cx="160" cy="28" r="12" fill="#9AA3AE"/><circle cx="196" cy="28" r="12" fill="#2F6DB5"/><circle cx="232" cy="28" r="12" fill="#2F6DB5"/></svg>
+</div>
+<div style="width:48px;display:flex;align-items:center;justify-content:center"><x-shape kind="arrow-right" style="background:#4A5568;width:32px;height:16px"></x-shape></div>
+<div style="width:292px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">clone 數</p>
+<svg aria-label="三個不同顏色的 clone" width="248" height="56" viewBox="0 0 248 56"><circle cx="72" cy="28" r="18" fill="#2F6DB5"/><circle cx="124" cy="28" r="18" fill="#C96A1B"/><circle cx="176" cy="28" r="18" fill="#4A5568"/></svg>
+</div>
+<div style="width:48px;display:flex;align-items:center;justify-content:center"><x-shape kind="arrow-right" style="background:#4A5568;width:32px;height:16px"></x-shape></div>
+<div style="width:292px;background:#FDFDFB;border:3px solid #2F6DB5;border-radius:16px;padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">每個 clone 的<br>細胞比例</p>
+<svg aria-label="三個 clone 的細胞比例長條，高低不同" width="248" height="56" viewBox="0 0 248 56"><rect x="70" y="4" width="28" height="50" fill="#2F6DB5"/><rect x="110" y="22" width="28" height="32" fill="#C96A1B"/><rect x="150" y="38" width="28" height="16" fill="#4A5568"/><rect x="56" y="53" width="136" height="3" fill="#1F2A37"/></svg>
+<p style="font-size:24px;font-weight:700;color:#C96A1B">陷阱 2</p>
+</div>
+<div style="width:48px;display:flex;align-items:center;justify-content:center"><x-shape kind="arrow-right" style="background:#4A5568;width:32px;height:16px"></x-shape></div>
+<div style="width:292px;background:#FDFDFB;border:3px solid #2F6DB5;border-radius:16px;padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">突變分群<br>&nbsp;</p>
+<svg aria-label="紅色突變點分成三群" width="248" height="56" viewBox="0 0 248 56"><ellipse cx="46" cy="28" rx="34" ry="24" fill="none" stroke="#2F6DB5" stroke-width="3"/><ellipse cx="124" cy="28" rx="34" ry="24" fill="none" stroke="#C96A1B" stroke-width="3"/><ellipse cx="202" cy="28" rx="34" ry="24" fill="none" stroke="#4A5568" stroke-width="3"/><circle cx="34" cy="22" r="6" fill="#D23A2E"/><circle cx="56" cy="20" r="6" fill="#D23A2E"/><circle cx="46" cy="38" r="6" fill="#D23A2E"/><circle cx="112" cy="22" r="6" fill="#D23A2E"/><circle cx="134" cy="24" r="6" fill="#D23A2E"/><circle cx="194" cy="24" r="6" fill="#D23A2E"/><circle cx="212" cy="34" r="6" fill="#D23A2E"/></svg>
+<p style="font-size:24px;font-weight:700;color:#C96A1B">陷阱 1</p>
+</div>
+<div style="width:48px;display:flex;align-items:center;justify-content:center"><x-shape kind="arrow-right" style="background:#4A5568;width:32px;height:16px"></x-shape></div>
+<div style="width:292px;background:#FDFDFB;border:3px solid #2F6DB5;border-radius:16px;padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">樹<br>&nbsp;</p>
+<svg aria-label="三個 clone 組成的分支樹" width="248" height="56" viewBox="0 0 248 56"><line x1="124" y1="10" x2="84" y2="46" stroke="#4A5568" stroke-width="3"/><line x1="124" y1="10" x2="164" y2="46" stroke="#4A5568" stroke-width="3"/><circle cx="124" cy="10" r="9" fill="#2F6DB5"/><circle cx="84" cy="46" r="9" fill="#C96A1B"/><circle cx="164" cy="46" r="9" fill="#4A5568"/></svg>
+<p style="font-size:24px;font-weight:700;color:#C96A1B">陷阱 1</p>
+</div>
+</div>
+<div style="position:relative;width:1664px;height:124px">
+<p style="position:absolute;left:0px;top:16px;width:640px;font-size:30px;font-weight:700;color:#C96A1B">long read 可能的幫助（推論）→</p>
+<div style="position:absolute;left:680px;top:0px;width:292px;height:6px;background:#2F6DB5;border-radius:3px"></div>
+<svg aria-label="深藍 HP1 read 與帶紅色突變的淺橘 HP2-1 read" style="position:absolute;left:680px;top:20px;width:210px" width="210" height="44" viewBox="0 0 210 44"><rect x="0" y="4" width="200" height="12" rx="6" fill="#2C5F9E"/><rect x="10" y="28" width="200" height="12" rx="6" fill="#F2B880"/><circle cx="140" cy="34" r="8" fill="#D23A2E"/></svg>
+<p style="position:absolute;left:900px;top:16px;width:72px;font-size:24px;line-height:1;color:#2C5F9E">HP1</p>
+<p style="position:absolute;left:900px;top:42px;width:96px;font-size:24px;line-height:1;color:#D9772B">HP2-1</p>
+<p style="position:absolute;left:680px;top:76px;width:292px;font-size:30px;line-height:1.4;color:#1F2A37">HP 計數</p>
+<div style="position:absolute;left:1020px;top:0px;width:632px;height:6px;background:#2F6DB5;border-radius:3px"></div>
+<svg aria-label="同一條 read 帶兩個紅色突變" style="position:absolute;left:1020px;top:24px;width:360px" width="360" height="32" viewBox="0 0 360 32"><rect x="0" y="10" width="360" height="12" rx="6" fill="#8FB3E0"/><circle cx="110" cy="16" r="10" fill="#D23A2E"/><circle cx="250" cy="16" r="10" fill="#D23A2E"/></svg>
+<p style="position:absolute;left:1020px;top:76px;width:632px;font-size:30px;line-height:1.4;color:#1F2A37">同一條 read 上兩個突變</p>
+</div>
+<div style="display:flex;gap:40px;align-items:center">
+<div style="width:760px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:20px 32px;display:flex;align-items:center;gap:24px">
+<svg aria-label="一張考卷，旁邊有綠色勾的標準答案" width="88" height="80" viewBox="0 0 88 80"><rect x="4" y="4" width="56" height="72" rx="6" fill="#FFFFFF" stroke="#4A5568" stroke-width="3"/><rect x="14" y="20" width="36" height="4" fill="#9AA3AE"/><rect x="14" y="34" width="36" height="4" fill="#9AA3AE"/><rect x="14" y="48" width="24" height="4" fill="#9AA3AE"/><polyline points="52,50 64,64 84,34" fill="none" stroke="#2E7D4F" stroke-width="6"/></svg>
+<p style="font-size:30px;color:#1F2A37"><b>benchmark</b>＝有標準答案的公開考題</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">五站對應建樹的五個問題。</p>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">後三站正是第 8 頁兩個陷阱發生的地方。</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">11 / 13</p>
+</div>
+<aside>這頁的結論是：SMC-Het 把建樹拆成五個子任務，long read 最可能幫上後三個。benchmark 就是有標準答案的公開考題；SMC-Het 用模擬腫瘤出題，所以每題都有真值。大家從左往右看：先估 purity，也就是腫瘤細胞占多少；再估有幾個 clone、每個 clone 的細胞比例；接著把突變分群，最後排成樹。競賽原本有七個子題、分成三組，這五站是我們依任務順序重排的。藍框三站就是第 8 頁兩個陷阱發生的地方。下面的小圖是推論：HP 計數幫第三站，同一條 read 上兩個突變幫分群和排樹。HP 計數也可能幫前兩站估拷貝數。另外，PhyClone 沒有參加這個競賽，所以我們沒有它在這個競賽的成績。</aside>
+</section>

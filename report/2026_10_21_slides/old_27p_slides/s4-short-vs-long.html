@@ -1,0 +1,92 @@
+<section id="s4-short-vs-long" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">4 · Long read 特徵</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">short read 只看單一 SNV；long read 多看到 phase 與 SNV 共現</h2>
+<div style="flex:1;display:flex;gap:40px;align-items:flex-start">
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;color:#4A5568">Short read</h3>
+<p style="font-size:24px;color:#4A5568">單一 SNV 的觀測</p>
+<p style="font-size:30px">VAF</p>
+<p style="font-size:30px">purity</p>
+<p style="font-size:30px">copy number</p>
+<p style="font-size:30px">multiplicity</p>
+<div style="display:flex;align-items:center;gap:24px">
+<x-shape kind="arrow-down" style="background:#4A5568;width:28px;height:56px"></x-shape>
+<p style="font-size:40px;font-weight:700;color:#1F2A37">CCF</p>
+</div>
+</div>
+<div style="width:408px;display:flex;flex-direction:column;gap:16px;padding-top:24px">
+<p style="font-size:24px;font-weight:700;color:#4A5568">Short read：每條只蓋一個 SNV</p>
+<div style="position:relative;width:408px;height:28px">
+<div style="position:absolute;left:96px;top:6px;width:140px;height:16px;background:#9AA3AE;border-radius:8px"></div>
+<div style="position:absolute;left:200px;top:0px;width:8px;height:28px;background:#D23A2E"></div>
+</div>
+<div style="position:relative;width:408px;height:28px">
+<div style="position:absolute;left:150px;top:6px;width:140px;height:16px;background:#9AA3AE;border-radius:8px"></div>
+<div style="position:absolute;left:200px;top:0px;width:8px;height:28px;background:#D23A2E"></div>
+</div>
+<div style="position:relative;width:408px;height:28px">
+<div style="position:absolute;left:180px;top:6px;width:140px;height:16px;background:#9AA3AE;border-radius:8px"></div>
+</div>
+<hr style="border:none;border-top:1px solid #D9DDE3;width:408px">
+<p style="font-size:24px;font-weight:700;color:#4A5568">Long read：一條蓋兩個 SNV</p>
+<div style="display:flex;align-items:center;gap:16px">
+<p style="width:96px;font-size:24px;font-weight:700;color:#2C5F9E">HP1</p>
+<div style="position:relative;width:296px;height:28px">
+<div style="position:absolute;left:0px;top:6px;width:296px;height:16px;background:#2C5F9E;border-radius:8px"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:16px">
+<p style="width:96px;font-size:24px;font-weight:700;color:#2C5F9E">HP1-1</p>
+<div style="position:relative;width:296px;height:28px">
+<div style="position:absolute;left:0px;top:6px;width:296px;height:16px;background:#8FB3E0;border-radius:8px"></div>
+<div style="position:absolute;left:84px;top:0px;width:8px;height:28px;background:#D23A2E"></div>
+<div style="position:absolute;left:200px;top:0px;width:8px;height:28px;background:#D23A2E"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:16px">
+<p style="width:96px;font-size:24px;font-weight:700;color:#D9772B">HP2</p>
+<div style="position:relative;width:296px;height:28px">
+<div style="position:absolute;left:0px;top:6px;width:296px;height:16px;background:#D9772B;border-radius:8px"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:16px">
+<p style="width:96px;font-size:24px;font-weight:700;color:#D9772B">HP2-1</p>
+<div style="position:relative;width:296px;height:28px">
+<div style="position:absolute;left:0px;top:6px;width:296px;height:16px;background:#F2B880;border-radius:8px"></div>
+<div style="position:absolute;left:250px;top:0px;width:8px;height:28px;background:#D23A2E"></div>
+</div>
+</div>
+<p style="font-size:24px;color:#4A5568"><span style="color:#D23A2E">紅色直條</span>＝somatic SNV 的 alt</p>
+</div>
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:20px">
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;color:#2F6DB5">Long read 多出</h3>
+<p style="font-size:30px">phase set（PS）</p>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;justify-content:space-between;align-items:baseline">
+<p style="font-size:30px">同 read SNV pair</p>
+<p style="font-size:24px;color:#4A5568">F5</p>
+</div>
+<p style="font-size:24px;color:#4A5568">alt/ref 組合</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:baseline">
+<p style="font-size:30px">haplotype</p>
+<p style="font-size:24px;color:#4A5568">F1</p>
+</div>
+<div style="display:flex;gap:24px">
+<div style="display:flex;align-items:center;gap:8px;width:150px"><div style="width:24px;height:24px;background:#2C5F9E;border-radius:4px"></div><p style="font-size:24px">HP1</p></div>
+<div style="display:flex;align-items:center;gap:8px;width:150px"><div style="width:24px;height:24px;background:#8FB3E0;border-radius:4px"></div><p style="font-size:24px">HP1-1</p></div>
+</div>
+<div style="display:flex;gap:24px">
+<div style="display:flex;align-items:center;gap:8px;width:150px"><div style="width:24px;height:24px;background:#D9772B;border-radius:4px"></div><p style="font-size:24px">HP2</p></div>
+<div style="display:flex;align-items:center;gap:8px;width:150px"><div style="width:24px;height:24px;background:#F2B880;border-radius:4px"></div><p style="font-size:24px">HP2-1</p></div>
+</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">17 / 27</p>
+</div>
+<aside>這頁對比短讀與長讀能用的觀測。短讀每個 SNV 只有 VAF，要配合 purity、copy number、multiplicity 換算 CCF。長讀多給三種資訊：phase set、同一條 read 上兩個 SNV 的 alt/ref 組合、HP1／HP2／HP1-1／HP2-1 的 haplotype 標籤。在計畫中，HP 分開計數對應特徵 F1，同 read SNV pair 計數對應 F5。來源：舊 PPT 第 8 頁（report/2026_10_21.pptx）、plan.md §3.1–3.2。</aside>
+</section>

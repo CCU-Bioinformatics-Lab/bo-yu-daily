@@ -1,0 +1,72 @@
+<section id="s5-smchet-decompose" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">5 · Benchmark 拆解</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">SMC-Het 把重建問題拆成七個子任務</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:40px;align-items:center">
+<div style="width:200px;display:flex;flex-direction:column">
+<p style="font-size:64px;font-weight:700;line-height:1.1;color:#2F6DB5">31</p>
+<p style="font-size:24px;color:#4A5568">個方法</p>
+</div>
+<div style="width:200px;display:flex;flex-direction:column">
+<p style="font-size:64px;font-weight:700;line-height:1.1;color:#2F6DB5">51</p>
+<p style="font-size:24px;color:#4A5568">個模擬腫瘤</p>
+</div>
+<div style="width:260px;display:flex;flex-direction:column">
+<p style="font-size:64px;font-weight:700;line-height:1.1;color:#2F6DB5">12,061</p>
+<p style="font-size:24px;color:#4A5568">次執行</p>
+</div>
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px 32px;display:flex;flex-direction:column;gap:4px">
+<p style="font-size:24px;color:#4A5568">參賽者輸入</p>
+<p style="font-size:30px;color:#1F2A37"><span style="color:#1F2A37">MuTect VCF＋Battenberg CN 與 purity</span></p>
+</div>
+</div>
+<div style="display:flex;align-items:center">
+<div style="width:232px;background:#FDFDFB;border:2px solid #2F6DB5;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#2F6DB5">1A</p>
+<p style="font-size:30px;font-weight:700;color:#1F2A37">purity</p>
+</div>
+<div style="width:61px;display:flex;justify-content:center"><x-shape kind="arrow-right" style="background:#4A5568;width:40px;height:20px"></x-shape></div>
+<div style="width:232px;background:#FDFDFB;border:2px solid #2F6DB5;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#2F6DB5">1B</p>
+<p style="font-size:30px;font-weight:700;color:#1F2A37">clone 數</p>
+</div>
+<div style="width:61px;display:flex;justify-content:center"><x-shape kind="arrow-right" style="background:#4A5568;width:40px;height:20px"></x-shape></div>
+<div style="width:232px;background:#FDFDFB;border:2px solid #2F6DB5;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#2F6DB5">1C</p>
+<p style="font-size:30px;font-weight:700;color:#1F2A37">各 clone 的 CP</p>
+</div>
+<div style="width:61px;display:flex;justify-content:center"><x-shape kind="arrow-right" style="background:#4A5568;width:40px;height:20px"></x-shape></div>
+<div style="width:232px;background:#FDFDFB;border:2px solid #2F6DB5;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#2F6DB5">2A hard／2B soft</p>
+<p style="font-size:30px;font-weight:700;color:#1F2A37">SNV 分群</p>
+</div>
+<div style="width:61px;display:flex;justify-content:center"><x-shape kind="arrow-right" style="background:#4A5568;width:40px;height:20px"></x-shape></div>
+<div style="width:232px;background:#FDFDFB;border:2px solid #2F6DB5;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#2F6DB5">3A hard／3B soft</p>
+<p style="font-size:30px;font-weight:700;color:#1F2A37">樹</p>
+</div>
+</div>
+<p style="font-size:24px;font-weight:700;color:#C96A1B">對本研究的意義（推論）</p>
+<div style="display:flex;align-items:stretch">
+<div style="width:234px;background:#FDFDFB;border:1px solid #C96A1B;border-radius:16px;padding:20px 24px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#C96A1B">1A</p>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">PhyClone 不推 purity，記 NA</p>
+</div>
+<div style="width:61px"></div>
+<div style="width:924px;background:#FDFDFB;border:1px solid #C96A1B;border-radius:16px;padding:20px 24px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#C96A1B">1B／2A</p>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">HP 計數拆開 multiplicity 與 subclonal CN 的混淆</p>
+</div>
+<div style="width:61px"></div>
+<div style="width:234px;background:#FDFDFB;border:1px solid #C96A1B;border-radius:16px;padding:20px 24px;display:flex;flex-direction:column;gap:4px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#C96A1B">3A／3B</p>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">read pair 直接給祖先關係</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">23 / 27</p>
+</div>
+<aside>這頁說明 SMC-Het 如何把 single-sample 重建拆成七個子任務：purity、clone 數、各 clone 的 CP、SNV 分群（hard／soft）、樹（hard／soft）。規模是 31 個方法、51 個模擬腫瘤、12,061 次執行，參賽者只拿到 MuTect VCF 與 Battenberg 的 CN 和 purity。橘色列是推論：PhyClone 不推 purity，所以 1A 記 NA；HP 計數可拆開 multiplicity 與 subclonal CN 的混淆；read pair 直接給祖先關係，對應 3A／3B。PhyClone 不在 SMC-Het 的受測方法中。來源：research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md。</aside>
+</section>

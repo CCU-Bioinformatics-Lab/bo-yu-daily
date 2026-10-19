@@ -48,5 +48,6 @@ python -m unittest phyclone.tests.unit_tests.test_tree.<Class>.<method>
 
 - 文件以**繁體中文**撰寫，技術名詞（SNV、CCF、multiplicity、topology、purity、ESS 等）保留英文。
 - 製作 PPT／投影片時，原始檔一律輸出到 `report/<簡報名稱>/`（例如 `report/sc_groundtruth_slides/`），不要放在 `research/` 或暫存目錄。
+- 收到任何製作或修改 PPT／投影片報告的指令時，先把該指令併入 `report/report_rule.md` 的「個人風格」對應區塊，再動手。製作前先讀這份規則檔並遵守。
 - 做研究 claim 時，要區分 nominal purity 與實測 purity，也要區分論文主張與程式實際行為，並標明證據來源。
 - 回答時採用 **ASD-STE100（Simplified Technical English）** 風格：一句只說一件事、句子短（說明句約 25 字詞內、指令句約 20 字詞內）、用主動語態、一個詞只用一個意思、指令用祈使句、先寫結論或動作再寫原因。中文回答也套用相同原則；技術名詞照上方規則保留英文。

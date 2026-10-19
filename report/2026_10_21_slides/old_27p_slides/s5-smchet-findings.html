@@ -1,0 +1,35 @@
+<section id="s5-smchet-findings" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">5 · Benchmark 拆解</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">SMC-Het 的四個發現都指向 long read 的切入點</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;gap:40px">
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;line-height:1.4;color:#1F2A37">① 深層樹不可靠</h3>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">只有 7 個方法做 phylogeny。樹越深，結果越不準。</p>
+<p style="font-size:30px;line-height:1.4;font-weight:700;color:#2F6DB5">→ C4 要在深層 SNV pair 上評估（推論）</p>
+</div>
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;line-height:1.4;color:#1F2A37">② subclonal CNA 是主要誤差</h3>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">Battenberg 漏掉 48 個 subclonal gain 中的 25 個。</p>
+<p style="font-size:30px;line-height:1.4;font-weight:700;color:#2F6DB5">→ 用 HP 拆分 VAF 與 depth（推論）</p>
+</div>
+</div>
+<div style="display:flex;gap:40px">
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;line-height:1.4;color:#1F2A37">③ NRPCC 建議 ≥ 32</h3>
+<p style="font-size:30px;line-height:1.4;color:#4A5568"><span style="color:#1F2A37">NRPCC＝ρd／(ρψ＋2(1−ρ))</span><br>purity 用估計值，不用 nominal。</p>
+<p style="font-size:30px;line-height:1.4;font-weight:700;color:#2F6DB5">→ 每個 tX_nY 先算 NRPCC（推論）</p>
+</div>
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;line-height:1.4;color:#1F2A37">④ long read 是未來方向</h3>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">Discussion 提出 mutation-to-mutation phasing。論文沒做 long read 實驗。</p>
+<p style="font-size:30px;line-height:1.4;font-weight:700;color:#2F6DB5">→ 支持本研究動機</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">24 / 27</p>
+</div>
+<aside>這頁整理 SMC-Het 論文的四個發現，並對應到本研究的設計。前三點是論文結果；箭頭後面是我們的推論。深層樹不可靠，所以 C4 的 read pair 證據要在深層 SNV pair 上評估。subclonal gain 漏偵測率高，HP 拆分可能有幫助；NRPCC 要用估計 purity 計算。來源：research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md 與 2026-10-18 session 紀錄 s5908_text.md。</aside>
+</section>

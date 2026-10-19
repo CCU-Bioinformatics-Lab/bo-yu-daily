@@ -1,0 +1,78 @@
+<section id="s4-architecture" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">4 · Long read 特徵</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">long read 特徵從兩個入口進入 PhyClone</h2>
+<div style="position:relative;width:1664px;height:550px">
+<div style="position:absolute;left:0px;top:200px;width:190px;height:130px;background:#EDEFF2;border:2px solid #9AA3AE;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#1F2A37">輸入資料</p>
+<p style="font-size:24px;line-height:1.3;color:#1F2A37">BAM／VCF</p>
+<p style="font-size:24px;line-height:1.3;color:#1F2A37">CN</p>
+</div>
+<div style="position:absolute;left:242px;top:200px;width:190px;height:130px;background:#2F6DB5;border:2px solid #2F6DB5;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#FDFDFB">C0 萃取</p>
+<p style="font-size:24px;line-height:1.3;color:#FDFDFB">HP、PS、</p>
+<p style="font-size:24px;line-height:1.3;color:#FDFDFB">allele</p>
+<p style="font-size:24px;line-height:1.3;color:#FDFDFB">pair QC</p>
+</div>
+<div style="position:absolute;left:484px;top:200px;width:190px;height:130px;background:#EDEFF2;border:2px solid #9AA3AE;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#1F2A37">M1 輸入驗證</p>
+<p style="font-size:24px;line-height:1.3;color:#2F6DB5">＋C1 跨檔檢查</p>
+</div>
+<div style="position:absolute;left:726px;top:0px;width:190px;height:130px;background:#EDEFF2;border:2px solid #9AA3AE;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#1F2A37">M2 SNV grid</p>
+<p style="font-size:24px;line-height:1.3;color:#2F6DB5">＋C2 genotype</p>
+<p style="font-size:24px;line-height:1.3;color:#2F6DB5">＋C3 HP</p>
+<p style="font-size:24px;line-height:1.3;color:#2F6DB5">likelihood</p>
+</div>
+<div style="position:absolute;left:968px;top:0px;width:190px;height:130px;background:#EDEFF2;border:2px solid #9AA3AE;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#1F2A37">M3 cluster</p>
+<p style="font-size:24px;line-height:1.3;color:#1F2A37">聚合</p>
+<p style="font-size:24px;line-height:1.3;color:#2F6DB5">＋C5 診斷</p>
+</div>
+<div style="position:absolute;left:1210px;top:0px;width:190px;height:130px;background:#EDEFF2;border:2px solid #9AA3AE;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#1F2A37">M4 CCF 卷積</p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">不變</p>
+</div>
+<div style="position:absolute;left:726px;top:400px;width:190px;height:130px;background:#2F6DB5;border:2px solid #2F6DB5;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#FDFDFB">C4 四類關係</p>
+<p style="font-size:24px;line-height:1.3;color:#FDFDFB">score</p>
+</div>
+<div style="position:absolute;left:1210px;top:400px;width:190px;height:130px;background:#EDEFF2;border:2px solid #9AA3AE;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#1F2A37">M5 tree score</p>
+<p style="font-size:24px;line-height:1.3;color:#2F6DB5">＋link score</p>
+</div>
+<div style="position:absolute;left:1452px;top:400px;width:190px;height:130px;background:#EDEFF2;border:2px solid #9AA3AE;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#1F2A37">M6 SMC／MCMC</p>
+<p style="font-size:24px;line-height:1.3;color:#2F6DB5">＋整合驗證</p>
+</div>
+<div style="position:absolute;left:1452px;top:200px;width:190px;height:130px;background:#EDEFF2;border:2px solid #9AA3AE;border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:center">
+<p style="font-size:24px;line-height:1.3;font-weight:700;color:#1F2A37">M7 輸出</p>
+<p style="font-size:24px;line-height:1.3;color:#1F2A37">MAP tree</p>
+<p style="font-size:24px;line-height:1.3;color:#2F6DB5">＋C6 診斷</p>
+</div>
+<x-connector x1="210" y1="275" x2="242" y2="275" head="end" route="straight" style="color:#4A5568;border-width:3px"></x-connector>
+<x-connector x1="452" y1="275" x2="484" y2="275" head="end" route="straight" style="color:#4A5568;border-width:3px"></x-connector>
+<x-connector x1="589" y1="200" x2="726" y2="75" head="end" route="vh" style="color:#4A5568;border-width:3px"></x-connector>
+<x-connector x1="589" y1="350" x2="726" y2="475" head="end" route="vh" style="color:#4A5568;border-width:3px"></x-connector>
+<x-connector x1="936" y1="75" x2="968" y2="75" head="end" route="straight" style="color:#4A5568;border-width:3px"></x-connector>
+<x-connector x1="1178" y1="75" x2="1210" y2="75" head="end" route="straight" style="color:#4A5568;border-width:3px"></x-connector>
+<x-connector x1="1315" y1="150" x2="1315" y2="400" head="end" route="straight" style="color:#4A5568;border-width:3px"></x-connector>
+<x-connector x1="936" y1="475" x2="1210" y2="475" head="end" route="straight" style="color:#4A5568;border-width:3px"></x-connector>
+<x-connector x1="1420" y1="475" x2="1452" y2="475" head="end" route="straight" style="color:#4A5568;border-width:3px"></x-connector>
+<x-connector x1="1557" y1="400" x2="1557" y2="350" head="end" route="straight" style="color:#4A5568;border-width:3px"></x-connector>
+<p style="position:absolute;left:500px;top:28px;width:210px;font-size:24px;line-height:1.3;font-weight:700;color:#C96A1B">單 SNV 觀測</p>
+<p style="position:absolute;left:500px;top:488px;width:210px;font-size:24px;line-height:1.3;font-weight:700;color:#C96A1B">pair 觀測</p>
+<div style="position:absolute;left:740px;top:178px;width:540px;display:flex;flex-direction:column;gap:10px">
+<p style="font-size:24px;line-height:1.3;color:#1F2A37"><b>特徵對應：</b>F1–F4 → C2、C3；F5 → C4</p>
+<div style="display:flex;gap:24px;align-items:center">
+<div style="display:flex;gap:10px;align-items:center"><div style="width:28px;height:28px;background:#2F6DB5;border-radius:6px"></div><p style="font-size:24px;color:#1F2A37">新增模組</p></div>
+<div style="display:flex;gap:10px;align-items:center"><div style="width:24px;height:24px;background:#EDEFF2;border:2px solid #9AA3AE;border-radius:6px"></div><p style="font-size:24px;color:#1F2A37">原有模組</p></div>
+</div>
+<p style="font-size:24px;line-height:1.3;color:#2F6DB5">藍字＝在原模組上擴充</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">22 / 27</p>
+</div>
+<aside>這頁說明 long read 特徵進入 PhyClone 的兩個入口。單 SNV 的 HP 計數（F1–F4）進入 M2，透過 C2 genotype 候選與 C3 HP likelihood 改變每個 SNV 的 CCF grid；M4 的卷積遞迴不變。同 read 的 SNV pair（F5）經 C4 轉成四類關係 score，在 M5 加進 tree score，與原 tree data likelihood 合併後交給 M6 SMC／MCMC。藍色是新增模組，灰色是原模組，藍字是本計畫在原模組上的擴充。這是設計提案，尚未實作；來源為 plan.md §2.1–2.2 與 §3.2。</aside>
+</section>

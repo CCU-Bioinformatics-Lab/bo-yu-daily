@@ -1,0 +1,94 @@
+<section id="s1-lung" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">1 · 文獻調查</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">肺癌論文用同一條 read 上的兩個突變，選出線性樹</h2>
+<div style="flex:1;display:flex;gap:40px;align-items:flex-start">
+<div style="position:relative;width:1040px;height:560px">
+<div style="position:absolute;left:0px;top:0px;width:500px;height:270px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:12px">
+<svg aria-label="分支樹：主幹 C-1 分出 C-2 與 C-3 兩個子 clone，打叉表示排除" width="500" height="270" viewBox="0 0 500 270" style="position:absolute;left:0px;top:0px;width:500px">
+<line x1="250" y1="70" x2="130" y2="160" stroke="#4A5568" stroke-width="4"/>
+<line x1="250" y1="70" x2="370" y2="160" stroke="#4A5568" stroke-width="4"/>
+<circle cx="250" cy="70" r="26" fill="#4A5568"/>
+<circle cx="130" cy="160" r="28" fill="#2F6DB5"/>
+<circle cx="370" cy="160" r="20" fill="#C96A1B"/>
+<line x1="404" y1="16" x2="428" y2="40" stroke="#B4442F" stroke-width="5"/>
+<line x1="428" y1="16" x2="404" y2="40" stroke="#B4442F" stroke-width="5"/>
+</svg>
+<p style="position:absolute;left:20px;top:12px;width:160px;font-size:30px;line-height:1.4;font-weight:700">分支樹</p>
+<p style="position:absolute;left:432px;top:10px;width:64px;font-size:30px;line-height:1.4;font-weight:700;color:#B4442F">排除</p>
+<p style="position:absolute;left:286px;top:52px;width:180px;font-size:24px;line-height:1.4"><b>C-1</b>　CCF 1</p>
+<p style="position:absolute;left:50px;top:194px;width:160px;font-size:24px;line-height:1.4;text-align:center"><b>C-2</b><br>CCF 0.616</p>
+<p style="position:absolute;left:290px;top:194px;width:160px;font-size:24px;line-height:1.4;text-align:center"><b>C-3</b><br>CCF 0.212</p>
+</div>
+<div style="position:absolute;left:540px;top:0px;width:500px;height:270px;background:#FDFDFB;border:3px solid #2E7D4F;border-radius:12px">
+<svg aria-label="線性樹：主幹 C-1 長出 C-2，C-2 再長出 C-3，打勾表示保留" width="494" height="264" viewBox="0 0 494 264" style="position:absolute;left:0px;top:0px;width:494px">
+<line x1="200" y1="60" x2="200" y2="226" stroke="#4A5568" stroke-width="4"/>
+<circle cx="200" cy="60" r="26" fill="#4A5568"/>
+<circle cx="200" cy="146" r="28" fill="#2F6DB5"/>
+<circle cx="200" cy="226" r="20" fill="#C96A1B"/>
+</svg>
+<p style="position:absolute;left:20px;top:12px;width:160px;font-size:30px;line-height:1.4;font-weight:700">線性樹</p>
+<div style="position:absolute;left:376px;top:14px;width:40px;height:40px"><x-icon name="CheckCircle" style="color:#2E7D4F;width:40px;height:40px"></x-icon></div>
+<p style="position:absolute;left:422px;top:10px;width:64px;font-size:30px;line-height:1.4;font-weight:700;color:#2E7D4F">保留</p>
+<p style="position:absolute;left:240px;top:42px;width:200px;font-size:24px;line-height:1.4"><b>C-1</b>　CCF 1</p>
+<p style="position:absolute;left:242px;top:128px;width:200px;font-size:24px;line-height:1.4"><b>C-2</b>　CCF 0.616</p>
+<p style="position:absolute;left:236px;top:208px;width:200px;font-size:24px;line-height:1.4"><b>C-3</b>　CCF 0.212</p>
+</div>
+<div style="position:absolute;left:0px;top:296px;width:1040px;height:264px;background:#FFFFFF;border:1px solid #D9DDE3;border-radius:12px">
+<p style="position:absolute;left:220px;top:12px;width:200px;font-size:24px;line-height:1.4;font-weight:700;color:#2F6DB5;text-align:center">C-2 的突變</p>
+<p style="position:absolute;left:500px;top:12px;width:200px;font-size:24px;line-height:1.4;font-weight:700;color:#C96A1B;text-align:center">C-3 的突變</p>
+<svg aria-label="一段 DNA 上有兩個突變位置，上方四條 long read：兩條同時帶兩個紅點，一條只帶 C-2 的紅點，一條都沒有" width="800" height="170" viewBox="0 0 800 170" style="position:absolute;left:20px;top:50px;width:800px">
+<line x1="300" y1="0" x2="300" y2="150" stroke="#6B7480" stroke-width="2" stroke-dasharray="6 6"/>
+<line x1="580" y1="0" x2="580" y2="150" stroke="#6B7480" stroke-width="2" stroke-dasharray="6 6"/>
+<rect x="120" y="8" width="600" height="14" rx="7" fill="#C9D1DB"/>
+<rect x="200" y="40" width="560" height="14" rx="7" fill="#C9D1DB"/>
+<rect x="160" y="72" width="560" height="14" rx="7" fill="#C9D1DB"/>
+<rect x="240" y="104" width="460" height="14" rx="7" fill="#C9D1DB"/>
+<circle cx="300" cy="15" r="10" fill="#D23A2E"/>
+<circle cx="580" cy="15" r="10" fill="#D23A2E"/>
+<circle cx="300" cy="47" r="10" fill="#D23A2E"/>
+<circle cx="580" cy="47" r="10" fill="#D23A2E"/>
+<circle cx="300" cy="79" r="10" fill="#D23A2E"/>
+<circle cx="580" cy="79" r="9" fill="#FFFFFF" stroke="#6B7480" stroke-width="3"/>
+<circle cx="300" cy="111" r="9" fill="#FFFFFF" stroke="#6B7480" stroke-width="3"/>
+<circle cx="580" cy="111" r="9" fill="#FFFFFF" stroke="#6B7480" stroke-width="3"/>
+<rect x="40" y="146" width="740" height="10" rx="5" fill="#4A5568"/>
+</svg>
+<p style="position:absolute;left:836px;top:48px;width:190px;font-size:24px;line-height:1.4;font-weight:700;color:#D23A2E">兩個都有</p>
+<p style="position:absolute;left:836px;top:80px;width:190px;font-size:24px;line-height:1.4;font-weight:700;color:#D23A2E">兩個都有</p>
+<p style="position:absolute;left:836px;top:112px;width:190px;font-size:24px;line-height:1.4;color:#4A5568">只有 C-2</p>
+<p style="position:absolute;left:836px;top:144px;width:190px;font-size:24px;line-height:1.4;color:#4A5568">都沒有</p>
+<p style="position:absolute;left:836px;top:180px;width:190px;font-size:24px;line-height:1.4;color:#4A5568">一段 DNA</p>
+<svg aria-label="紅點圖例" width="24" height="24" viewBox="0 0 24 24" style="position:absolute;left:24px;top:220px;width:24px">
+<circle cx="12" cy="12" r="10" fill="#D23A2E"/>
+</svg>
+<p style="position:absolute;left:56px;top:214px;width:560px;font-size:24px;line-height:1.4">突變：腫瘤細胞 DNA 上某一個鹼基改變了</p>
+</div>
+<x-connector x1="1000" y1="340" x2="1000" y2="276" head="end" route="straight" style="color:#2E7D4F;border-width:4px"></x-connector>
+<p style="position:absolute;left:928px;top:300px;width:60px;font-size:24px;line-height:1.4;font-weight:700;color:#2E7D4F">支持</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<div style="background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:20px 24px">
+<p style="font-size:30px;line-height:1.4">CCF＝帶這個突變的腫瘤細胞比例。</p>
+</div>
+<div style="background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:20px 24px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;line-height:1.4;color:#4A5568"><b>比例規則</b>：子 clone 的 CCF 加起來不能超過父 clone</p>
+<svg aria-label="比例規則長條：上方灰色長條是 C-1 的 1，下方藍色 0.616 加橘色 0.212 沒有超過上方長條" width="520" height="64" viewBox="0 0 520 64">
+<rect x="0" y="4" width="500" height="24" rx="4" fill="#4A5568"/>
+<rect x="0" y="36" width="308" height="24" rx="4" fill="#2F6DB5"/>
+<rect x="310" y="36" width="106" height="24" rx="4" fill="#C96A1B"/>
+<line x1="500" y1="0" x2="500" y2="64" stroke="#2E7D4F" stroke-width="3" stroke-dasharray="5 4"/>
+</svg>
+<p style="font-size:24px;line-height:1.4"><span style="color:#2F6DB5">C-2 0.616</span>＋<span style="color:#C96A1B">C-3 0.212</span>＝0.828 ≤ C-1 1</p>
+<p style="font-size:30px;line-height:1.4">兩棵樹都符合比例規則。</p>
+</div>
+<div style="background:#FDFDFB;border:3px solid #2E7D4F;border-radius:16px;padding:18px 22px">
+<p style="font-size:30px;line-height:1.4">分支樹的兩個突變在不同細胞裡，同一條 read 不會同時帶兩個。</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">4 / 13</p>
+</div>
+<aside>這頁的結論是：肺癌論文用同一條 read 上的兩個突變，選出線性樹。突變是腫瘤細胞 DNA 上某個鹼基變了；CCF 是帶這個突變的腫瘤細胞比例。大家看上面兩棵樹：線性樹是 C-1、C-2、C-3 排成一條線；分支樹是 C-2、C-3 當兄弟。比例規則是說，子 clone 的 CCF 加起來不能超過父 clone。0.616 加 0.212 是 0.828，沒超過 1，兩棵都合格，光看比例選不出來。再看下面的 read。分支樹裡兩個突變在不同細胞，一條 read 不會同時帶兩個。論文看到了兩個都有的 read，所以留下線性樹。前提是兩個突變在同一份染色體上，第 10 頁會講完整條件。C-2、C-3 是突變群，read 證據只針對特定一對突變。作者只拿它事後挑樹，沒放進建樹模型。</aside>
+</section>

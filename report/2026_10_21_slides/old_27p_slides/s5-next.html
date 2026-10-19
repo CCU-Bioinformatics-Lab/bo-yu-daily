@@ -1,0 +1,56 @@
+<section id="s5-next" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">5 · Benchmark 拆解</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">下一步：先建 baseline，再加 long read 證據</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<div style="position:relative;display:flex;flex-direction:column;gap:16px">
+<div style="position:absolute;left:156px;top:30px;width:1352px;height:4px;background:#D9DDE3"></div>
+<div style="display:flex;gap:24px">
+<div style="width:313px;display:flex;justify-content:center"><div style="width:64px;height:64px;border-radius:32px;background:#C96A1B;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">1</p></div></div>
+<div style="width:313px;display:flex;justify-content:center"><div style="width:64px;height:64px;border-radius:32px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">2</p></div></div>
+<div style="width:313px;display:flex;justify-content:center"><div style="width:64px;height:64px;border-radius:32px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">3</p></div></div>
+<div style="width:313px;display:flex;justify-content:center"><div style="width:64px;height:64px;border-radius:32px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">4</p></div></div>
+<div style="width:313px;display:flex;justify-content:center"><div style="width:64px;height:64px;border-radius:32px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">5</p></div></div>
+</div>
+<div style="display:flex;gap:24px">
+<div style="width:263px;background:#FDFDFB;border:2px solid #C96A1B;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:700;color:#C96A1B">SMC-Het｜先做</p>
+<h3 style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">單樣本 baseline</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5568">轉換成 PhyClone 輸入。跑單樣本 baseline。資料已下載。</p>
+</div>
+<div style="width:263px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5">L0</p>
+<h3 style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">不退步驗證</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5568">用 PhyClone benchmark。沒有 HP 輸入時，結果不劣於原版。</p>
+</div>
+<div style="width:263px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5">L1／L1-B</p>
+<h3 style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">HP 擴增模擬</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5568">參數式模擬。在真值樹上加入 HP 計數。</p>
+</div>
+<div style="width:263px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5">L2</p>
+<h3 style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">read-level 模擬</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5568">評估 Liu 2026 subline 混成 pseudo-bulk。</p>
+</div>
+<div style="width:263px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5">L3</p>
+<h3 style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">真實資料</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5568">HCC1395 與 tX_nY subsample 先跑 <span style="color:#1F2A37">somatic_haplotag</span>。</p>
+</div>
+</div>
+</div>
+<div style="background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;gap:32px;align-items:flex-start">
+<div style="width:160px;display:flex;gap:12px;align-items:center"><x-icon name="Warning" style="color:#B4442F;width:32px;height:32px"></x-icon><p style="font-size:30px;font-weight:700;color:#B4442F">待確認</p></div>
+<div style="flex:1;display:flex;gap:32px">
+<p style="flex:1;font-size:24px;line-height:1.4;color:#1F2A37">SMC-Het sc1C 的 CP 單位：CCF 或 purity×CCF。</p>
+<p style="flex:1;font-size:24px;line-height:1.4;color:#1F2A37">subclonal CN 區段的處理方式：PhyClone 每個 SNV 只接受一組 CN。</p>
+<p style="flex:1;font-size:24px;line-height:1.4;color:#1F2A37">Liu 2026 資料是 mm10，需要重新 phasing。</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">26 / 27</p>
+</div>
+<aside>這頁說明接下來的執行順序。第一步是把已下載的 SMC-Het 資料轉成 PhyClone 輸入，先建單樣本 baseline。之後依驗證層 L0、L1／L1-B、L2、L3 逐步加入 long read 證據；L3 不宣稱真樹準確率。下方三個待確認事項會影響評分與資料轉換。來源：plan.md §0 與 §5.6、research/tumor_phylogeny_2026/methods_survey/workers/W8_benchmark_update_2026-10-18.md、s5908_text.md（2026-10-18 session 紀錄）。</aside>
+</section>

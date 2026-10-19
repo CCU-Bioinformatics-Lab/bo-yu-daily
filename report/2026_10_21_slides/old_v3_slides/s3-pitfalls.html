@@ -1,0 +1,107 @@
+<section id="s3-pitfalls" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">3 · 輸入與輸出</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">從 VAF 到演化樹，有兩個陷阱</h2>
+<div style="flex:1;display:flex;gap:40px">
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px 32px;display:flex;flex-direction:column;gap:10px">
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;line-height:1.2;color:#1F2A37">陷阱 1：比例相近不代表同一個 clone</h3>
+<div style="position:relative;width:748px;height:440px">
+<svg aria-label="真樹 A 分出兄弟 B 與 C，兩者 CCF 都約 0.4；數線上兩點重疊；錯誤結果是 B、C 併成一群，或排成 A、B、C 一條線" width="748" height="440" viewBox="0 0 748 440" style="position:absolute;left:0;top:0;width:748px;height:440px">
+<line x1="110" y1="108" x2="64" y2="174" stroke="#4A5568" stroke-width="3"/>
+<line x1="110" y1="108" x2="156" y2="174" stroke="#4A5568" stroke-width="3"/>
+<circle cx="86" cy="142" r="6" fill="#D23A2E"/>
+<circle cx="134" cy="142" r="6" fill="#D23A2E"/>
+<circle cx="110" cy="80" r="30" fill="#4A5568"/>
+<circle cx="55" cy="200" r="28" fill="#2F6DB5"/>
+<circle cx="165" cy="200" r="28" fill="#C96A1B"/>
+<line x1="236" y1="150" x2="280" y2="150" stroke="#1F2A37" stroke-width="4"/>
+<polygon points="292,150 278,140 278,160" fill="#1F2A37"/>
+<rect x="306" y="40" width="440" height="126" rx="12" fill="none" stroke="#B4442F" stroke-width="3" stroke-dasharray="10 6"/>
+<line x1="396" y1="122" x2="462" y2="122" stroke="#4A5568" stroke-width="3"/>
+<circle cx="370" cy="122" r="26" fill="#4A5568"/>
+<path d="M494 90 A32 32 0 0 0 494 154 Z" fill="#2F6DB5"/>
+<path d="M494 90 A32 32 0 0 1 494 154 Z" fill="#C96A1B"/>
+<rect x="306" y="182" width="440" height="126" rx="12" fill="none" stroke="#B4442F" stroke-width="3" stroke-dasharray="10 6"/>
+<line x1="396" y1="264" x2="458" y2="264" stroke="#4A5568" stroke-width="3"/>
+<line x1="510" y1="264" x2="572" y2="264" stroke="#4A5568" stroke-width="3"/>
+<circle cx="370" cy="264" r="26" fill="#4A5568"/>
+<circle cx="484" cy="264" r="26" fill="#2F6DB5"/>
+<circle cx="598" cy="264" r="26" fill="#C96A1B"/>
+<line x1="40" y1="380" x2="700" y2="380" stroke="#9AA3AE" stroke-width="4"/>
+<line x1="40" y1="368" x2="40" y2="392" stroke="#9AA3AE" stroke-width="4"/>
+<line x1="700" y1="368" x2="700" y2="392" stroke="#9AA3AE" stroke-width="4"/>
+<circle cx="300" cy="380" r="11" fill="#2F6DB5"/>
+<circle cx="308" cy="380" r="11" fill="#C96A1B" fill-opacity="0.85"/>
+<circle cx="700" cy="380" r="11" fill="#4A5568"/>
+</svg>
+<p style="position:absolute;left:0;top:0;width:220px;font-size:24px;font-weight:700;color:#2E7D4F;text-align:center">真樹</p>
+<p style="position:absolute;left:90px;top:63px;width:40px;font-size:24px;font-weight:700;color:#FDFDFB;text-align:center">A</p>
+<p style="position:absolute;left:35px;top:183px;width:40px;font-size:24px;font-weight:700;color:#FDFDFB;text-align:center">B</p>
+<p style="position:absolute;left:145px;top:183px;width:40px;font-size:24px;font-weight:700;color:#FDFDFB;text-align:center">C</p>
+<p style="position:absolute;left:146px;top:44px;width:90px;font-size:24px;color:#4A5568">CCF 1</p>
+<p style="position:absolute;left:5px;top:234px;width:100px;font-size:24px;color:#2F6DB5;text-align:center">約 0.4</p>
+<p style="position:absolute;left:115px;top:234px;width:100px;font-size:24px;color:#C96A1B;text-align:center">約 0.4</p>
+<p style="position:absolute;left:316px;top:0px;width:430px;font-size:24px;font-weight:700;color:#B4442F">錯誤結果</p>
+<p style="position:absolute;left:556px;top:58px;width:180px;font-size:24px;font-weight:700;color:#B4442F">併成一群</p>
+<p style="position:absolute;left:350px;top:105px;width:40px;font-size:24px;font-weight:700;color:#FDFDFB;text-align:center">A</p>
+<p style="position:absolute;left:534px;top:105px;width:70px;font-size:24px;font-weight:700;color:#1F2A37">B+C</p>
+<p style="position:absolute;left:640px;top:196px;width:100px;font-size:24px;font-weight:700;color:#B4442F">排成線</p>
+<p style="position:absolute;left:350px;top:247px;width:40px;font-size:24px;font-weight:700;color:#FDFDFB;text-align:center">A</p>
+<p style="position:absolute;left:464px;top:247px;width:40px;font-size:24px;font-weight:700;color:#FDFDFB;text-align:center">B</p>
+<p style="position:absolute;left:578px;top:247px;width:40px;font-size:24px;font-weight:700;color:#FDFDFB;text-align:center">C</p>
+<p style="position:absolute;left:0px;top:322px;width:300px;font-size:24px;color:#1F2A37">CCF 數線</p>
+<p style="position:absolute;left:224px;top:322px;width:180px;font-size:24px;color:#1F2A37;text-align:center">B、C 重疊</p>
+<p style="position:absolute;left:28px;top:400px;width:24px;font-size:24px;color:#6B7480;text-align:center">0</p>
+<p style="position:absolute;left:688px;top:400px;width:24px;font-size:24px;color:#6B7480;text-align:center">1</p>
+</div>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">比例相近的兄弟 clone 會被併錯或排錯。</p>
+</div>
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px 32px;display:flex;flex-direction:column;gap:10px">
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;line-height:1.2;color:#1F2A37">陷阱 2：部分細胞拷貝數改變</h3>
+<div style="position:relative;width:748px;height:440px">
+<svg aria-label="60% 細胞是 1:1，40% 細胞是 2:1，藍色那份被複製；突變在被複製的藍色那份時 VAF 0.583，在沒被複製的橘色那份時 VAF 0.417" width="748" height="440" viewBox="0 0 748 440" style="position:absolute;left:0;top:0;width:748px;height:440px">
+<ellipse cx="100" cy="85" rx="94" ry="45" fill="#EEF2F6" stroke="#9AA3AE" stroke-width="2"/>
+<ellipse cx="320" cy="85" rx="94" ry="45" fill="#EEF2F6" stroke="#9AA3AE" stroke-width="2"/>
+<rect x="45" y="70" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="45" y="89" width="110" height="12" rx="6" fill="#D9772B"/>
+<rect x="265" y="62" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="265" y="79" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="265" y="96" width="110" height="12" rx="6" fill="#D9772B"/>
+<circle cx="120" cy="76" r="8" fill="#D23A2E" stroke="#FFFFFF" stroke-width="2"/>
+<circle cx="340" cy="68" r="8" fill="#D23A2E" stroke="#FFFFFF" stroke-width="2"/>
+<circle cx="340" cy="85" r="8" fill="#D23A2E" stroke="#FFFFFF" stroke-width="2"/>
+<polygon points="440,85 424,75 424,95" fill="#1F2A37"/>
+<line x1="0" y1="168" x2="748" y2="168" stroke="#D9DDE3" stroke-width="2" stroke-dasharray="6 6"/>
+<ellipse cx="100" cy="217" rx="94" ry="45" fill="#EEF2F6" stroke="#9AA3AE" stroke-width="2"/>
+<ellipse cx="320" cy="217" rx="94" ry="45" fill="#EEF2F6" stroke="#9AA3AE" stroke-width="2"/>
+<rect x="45" y="202" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="45" y="221" width="110" height="12" rx="6" fill="#D9772B"/>
+<rect x="265" y="194" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="265" y="211" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="265" y="228" width="110" height="12" rx="6" fill="#D9772B"/>
+<circle cx="120" cy="227" r="8" fill="#D23A2E" stroke="#FFFFFF" stroke-width="2"/>
+<circle cx="340" cy="234" r="8" fill="#D23A2E" stroke="#FFFFFF" stroke-width="2"/>
+<polygon points="440,217 424,207 424,227" fill="#1F2A37"/>
+</svg>
+<p style="position:absolute;left:0;top:0;width:200px;font-size:24px;font-weight:700;color:#1F2A37;text-align:center">60% 細胞　1:1</p>
+<p style="position:absolute;left:220px;top:0;width:200px;font-size:24px;font-weight:700;color:#1F2A37;text-align:center">40% 細胞　2:1</p>
+<p style="position:absolute;left:0;top:132px;width:200px;font-size:24px;color:#4A5568;text-align:center">1 份帶突變</p>
+<p style="position:absolute;left:220px;top:132px;width:200px;font-size:24px;color:#D23A2E;text-align:center">2 份帶突變</p>
+<p style="position:absolute;left:456px;top:44px;width:290px;font-size:24px;color:#2C5F9E">突變在被複製的那份</p>
+<p style="position:absolute;left:456px;top:80px;width:290px;font-size:40px;font-weight:700;color:#1F2A37">VAF 0.583</p>
+<p style="position:absolute;left:0;top:264px;width:200px;font-size:24px;color:#4A5568;text-align:center">1 份帶突變</p>
+<p style="position:absolute;left:220px;top:264px;width:200px;font-size:24px;color:#4A5568;text-align:center">1 份帶突變</p>
+<p style="position:absolute;left:456px;top:176px;width:290px;font-size:24px;color:#D9772B">突變在沒被複製的那份</p>
+<p style="position:absolute;left:456px;top:212px;width:290px;font-size:40px;font-weight:700;color:#1F2A37">VAF 0.417</p>
+<p style="position:absolute;left:0;top:306px;width:748px;font-size:24px;color:#1F2A37">1:1、2:1＝兩份染色體（<span style="color:#2C5F9E">藍</span>、<span style="color:#D9772B">橘</span>）各幾份</p>
+<p style="position:absolute;left:0;top:340px;width:748px;font-size:24px;font-weight:700;color:#1F2A37">multiplicity＝突變位在幾份拷貝上</p>
+<p style="position:absolute;left:0;top:374px;width:748px;font-size:24px;line-height:1.4;color:#4A5568">前提：purity＝1、突變早於複製、<br>突變在所有腫瘤細胞（CCF＝1）</p>
+</div>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">同一個 CCF 會因拷貝數給出兩種 VAF。</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">8 / 13</p>
+</div>
+<aside>這頁的結論是：從 VAF 推到演化樹，有兩個陷阱。先看左邊。真樹是 A 分出 B、C 兩個兄弟，比例都約 0.4。數線上兩點疊在一起。只看比例，會被併成一群，或排成一條線。零點四加零點四沒超過 A 的 1，比例規則排除不了這條線。再看右邊。每條染色體有兩份，一份來自父方、一份來自母方；1:1、2:1 就是這兩份各有幾份。這裡 60% 細胞是 1:1，40% 細胞的藍色那份多一份。multiplicity 就是突變位在幾份拷貝上。突變在被複製的那份，VAF 是一點四除以二點四，約 0.583；在沒被複製的那份，是 0.417。PhyClone 每個突變只吃一組拷貝數，兩種都換不回正確的 CCF。接下來兩頁的 long read 證據，第 9 頁幫助陷阱 2，第 10 頁幫助陷阱 1。</aside>
+</section>

@@ -1,0 +1,35 @@
+<section id="s4-topology-constraint" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">4 · Long read 特徵</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">用 alt-alt reads 排除不可能的候選 topology</h2>
+<div style="flex:1;display:flex;gap:40px">
+<div style="width:632px;display:flex;flex-direction:column;gap:12px">
+<div style="background:#FFFFFF;border:1px solid #D9DDE3;border-radius:16px;padding:16px;display:flex;justify-content:center">
+<img src="/_blob/d8faebe8b48f5322c100f12644e0fe52" alt="B04 S14-T：branched 與 linear 兩種候選樹，以及同時帶 C-2 與 C-3 突變的 double mutant reads" style="width:598px;height:378px;object-fit:contain">
+</div>
+<p style="font-size:24px;color:#4A5568;line-height:1.4">出處：B04 Supplement Fig. S9c–d（病人 S14-T）</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<div style="background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;gap:24px;align-items:flex-start">
+<div style="width:56px;height:56px;border-radius:28px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">1</p></div>
+<div style="flex:1;display:flex;flex-direction:column"><p style="font-size:30px;line-height:1.4;color:#1F2A37"><b>CCF</b>：C-2 0.616，C-3 0.212。</p><p style="font-size:30px;line-height:1.4;color:#4A5568">branched 與 linear 都符合 sum rule。</p></div>
+</div>
+<div style="background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;gap:24px;align-items:flex-start">
+<div style="width:56px;height:56px;border-radius:28px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">2</p></div>
+<div style="flex:1;display:flex;flex-direction:column"><p style="font-size:30px;line-height:1.4;color:#1F2A37"><b>Long read</b>：出現 double mutant reads。</p><p style="font-size:30px;line-height:1.4;color:#4A5568">chr17 位點對 5 條，chr9 位點對 6 條。</p></div>
+</div>
+<div style="background:#FDFDFB;border:1px solid #2E7D4F;border-radius:16px;padding:32px;display:flex;gap:24px;align-items:flex-start">
+<div style="width:56px;height:56px;border-radius:28px;background:#2E7D4F;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">3</p></div>
+<div style="flex:1;display:flex;flex-direction:column"><p style="font-size:30px;line-height:1.4;color:#1F2A37"><b>排除</b>：branched 不允許 alt-alt。</p><p style="font-size:30px;line-height:1.4;color:#2E7D4F">因此 B04 選 linear。</p></div>
+</div>
+</div>
+</div>
+<div style="background:#FDFDFB;border:1px solid #D9DDE3;border-left:8px solid #2F6DB5;border-radius:16px;padding:20px 32px;display:flex;gap:24px;align-items:center">
+<p style="font-size:30px;font-weight:700;color:#2F6DB5">本研究（設計提案）</p>
+<p style="font-size:30px;color:#1F2A37">把「事後篩選」改成 PhyClone tree score 的 soft 因子（C4）。</p>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">20 / 27</p>
+</div>
+<aside>這頁用 B04 病人 S14 說明 alt-alt reads 如何排除候選拓樸。CCF 0.616 與 0.212 同時符合 branched 與 linear，所以 bulk CCF 無法決定。Long read 看到同時帶兩個突變的 reads（Fig. S9d：chr17 位點對 single mutant 16 條、double mutant 5 條；chr9 位點對 single mutant 6 條、double mutant 6 條），branched 不允許這種 pattern，作者因此選 linear；這是論文描述，而且是建完候選樹之後的事後篩選。本研究的設計提案是把四類關係 score 加進 PhyClone 的 tree score，作為 soft 因子；缺少 alt-alt 不代表已證明 branch。來源：research/tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md、plan.md §4.5。</aside>
+</section>
