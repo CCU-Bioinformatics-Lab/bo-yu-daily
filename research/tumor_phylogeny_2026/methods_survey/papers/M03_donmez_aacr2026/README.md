@@ -1,3 +1,28 @@
+---
+paper_id: M03
+category: "C2"
+category_label: "long-read 特徵輔助建樹（無 single-cell 真值）"
+subtype: "c2_local_order"
+sc_truth_strength: "none"
+title: "Phasing tumor clones by timing point mutations using bulk long-read sequencing (AACR 2026 Abstract 6912)"
+year: 2026
+doc_type: "abstract"
+material: "cell_line"
+platform_class: "long_read_feature"
+platform_detail: ["ONT R10 regular + ultra-long (CASTLE H2009, H1437)"]
+long_read_role: "local_order"
+long_read_features: ["same-read SNV co-occurrence", "haplotag HP (code only)"]
+single_cell_truth: "none"
+single_cell_tech: []
+input_is_single_cell: false
+tree_type: ["mutation_tree", "local_order"]
+cross_tags: ["read_cooccurrence_model", "direct_competitor", "castle_ont_same_data", "longphase"]
+keywords_en: ["long-read", "oxford nanopore", "ultra-long reads", "somatic snv phasing", "read co-occurrence", "sequential co-occurring divergent", "mutation graph", "transitivity", "castle panel", "h2009", "h1437", "lung cancer cell line", "kolmogorov"]
+keywords_zh: ["長讀定序", "體細胞突變定相", "同 read 共現", "突變時序", "細胞株"]
+summary_zh: "ONT 同 read 共現判定突變先後與分歧；沒有真值。"
+category_index: "../../../../PAPER_CATEGORIES.md"
+---
+
 # M03 Donmez & Kolmogorov（AACR 2026 Abstract 6912）
 
 閱讀日：2026-10-17。只有會議摘要，沒有全文。標記：「摘要描述」＝摘要原文寫的；「推論」＝我的分析。

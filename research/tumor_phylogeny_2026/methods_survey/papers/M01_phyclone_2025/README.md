@@ -1,3 +1,28 @@
+---
+paper_id: M01
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_sc_benchmark_truth"
+sc_truth_strength: "benchmark_truth"
+title: "PhyClone: accurate Bayesian reconstruction of cancer phylogenies from bulk sequencing"
+year: 2025
+doc_type: "method"
+material: "mixed"
+platform_class: "short_or_unspecified"
+platform_detail: ["bulk WGS", "targeted deep sequencing", "simulated (platform not named)"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "sc_derived_benchmark_truth"
+single_cell_tech: ["McPherson 2016 single-nucleus targeted PCR (see R01)"]
+input_is_single_cell: false
+tree_type: ["clone_tree"]
+cross_tags: ["baseline_method", "phyclone_truth_source", "roth_lab", "mutation_loss"]
+keywords_en: ["phyclone", "bulk snv", "copy number", "fs-crp", "particle gibbs", "smc", "pyclone emission", "outlier mutation loss", "multi-sample", "hgsoc", "mcpherson 2016", "ancestor-descendant f-score", "clone tree"]
+keywords_zh: ["腫瘤演化樹", "bulk 定序", "貝氏推論", "粒子吉布斯", "卵巢癌", "單細胞真值樹"]
+summary_zh: "bulk SNV+CN 的貝氏 clone tree；HGSOC 真值樹來自單細胞。"
+category_index: "../../../../PAPER_CATEGORIES.md"
+---
+
 # M01 PhyClone（Hurtado, Bouchard-Côté, Roth；Bioinformatics 2025）
 
 閱讀日：2026-10-17。標記：「論文描述」＝正式版主文或 supplement 明寫；「程式實作」＝我看過 repo 程式碼；「推論」＝我的分析。

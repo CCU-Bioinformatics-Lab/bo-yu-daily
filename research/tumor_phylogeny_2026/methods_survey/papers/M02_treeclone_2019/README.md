@@ -1,3 +1,28 @@
+---
+paper_id: M02
+category: "C1"
+category_label: "短讀或未說平台（無 single-cell 真值）"
+subtype: "c1_read_cooccurrence_short"
+sc_truth_strength: "none"
+title: "TreeClone: Reconstruction of tumor subclone phylogeny based on mutation pairs using next generation sequencing data"
+year: 2019
+doc_type: "method"
+material: "mixed"
+platform_class: "short_or_unspecified"
+platform_detail: ["Illumina HiSeq PE100 WES", "simulated"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "simulated_only"
+single_cell_tech: []
+input_is_single_cell: false
+tree_type: ["clone_tree"]
+cross_tags: ["read_cooccurrence_model", "transferable_to_long_read", "copy_neutral_only"]
+keywords_en: ["treeclone", "mutation pairs", "read-level co-occurrence", "local haplotype", "lochap", "paired-end reads", "multinomial read classes", "copy-neutral", "bayesian mcmc", "parallel tempering", "lung adenocarcinoma", "multi-region"]
+keywords_zh: ["突變對", "同一 read 共現", "局部 haplotype", "肺腺癌", "亞克隆演化樹"]
+summary_zh: "用同 read 上的 SNV pair 推 clone tree；只用 short read。"
+category_index: "../../../../PAPER_CATEGORIES.md"
+---
+
 # M02 TreeClone（Zhou, Sengupta, Müller, Ji；Ann. Appl. Stat. 2019）
 
 閱讀日：2026-10-17。標記：「論文描述」＝arXiv v2 正文明寫；「推論」＝我的分析。本篇沒有可讀的程式碼。

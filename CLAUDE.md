@@ -14,6 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 目錄結構
 
+- `research/PAPER_CATEGORIES.md`：**找論文先看這裡**。22 篇依「定序平台 × single-cell 真值」分成 C1（短讀／未說平台）、C2（long-read 特徵輔助建樹）、C3a／C3b（single-cell 真值樹 × 短讀／long read）。總表是 `research/paper_categories.tsv`（唯一來源）；每篇 README 頂端有單行 YAML front-matter，可直接 `grep -rl '^category: "C2"' --include=README.md research/`；`research/papers_by_category/` 是依類的 symlink 目錄。改分類時只改 TSV，再跑 `python3 research/tools/sync_paper_categories.py`（`--check` 檢查 drift）。
 - `tumor_sample.md`：樣本／CRAM 路徑盤點（`/big8_disk/data/<cell line>/ONT*/subsample/<purity label>/<line>_<purity label>.cram`；部分舊 `.bam` symlink 已失效，以該檔為準），以及 PhyClone benchmarking 資料集（`/big8_disk/boyu114/phyclone_dataset/`）。
 - `research/phyclone_research/`：PhyClone 論文分析。
   - `PhyClone/`：上游 PhyClone 原始碼，是 **git submodule**（`https://github.com/Roth-Lab/PhyClone.git`），改動要在 submodule 內另外 commit。

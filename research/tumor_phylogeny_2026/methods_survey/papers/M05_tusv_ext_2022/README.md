@@ -1,3 +1,28 @@
+---
+paper_id: M05
+category: "C1"
+category_label: "短讀或未說平台（無 single-cell 真值）"
+subtype: "c1_bulk_short_read"
+sc_truth_strength: "none"
+title: "TUSV-ext: Reconstructing tumor clonal lineage trees incorporating SNVs, CNAs and SVs"
+year: 2022
+doc_type: "method"
+material: "mixed"
+platform_class: "short_or_unspecified"
+platform_detail: ["multi-region bulk short-read WGS", "simulated (no platform)"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "simulated_only"
+single_cell_tech: []
+input_is_single_cell: false
+tree_type: ["clone_tree", "cn_event_tree"]
+cross_tags: ["structural_variant", "latent_allele_phasing", "multi_region"]
+keywords_en: ["tusv-ext", "ilp", "gurobi", "multi-region bulk", "snv", "structural variation", "sv breakpoint", "allele-specific copy number", "latent allele phasing", "dollo", "deconvolution", "prostate cancer"]
+keywords_zh: ["整數線性規劃", "結構變異", "等位基因特異拷貝數", "多區域取樣", "潛在定相"]
+summary_zh: "ILP 聯合 SNV/SV/CNA 建樹；phasing 是潛變數。"
+category_index: "../../../../PAPER_CATEGORIES.md"
+---
+
 # M05 TUSV-ext（Fu et al., Bioinformatics 2022, ISMB）閱讀筆記
 
 ## 書目、版本與檔案

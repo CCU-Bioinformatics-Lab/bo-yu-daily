@@ -1,3 +1,28 @@
+---
+paper_id: A03
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_patient_sc_reference"
+sc_truth_strength: "reference_tree"
+title: "Application of high-throughput single-nucleus DNA sequencing in pancreatic cancer"
+year: 2023
+doc_type: "application"
+material: "human_patient"
+platform_class: "short_or_unspecified"
+platform_detail: ["Tapestri snDNA amplicon panel (Illumina)"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "patient_scdna_reference_tree"
+single_cell_tech: ["Tapestri snDNA"]
+input_is_single_cell: true
+tree_type: ["clone_tree", "mutation_tree"]
+cross_tags: ["amplicon_panel", "metastasis"]
+keywords_en: ["pdac", "pancreatic cancer", "sndna-seq", "tapestri", "amplicon panel", "scg", "smad4 deletion", "kras", "allelic dropout", "doublet", "mutual exclusivity", "clone phylogeny"]
+keywords_zh: ["胰臟癌", "單核DNA定序", "擴增子面板", "互斥變異", "等位基因脫落", "克隆樹"]
+summary_zh: "Tapestri snDNA 建 PA04 的 SNV+SMAD4 刪除 clone 樹。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # A03 — 胰臟癌病人 single-nucleus SNV＋CNV 演化樹
 
 Zhang, H. et al. **Application of high-throughput single-nucleus DNA sequencing in pancreatic cancer.** *Nature Communications* **14**, 749 (2023). DOI: [10.1038/s41467-023-36344-z](https://doi.org/10.1038/s41467-023-36344-z)。本目錄保存官方正式期刊版。

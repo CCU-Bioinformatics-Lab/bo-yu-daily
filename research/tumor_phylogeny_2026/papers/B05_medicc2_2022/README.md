@@ -1,3 +1,28 @@
+---
+paper_id: B05
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_sc_partial"
+sc_truth_strength: "partial"
+title: "MEDICC2: whole-genome doubling aware copy-number phylogenies for cancer evolution"
+year: 2022
+doc_type: "method"
+material: "mixed"
+platform_class: "short_or_unspecified"
+platform_detail: ["bulk Illumina WGS (PCAWG)", "short-read scDNA (Minussi TNBC)", "simulated"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "sc_partial_validation"
+single_cell_tech: ["scDNA-seq (Minussi TNBC, ~1000 cells/patient)"]
+input_is_single_cell: true
+tree_type: ["sample_tree", "cell_tree", "cn_event_tree"]
+cross_tags: ["haplotype_specific_cn", "wgd", "single_cell_input"]
+keywords_en: ["medicc2", "haplotype-specific copy number", "minimum event distance", "whole-genome doubling", "loh", "mirrored subclonal allelic imbalance", "neighbor joining", "copy-number phylogeny", "pcawg", "prostate cancer", "triple-negative breast cancer", "single-cell dna"]
+keywords_zh: ["單倍型特異拷貝數", "全基因組加倍", "最小事件距離", "拷貝數演化樹", "單細胞DNA"]
+summary_zh: "haplotype CN+WGD 改變 topology；單細胞樹仍是推論。"
+category_index: "../../../PAPER_CATEGORIES.md"
+---
+
 # B05 — MEDICC2：把 haplotype-specific CN、LOH 與 WGD 直接用於樹重建
 
 ## 書目、檔案與分類

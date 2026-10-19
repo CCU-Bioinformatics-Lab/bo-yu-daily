@@ -1,10 +1,12 @@
 {
   "cutoff_date": "2026-10-15",
   "recent_window": "2021-2026",
+  "category_index": "../PAPER_CATEGORIES.md (C1 short/unspecified; C2 long-read feature; C3a/C3b single-cell truth x platform; source paper_categories.tsv)",
   "category_policy": "A: patient scDNA-supported reference tree; B: long-read/linked-read/local order or transferable haplotype phylogeny. No claim that all B papers infer complete clone trees from native long reads.",
   "papers": [
     {
       "id": "A01", "directory": "A01_ovarian_cfDNA_2025", "selection": "A_core",
+      "category": "C3a", "subtype": "c3a_patient_sc_reference", "sc_truth_strength": "reference_tree",
       "title": "Tracking clonal evolution during treatment in ovarian cancer using cell-free DNA",
       "doi": "10.1038/s41586-025-09580-0", "online_year": 2025, "issue_year": 2025,
       "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41586-025-09580-0.pdf",
@@ -13,6 +15,7 @@
     },
     {
       "id": "A02", "directory": "A02_sprinter_2025", "selection": "A_core",
+      "category": "C3a", "subtype": "c3a_patient_sc_reference", "sc_truth_strength": "reference_tree",
       "title": "Characterizing the evolutionary dynamics of cancer proliferation in single-cell clones with SPRINTER",
       "doi": "10.1038/s41588-024-01989-z", "online_year": 2024, "issue_year": 2025,
       "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41588-024-01989-z.pdf",
@@ -21,6 +24,7 @@
     },
     {
       "id": "A03", "directory": "A03_pancreatic_snDNA_2023", "selection": "A_core",
+      "category": "C3a", "subtype": "c3a_patient_sc_reference", "sc_truth_strength": "reference_tree",
       "title": "Application of high-throughput single-nucleus DNA sequencing in pancreatic cancer",
       "doi": "10.1038/s41467-023-36344-z", "online_year": 2023, "issue_year": 2023,
       "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41467-023-36344-z.pdf",
@@ -29,6 +33,7 @@
     },
     {
       "id": "A04", "directory": "A04_aml_strandseq_2024", "selection": "A_core",
+      "category": "C3a", "subtype": "c3a_patient_sc_reference", "sc_truth_strength": "reference_tree",
       "title": "Single-cell multiomics analysis reveals dynamic clonal evolution and targetable phenotypes in acute myeloid leukemia with complex karyotype",
       "doi": "10.1038/s41588-024-01999-x", "online_year": 2024, "issue_year": 2024,
       "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41588-024-01999-x.pdf",
@@ -37,6 +42,7 @@
     },
     {
       "id": "A05", "directory": "A05_mpal_multiome_2024", "selection": "A_core",
+      "category": "C3a", "subtype": "c3a_patient_sc_reference", "sc_truth_strength": "reference_tree",
       "title": "Multiomic single cell sequencing identifies stemlike nature of mixed phenotype acute leukemia",
       "doi": "10.1038/s41467-024-52317-2", "online_year": 2024, "issue_year": 2024,
       "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41467-024-52317-2.pdf",
@@ -45,6 +51,7 @@
     },
     {
       "id": "B01", "directory": "B01_melanoma_longread_2026", "selection": "B_core",
+      "category": "C2", "subtype": "c2_long_read_data_only", "sc_truth_strength": "none",
       "title": "Long-read sequencing of single cell-derived melanoma sublines reveals divergent and parallel genomic and epigenomic evolutionary trajectories",
       "doi": "10.1038/s41467-026-75172-9", "online_year": 2026, "issue_year": 2026,
       "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41467-026-75172-9.pdf",
@@ -53,6 +60,7 @@
     },
     {
       "id": "B02", "directory": "B02_myeloma_linkedread_2021", "selection": "B_core",
+      "category": "C1", "subtype": "c1_read_cooccurrence_short", "sc_truth_strength": "none",
       "title": "Co-evolution of tumor and immune cells during progression of multiple myeloma",
       "doi": "10.1038/s41467-021-22804-x", "online_year": 2021, "issue_year": 2021,
       "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41467-021-22804-x.pdf",
@@ -61,6 +69,7 @@
     },
     {
       "id": "B03", "directory": "B03_singlecell_mutational_processes_2022", "selection": "bridge",
+      "category": "C3a", "subtype": "c3a_patient_sc_reference", "sc_truth_strength": "reference_tree",
       "title": "Single-cell genomic variation induced by mutational processes in cancer",
       "doi": "10.1038/s41586-022-05249-0", "online_year": 2022, "issue_year": 2022,
       "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41586-022-05249-0.pdf",
@@ -69,6 +78,7 @@
     },
     {
       "id": "B04", "directory": "B04_lung_longread_phasing_2022", "selection": "B_core",
+      "category": "C3b", "subtype": "c3b_topology_constraint_sc_partial", "sc_truth_strength": "partial",
       "title": "Phasing analysis of lung cancer genomes using a long read sequencer",
       "doi": "10.1038/s41467-022-31133-6", "online_year": 2022, "issue_year": 2022,
       "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41467-022-31133-6.pdf",
@@ -77,6 +87,7 @@
     },
     {
       "id": "B05", "directory": "B05_medicc2_2022", "selection": "method_comparator",
+      "category": "C3a", "subtype": "c3a_sc_partial", "sc_truth_strength": "partial",
       "title": "MEDICC2: whole-genome doubling aware copy-number phylogenies for cancer evolution",
       "doi": "10.1186/s13059-022-02794-9", "online_year": 2022, "issue_year": 2022,
       "pdf_version": "published_corrected_2023", "pdf_url": "https://genomebiology.biomedcentral.com/counter/pdf/10.1186/s13059-022-02794-9",
@@ -85,6 +96,7 @@
     },
     {
       "id": "B06", "directory": "B06_hcc_multisite_longread_2025", "selection": "B_core",
+      "category": "C2", "subtype": "c2_sample_tree_sv", "sc_truth_strength": "none",
       "title": "Multisite long-read sequencing reveals the early contributions of somatic structural variations to HBV-related hepatocellular carcinoma tumorigenesis",
       "doi": "10.1101/gr.279617.124", "online_year": 2025, "issue_year": 2025,
       "pdf_version": "published", "pdf_url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC12047258.1/PMC12047258.1.pdf",
@@ -93,6 +105,7 @@
     },
     {
       "id": "B07", "directory": "B07_numbat_2022", "selection": "B_core",
+      "category": "C1", "subtype": "c1_single_cell_input_no_truth", "sc_truth_strength": "none",
       "title": "Haplotype-aware analysis of somatic copy number variations from single-cell transcriptomes",
       "doi": "10.1038/s41587-022-01468-y", "online_year": 2022, "issue_year": 2023,
       "pdf_version": "biorxiv_v1_2022-02-10; formal published HTML cross-checked",
@@ -104,6 +117,7 @@
     },
     {
       "id": "B08", "directory": "B08_hpv_integration_2023", "selection": "molecular_history_extension",
+      "category": "C2", "subtype": "c2_molecular_history", "sc_truth_strength": "none",
       "title": "Intratumoral Heterogeneity and Clonal Evolution Induced by HPV Integration",
       "doi": "10.1158/2159-8290.CD-22-0900", "online_year": 2023, "issue_year": 2023,
       "pdf_version": "accepted_manuscript_CSHL_46_pages",

@@ -1,3 +1,28 @@
+---
+paper_id: H01
+category: "C3a"
+category_label: "single-cell 真值樹 × 短讀或未說平台"
+subtype: "c3a_sc_partial"
+sc_truth_strength: "partial"
+title: "Fang 2021: HCC1395 community reference samples and call sets (high-confidence candidate branching tree)"
+year: 2021
+doc_type: "application"
+material: "cell_line"
+platform_class: "short_or_unspecified"
+platform_detail: ["Illumina bulk WGS/WES", "PacBio ~40x for call-set validation only"]
+long_read_role: "validation_only"
+long_read_features: []
+single_cell_truth: "sc_partial_validation"
+single_cell_tech: ["10x Chromium Single Cell CNV (Illumina)"]
+input_is_single_cell: false
+tree_type: ["clone_tree"]
+cross_tags: ["long_read_validation_only", "cell_line", "repo_validation_reference", "hcc1395"]
+keywords_en: ["hcc1395", "seqc2", "reference call set", "phylowgs", "superfreq", "bulk wgs", "wes", "ascat", "10x single-cell cnv", "pacbio validation", "tumor-normal titration", "breast cancer cell line"]
+keywords_zh: ["乳癌細胞株", "參考樣本", "演化樹", "單細胞拷貝數", "正交驗證"]
+summary_zh: "bulk PhyloWGS 建樹；單細胞 CNV 只部分佐證。"
+category_index: "../../PAPER_CATEGORIES.md"
+---
+
 # HCC1395 high-confidence candidate branching tree topology：論文分析索引
 
 本目錄分析：

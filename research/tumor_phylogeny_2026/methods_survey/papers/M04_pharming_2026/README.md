@@ -1,3 +1,28 @@
+---
+paper_id: M04
+category: "C1"
+category_label: "短讀或未說平台（無 single-cell 真值）"
+subtype: "c1_single_cell_input_no_truth"
+sc_truth_strength: "none"
+title: "Pharming: Joint Clonal Tree Reconstruction of SNV and Copy Number Aberration Evolution from Single-Cell DNA Sequencing of Tumors"
+year: 2026
+doc_type: "method"
+material: "mixed"
+platform_class: "short_or_unspecified"
+platform_detail: ["low-pass scDNA (ACT, DLP+)", "simulated"]
+long_read_role: "none"
+long_read_features: []
+single_cell_truth: "simulated_only"
+single_cell_tech: ["ACT", "DLP+"]
+input_is_single_cell: true
+tree_type: ["clone_tree", "cn_event_tree", "mutation_tree"]
+cross_tags: ["single_cell_input", "haplotype_specific_cn", "snv_cna_joint"]
+keywords_en: ["pharming", "scdna-seq", "low-pass single-cell", "act", "dlp+", "joint snv cna tree", "haplotype-specific copy number", "cnrein", "dollo snv loss", "infinite alleles cna", "triple-negative breast cancer", "ovarian cancer cell lines"]
+keywords_zh: ["單細胞 DNA 定序", "SNV 與 CNA 聯合演化樹", "haplotype 特異 CN", "三陰性乳癌", "卵巢癌細胞株"]
+summary_zh: "單細胞 SNV+CNA 聯合 clone tree；只有模擬真值。"
+category_index: "../../../../PAPER_CATEGORIES.md"
+---
+
 # M04 Pharming（Weber et al., J Comput Biol 2026）閱讀筆記
 
 > **版本警示**：本地 `paper.pdf` 是 **bioRxiv v1 preprint（2024-11-18）**，不是 JCB 正式版。JCB 版需付費、未取得；RECOMB 2025 LNCS 版是 5 頁 extended abstract（LNCS pp.294–298），也沒有取得。下文頁碼、式子、實驗數字全部出自 bioRxiv v1。
