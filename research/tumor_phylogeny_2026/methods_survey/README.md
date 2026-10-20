@@ -2,7 +2,7 @@
 
 查核日：2026-10-16。文件語言：繁體中文，技術名詞保留英文。
 
-> **2026-10-18**：`papers/` 下 M01、M02、M04–M07 已納入 [論文分類索引](../../PAPER_CATEGORIES.md)（平台 × single-cell 真值）。46 個方法的總表仍以本檔為準，未逐一分類。
+> **2026-10-18**：`papers/` 下 M01、M02、M04–M08 已納入 [論文分類索引](../../PAPER_CATEGORIES.md)（平台 × single-cell 真值）。46 個方法的總表仍以本檔為準，未逐一分類。
 
 ## 為什麼重做
 
@@ -168,8 +168,9 @@ W5 也查了 deep learning／generative 型方法（2023–2026），沒有找�
 |---|---|---|---|
 | **TreeClone** | 2019 Ann Appl Stat | [18-AOAS1224](https://doi.org/10.1214/18-AOAS1224) | short-read 相鄰 SNV pair 的 4 類 haplotype read count 進 Bayesian tree likelihood（8 類 read multinomial，含 partially missing reads；pair 間未互相 phase，genotype 以鏡像對稱縮為 10 類）；CN=2 寫死在 likelihood 的「0.5×兩條 allele」項；沒有 multiplicity；程式碼目前連不上。只讀到 arXiv v2，見 [M02](papers/M02_treeclone_2019/README.md) |
 
+| **BitPhylogeny** | 2015 Genome Biol | [s13059-015-0592-6](https://doi.org/10.1186/s13059-015-0592-6) | 每條 read（或每個 cell）的多位點 0/1 pattern 整筆來自同一個 clone，TSSB prior＋Gibbs（加 swap move）同時推 clone 數、clone 參數與樹；clone 可在內部節點。資料是 454 bisulfite methylation 與 single-cell exome；沒有 CN、purity、read count 模型；真實資料無真值樹。Bitbucket code 已失效，GitHub `keyuan/bitphyloR`（2016）。見 [M08](papers/M08_bitphylogeny_2015/README.md) |
 
-這一類只有 1 篇正式發表。經典先例：BitPhylogeny（2015）。
+這一類共 2 篇。TreeClone 用顯式 pair 計數；BitPhylogeny 用「整條 read 共用一個 clone」隱式約束。2026-10-19 依使用者決定加入 M08。
 
 ## 邊界與近似（不計主選）
 
@@ -256,4 +257,5 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
 | [M04](papers/M04_pharming_2026/README.md) | Pharming | bioRxiv v1 29 頁 | (x,y,w,z) 狀態空間、JCTI、與 HP＋multiplicity 的接點 |
 | [M05](papers/M05_tusv_ext_2022/README.md) | TUSV-ext（附 Sc-TUSV-ext、TUSV-int） | 出版社正式版 9 頁 | ILP、latent allele phasing、改用觀測 HP 的簡化 |
 | [M06](papers/M06_phylex_2023/README.md) | PhylEx | 出版社正式版 16 頁＋補充 19 頁 | bulk × scRNA likelihood 合成、改成 read 層級共現要改的項 |
+| [M08](papers/M08_bitphylogeny_2015/README.md) | BitPhylogeny | Europe PMC 全文 XML（PDF 被擋，補充檔未讀） | read pattern 當抽樣單位、TSSB 聯合推 clone 與樹、搬到 ONT＋HP 的 5 個問題 |
 
