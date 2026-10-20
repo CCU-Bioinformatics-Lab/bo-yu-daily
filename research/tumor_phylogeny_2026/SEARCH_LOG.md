@@ -48,9 +48,7 @@ tumor phylogeny long reads single cell haplotype reconstruction 2024 2025
 "haplotype" "phylogeny" "2025" cancer single cell
 "long-read sequencing" "clonal tree"
 "LongSom" "phylogenetic" tree
-"Multisite long-read sequencing reveals" pdf
 "SomaticHaplotype" phylogeny
-"Abstract 6912" "Phasing tumor clones"
 ```
 
 primary-source 優先順序：正式出版全文／PDF與補充圖 → 作者機構保存版／正式 PMC 全文 → 原始作者 preprint（顯著標版本）→ 原作者 repository／資料封存。搜尋引擎、OpenAlex 等只供發現 DOI／合法來源，不當科學結論的最終依據。技術與資料取用的年份資訊以查核日可讀來源為準。
@@ -59,9 +57,9 @@ primary-source 優先順序：正式出版全文／PDF與補充圖 → 作者機
 
 A 類必須確有 primary patient genomic single-cell 或 single-nucleus evidence，且產出 genetic tree／clonal ancestry；單純 expression cluster、UMAP、normal-cell receptor lineage 不算。PDX 與 primary tissue 分開；16 人 cohort 若只有 PA04 完整樹，就不能寫成有 16 棵可驗證病人樹。
 
-B 主選採五篇涵蓋研究路徑：B01/B04/B06 是 native ONT，B02 是 linked short reads，B07 是 population phased haplotype/CN 的實際 topology 方法。**native long reads 不等於必然使用 haplotype-specific 特徵**：B01 鼠株 inbred 缺乏可用 germline phasing，就是重要反例。B05、B03與B08列延伸；沒有為了數量把 validation-only、fixed-tree event placement 或會議摘要寫成 full clone-tree algorithm。
+B 主選採三篇涵蓋研究路徑：B01/B04 是 native ONT，B07 是 population phased haplotype/CN 的實際 topology 方法。**native long reads 不等於必然使用 haplotype-specific 特徵**：B01 鼠株 inbred 缺乏可用 germline phasing，就是重要反例。B05與B03列延伸；沒有為了數量把 validation-only、fixed-tree event placement 或會議摘要寫成 full clone-tree algorithm。
 
-同一研究的 preprint、正式版與 correction 只計一次。不同論文共用 MM cohort 仍是不同方法論文，但在 B02/B07 顯著說明資料不獨立，不能當兩次臨床重現。
+同一研究的 preprint、正式版與 correction 只計一次。
 
 ## 近似命中與排除原因
 
@@ -77,12 +75,9 @@ B 主選採五篇涵蓋研究路徑：B01/B04/B06 是 native ONT，B02 是 linke
 | [Refphase, 2023](https://pmc.ncbi.nlm.nih.gov/articles/PMC10621967/) | 多樣本 haplotype-specific CN phasing、MEDICC2 介面 | long-range reference phasing 不代表使用 native long reads，仍需另外推樹 |
 | [Meltos, 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC8215921/) | 將 SV 放進既有 SNV evolutionary tree，另有 linked-read 支持 | 年份較早；linked reads 在該研究主要用於 assessment，不能改寫為主 likelihood |
 | [TreeClone, 2019](https://arxiv.org/abs/1703.03853) | proximal SNV pairs、Bayesian tree prior；同分子共現的早期先例 | 使用 short reads，超出近期主選，但對 C4 novelty 判斷有用；不可聲稱 co-read pair idea 始於本 repo |
-| [SomaticHaplotype, 2024 preprint](https://doi.org/10.1101/2024.08.09.607342) | somatic/germline phasing、linked-read clone constraints | 與 B02 MM 資料／NRAS案例重疊；preprint、局部結構與完整樹需分開，不另當獨立病人驗證 |
-| [AACR 2026 abstract 6912](https://doi.org/10.1158/1538-7445.AM2026-6912) | **Phasing tumor clones by timing point mutations using bulk long-read sequencing**；直接用 H2009/H1437 ONT pair patterns 與 transitivity 建關係圖 | 只有會議摘要，缺完整方法／PDF全文／獨立病人 scDNA truth；不計正式完整論文，但與本 repo 非常相關，必須追蹤 |
+| [SomaticHaplotype, 2024 preprint](https://doi.org/10.1101/2024.08.09.607342) | somatic/germline phasing、linked-read clone constraints | preprint、局部結構與完整樹需分開，不另當獨立病人驗證 |
 | [ecSingle, 2026](https://doi.org/10.1186/s13059-026-03933-2) | patient scRNA allelic imbalance、ONT RNA/WGS、ecDNA subclonal dynamics | ecDNA 分群與縱向擴張不自動等於完整 genetic phylogeny；另須考慮 ecDNA 非樹狀遺傳 |
 | [Esophageal amplicons, 2024](https://doi.org/10.1038/s41467-024-47619-4) | long-read assembly＋DLP+ 追 organoid clonal shifts | organoid passage selection、amplicon architecture 與病人原位 lineage truth 不同；不能只因同有 scDNA/longread就當完整交集 |
-
-2026 AACR 摘要由 Donmez／Kolmogorov 提出與本 repo 很接近的 pair timing 方向，而且使用相同 H2009/H1437 細胞株。這是後續 related-work／新穎性比較必查線索；摘要中的結果仍只按摘要強度解讀，不將未見的完整演算法細節補寫出來。
 
 ## PDF、閱讀與版本控管
 

@@ -2,7 +2,7 @@
 
 查核日：2026-10-16。文件語言：繁體中文，技術名詞保留英文。
 
-> **2026-10-18**：`papers/` 下 M01–M07 已納入 [論文分類索引](../../PAPER_CATEGORIES.md)（平台 × single-cell 真值）。46 個方法的總表仍以本檔為準，未逐一分類。
+> **2026-10-18**：`papers/` 下 M01、M02、M04–M07 已納入 [論文分類索引](../../PAPER_CATEGORIES.md)（平台 × single-cell 真值）。46 個方法的總表仍以本檔為準，未逐一分類。
 
 ## 為什麼重做
 
@@ -37,7 +37,6 @@
 
 **協調者核對**：
 - 主選表 50 個不重複 DOI，全部以 Crossref API 解析成功，標題與第一作者相符（2026-10-16）。
-- AACR 2026 Abstract 6912 的 DOI 也以 Crossref 確認。
 - SCARLET 的輸入從官方 README 確認：需要給定 copy-number tree，在其上推 mutation tree。
 
 **證據層級**：
@@ -169,7 +168,8 @@ W5 也查了 deep learning／generative 型方法（2023–2026），沒有找�
 |---|---|---|---|
 | **TreeClone** | 2019 Ann Appl Stat | [18-AOAS1224](https://doi.org/10.1214/18-AOAS1224) | short-read 相鄰 SNV pair 的 4 類 haplotype read count 進 Bayesian tree likelihood（8 類 read multinomial，含 partially missing reads；pair 間未互相 phase，genotype 以鏡像對稱縮為 10 類）；CN=2 寫死在 likelihood 的「0.5×兩條 allele」項；沒有 multiplicity；程式碼目前連不上。只讀到 arXiv v2，見 [M02](papers/M02_treeclone_2019/README.md) |
 
-這一類只有 1 篇正式發表。最接近的另一項是 **Donmez & Kolmogorov, AACR 2026 Abstract 6912**（[10.1158/1538-7445.AM2026-6912](https://doi.org/10.1158/1538-7445.AM2026-6912)，Crossref 已核；作者只有 Donmez 與 Kolmogorov 兩人）：用 bulk ONT 上的 point-mutation pair 關係建樹，資料是 **H2009／H1437**（CASTLE，一般與 ultra-long ONT）。摘要未提 copy number、multiplicity、purity、multi-sample，只提 phasing 可區分 duplicated chromosome copies；結果只有描述統計，沒有正確率評估。到 2026-10-17 沒有 preprint；公開程式在作者個人帳號的 [atabeerk/cancer_phasing](https://github.com/atabeerk/cancer_phasing)（無 license，開發中）。它只是會議摘要，不計主選，但它是最直接的同期競爭者，見 [M03](papers/M03_donmez_aacr2026/README.md)。經典先例：BitPhylogeny（2015）。
+
+這一類只有 1 篇正式發表。經典先例：BitPhylogeny（2015）。
 
 ## 邊界與近似（不計主選）
 
@@ -202,7 +202,7 @@ W5 也查了 deep learning／generative 型方法（2023–2026），沒有找�
    - SNV 經 phase set 指派到 HP1/HP2，再配合 haplotype-specific CN，約束 multiplicity 與 CN timing；
    - 以 SMC／PG 推 topology。
 
-可主張的是這幾項的**聯合模型**，不能單獨主張「首次用 read phasing 推腫瘤樹」。最大的風險是 Kolmogorov 組的 AACR 2026 摘要可能發展成完整論文並補上 CN，需要持續追蹤。
+可主張的是這幾項的**聯合模型**，不能單獨主張「首次用 read phasing 推腫瘤樹」。
 
 ## Benchmark 與評估指標（供 `evaluation_v1.md`）
 
@@ -227,14 +227,13 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
 
 1. **PhyClone**：基線，已有正式版。
 2. **TreeClone**：read pair 共現 likelihood 的直接起點與差異界定。
-3. **Donmez AACR 2026 #6912**：同期競爭者，同樣的 cell line。
-4. **Pharming**：haplotype CN＋multiplicity 的 genotype 表示法。
-5. **TUSV-ext**：phased SNV／SV／CN 的 ILP，可對接 longphase 的 HP。
-6. **PhylEx**：在 bulk likelihood 上加單細胞共現資訊的範式（Lagergren 組，Roth 共同通訊）；換成 read 層級共現需要改的四項見 M06。
-7. **Pairtree／Orchard**：主要 bulk 競品與 benchmark 指標來源。
-8. **MEDICC2／CNETML**：haplotype CN 沿樹轉移的模型，可作為 CN-only baseline。
-9. **SCARLET／ConDoR**：CN 約束 SNV loss 的作法，可升級成 haplotype 層級的約束。
-10. **Salcedo 2020**：評估指標。
+3. **Pharming**：haplotype CN＋multiplicity 的 genotype 表示法。
+4. **TUSV-ext**：phased SNV／SV／CN 的 ILP，可對接 longphase 的 HP。
+5. **PhylEx**：在 bulk likelihood 上加單細胞共現資訊的範式（Lagergren 組，Roth 共同通訊）；換成 read 層級共現需要改的四項見 M06。
+6. **Pairtree／Orchard**：主要 bulk 競品與 benchmark 指標來源。
+7. **MEDICC2／CNETML**：haplotype CN 沿樹轉移的模型，可作為 CN-only baseline。
+8. **SCARLET／ConDoR**：CN 約束 SNV loss 的作法，可升級成 haplotype 層級的約束。
+9. **Salcedo 2020**：評估指標。
 
 ## 待核與已知缺口
 
@@ -243,7 +242,7 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
 - **其他不確定處**：
   - 程式碼位置已查明：MEDICC2 論文寫 bitbucket.org/schwarzlab/medicc2，GitHub schwarzlab-ccb/medicc2 是同團隊目前維護的 repo（由轉址推斷）；PACTION 在 github.com/elkebir-group/paction（W5 寫的 raphael-group 是錯的 org）；Canopy2 在 github.com/annweideman/canopy2。
   - PHALCON、Phyllochron 還沒有正式版。
-- **逐篇 dossier**：精讀清單前 6 篇已建立，見下節。其餘方法沒有下載 PDF。
+- **逐篇 dossier**：精讀清單前 5 篇已建立，見下節。其餘方法沒有下載 PDF。
 - **版本限制**：TreeClone 只讀 arXiv v2（期刊 PDF 被擋）；Pharming 只讀 bioRxiv v1（JCB 正式版付費）；Sc-TUSV-ext 只讀 bioRxiv v1 與 JCB 摘要；TUSV-ext 的完整 ILP（補充材料 S1）未讀。
 
 ## 逐篇 dossier
@@ -254,7 +253,6 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
 |---|---|---|---|
 | [M01](papers/M01_phyclone_2025/README.md) | PhyClone | 出版社正式版 10 頁＋補充 28 頁；另存 bioRxiv v1 對照 | 正式版與 preprint 差異、multiplicity 邊際化、outlier model、PG／SMC |
 | [M02](papers/M02_treeclone_2019/README.md) | TreeClone | arXiv v2 30 頁（期刊版未取得） | mutation-pair read likelihood、CN=2 寫死之處、推廣到 long read 的方式 |
-| [M03](papers/M03_donmez_aacr2026/README.md) | Donmez AACR 2026 | 摘要全文（無 PDF） | 與本研究的重疊與差異；無 preprint；程式 [atabeerk/cancer_phasing](https://github.com/atabeerk/cancer_phasing) |
 | [M04](papers/M04_pharming_2026/README.md) | Pharming | bioRxiv v1 29 頁 | (x,y,w,z) 狀態空間、JCTI、與 HP＋multiplicity 的接點 |
 | [M05](papers/M05_tusv_ext_2022/README.md) | TUSV-ext（附 Sc-TUSV-ext、TUSV-int） | 出版社正式版 9 頁 | ILP、latent allele phasing、改用觀測 HP 的簡化 |
 | [M06](papers/M06_phylex_2023/README.md) | PhylEx | 出版社正式版 16 頁＋補充 19 頁 | bulk × scRNA likelihood 合成、改成 read 層級共現要改的項 |

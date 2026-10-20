@@ -59,15 +59,6 @@
       "tree_evidence": "ScisTree ONT SNV tree; TreeHarmonizer fixed-topology placement", "independent_complete_truth": false
     },
     {
-      "id": "B02", "directory": "B02_myeloma_linkedread_2021", "selection": "B_core",
-      "category": "C1", "subtype": "c1_read_cooccurrence_short", "sc_truth_strength": "none",
-      "title": "Co-evolution of tumor and immune cells during progression of multiple myeloma",
-      "doi": "10.1038/s41467-021-22804-x", "online_year": 2021, "issue_year": 2021,
-      "pdf_version": "published", "pdf_url": "https://www.nature.com/articles/s41467-021-22804-x.pdf",
-      "material": "human patient", "single_cell": "scRNA", "long_feature": "10x linked short reads, haplotype and somatic co-occurrence",
-      "tree_evidence": "local subclone relationship constraints; no independent scDNA tree", "independent_complete_truth": false
-    },
-    {
       "id": "B03", "directory": "B03_singlecell_mutational_processes_2022", "selection": "bridge",
       "category": "C3a", "subtype": "c3a_patient_sc_reference", "sc_truth_strength": "reference_tree",
       "title": "Single-cell genomic variation induced by mutational processes in cancer",
@@ -95,15 +86,6 @@
       "tree_evidence": "minimum-event distance and de novo CN phylogeny", "independent_complete_truth": false
     },
     {
-      "id": "B06", "directory": "B06_hcc_multisite_longread_2025", "selection": "B_core",
-      "category": "C2", "subtype": "c2_sample_tree_sv", "sc_truth_strength": "none",
-      "title": "Multisite long-read sequencing reveals the early contributions of somatic structural variations to HBV-related hepatocellular carcinoma tumorigenesis",
-      "doi": "10.1101/gr.279617.124", "online_year": 2025, "issue_year": 2025,
-      "pdf_version": "published", "pdf_url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC12047258.1/PMC12047258.1.pdf",
-      "material": "human patient", "single_cell": "none", "long_feature": "ONT SV breakpoint presence; modified SVclone CCF",
-      "tree_evidence": "neighbor-joining sample tree, not deconvolved clone tree", "independent_complete_truth": false
-    },
-    {
       "id": "B07", "directory": "B07_numbat_2022", "selection": "B_core",
       "category": "C1", "subtype": "c1_single_cell_input_no_truth", "sc_truth_strength": "none",
       "title": "Haplotype-aware analysis of somatic copy number variations from single-cell transcriptomes",
@@ -114,16 +96,6 @@
       "pdf_url": "https://www.biorxiv.org/content/10.1101/2022.02.07.479314v1.full.pdf",
       "material": "human patient; NCI-N87 cell line added in formal version", "single_cell": "scRNA; formal-version cell-line scDNA comparator", "long_feature": "population-based haplotype, allele counts and expression; no native long reads",
       "tree_evidence": "iterative CNV genotype and maximum-likelihood phylogeny", "independent_complete_truth": false
-    },
-    {
-      "id": "B08", "directory": "B08_hpv_integration_2023", "selection": "molecular_history_extension",
-      "category": "C2", "subtype": "c2_molecular_history", "sc_truth_strength": "none",
-      "title": "Intratumoral Heterogeneity and Clonal Evolution Induced by HPV Integration",
-      "doi": "10.1158/2159-8290.CD-22-0900", "online_year": 2023, "issue_year": 2023,
-      "pdf_version": "accepted_manuscript_CSHL_46_pages",
-      "pdf_url": "https://repository.cshl.edu/40840/1/2023-Goodwin-Intratumoral-heterogeneity-and-clonal-evolution-induced-by-HPV-integration.pdf",
-      "material": "human primary tumors and cell lines", "single_cell": "not independent scDNA lineage truth", "long_feature": "ONT/PacBio HPV-human integration and rearrangement molecules",
-      "tree_evidence": "local structural molecular ancestry/history; not full clone-tree inference", "independent_complete_truth": false
     }
   ]
 }

@@ -27,8 +27,8 @@ DOI 的核對方式：
 | RECOMB-CG 2025（LNCS 15666，ISBN 978-3-031-94927-2） | **是**。官方站 `recomb.org/recomb-cg2025` 回 404，改用 Crossref ISBN 過濾，列出 21 章 | 逐篇看標題 | Liu & Nakhleh「Inferring Phylogenetic Trees of Cancer Evolution from Longitudinal Single-Cell Copy Number Profiles」＝**NestedBD-Long**，已含在 44 個中的 NestedBD |
 | RECOMB-CG 2026（LNCS，ISBN 978-3-032-26891-4） | **是**。Crossref ISBN 過濾，列出 19 章 | 逐篇看標題 | 無腫瘤相關論文 |
 | bioRxiv 2025-06-01 到 2026-10-17 | **是（限 6 個 category）**。用 `api.biorxiv.org/details` 全量下載 bioinformatics、cancer biology、genomics、genetics、evolutionary biology、systems biology，去重後共 21,286 個 DOI | 下方三種方式 | 見「新增候選」與「近似與排除」 |
-| Crossref posted-content（`from-posted-date:2025-06-01`） | 是（相關性排序，每個查詢取前 40 筆） | `tumor phylogeny`、`clone tree cancer`、`cancer phylogenetic reconstruction`、`long-read phylogeny tumor`、`clonal evolution tree inference single-cell`、`copy number phylogeny`、`subclonal reconstruction tree`、`haplotype phasing tumor clone`、`phasing tumor clones timing point mutations long-read`、`bulk long-read sequencing tumor clones somatic mutation co-occurrence reads`、`nanopore tumor subclonal phylogeny`、`long reads clonal phylogeny cancer cell line`、`mutation pairs reads phylogeny tumor` | 補到 Ahmed et al. 2026（bin size）。其他命中與 bioRxiv 全量掃描重疊 |
-| WebSearch（輔助） | — | `RECOMB 2026 accepted papers tumor phylogeny`、`RECOMB-CG 2025 accepted papers`、`bioRxiv 2026 long-read tumor phylogeny haplotype phasing clone tree`、`Donmez Kolmogorov phasing tumor clones point mutations long-read bioRxiv`、`El-Kebir 2026 bioRxiv tumor phylogeny method`、`Zaccaria lab 2026 …`、`Roth lab Bouchard-Côté 2026 …`、`Russell Schwartz 2026 …` | 沒有新增方法；確認 Donmez／Kolmogorov 只有 AACR 摘要 |
+| Crossref posted-content（`from-posted-date:2025-06-01`） | 是（相關性排序，每個查詢取前 40 筆） | `tumor phylogeny`、`clone tree cancer`、`cancer phylogenetic reconstruction`、`long-read phylogeny tumor`、`clonal evolution tree inference single-cell`、`copy number phylogeny`、`subclonal reconstruction tree`、`haplotype phasing tumor clone`、`bulk long-read sequencing tumor clones somatic mutation co-occurrence reads`、`nanopore tumor subclonal phylogeny`、`long reads clonal phylogeny cancer cell line`、`mutation pairs reads phylogeny tumor` | 補到 Ahmed et al. 2026（bin size）。其他命中與 bioRxiv 全量掃描重疊 |
+| WebSearch（輔助） | — | `RECOMB 2026 accepted papers tumor phylogeny`、`RECOMB-CG 2025 accepted papers`、`bioRxiv 2026 long-read tumor phylogeny haplotype phasing clone tree`、`El-Kebir 2026 bioRxiv tumor phylogeny method`、`Zaccaria lab 2026 …`、`Roth lab Bouchard-Côté 2026 …`、`Russell Schwartz 2026 …` | 沒有新增方法 |
 
 bioRxiv 全量掃描用了三種方式：
 - **(a) 方法導向**：title＋abstract 同時含腫瘤詞與樹詞，abstract 含 `we present/introduce/develop/propose|algorithm|framework|tool`。
@@ -38,7 +38,6 @@ bioRxiv 全量掃描用了三種方式：
 
 覆蓋限制：
 - 沒有掃 medRxiv。也沒有掃 bioRxiv 其他 category，例如 cell biology、molecular biology。
-- AACR 2026 摘要已由 W1／W4 處理，這次沒有重查。
 - RECOMB 2026 的 LNCS 章節 DOI 目前查不到，所以 RECOMB 2026 的論文都以 bioRxiv DOI 記錄。
 
 ## 新增候選
@@ -123,24 +122,22 @@ bioRxiv 全量掃描用了三種方式：
    - calling 或 phasing 工具：LongPhase-S、LongPhase-TO、Baker 2026、Lefèbvre 2026、LRSomatic；
    - 應用論文：melanoma sublines（已在 W3、W4）。
    F 類仍只有 TreeClone（2019）。
-2. **Donmez & Kolmogorov（AACR 2026 #6912）**：以 Crossref posted-content、bioRxiv 6 個 category 的作者比對（Kolmogorov 在範圍內有 4 篇 preprint，都不是這項工作），以及 WebSearch 三種方式查找，**都沒有找到對應的 preprint 或正式論文**。它仍是最直接的同期競爭者，狀態維持「只有會議摘要」。
-3. **haplotype 方向**：新出現的 haplotype-aware 工作有兩個，都不推 topology：
+2. **haplotype 方向**：新出現的 haplotype-aware 工作有兩個，都不推 topology：
    - cfClone（Roth lab）：在給定 clone 結構下估 prevalence；
    - CNVeil：sc haplotype-specific CN calling。
    HP 指派加上 haplotype-specific CN 約束 multiplicity 這一點，最接近的仍是 Pharming（sc）與 TUSV-ext（latent phase）。
-4. **SNV＋CN 聯合推樹**：新增的 ScisTreeCNA 與 LoPhy、Pharming、COMPASS 同屬 single-cell。bulk 端沒有新的 SNV＋CN 推樹方法。PhyClone 在 A 類的競品清單不變。
-5. **推論引擎**：新方法用的推論方式如下，沒有新的 SMC／Particle Gibbs 腫瘤推樹方法：
+3. **SNV＋CN 聯合推樹**：新增的 ScisTreeCNA 與 LoPhy、Pharming、COMPASS 同屬 single-cell。bulk 端沒有新的 SNV＋CN 推樹方法。PhyClone 在 A 類的競品清單不變。
+4. **推論引擎**：新方法用的推論方式如下，沒有新的 SMC／Particle Gibbs 腫瘤推樹方法：
    - combinatorial：Dolphyin、branch-and-bound、CTBF；
    - distance-based：SRNJ；
    - Bayesian 精修或 likelihood search：PhyloSOLID、ScisTreeCNA。
    - fastppm 屬固定 tree 的計分加速，不搜尋 topology，可以考慮借用到 PhyClone 的 tree 計分（推論）。
-6. **對評估有用的副產品**：
+5. **對評估有用的副產品**：
    - Satas et al.（WABI 2026）：min-flip 目標偏好不平衡的深樹。
    - omlta：clonal tree alignment，可作為另一種 tree 距離。
    - SCOUT：合成 WGS benchmark，有 evolutionary ground truth。
 
 **待追蹤**：
-- Donmez／Kolmogorov 是否出 preprint；
 - Cwikla／Schwarz 的 RECOMB-CCB 2026 LBR；
 - RECOMB 2026 的 LNCS 章節 DOI；
 - 本次沒有掃的 medRxiv 與 bioRxiv 其他 category。
