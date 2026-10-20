@@ -1,0 +1,107 @@
+<section id="s1-read-features" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">1 · 這種資料存在嗎</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">三篇都用同一條 read 上的多個位點，用在不同步驟</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;flex-direction:row;gap:24px">
+<div style="width:180px"></div>
+<div style="width:470px;display:flex;flex-direction:column;gap:10px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:20px">
+<h3 style="font-size:40px;font-weight:700;line-height:1.2;color:#1F2A37">肺癌長讀研究</h3>
+<p style="font-size:24px;line-height:1.2;color:#6B7480">Sakamoto 2022</p>
+<svg aria-label="藍色 HP1 長條上有兩個紅色突變。三條長讀：一條兩點都帶突變，一條只帶左點，一條都沒有。虛線箭頭從長讀指向下方被藍框選中的線性樹，上方灰色的分支樹落選。" width="428" height="170" viewBox="0 0 470 186">
+<line x1="90" y1="8" x2="90" y2="180" stroke="#9AA3AE" stroke-width="2" stroke-dasharray="6 5"/>
+<line x1="200" y1="8" x2="200" y2="180" stroke="#9AA3AE" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="10" y="20" width="270" height="14" rx="7" fill="#2C5F9E"/>
+<circle cx="90" cy="27" r="8" fill="#D23A2E"/>
+<circle cx="200" cy="27" r="8" fill="#D23A2E"/>
+<rect x="30" y="66" width="230" height="14" rx="7" fill="#8FB3E0"/>
+<circle cx="90" cy="73" r="8" fill="#D23A2E"/>
+<circle cx="200" cy="73" r="8" fill="#D23A2E"/>
+<rect x="50" y="106" width="210" height="14" rx="7" fill="#8FB3E0"/>
+<circle cx="90" cy="113" r="8" fill="#D23A2E"/>
+<circle cx="200" cy="113" r="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="2.5"/>
+<rect x="20" y="146" width="230" height="14" rx="7" fill="#2C5F9E"/>
+<circle cx="90" cy="153" r="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="2.5"/>
+<circle cx="200" cy="153" r="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="2.5"/>
+<g stroke="#9AA3AE" stroke-width="3"><line x1="390" y1="18" x2="360" y2="68"/><line x1="390" y1="18" x2="420" y2="68"/></g>
+<circle cx="390" cy="18" r="9" fill="#9AA3AE"/><circle cx="360" cy="68" r="9" fill="#9AA3AE"/><circle cx="420" cy="68" r="9" fill="#9AA3AE"/>
+<rect x="350" y="94" width="80" height="88" rx="12" fill="none" stroke="#2F6DB5" stroke-width="3"/>
+<g stroke="#4A5568" stroke-width="3"><line x1="390" y1="108" x2="390" y2="168"/></g>
+<circle cx="390" cy="108" r="9" fill="#4A5568"/><circle cx="390" cy="138" r="9" fill="#4A5568"/><circle cx="390" cy="168" r="9" fill="#4A5568"/>
+<line x1="275" y1="138" x2="330" y2="138" stroke="#4A5568" stroke-width="3" stroke-dasharray="7 5"/>
+<polygon points="330,130 346,138 330,146" fill="#4A5568"/>
+</svg>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">只帶左點的 read → 左點較早<br>從 2 棵候選樹挑 1 棵</p>
+</div>
+<div style="width:470px;display:flex;flex-direction:column;gap:10px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:20px">
+<h3 style="font-size:40px;font-weight:700;line-height:1.2;color:#1F2A37">甲基化條碼研究</h3>
+<p style="font-size:24px;line-height:1.2;color:#6B7480">Hackett 2026</p>
+<svg aria-label="四條藍色 HP1 長讀，每條上有七個甲基化位點，實心表示有甲基化、空心表示沒有。上兩條的 pattern 相似，下兩條相似。箭頭指向右邊的樹，相似的 read 先合在一起。" width="428" height="170" viewBox="0 0 470 186">
+<rect x="10" y="18" width="240" height="14" rx="7" fill="#2C5F9E"/>
+<rect x="10" y="62" width="240" height="14" rx="7" fill="#2C5F9E"/>
+<rect x="10" y="106" width="240" height="14" rx="7" fill="#2C5F9E"/>
+<rect x="10" y="150" width="240" height="14" rx="7" fill="#2C5F9E"/>
+<g stroke="#1F2A37" stroke-width="2.5">
+<circle cx="35" cy="25" r="9" fill="#1F2A37"/><circle cx="65" cy="25" r="9" fill="#1F2A37"/><circle cx="95" cy="25" r="9" fill="#FDFDFB"/><circle cx="125" cy="25" r="9" fill="#1F2A37"/><circle cx="155" cy="25" r="9" fill="#1F2A37"/><circle cx="185" cy="25" r="9" fill="#FDFDFB"/><circle cx="215" cy="25" r="9" fill="#FDFDFB"/>
+<circle cx="35" cy="69" r="9" fill="#1F2A37"/><circle cx="65" cy="69" r="9" fill="#1F2A37"/><circle cx="95" cy="69" r="9" fill="#FDFDFB"/><circle cx="125" cy="69" r="9" fill="#1F2A37"/><circle cx="155" cy="69" r="9" fill="#1F2A37"/><circle cx="185" cy="69" r="9" fill="#FDFDFB"/><circle cx="215" cy="69" r="9" fill="#1F2A37"/>
+<circle cx="35" cy="113" r="9" fill="#FDFDFB"/><circle cx="65" cy="113" r="9" fill="#1F2A37"/><circle cx="95" cy="113" r="9" fill="#1F2A37"/><circle cx="125" cy="113" r="9" fill="#FDFDFB"/><circle cx="155" cy="113" r="9" fill="#FDFDFB"/><circle cx="185" cy="113" r="9" fill="#1F2A37"/><circle cx="215" cy="113" r="9" fill="#FDFDFB"/>
+<circle cx="35" cy="157" r="9" fill="#FDFDFB"/><circle cx="65" cy="157" r="9" fill="#1F2A37"/><circle cx="95" cy="157" r="9" fill="#1F2A37"/><circle cx="125" cy="157" r="9" fill="#FDFDFB"/><circle cx="155" cy="157" r="9" fill="#FDFDFB"/><circle cx="185" cy="157" r="9" fill="#1F2A37"/><circle cx="215" cy="157" r="9" fill="#1F2A37"/>
+</g>
+<line x1="262" y1="91" x2="296" y2="91" stroke="#4A5568" stroke-width="3"/>
+<polygon points="296,83 312,91 296,99" fill="#4A5568"/>
+<g stroke="#4A5568" stroke-width="3" fill="none">
+<polyline points="460,25 420,25 420,69 460,69"/>
+<polyline points="460,113 420,113 420,157 460,157"/>
+<polyline points="420,47 365,47 365,135 420,135"/>
+<line x1="365" y1="91" x2="330" y2="91"/>
+</g>
+</svg>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">每條長讀一串甲基化位點（●有 ○無）<br>相似的 read 排成一棵樹</p>
+</div>
+<div style="width:470px;display:flex;flex-direction:column;gap:10px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:20px">
+<h3 style="font-size:40px;font-weight:700;line-height:1.2;color:#1F2A37">配對 read 建樹方法</h3>
+<p style="font-size:24px;line-height:1.2;color:#6B7480">Zhou 2019</p>
+<svg aria-label="三對灰色短讀，每對兩端各蓋一個位點，以虛線相連；紅點表示帶突變，空心表示沒有。箭頭指向四根計數長條，再指向一棵樹。" width="428" height="170" viewBox="0 0 470 186">
+<line x1="60" y1="8" x2="60" y2="180" stroke="#9AA3AE" stroke-width="2" stroke-dasharray="6 5"/>
+<line x1="185" y1="8" x2="185" y2="180" stroke="#9AA3AE" stroke-width="2" stroke-dasharray="6 5"/>
+<g fill="#9AA3AE"><rect x="20" y="30" width="80" height="14" rx="7"/><rect x="145" y="30" width="80" height="14" rx="7"/><rect x="25" y="85" width="80" height="14" rx="7"/><rect x="150" y="85" width="80" height="14" rx="7"/><rect x="15" y="140" width="80" height="14" rx="7"/><rect x="140" y="140" width="80" height="14" rx="7"/></g>
+<g stroke="#4A5568" stroke-width="2" stroke-dasharray="4 4"><line x1="100" y1="37" x2="145" y2="37"/><line x1="105" y1="92" x2="150" y2="92"/><line x1="95" y1="147" x2="140" y2="147"/></g>
+<circle cx="60" cy="37" r="8" fill="#D23A2E"/><circle cx="185" cy="37" r="8" fill="#D23A2E"/>
+<circle cx="60" cy="92" r="8" fill="#D23A2E"/><circle cx="185" cy="92" r="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="2.5"/>
+<circle cx="60" cy="147" r="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="2.5"/><circle cx="185" cy="147" r="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="2.5"/>
+<line x1="238" y1="92" x2="256" y2="92" stroke="#4A5568" stroke-width="3"/>
+<polygon points="256,84 270,92 256,100" fill="#4A5568"/>
+<g fill="#4A5568"><rect x="280" y="70" width="16" height="90"/><rect x="302" y="125" width="16" height="35"/><rect x="324" y="150" width="16" height="10"/><rect x="346" y="100" width="16" height="60"/></g>
+<line x1="280" y1="162" x2="362" y2="162" stroke="#4A5568" stroke-width="2"/>
+<line x1="370" y1="92" x2="386" y2="92" stroke="#4A5568" stroke-width="3"/>
+<polygon points="386,84 400,92 386,100" fill="#4A5568"/>
+<g stroke="#4A5568" stroke-width="3"><line x1="435" y1="50" x2="415" y2="100"/><line x1="435" y1="50" x2="455" y2="100"/><line x1="415" y1="100" x2="415" y2="145"/></g>
+<circle cx="435" cy="50" r="9" fill="#4A5568"/><circle cx="415" cy="100" r="9" fill="#4A5568"/><circle cx="455" cy="100" r="9" fill="#4A5568"/><circle cx="415" cy="145" r="9" fill="#4A5568"/>
+</svg>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">短讀兩端各蓋一個突變<br>組合計數 → 機率模型 → 樹</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:center;border-bottom:1px solid #D9DDE3;padding:10px 0">
+<p style="width:180px;font-size:30px;font-weight:700;color:#4A5568">長讀</p>
+<p style="width:470px;font-size:30px;font-weight:700;text-align:center;color:#1F2A37">有</p>
+<p style="width:470px;font-size:30px;font-weight:700;text-align:center;color:#1F2A37">有</p>
+<p style="width:470px;font-size:30px;text-align:center;color:#6B7480">無</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:center;border-bottom:1px solid #D9DDE3;padding:10px 0">
+<p style="width:180px;font-size:30px;font-weight:700;color:#4A5568">HP 分相</p>
+<p style="width:470px;font-size:30px;font-weight:700;text-align:center;color:#1F2A37">有</p>
+<p style="width:470px;font-size:30px;font-weight:700;text-align:center;color:#1F2A37">有</p>
+<p style="width:470px;font-size:30px;text-align:center;color:#6B7480">無</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:center">
+<p style="width:180px;font-size:30px;font-weight:700;color:#4A5568">用在哪一步</p>
+<div style="width:470px;display:flex;justify-content:center"><p style="font-size:30px;font-weight:700;color:#4A5568;border:3px dashed #4A5568;border-radius:12px;padding:6px 24px">事後挑樹</p></div>
+<div style="width:470px;display:flex;justify-content:center"><p style="font-size:30px;font-weight:700;color:#2F6DB5;border:3px solid #2F6DB5;border-radius:12px;padding:6px 24px">直接建樹</p></div>
+<div style="width:470px;display:flex;justify-content:center"><p style="font-size:30px;font-weight:700;color:#C96A1B;border:3px solid #C96A1B;border-radius:12px;padding:6px 24px">放進機率模型</p></div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">6 / 10</p>
+</div>
+<aside>這頁的結論是：三篇都看同一條 read 上的多個位點，但用在建樹的不同步驟。先看左邊肺癌長讀研究。藍色長條上有兩個紅點，有的長讀兩點都帶突變，有的只帶左點，沒有只帶右點的，所以左點比較早。不過它的樹先用短讀排出兩棵候選，再用長讀挑一棵，所以下面寫「事後挑樹」。中間是甲基化條碼研究。長讀先依兩條同源染色體分開，再比較每條 read 上一整串甲基化位點，相似的 read 排在一起，直接排出一棵樹。右邊是配對 read 建樹方法，用的是短讀。一對 read 兩端各蓋一個突變，四種組合的計數放進機率模型，和樹一起推。它只處理拷貝數正常的區域。接下來一篇一篇拆開看，先看左邊的肺癌長讀研究。</aside>
+</section>

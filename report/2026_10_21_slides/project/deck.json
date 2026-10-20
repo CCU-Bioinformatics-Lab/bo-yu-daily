@@ -23,15 +23,12 @@
   "lists": "css",
   "order": [
     "cover",
-    "agenda",
-    "s1-count",
-    "s1-terms",
     "s1-features",
-    "s2-sim-layers",
-    "s2-smchet",
-    "s2-sc-trees",
-    "s2-longread",
-    "summary"
+    "s1-feat-lung",
+    "s1-feat-methyl",
+    "s2-sim-check",
+    "s2-sim-plan",
+    "s2-real-ref"
   ],
   "sections": {
     "s0": {
@@ -39,16 +36,26 @@
       "start": "cover"
     },
     "s1": {
-      "description": "這種資料存在嗎：17 篇中沒有同時有長讀與驗證用真值樹的研究",
-      "start": "s1-count"
+      "before": null,
+      "description": "這種資料存在嗎：18 篇中只有 1 篇同時有 long read 與驗證用真值樹",
+      "start": "s1-features"
     },
     "s2": {
-      "description": "前人怎麼做資料：模擬多停在計數層，真實資料的真值都是短讀",
-      "start": "s2-sim-layers"
+      "before": null,
+      "description": "前人怎麼做資料：模擬多停在計數層，真實資料的真值多半是短讀",
+      "seq": 0,
+      "start": null
     },
     "s3": {
+      "before": null,
       "description": "總結",
-      "start": "summary"
+      "seq": 0,
+      "start": null
+    },
+    "s4": {
+      "before": null,
+      "description": "我們怎麼驗證：先確認不退步，再用模擬資料量增益，最後在 HCC1395 真實資料上對照參考樹",
+      "start": "s2-sim-check"
     }
   },
   "title": "2026-10-21 腫瘤演化樹研究進度"
