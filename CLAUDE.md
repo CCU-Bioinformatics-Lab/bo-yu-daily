@@ -46,6 +46,7 @@ python -m unittest phyclone.tests.unit_tests.test_tree.<Class>.<method>
 
 ## 工作慣例
 
+- **【強制】所有回答一律使用繁體中文**，包括對話回覆、摘要與說明；技術名詞依下一條保留英文。不論前文或工具輸出是什麼語言，都不可改用英文回答。
 - 文件以**繁體中文**撰寫，技術名詞（SNV、CCF、multiplicity、topology、purity、ESS 等）保留英文。
 - 製作 PPT／投影片時，原始檔一律輸出到 `report/<簡報名稱>/`（例如 `report/sc_groundtruth_slides/`），不要放在 `research/` 或暫存目錄。
 - 收到任何製作或修改 PPT／投影片報告的指令時，先把該指令併入 `report/report_rule.md` 的「個人風格」對應區塊，再動手。製作前先讀這份規則檔並遵守。
