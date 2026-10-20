@@ -120,8 +120,8 @@
 - **(d) 易錯點**：
   - 分支時沒有 alt-alt read。原因：a、b 在不同的細胞譜系，同一條 DNA 分子不會同時帶有兩者。前提是兩者在同一條 haplotype，而且 C_h=1。
   - a、b 在不同 HP 時，共現永遠是 0，不能拿來判斷關係。圖上的兩個點必須畫在同一條長條上。
-  - 如果該 haplotype 有多個 copy（C_h>1）、有 ecDNA，或兩點之間跨 CN breakpoint，pattern 不再對應細胞譜系（SYNTHESIS K2、B08）。
-  - n11=0 不能直接判為分支。coverage 低時本來就可能看不到 11（SYNTHESIS K3、B02 n=4）。
+  - 如果該 haplotype 有多個 copy（C_h>1）、有 ecDNA，或兩點之間跨 CN breakpoint，pattern 不再對應細胞譜系（SYNTHESIS K2）。
+  - n11=0 不能直接判為分支。coverage 低時本來就可能看不到 11（SYNTHESIS K3）。
   - 只有 11 也不能證明 same（B04 EGFR 例）。
   - 一條 read 是一個分子觀測，不是一個細胞。
   - n00 不提供關係資訊，計分時不使用。
@@ -198,3 +198,48 @@
   - 只有 7 個方法提交 phylogeny。PhyClone 沒有參賽。
   - 管線箭頭只表示任務順序。參賽方法不一定照這個順序計算。
 - **(e) 出處**：Salcedo, Tarabichi et al. 2024 *Nat Biotechnol* 43:581（Methods p.13、Table 1）；M07。原始子任務代號為 1A、1B、1C、2A/2B、3A/3B，只記在本檔與 `BRIEF.md`。
+
+## 10. read 層級腫瘤 BAM 模擬
+
+- **(a) 定義**：read 層級模擬從一份真實正常人的 BAM 出發。先把 read 依 haplotype 定相，再依「haplotype × 染色體」切成 read 池。每個 read 池依 clone 比例與拷貝數調整深度，再把設計好的突變植入 read 序列。最後合併成一份腫瘤 BAM。和計數層模擬不同，它產生真的 read 序列，可以再跑一般的變異呼叫流程。
+- **(b) 慣例**：由左到右的流程，每步一個方塊，步與步之間用實線箭頭。read 池畫成兩組色條（HP1、HP2 固定配色）。植入的突變畫成紅點，只放在其中一色的 read 上。輸出端畫一份 BAM 圖示，旁邊放「變異清單」。M07 論文沒有附這條流程的示意圖，構圖依 Methods 文字整理。
+- **(c) 構圖**：
+  - 第 1 步：一疊灰色短條＝「正常人 read」（M07 用 HG002 300× 短讀）。
+  - 第 2 步：灰條改成上藍（HP1）下橘（HP2）兩組，標「定相」。
+  - 第 3 步：兩組再依染色體切成小格，例如「chr1 HP1」「chr1 HP2」「chr2 HP1」…，標「read 池」。
+  - 第 4 步：各池的色條數量不同（多＝深度高），標「調深度：clone 比例、拷貝數」。
+  - 第 5 步：在部分 HP1（或 HP2）色條上放紅點，標「植入 SNV、SV」。子 clone 的池同時帶父 clone 的紅點。
+  - 第 6 步：所有池合成一條 BAM，再箭頭到「變異清單」。若要表示參賽者看不到 read，可在 BAM 上加斜線底。
+- **(d) 易錯點**：
+  - 紅點只放在一個 haplotype 的 read 池。不要兩色都放。
+  - 子 clone 帶父 clone 的突變（deletion 例外）。不要讓子 clone 的池缺少父 clone 的紅點。
+  - 「調深度」是改 read 數，不是改 read 長度。拷貝數增加＝該池 read 變多。
+  - 植入真值裡可能有每個突變的 haplotype（推論；論文沒有寫真值檔的欄位）。
+  - 短讀版每個突變各自挑要改的 read，不同突變之間不必落在同一批 read。長讀版一條 read 會跨過多個突變，所以要先把整條 read 指派給一個 clone，再放上這個 clone 的全部突變；否則同 read 共現（概念 5）的答案會錯（推論）。
+  - 長讀版的 haplotype 切分要用父母資料等獨立來源，不能用待測的 phasing 工具產生真值（推論）。
+  - 底層深度要夠。不要靠複製 read 補深度，複製會產生重複分子（推論）。
+  - 參賽者只拿到變異清單與拷貝數結果，不是 BAM。不要畫成參賽者直接讀 read。
+- **(e) 出處**：Salcedo, Tarabichi et al. 2024 *Nat Biotechnol* 43:581，Methods p.13（GIAB GM24385/HG002 300× Illumina、PhaseTools 定相、phased contig 中位長約 85 kb、依 phase × chromosome 切 sub-BAM、BAMSurgeon spike-in、MuTect／Battenberg 呼叫）；M07 README「BAM 模擬流程」。長讀版難點為 `report/2026_10_21_slides/REVIEW_v5.md` 教授審查推論。
+
+## 11. single-cell DNA：標靶 panel 對淺層全基因體
+
+- **(a) 定義**：single-cell DNA 定序有兩種常見取捨。標靶 panel 只放大選定的位點，但每個位點讀很深。淺層全基因體讀整個基因體，但每顆細胞只讀很少（約 0.05×–0.09×）。兩者都用短讀定序。前者適合判斷每顆細胞的 SNV 有無；後者適合判斷每顆細胞的拷貝數。有些技術定序細胞核（nuclei），不是整顆細胞。
+- **(b) 慣例**：上下或左右並排兩條相同長度的基因體長條。標靶 panel 在少數位置畫高高的 read 堆，其餘位置空白。淺層全基因體在整條長條上畫一層稀疏、均勻的 read。下方各接一種輸出：標靶 panel 接 cell × SNV 的 0/1 矩陣；淺層全基因體接 cell × bin 的拷貝數熱圖。最後各接一棵樹，標樹的種類。
+- **(c) 構圖**：
+  - 兩欄，同一列放同一件事（照 `report_rule.md`「圖」第 5 條）。左欄「標靶 panel」，右欄「淺層全基因體」。
+  - 第 1 列「讀哪裡」：灰色基因體長條。左欄在 3–5 個位置放高窄的 read 堆，標「選定基因」。右欄整條鋪一層短 read，標「整個基因體、讀很少」。
+  - 第 2 列「每顆細胞看到什麼」：左欄是格子矩陣，有突變的格子塗紅（`#D23A2E`），部分格子用灰色斜線表示 dropout。右欄是色階熱圖，每格是一個 bin 的拷貝數。
+  - 第 3 列「樹」：左欄標「SNV 樹」，右欄標「拷貝數樹」。
+  - 底部一條共同標籤：「兩者都是短讀」。
+- **(d) 易錯點**：
+  - 標靶 panel 只看選定基因。未選的 passenger 突變看不到，不同的 lineage 可能被合併（A05）。
+  - 標靶 panel 的 PCR 會有 allelic dropout 與 doublet。沒有 alt 的格子不等於真陰性（A03：doublet 約 3–5%；R01：SNV 位點少於 50 reads 視為 missing）。
+  - 淺層全基因體每顆細胞讀太少，不能逐細胞呼叫 SNV。SNV 要先把同 clone 的細胞合併再判斷（A02）。
+  - 淺層全基因體的樹常由拷貝數建出（A01、B03）。拷貝數樹不等於 SNV 樹（概念 8）。A02 的拷貝數樹固定沿用 SNV 樹的 topology，兩棵樹不是各自獨立建出。
+  - haplotype-specific 拷貝數是跨細胞整合 haplotype block 推出的。它不是 longphase 的 HP／PS 標籤（A01、B03）。
+  - Strand-seq 屬於淺層全基因體的一種，用短讀分別讀 DNA 兩股，可推出整條染色體的 haplotype。它不是長讀（A04）。
+  - 「nuclei」與「cells」是不同的計數單位。投影片照論文用的單位寫。
+- **(e) 出處**：
+  - 標靶 panel：R01 README §4（單核不做全基因組擴增，48-plex PCR，每人 48–96 個目標，MiSeq）；A03 README（186 amplicons／93 genes，8,061 nuclei，ADO 與 doublet）；A05 README（20 個白血病基因，58,807 cells，SCITE mutation tree）。
+  - 淺層全基因體：A01 README（DLP+ 平均每細胞約 0.088×，500-kb bins 拷貝數，MEDICC2 樹）；B03 README（DLP+ median 約 0.05×，total-CN breakpoints 建樹）；A02 README（clone pseudobulk 判 SNV，HUNTRESS SNV 樹，MEDICC2 固定 topology）；A04 README（Strand-seq 75-bp PE、100-kb bins、人工 clone 樹）。
+  - README 路徑見 `research/paper_categories.tsv` 的 `readme` 欄（相對於 `research/`）。

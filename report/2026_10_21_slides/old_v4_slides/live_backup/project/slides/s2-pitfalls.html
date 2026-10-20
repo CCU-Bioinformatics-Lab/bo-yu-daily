@@ -1,0 +1,111 @@
+<section id="s2-pitfalls" style="display:flex; flex-direction:column; gap:40px; padding:128px 128px 160px; background:#f7f6f2">
+  <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5">2 · 原因</p>
+  <h2 style="font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">bulk 有兩個分不出來的地方：兄弟 clone 與 multiplicity</h2>
+  <div style="display:flex; flex-direction:row; gap:40px; flex:1">
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:20px 32px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+      <div style="display:flex; flex-direction:row; gap:20px; align-items:center">
+        <h3 style="font-family:'Noto Serif TC', Georgia, serif; font-size:40px; font-weight:700; line-height:1.2; color:#1f2a37">陷阱 1：兄弟 clone</h3>
+        <p style="padding:2px 12px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#2f6db5; border:2px solid #2f6db5; border-radius:8px">P3 同類情況</p>
+      </div>
+      <div style="position:relative; width:748px; height:376px; display:flex; flex-direction:column; align-self:stretch">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="真樹 A 分出兄弟 B 與 C，兩者 CCF 都約 0.4；數線上兩點重疊；錯誤結果是 B、C 併成一群，或排成 A、B、C 線性" viewBox="0 0 748 376" style="position:absolute; top:0; left:0; width:748px; height:376px">
+<line x1="110" y1="64" x2="55" y2="170" stroke="#4A5568" stroke-width="3"/>
+<line x1="110" y1="64" x2="165" y2="170" stroke="#4A5568" stroke-width="3"/>
+<circle cx="80" cy="122" r="6" fill="#D23A2E"/>
+<circle cx="140" cy="122" r="6" fill="#D23A2E"/>
+<circle cx="110" cy="64" r="28" fill="#4A5568"/>
+<circle cx="55" cy="170" r="26" fill="#2F6DB5"/>
+<circle cx="165" cy="170" r="26" fill="#C96A1B"/>
+<line x1="236" y1="128" x2="280" y2="128" stroke="#1F2A37" stroke-width="4"/>
+<polygon points="292,128 278,118 278,138" fill="#1F2A37"/>
+<rect x="306" y="28" width="440" height="100" rx="12" fill="none" stroke="#B4442F" stroke-width="3" stroke-dasharray="10 6"/>
+<line x1="394" y1="78" x2="466" y2="78" stroke="#4A5568" stroke-width="3"/>
+<circle cx="370" cy="78" r="24" fill="#4A5568"/>
+<path d="M494 50 A28 28 0 0 0 494 106 Z" fill="#2F6DB5"/>
+<path d="M494 50 A28 28 0 0 1 494 106 Z" fill="#C96A1B"/>
+<rect x="306" y="136" width="440" height="100" rx="12" fill="none" stroke="#B4442F" stroke-width="3" stroke-dasharray="10 6"/>
+<line x1="394" y1="186" x2="460" y2="186" stroke="#4A5568" stroke-width="3"/>
+<line x1="508" y1="186" x2="574" y2="186" stroke="#4A5568" stroke-width="3"/>
+<circle cx="370" cy="186" r="24" fill="#4A5568"/>
+<circle cx="484" cy="186" r="24" fill="#2F6DB5"/>
+<circle cx="598" cy="186" r="24" fill="#C96A1B"/>
+<line x1="40" y1="290" x2="700" y2="290" stroke="#9AA3AE" stroke-width="4"/>
+<line x1="40" y1="278" x2="40" y2="302" stroke="#9AA3AE" stroke-width="4"/>
+<line x1="700" y1="278" x2="700" y2="302" stroke="#9AA3AE" stroke-width="4"/>
+<circle cx="300" cy="290" r="11" fill="#2F6DB5"/>
+<circle cx="308" cy="290" r="11" fill="#C96A1B" fill-opacity="0.85"/>
+<circle cx="700" cy="290" r="11" fill="#4A5568"/>
+</svg>
+        <p style="position:absolute; top:0; left:0; width:220px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#2e7d4f">真樹</p>
+        <p style="position:absolute; top:47px; left:90px; width:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#fdfdfb">A</p>
+        <p style="position:absolute; top:153px; left:35px; width:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#fdfdfb">B</p>
+        <p style="position:absolute; top:153px; left:145px; width:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#fdfdfb">C</p>
+        <p style="position:absolute; top:44px; left:144px; width:90px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#4a5568">CCF 100%</p>
+        <p style="position:absolute; top:200px; left:5px; width:100px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; text-align:center; color:#2f6db5">約 0.4</p>
+        <p style="position:absolute; top:200px; left:115px; width:100px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; text-align:center; color:#c96a1b">約 0.4</p>
+        <p style="position:absolute; top:0; left:316px; width:430px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#b4442f">錯誤結果</p>
+        <p style="position:absolute; top:61px; left:350px; width:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#fdfdfb">A</p>
+        <p style="position:absolute; top:61px; left:464px; width:60px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#fdfdfb">B+C</p>
+        <p style="position:absolute; top:61px; left:560px; width:170px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#b4442f">併成一群</p>
+        <p style="position:absolute; top:169px; left:350px; width:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#fdfdfb">A</p>
+        <p style="position:absolute; top:169px; left:464px; width:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#fdfdfb">B</p>
+        <p style="position:absolute; top:169px; left:578px; width:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#fdfdfb">C</p>
+        <p style="position:absolute; top:169px; left:634px; width:108px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#b4442f">排成線性</p>
+        <p style="position:absolute; top:240px; left:204px; width:200px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; text-align:center; color:#1f2a37">B、C 重疊</p>
+        <p style="position:absolute; top:240px; left:688px; width:24px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; text-align:center; color:#4a5568">A</p>
+        <p style="position:absolute; top:273px; left:8px; width:24px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; text-align:center; color:#6b7480">0</p>
+        <p style="position:absolute; top:273px; left:716px; width:24px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; text-align:center; color:#6b7480">1</p>
+        <p style="position:absolute; top:310px; left:0; width:748px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#1f2a37"><b>CCF</b>＝帶這個突變的腫瘤細胞比例</p>
+        <p style="position:absolute; top:342px; left:0; width:748px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#1f2a37"><b>比例規則</b>：B＋C 不超過 A，所以兄弟和線性都合格</p>
+      </div>
+      <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; line-height:1.4; color:#1f2a37">比例相近的兄弟 clone 會被併錯或排錯。</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:20px 32px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+      <h3 style="font-family:'Noto Serif TC', Georgia, serif; font-size:40px; font-weight:700; line-height:1.2; color:#1f2a37">陷阱 2：multiplicity</h3>
+      <div style="position:relative; width:748px; height:320px; display:flex; flex-direction:column; align-self:stretch">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="purity 為 1；60% 腫瘤細胞是 1:1，40% 腫瘤細胞的第一份（藍）多一份成 2:1。解釋一：紅點在第二份（橘），一份拷貝，CCF 0.8。解釋二：紅點只在 40% 細胞的兩份第一份上，兩份拷貝，CCF 0.4。兩種 VAF 都是 0.333" viewBox="0 0 748 320" style="position:absolute; top:0; left:0; width:748px; height:320px">
+<ellipse cx="205" cy="82" rx="85" ry="42" fill="#EEF2F6" stroke="#9AA3AE" stroke-width="2"/>
+<ellipse cx="400" cy="82" rx="85" ry="42" fill="#EEF2F6" stroke="#9AA3AE" stroke-width="2"/>
+<rect x="150" y="70" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="150" y="88" width="110" height="12" rx="6" fill="#D9772B"/>
+<rect x="345" y="61" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="345" y="78" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="345" y="95" width="110" height="12" rx="6" fill="#D9772B"/>
+<circle cx="225" cy="94" r="8" fill="#D23A2E" stroke="#FFFFFF" stroke-width="2"/>
+<circle cx="420" cy="101" r="8" fill="#D23A2E" stroke="#FFFFFF" stroke-width="2"/>
+<line x1="0" y1="140" x2="490" y2="140" stroke="#D9DDE3" stroke-width="2" stroke-dasharray="6 6"/>
+<ellipse cx="205" cy="198" rx="85" ry="42" fill="#EEF2F6" stroke="#9AA3AE" stroke-width="2"/>
+<ellipse cx="400" cy="198" rx="85" ry="42" fill="#EEF2F6" stroke="#9AA3AE" stroke-width="2"/>
+<rect x="150" y="186" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="150" y="204" width="110" height="12" rx="6" fill="#D9772B"/>
+<rect x="345" y="177" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="345" y="194" width="110" height="12" rx="6" fill="#2C5F9E"/>
+<rect x="345" y="211" width="110" height="12" rx="6" fill="#D9772B"/>
+<circle cx="420" cy="183" r="8" fill="#D23A2E" stroke="#FFFFFF" stroke-width="2"/>
+<circle cx="420" cy="200" r="8" fill="#D23A2E" stroke="#FFFFFF" stroke-width="2"/>
+</svg>
+        <p style="position:absolute; top:0; left:0; width:118px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#1f2a37">purity＝1</p>
+        <p style="position:absolute; top:0; left:120px; width:170px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#1f2a37">60% 細胞　1:1</p>
+        <p style="position:absolute; top:0; left:315px; width:170px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#1f2a37">40% 細胞　2:1</p>
+        <p style="position:absolute; top:0; left:505px; width:243px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#d23a2e">VAF 都是 0.333</p>
+        <p style="position:absolute; top:50px; left:0; width:110px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#1f2a37">解釋一</p>
+        <p style="position:absolute; top:84px; left:0; width:110px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#4a5568">在第二份</p>
+        <p style="position:absolute; top:38px; left:505px; width:243px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#4a5568">一份拷貝</p>
+        <p style="position:absolute; top:66px; left:505px; width:243px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:40px; font-weight:700; color:#1f2a37">CCF＝0.8</p>
+        <p style="position:absolute; top:126px; left:505px; width:243px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#b4442f">樹上位置也不同</p>
+        <p style="position:absolute; top:166px; left:0; width:110px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#1f2a37">解釋二</p>
+        <p style="position:absolute; top:200px; left:0; width:110px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#4a5568">在第一份</p>
+        <p style="position:absolute; top:160px; left:505px; width:243px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#4a5568">兩份拷貝，早於增加</p>
+        <p style="position:absolute; top:188px; left:505px; width:243px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:40px; font-weight:700; color:#1f2a37">CCF＝0.4</p>
+        <p style="position:absolute; top:252px; left:0; width:748px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#1f2a37"><span style="color:#2c5f9e">藍</span>＝第一份，<span style="color:#d9772b">橘</span>＝第二份；40% 細胞的第一份多一份</p>
+        <p style="position:absolute; top:286px; left:0; width:748px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#1f2a37"><b>multiplicity</b>＝突變位在幾份拷貝上</p>
+      </div>
+      <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; line-height:1.4; color:#1f2a37">同一個 VAF 會因 multiplicity 不同，對應到兩種 CCF。</p>
+    </div>
+  </div>
+  <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-10-21 腫瘤演化樹研究進度</p>
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">5 / 10</p>
+  </div>
+  <aside>結論是：只看 bulk，有兩個地方分不出來。左邊和第 3 頁同一類情況。CCF 是帶這個突變的腫瘤細胞比例。真樹是 A 分出兄弟 B、C，都約 0.4。比例規則說子 clone 加起來不能超過父 clone；0.4 加 0.4 沒超過 1，兄弟和線性都合格。結果被併成一群，或排成線性。右邊 purity 是 1，40% 細胞的第一份多一份，變成 2:1，平均每個細胞 2.4 份。multiplicity 是突變位在幾份拷貝上。解釋一，突變在第二份，0.8 除以 2.4；解釋二，突變在第一份、早於增加，0.4 乘 2 除以 2.4。都是 0.333，CCF 卻差一倍。前提是已知 40% 細胞多一份，而且多的是第一份。如第 4 頁所說，PhyClone 每個突變只吃一組拷貝數，連這種情況都表達不了。這兩個陷阱，長讀都有線索：一條長讀能同時跨過兩個突變，也能分出突變在哪一份。那前人有沒有這樣用過？</aside>
+</section>

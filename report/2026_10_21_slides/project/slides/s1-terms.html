@@ -1,0 +1,58 @@
+<section id="s1-terms" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">1 · 這種資料存在嗎</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">phasing 把 read 分到兩份同源染色體，標籤只在同一段 phase block 內有效</h2>
+<div style="flex:1;display:flex;gap:80px;align-items:center">
+<div style="width:640px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:16px">
+<div style="position:relative;width:604px;height:320px">
+<svg aria-label="兩份同源染色體 HP1 與 HP2，各分成兩段 phase block；一條長 read 同時蓋到 HP1 上兩個腫瘤突變" width="604" height="320" viewBox="0 0 604 320" style="position:absolute;left:0px;top:0px;width:604px">
+<rect x="70" y="80" width="130" height="14" rx="7" fill="#2C5F9E"/>
+<rect x="110" y="52" width="210" height="14" rx="7" fill="#8FB3E0"/>
+<circle cx="150" cy="59" r="9" fill="#D23A2E"/>
+<circle cx="290" cy="59" r="9" fill="#D23A2E"/>
+<rect x="430" y="66" width="150" height="14" rx="7" fill="#2C5F9E"/>
+<rect x="60" y="110" width="270" height="22" rx="11" fill="#2C5F9E"/>
+<rect x="330" y="116" width="70" height="10" fill="#D9DDE3"/>
+<rect x="400" y="110" width="194" height="22" rx="11" fill="#2C5F9E"/>
+<rect x="60" y="154" width="270" height="22" rx="11" fill="#D9772B"/>
+<rect x="330" y="160" width="70" height="10" fill="#D9DDE3"/>
+<rect x="400" y="154" width="194" height="22" rx="11" fill="#D9772B"/>
+<g fill="#FFFFFF" stroke="#1F2A37" stroke-width="2">
+<rect x="94" y="104" width="12" height="34" rx="3"/>
+<rect x="214" y="104" width="12" height="34" rx="3"/>
+<rect x="444" y="104" width="12" height="34" rx="3"/>
+<rect x="534" y="104" width="12" height="34" rx="3"/>
+</g>
+<g fill="#1F2A37">
+<rect x="94" y="148" width="12" height="34" rx="3"/>
+<rect x="214" y="148" width="12" height="34" rx="3"/>
+<rect x="444" y="148" width="12" height="34" rx="3"/>
+<rect x="534" y="148" width="12" height="34" rx="3"/>
+</g>
+<circle cx="150" cy="121" r="11" fill="#D23A2E" stroke="#FFFFFF" stroke-width="3"/>
+<circle cx="290" cy="121" r="11" fill="#D23A2E" stroke="#FFFFFF" stroke-width="3"/>
+<rect x="80" y="196" width="180" height="14" rx="7" fill="#D9772B"/>
+<rect x="420" y="210" width="150" height="14" rx="7" fill="#D9772B"/>
+<path d="M60 248 L60 262 L330 262 L330 248" fill="none" stroke="#2F6DB5" stroke-width="3"/>
+<path d="M400 248 L400 262 L594 262 L594 248" fill="none" stroke="#2F6DB5" stroke-width="3"/>
+</svg>
+<p style="position:absolute;left:100px;top:6px;width:240px;font-size:24px;font-weight:700;text-align:center;color:#D23A2E">同 read 共現</p>
+<p style="position:absolute;left:0px;top:104px;width:56px;font-size:24px;font-weight:700;color:#2C5F9E">HP1</p>
+<p style="position:absolute;left:0px;top:148px;width:56px;font-size:24px;font-weight:700;color:#D9772B">HP2</p>
+<p style="position:absolute;left:60px;top:270px;width:270px;font-size:24px;font-weight:700;text-align:center;color:#2F6DB5">phase block 1</p>
+<p style="position:absolute;left:320px;top:270px;width:90px;font-size:24px;font-weight:700;text-align:center;color:#B4442F">不能接</p>
+<p style="position:absolute;left:400px;top:270px;width:194px;font-size:24px;font-weight:700;text-align:center;color:#2F6DB5">phase block 2</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;gap:16px;align-items:center"><div style="width:64px;display:flex;gap:8px;justify-content:center"><div style="width:10px;height:30px;background:#FFFFFF;border:2px solid #1F2A37;border-radius:3px"></div><div style="width:14px;height:34px;background:#1F2A37;border-radius:3px"></div></div><p style="width:820px;font-size:30px;line-height:1.4"><b>異型合子 SNP</b>：兩份天生不同的位置</p></div>
+<div style="display:flex;gap:16px;align-items:center"><div style="width:64px;display:flex;flex-direction:column;gap:6px"><div style="width:64px;height:12px;background:#2C5F9E;border-radius:6px"></div><div style="width:64px;height:12px;background:#D9772B;border-radius:6px"></div></div><p style="width:820px;font-size:30px;line-height:1.4"><b>HP</b>：read 依 SNP 分到兩份之一</p></div>
+<div style="display:flex;gap:16px;align-items:center"><div style="width:58px;height:12px;border:3px solid #2F6DB5;border-top:0px solid #2F6DB5"></div><p style="width:820px;font-size:30px;line-height:1.4"><b>phase block（PS）</b>：HP 有效的一段</p></div>
+<div style="display:flex;gap:16px;align-items:center"><div style="position:relative;width:64px;height:20px"><div style="position:absolute;left:0px;top:4px;width:64px;height:12px;background:#8FB3E0;border-radius:6px"></div><div style="position:absolute;left:8px;top:2px;width:16px;height:16px;background:#D23A2E;border-radius:8px"></div><div style="position:absolute;left:40px;top:2px;width:16px;height:16px;background:#D23A2E;border-radius:8px"></div></div><p style="width:820px;font-size:30px;line-height:1.4"><b>同 read 共現</b>：一條 read 上兩個<span style="color:#D23A2E">突變</span></p></div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">4 / 10</p>
+</div>
+<aside>先把下一頁表格要用的三個詞講清楚。大家看左邊這張圖。人有兩份同源染色體，上面藍色叫 HP1，下面橘色叫 HP2。兩份在某些位置天生不同，就是白色和黑色的小方塊，叫異型合子 SNP。一條 read 只要跨過這些位置，就能判斷它來自哪一份，這個動作叫 phasing，貼上的標籤就是 HP。再看最下面的藍色括號。HP 只在同一段 phase block 內有效；中間 SNP 太少的地方接不起來，所以左右兩段的 HP1 不能直接當成同一份。最後看最上面那條淺藍色的長 read。它同時蓋到兩個紅色的腫瘤突變，我們叫同 read 共現。有了這三個詞，下一頁就看哪些論文用到了它們。</aside>
+</section>
