@@ -1,0 +1,1930 @@
+Supplementary Note 1: Construction of epiallele barcodes from paired-end EM-Seq reads
+
+CpG position:
+
+1
+
+2
+
+3
+
+top (+)
+bottom (-)
+
+CG
+GC
+
+CG
+GC
+
+CG
+GC
+
+DNA template
+4
+5
+CG
+GC
+
+CG
+GC
+
+resulting barcode
+6
+
+7
+
+CG
+GC
+
+CG
+GC
+
+1 2 3 4 5 6 7
+
+read pair 1
+
+[1,0,0,-,-,1,0]
+
+read pair 2
+
+[1,0,0,0,0,1]
+
+read pair 3
+
+[0,0,1,0,1,0]
+
+read pair 4
+
+[1,0,0,-,0,0,1]
+
+read pair 5
+
+[1,0,0,1,0,0,1]
+
+top (+)
+
+bottom (-)
+
+Fig. S1. Schematic of encoding epiallele barcodes from paired-end EM-Seq CpG methylation calls
+
+Supplementary Note 2: Ruling out alternative explanations for PCDH methylation behaviour
+Cell type effects. To establish that PCDH methylation barcodes act as in-vivo lineage markers, it is important to rule out the
+
+possibility that cell-type effects give rise to the phenomena we observe. Numerous observations show that such an interpretation
+is not consistent with the behaviour of methylation patterns in PCDH. Most importantly, as reported in Fonseca et al. 36 , the
+majority of the DNA sequenced from UKCTOCS peripheral blood samples comes from Neutrophils, and the cell-type changes
+between samples with and without large clones are too subtle to account for the dramatic drop in diversity observed during clonal
+sweeps. Furthermore, the barcodes that expand at a given locus are chosen randomly (see supplementary note 14), whereas
+if barcodes marked cell type, one may expect the same methylation patterns to be found at a given site across individuals.
+The tri-modal methylation distribution function post-sweep is also not consistent with cell-type effects - there is no reason that
+cell-type biases would cause a given CpG locus to switch to being fully methylated, fully unmethylated, or methylated in half
+of reads. Finally, the behaviour of the barcodes during a sub-clonal event (in which a new, slightly altered set of barcodes
+establish) would not be expected if the region was strongly cell-type associated.
+
+Supplementary Note 3: Methylation distribution of barcode CpGs in the PCDH gene cluster
+Previous work by our group and others found that the methylation distribution of fluctuating CpGs (fCpGs) reflects clonal
+diversity of blood stem cells where a “W"-shaped distribution emerges as a clone expands 34–36 . Methylation distributions of
+PCDH barcode CpGs closely matched those that we previously observed in an independent set of fCpGs for these samples
+and distribution variance was similarly quantitative for clonal cell fraction in cases with detectable drivers (Supplementary Fig.
+S2a,c,d). The clonality statistic for PCDH barcodes also closely correlated with the distribution variance of non-PCDH fCpGs
+(Supplementary Fig. S2e). We also observed similar differences in homogeneity of CpG methylation states in expanded versus
+non-expanded donors, which is consistent with previous findings cited above (Supplementary Fig. S2f). Specifically, methylation state homogeneity is high in diverse, non-expanded cell populations and low in oligoclonal and expanded populations.
+Supplementary Fig. S2f shows homogeneous methylation regions in non-expanded samples as mostly white space in contrast
+to the more heterogeneous behaviour of samples with high clonal cell fractions. These patterns also highlight donors with predicted missing drivers, the tendency of epimutations toward methylation, and potential CpG positions that may be less mutable
+across the region. Positions that tend to be consistently (un)methylated across all donors are candidates for further filtering in
+future studies.
+The behaviour of CpGs used in our PCDH barcodes closely resembles that of previously identified fCpGs in other regions
+of the genome in a similarly quantitative manner, further supporting their utility to detect clonal expansions and as clonal
+lineage markers. Although it is unclear whether similar mechanisms drive CpG methylation in the PCDH gene cluster, they
+nevertheless appear to have similar properties as they synchronize during clonal expansion. Furthermore, a region of highdensity CpGs with this behaviour allows for both less-expensive, deeper targeted sequencing and the benefit of the additional
+information from phasing.
+
+14
+
+a
+
+*
+
+*
+
+*
+
+*
+
+0.0
+
+probability density
+
+cell fraction from somatic hotspots
+
+*
+
+1.0
+
+case
+
+methylation fraction of barcode CpGs at final collection
+
+0.5
+
+1
+
+simulated
+post-expansion
+ccf=0.9
+variance=
+0.067
+0
+
+0.5
+
+methylation fraction
+
+1
+
+d
+0.12
+
+0.10
+
+R2=0.88
+
+0.08
+
+0.06
+
+0.04
+
+0.02
+
+0.00
+0.00
+
+0.02
+
+0.04
+
+0.06
+
+0.08
+
+0.10
+
+0.12
+
+methylation variance of fCpGs
+used in Fonseca et al 2025 (Preprint)
+
+f
+
+0.09
+
+*
+
+predicted
+missing drivers
+
+0.5
+
+0.08
+
+fraction of top-two barcodes
+
+0
+
+c
+
+methylation variance of barcode CpGs
+
+simulated
+pre-expansion
+ccf=0
+variance=
+0.010
+
+methylation variance of
+PCDH barcode CpGs
+
+b
+
+age-matched control
+
+* case with predicted missing driver
+e
+
+0.07
+0.06
+0.05
+0.04
+0.03
+0.02
+
+R2=0.85
+
+0.4
+
+0.3
+
+0.2
+
+0.1
+
+0.01
+0.00
+
+0.0
+0.00
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+fraction of largest clone
+
+mean methylation per CpG across PCDH at final collection
+
+1.0
+
+0.02
+
+0.04
+
+0.06
+
+0.08
+
+0.10
+
+methylation variance of fCpGs
+used in Fonseca et al 2025 (Preprint)
+
+**
+**
+*
+
+1.0
+
+cases
+
+0.5
+
+0.0
+
+fraction
+methylated
+
+matched controls
+
+1.0
+
+0.5
+
+0.0
+
+clonal
+cell fraction
+from somatic
+mutations
+clonal
+cell fraction
+CpG position (+ strand, chr 5, PCDH αβγ, hg19)
+
+with predicted
+* case
+missing driver
+
+Fig. S2. a. Distribution of CpG methylation states in barcode CpGs from the PCDH gene cluster region at the last time point collected sorted by
+
+increasing clonal cell fraction (CCF) as determined by somatic mutations (case=red, control=blue). b. The distinct "W"-shaped distribution that arises
+from synchronization of CpG states during clonal expansion is observed in PCDH CpGs, the variance of which correlates well with previous work 36
+using an independent set of fluctuating CpGs (fCpGs) in the same sample set (c). This variance quantitatively reflects the cell fraction of largest
+clone (as determined by somatic mutations) (d) and is highly correlated with the top-two barcode fraction (BF) (e). f. Methylation patterns across the
+PCDH region are shown for cases (top, sorted by detectable mutation CCF) and matched controls (same order, bottom) and are consistent with other
+studies using array-based fCpGs measurements 35 where non-expanded stem cell populations exhibit homogeneous states (i.e., average →0.5, white)
+and expanded and oligoclonal population state are heterogeneous; either methylated (1, red) or unmethylated (0, blue). Cases with predicted missing
+15
+drivers (asterisks) have patterns similar to those with detectable higher frequency somatic mutations (red clonal cell fractions)
+
+Supplementary Note 4: Modelling barcode dynamics
+A. Evolution of the set of barcode fractions during a clonal sweep. We consider the evolution of the cell fraction f of
+
+the barcode patterns present during a somatic sweep. New copies of a given barcode can arise through either symmetric cell
+divisions or epimutations from closely related barcodes, while existing copies can be lost due to epimutations. For a given
+methylation rate µ and demethylation rate ω, the dynamics of the barcode fractions fb are therefore given by
+!
+!
+dfb
+= S(t)f → (µn + ω(l → n))fi + µ
+fi + ω
+fi ,
+(12)
+dt
+i→Db
+
+i→Mb
+
+where Mb and Db are the sets of barcodes which are a single methylation or demethylation edit away from barcode b, and S(t)
+is the instantaneous growth rate of the clone. When barcodes are sufficiently long, any individual pattern will be rare outside
+of a clonal expansion.
+The barcode fraction within a clone, f˜, will then be given to a close approximation by f˜ ↑ f /CF, where
+"
+↑
+CF = CF0 exp( S(t )dt↑ ) is the clonal cell fraction. It then follows that
+!
+!
+df˜b
+= f˜→ (µn + ω(l → n))f˜i + µ
+f˜i + ω
+f˜i .
+dt
+i→Db
+
+(13)
+
+i→Mb
+
+The set of barcode fractions expected, f˜ = (f˜1 , f˜2 , ...), is then governed by
+
+df˜
+= Mf˜,
+(14)
+dt
+where the elements of M are defined in equation 12, n is the number of unmethylated sites in the barcode, and l is the barcode
+length. The above can be solved using a matrix exponential,
+f˜(t) = exp(Mt)f˜0 .
+
+(15)
+
+Hence, the predicted barcode dynamics within a clone depend on epimutation rates and coalescence time only through the
+products µt and ωt and is independent of the clonal cell fraction F (t). This allows for inference of epimutation rates even when
+F (t) is non-exponential, for example due to clonal competition. While previous studies 35 have claimed to find independent
+estimates of µ, ω, and t, such work is based on strong assumptions about the state of fCpG sites at birth which are difficult to
+verify with existing data. To infer epimutation rates it is therefore necessary to use pre-existing estimates for the initiation time
+based on clonal growth rates.
+B. Read fraction of founding barcode during a clonal sweep. In the limit of low µt, ωt the effect of epimutations back
+
+to the founding barcode will be negligible and the frequency of the founding barcode will be given to a close approximation by
+df˜
+= →(µn + ω(l → n))f˜.
+dt
+
+(16)
+
+f˜ = exp(→(µn + (l → n)ω)t),
+
+(17)
+
+f (t) = CF(t)f˜(t) = CF(t) exp(→(µn + ω(l → n))t).
+
+(18)
+
+We can solve the above to get
+where f˜(t = 0) = 1. Therefore
+
+Again, the barcode fraction within a clone depends only on the products µt and ωt.
+
+C. Effect of ongoing epimutations on longitudinal barcode frequency plots. The following plots illustrate the barcode
+
+behaviour expected during a clonal sweep and sub-sweep. If there were no ongoing epimutations, the two founding barcodes
+would completely sweep with the clone (Supplementary Fig. S3a). For epimutations at a rate O(10↓2 )year↓1 , founding
+barcodes continually epimutate into barcodes with similar patterns, and so after a sweep two families of closely related patterns
+establish. When there is a bias in the epimutation rate, less methylated barcodes generally reach lower read fractions, as
+unmethylated sites undergo more epimutations than methylated sites (Supplementary Fig. S3 c). The same behaviour can
+be observed in clonally expanded UKCTOCS blood samples (Fig. 3 c,d,e, Supplementary Fig. 14a). The founding barcode
+on a haploid for a sub-sweep may or may not have undergone an epimutation relative to the founding barcode of the initial
+clonal expansion. The subsweep can therefore be tracked by both, only one, or by neither haploid (Supplementary Fig. S3
+d,e,f respectively), depending which of the two founding barcodes of the sub-sweep have undergone epimutations relative to
+the founding barcodes of the original sweep. All three behaviours are observed in samples from UKCTOCS blood donors
+with subclonal expansions during sample collection (see Supplementary Fig. S17 14016710,140167242 for detection by both
+haploids, 140167805, 140209211 for detection by only one haploid, and 140182410, 140167560 for no detection).
+16
+
+C
+
+simulated sweep:
+μ = ν = 0year-1
+
+b
+
+simulated sweep:
+μ = ν = 0.01year-1
+
+c
+
+simulated vsweep:
+μ = 0.01year-1, ν = 0.001year-1
+
+proportion of simulated barcodes
+
+a
+
+no epimutations - barcodes fully sweep
+simulated sub-sweep:
+μ = 0.01year-1, ν = 0.001year-1
+
+e
+
+simulated sub-sweep:
+μ = 0.01year-1, ν = 0.001year-1
+
+biased process - unequal barcode sizes
+f
+
+simulated sub-sweep:
+μ = 0.01year-1, ν = 0.001year-1
+
+proportion of simulated barcodes
+
+d
+
+ongoing epimutations - two barcode families
+
+bi-haploid detection of subsweep
+
+single-haploid detection of subsweep
+
+no detection of subsweep
+
+Fig. S3. Effect of ongoing epimutations on barcode behaviour during sweeps and sub-sweeps. a. A simulation showing the growth of the two
+
+founding barcodes during a clonal sweep with no ongoing epimutations. b. The same with ongoing methylating and demethylating epimutations at a rate
+of 0.01/year. textbfc. A simulation showing the growth of barcodes under a realistic epimutation process. d,e,f. Simulations run with the same starting
+barcodes, sweep fitnesses, and times but different random seeds, showing three possible behaviours of barcodes during a sub-sweep - detection by
+both haploids, just one haploid, or no detection respectively.
+
+Supplementary Note 5: Benchmarking inference on simulated data
+To investigate the robustness of our inference framework to realistic complications, we benchmarked its ability to recapitulate
+ground-truth epimutation rates in a range of simulated scenarios. To test if we could accurately measure the epimutation
+rate in expansions with different fitnesses and wait times, we considered a simulated cohort of clonal sweeps with a range
+of fitness drawn uniformly from 0.5 → 2/year and sampling times from clone initiation drawn uniformly from 5 → 15years.
+We only considered samples with a simulated CF ↓ 0.9. Consistent with theory (supplementary note 4), we found that we
+could accurately determine the epimutation rate times the coalescence time under such conditions. This allows us to infer the
+epimutation rates when the coalescence time is known, and bound the rates when the time is not known.
+To investigate the effect of incomplete sweeps on the estimated rates, we considered the sweeps which had 0.8 ↔ CF < 0.9.
+We found that, because at small epimutation rates the residual diversity will be dominated by the remaining wild-type barcodes,
+this leads to an overestimate if the rates are small. We therefore only applied our method to UKCTOCS blood samples with
+sweeps with CF > 0.8, and estimated the uncertainty caused by incomplete sweep sizes by finding the range of ground-truth
+rates that gave such a measured value in-silico.
+Finally, to investigate the effect of sub-clonal expansions on the measured epimutation rates, we simulated the set of
+patterns produced by a sub-clonal growth growing on the background of a full sweep. When large sub-clones were present
+(sub-CF > 20%), the obtained epimutation rates were underestimates of the ground-truth rate (supplementary Fig. S4c). We
+reasoned that such behaviour arises because the barcodes within the sub-clone have had less time to epimutate, giving less
+residual diversity than would be expected, giving an underestimate of the rates. We therefore limited our analysis to individuals
+with sub-clones of a maximum cell fraction of 10%. Having sub-clones smaller than 10% had a negligible impact on our ability
+to accurately infer rates (supplementary Fig. S4d). We did, however, run inference on samples which had sub-clones of a
+similar size to the main clone (for example, as present in C92_002_s7). For these samples we used the coalescence time of the
+sub-clone.
+
+17
+
+a
+
+b
+
+Full sweeps (0.9<CF)
+10
+
+c
+
+Incomplete sweeps (0.8<CF<0.9)
+
+Large sub-clones (>20%)
+
+d
+
+No large sub-clones (<10%)
+
+inferred rate x time since MRCA
+
+0
+
+methylation
+demethylation
+
+10-1
+
+10-2
+10-2
+10-1
+100
+ground truth rate x time since MRCA
+
+10-2
+10-1
+100
+ground truth rate x time since MRCA
+
+10-2
+10-1
+100
+ground truth rate x time since MRCA
+
+10-2
+10-1
+100
+ground truth rate x time since MRCA
+
+Fig. S4. Benchmarking of epimutation rate inference. a. Example inference for sweeps simulated with a range of fitnesses and wait times, with cell
+
+fractions > 90%. b. Inference under the same conditions, but with cell fractions between 80% and 90%. c. Impact of large sub-clones (sub-CF> 20%
+on inferred rates. d. Impact of small sub-clones (sub-CF< 10%) on inferred epimutation rates.
+
+Supplementary Note 6: PCDH methylation barcodes reflect sweep timings
+Under our model of barcode dynamics, the read fraction of the largest barcode within a clone at a given locus decreases in
+time as exp(→(µn + ω(l → n))t. Under the assumption that the epimutation rates µ and ω are constant over time, methylation
+barcodes should therefore encode information about the coalescence time for a sweep. We found that the BF was larger in
+samples C92_023 and C92_033 after a sub-sweep than before it, suggesting that the coalescence time for the parent sweep
+was longer than that for the sub-sweep, consistent with the general pattern of fitness effects observed in clonal sweeps with
+increasingly many driver mutations (38) . To ensure that this observation was not confounded by biases in the barcodes of origin
+for the sub-sweeps, we found the mean read fraction of each possible 6-mer pattern conditioned on it being one of the largest
+two at a given locus. The same patterns generally had higher read fractions post sub-sweep that pre sub-sweep.
+C92_023
+
+0.5
+0.4
+0.3
+
+s1
+
+s2
+
+s6
+
+s7
+s7
+s6
+s2
+s1
+
+0.2
+0.1
+0.0
+
+000000
+000001
+000010
+000100
+001000
+010000
+100000
+000011
+000101
+000110
+001001
+001010
+001100
+010001
+010010
+010100
+011000
+100001
+100010
+100100
+101000
+110000
+000111
+001011
+001101
+001110
+010011
+010101
+010110
+011001
+011010
+011100
+100011
+100101
+100110
+101001
+101010
+101100
+110001
+110010
+110100
+111000
+001111
+010111
+011011
+011101
+011110
+100111
+101011
+101101
+101110
+110011
+110101
+110110
+011111
+111001
+101111
+111010
+110111
+111100
+111011
+111101
+111110
+111111
+
+average founder read fraction
+
+a
+
+b
+
+0.4
+0.3
+
+s1 s2 s5 s6 s7
+s5
+s6
+s7
+s1
+s2
+
+0.2
+0.1
+0.0
+
+000000
+000001
+000010
+000100
+001000
+010000
+100000
+000011
+000101
+000110
+001001
+001010
+001100
+010001
+010010
+010100
+011000
+100001
+100010
+100100
+101000
+110000
+000111
+001011
+001101
+001110
+010011
+010101
+010110
+011001
+011010
+011100
+100011
+100101
+100110
+101001
+101010
+101100
+110001
+110010
+110100
+111000
+001111
+010111
+011011
+011101
+011110
+100111
+101011
+101101
+101110
+110011
+110101
+110110
+011111
+111001
+101111
+111010
+110111
+111100
+111011
+111101
+111110
+111111
+
+average founder read fraction
+
+C92_033
+0.5
+
+barcode methylation pattern
+Fig. S5. PCDH methylation barcodes reflect sweep timings. a. Average read fraction of largest barcodes against the pattern of the largest barcode
+
+for C92_023. b. The same for C92_033.
+
+18
+
+C
+
+Supplementary Note 7: Other methylation barcode regions
+We found that an extended region of chromosome 16 (hg19 chr16:32214053-34208607) had a lower methylation entropy in
+individuals with large clonal sweeps than in polyclonal samples (supplementary Fig. S6a, red and blue lines respectively).
+While sites in this region have high methylation entropy, they are less diverse than those in PCDH (S6b). Unlike in PCDH, we
+are not aware of any underlying reason for this high methylation diversity. Nevertheless, the average BF across this region tracks
+ground-truth cell fractions (supplementary Fig. S6c), and is strongly correlated with the same quantity in PCDH (supplementary
+Fig. S6d). Controls showed more diverse patterns of methylation than cases (supplementary Fig S6e,f), although the set of
+patterns in polyclonal samples was typically less diverse than in PCDH. The dynamics of methylation patterns at single loci
+in this region bore some resemblance to the dynamics of somatic variants over time. We found that methylation barcodes in
+this section of chr16 typically could not be used to track sub-clonal events - often the barcodes in these regions had become
+almost fully saturated as fully methylated (or in some cases fully unmethylated), limiting their utility for high resolution lineage
+tracing. Nonetheless, the existence of another extended region in our panel which displays some of the same features as PCDH
+raises the possibility that there may be many such regions across the human genome.
+entropy across panel - chr16
+
+5.0
+4.0
+3.0
+2.0
+1.0
+0.0
+
+b
+
+position along panel (arbitary scale)
+
+c
+
+0.2
+
+BF over region of chr16
+
+proportion of loci/%
+
+d
+
+1.0
+
+0.3
+
+PCDH
+chr16 region
+
+0.1
+0.0
+3
+
+4
+entropy
+
+0.8
+0.6
+0.4
+0.2
+0.0
+
+0.0 0.2 0.4 0.6 0.8 1.0
+maximum cell fraction
+
+0.6
+0.5
+0.4
+0.3
+0.2
+0.1
+
+0.1
+
+0.2
+0.3
+BF over PCDH
+
+0.4
+
+CNTRL_183
+
+CNTRL_169
+
+CNTRL_004
+
+74 75 76 77 78 79
+CNTRL_191
+
+72 73 74 75 76 77 78 79 80
+CNTRL_170
+
+69 70 71 72 73 74
+C92_002
+
+64 65 66 67 68 69 70
+C92_007
+
+61
+
+62
+
+63
+
+64
+
+65
+
+CNTRL_181
+
+cf
+
+reads
+
+cf
+
+reads
+
+e
+
+5
+
+BF over region of chr16
+
+entropy
+
+a
+
+60
+
+61
+
+62 63
+C92_034
+
+64
+
+cf
+
+reads
+
+f
+
+72 73 74 75 76 77 78 79 80
+C92_023
+
+69 70 71 72 73 74
+C92_018
+
+68 69 70 71 72 73 74
+age/years
+
+62
+
+70
+
+cf
+
+reads
+
+74 75 76 77 78 79
+C92_033
+
+63 64 65
+age/years
+
+66
+
+71
+
+72 73
+age/years
+
+74
+
+Fig. S6. A region of chromosome 16 acts in a similar way to PCDH a. The 10-mer methylation entropy of individuals with (red) and without (blue)
+
+large clonal sweeps in the targeted EM-seq panel across chromosome 16. b. The top-end of the 10-mer methylation entropy distribution, with PCDH
+and the region of chr16 highlighted. c. BF computed across the region of chr16 against the maximum cell fraction found in somatic sequecing. d. The
+average BF over the region of chr16 against the average BF in PCDH. e. Barcode frequencies over time in controls with no observed somatic sweeps.
+f. The same for cases with high-frequency somatic variants.
+
+19
+
+Supplementary Note 8: Simulation of long-read stochastic CpG barcodes in a growing stem
+cell population
+A. Performance of simulated long-read barcode matrices.
+a
+
+Simulated clonal and subclonal expansions
+
+b
+
+“ground truth” tree from simulated expansions (year 22)
+
+sampled
+population
+(year 22)
+WT
+c
+
+subclonal
+
+founder
+
+WT
+
+trees built with 100 barcodes (10% error and 20% dropout with imputation at year 22)
+
+200 CpGs
+
+50 CpGs
+
+100 CpGs
+
+25 CpGs
+
+75 CpGs
+
+10 CpGs
+
+Fig. S7. Impact of barcode length on clonal reconstruction. a. Simulated stem cell population with founding (year=1) and subclonal (year=10)
+
+mutation events (see methods, Simulation of long-read CpG barcodes in a growing stem cell population; N=10k diploid cells, initial barcode states were
+random, epimutation rate=0.01/year). The population was sampled 22 years after initiation of the mutant clone (s=0.5), which allowed 12 years of
+subclonal expansion as well (s=0.5), at →70% CCF (subclone →60%). b. Ground truth tree showing wild-type (WT) and linear clonal (founder, blue) and
+subclonal (red) cells. c. Trees constructed using 100 barcodes (haploid "A" only) with various numbers of CpGs per barcode. Note, after subsampling
+barcodes from the population, they were subjected to the addition of 10% random error (noise) and 20% random dropout followed by imputation for
+hierarchical clustering (see methods).
+
+20
+
+B
+
+CpG dropout imputation accuracy and its affect on cluster assignment
+
+B. CpG dropout imputation accuracy and its affect on cluster assignment.
+a
+~20% CCF
+~70% CCF
+
+b
+
+simulation sampled at ~20% clonal cell fraction
+
+c
+
+simulation sampled at ~70% clonal cell fraction
+
+“ground truth” tree
+
+WT
+founder
+subclonal
+
+WT
+
+trees built with 100 barcodes with 100 CpGs each
+no dropout
+
+“ground truth” tree
+
+WT
+
+subclonal
+
+founder
+
+WT
+
+trees built with 100 barcodes with 100 CpGs each
+no dropout
+
+5% dropout with imputation
+
+5% dropout with imputation
+
+10% dropout with imputation
+
+10% dropout with imputation
+
+20% dropout with imputation
+
+20% dropout with imputation
+
+40% dropout with imputation
+
+40% dropout with imputation
+
+Fig. S8. Impact of CpG dropout and Hamming kNN imputation on clonal reconstruction. a. Accuracy of Hamming kNN imputation method at
+
+various fractions of random dropout sampled at →20% (black) and →80% (blue) clonal cell fractions (CCFs). Stem cell population dynamics and longread barcodes were simulated as in Supplementary Note S7 and sampled at →20% and →70% CCF, resulting in the ground truth trees show (b,c, see
+methods, Clustering of barcode matrices and calculation of cluster read fractions). c. Trees constructed using 100 barcodes with 100 CpGs each with
+various fractions of CpG dropout (5%, 10%, 20%, and 40%) followed by Hamming kNN imputation of methylation states.
+
+21
+
+Supplementary Note 9: Long-read barcode matrices in the PCDH gene cluster
+Table S1. Long-read matrices coordinates and performance in PD6646 used in Fig. 4 and Fig. S6 (v: variably expressed exon, c: constantly expressed exon)
+
+22
+
+Fig. S9. Examples of hierarchical clustering of long-read epiallele barcode matrices in the PCDH gene cluster region for patient PD6646.
+
+23
+
+Supplementary Note 10: Additional kmeans clustering of long-read barcodes to quantify cancer cell fractions
+We sought to quantify the cancer cell fraction of PD6646 by additional clustering of long-read barcode matrices in the PCDH
+region, particularly to test approaches that allowed for CpG dropout without imputation. We applied kmeans clustering (k=2
+clusters maximum) to each pre-imputation haploid matrix based on the assumption that a cell population with significant clonal
+diversity would evenly cluster into groups with ↗50% with-in group similarity (↗50% of CpGs share the same state), or
+near-random clustering. Whereas, a population with a clonal expansion of <100% clonal cell fraction on top of a wild-type
+background would result in one cluster with »50% with-in group similarity and one with ↗50%, proportional in size to the
+clonal cell fraction and the remaining wild-type fraction, respectively. We found that kmeans clustering was somewhat better
+at estimating the DNMT3A clonal cell fraction than hierarchical clustering, it resulted in more orphan clusters that generated
+bimodal distributions for haploid "B". It was also better at partitioning the more random distributions found in the healthy
+control.
+1
+haploid A
+haploid B
+healthy control
+actual fraction
+of clade
+
+fraction of reads
+
+0.8
+0.6
+0.4
+0.2
+
+0
+cancer
+nonnonpredicted cancer
+clade: (DNMT3A) cancer (DNMT3A) cancer
+kmeans (k=2)
+
+hclust (k=2)
+
+Fig. S10. Comparison of kmeans and hierarchical clustering methods to infer clade fractions in PD6646 long-read barcode matrices.
+
+Supplementary Note 11: Barcode fraction correlation against largest somatic variant size without time-series germline filtering
+
+barcode fraction (BF)
+
+0.35
+0.30
+
+filter applied, remaining cell
+fraction consistent with BF
+filter applied,
+become
+missing drivers
+filter not applied
+
+0.25
+0.20
+0.15
+filter applied,
+no further evidence
+of expansion
+
+0.10
+0.0
+
+0.25
+
+0.50
+
+0.75
+
+1.00
+
+cell fraction from genetic sequencing
+Fig. S11. Barcode fraction against variant cell fraction before time-series germline filtering.
+
+24
+
+Supplementary Note 12: Evidence of correlations between CpGs
+We found that in polyclonal tissue barcodes in which adjacent sites had the same methylation state had higher average read
+fractions than barcodes in which adjacent sites switch between methylated and unmethylated (supplementary Fig. 12) - there
+are correlations between nearby sites. This means that in non-clonal samples, certain barcodes are typically larger than would
+naively be predicted, adding a constant background to statistics that aim to measure clonal size. This lack of independence
+of epimutations has important implications for using PCDH methylation patterns to build phylogenetic trees, the process of
+which depends on assumptions about the diversity generation process. We speculate that building a more thorough quantitative
+understanding of the epimutation process, including of these correlations, may allow us to better reconstruct the lineage history
+of individuals with clonal expansions.
+
+barcode frequency
+
+10-1
+
+000000
+000001
+000010
+000100
+001000
+010000
+100000
+000011
+000101
+000110
+001001
+001010
+001100
+010001
+010010
+010100
+011000
+100001
+100010
+100100
+101000
+110000
+000111
+001011
+001101
+001110
+010011
+010101
+010110
+011001
+011010
+011100
+100011
+100101
+100110
+101001
+101010
+101100
+110001
+110010
+110100
+111000
+001111
+010111
+011011
+011101
+011110
+100111
+101011
+101101
+101110
+110011
+110101
+110110
+011111
+111001
+101111
+111010
+110111
+111100
+111011
+111101
+111110
+111111
+
+10-2
+
+barcode pattern
+
+Fig. S12. Barcode-pattern usage distribution. The fraction of all 6-mer reads across the protocadherin region which have each of the 26 = 64 possible
+
+methylation patterns.
+
+25
+
+Supplementary Note 13: Extended data: Longitudinal barcode frequency plots for all samples
+
+C92_002
+
+C92_003
+
+C92_005
+
+C92_007
+
+C92_008
+
+C92_009
+
+C92_011
+
+C92_012
+
+C92_015
+
+C92_016 *
+
+C92_018
+
+C92_019
+
+C92_022
+
+C92_023
+
+C92_024
+
+C92_032
+
+C92_033
+
+C92_034
+
+C92_036
+
+C92_039
+
+C92_041 *
+
+C92_042
+
+C92_043
+
+C92_044 *
+
+C92_045 *
+
+C92_047
+
+C92_048 *
+
+C92_049
+
+C92_050
+
+C92_051
+
+C92_052
+
+C92_053
+
+C92_054
+
+C92_055
+
+C92_056
+
+C92_057 *
+
+C92_058
+
+C92_061
+
+C92_062
+
+C92_063
+
+C92_064 *
+
+C92_065
+
+C92_066
+
+C92_067
+
+C92_068
+
+C92_070
+
+C92_072
+
+C92_086
+
+CNTRL_001
+
+CNTRL_002
+
+CNTRL_004
+
+CNTRL_005
+
+CNTRL_122
+
+CNTRL_160
+
+CNTRL_161
+
+CNTRL_162
+
+CNTRL_161
+Depth issue
+
+CNTRL_163
+
+CNTRL_164
+
+CNTRL_165
+
+CNTRL_166
+
+CNTRL_167
+
+CNTRL_168 *
+
+CNTRL_169
+
+CNTRL_170
+
+CNTRL_171
+
+CNTRL_172
+
+CNTRL_173
+
+CNTRL_174
+
+CNTRL_175
+
+CNTRL_177
+
+CNTRL_178
+
+CNTRL_179
+
+CNTRL_180
+
+CNTRL_181
+
+CNTRL_182
+
+CNTRL_183
+
+CNTRL_184
+
+CNTRL_185
+
+CNTRL_186
+
+CNTRL_187
+
+CNTRL_188
+
+CNTRL_189
+
+CNTRL_190
+
+CNTRL_191
+
+CNTRL_192
+
+CNTRL_193
+
+CNTRL_194
+
+CNTRL_195
+
+CNTRL_196
+
+CNTRL_197
+
+CNTRL_198
+
+CNTRL_199
+
+CNTRL_200
+
+CNTRL_201
+
+CNTRL_202
+
+CNTRL_203
+
+Fig. S13. Longitudinal barcode frequency plots for all samples. Longitudinal plots for all samples at the ten-mer starting at hg19 chr5:140256590 (the same as used
+in Fig. 1). For eight individuals (starred), there was insufficient depth at some timepoint at this locus, and so the first locus which had sufficient samples in all samples was
+used - if there was no such locus, the first locus which maximised the number of samples with sufficient coverage was used, and the samples without sufficient depth were
+excluded.
+
+26
+
+Supplementary Note 14: Barcodes that expand at a given site are chosen randomly
+The barcodes which expanded at a given locus during a clonal sweep were different across individuals (supplementary Fig.
+14a), consistent with the hypothesis that these patterns act as neutral lineage markers. To quantify this we found the average
+Hamming distance between the two expanded barcodes across all non-constant PCDH loci. If barcodes were chosen at random,
+the expected value of this quantity would be l((m1 + m2 ) → 2m1 m2 ), where m1 and m2 are the average methylations of two
+barcodes respectively and l is the barcode length (we use l = 10). Both on the two haploids of one individual (supplementary
+Fig. 14b) and across individuals (supplementary Fig. 14c), the established barcodes are no more closely related than would be
+expected by chance.
+C92_002_s7
+
+C92_012_s6
+
+CpG sites
+
+CpG sites
+
+C92_022_s7
+
+C92_023_s1
+
+CpG sites
+
+CpG sites
+
+C92_033_s1
+
+C92_034_s1
+
+CpG sites
+
+CpG sites
+
+reads
+
+a
+
+b
+
+measured average difference
+
+C92_002_s7 similarity across haploids
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+0
+
+c
+
+C92_002_s7, C92_033_s1 similarity
+
+C92_022_s7, C92_012_s6 similarity
+
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+0
+
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+0
+0 1 2 3 4 5 6 7 8 9 10
+predicted average
+difference if independent
+
+d
+
+0 1 2 3 4 5 6 7 8 9 10
+predicted average
+difference if independent
+
+0 1 2 3 4 5 6 7 8 9 10
+predicted average
+difference if independent
+
+Fig. S14. Barcodes that expand at a given locus are chosen randomly. a. Example pileups at a locus in PCDH (hg19 chr5:140167118) b. The
+
+average Hamming distance between the estimated founding barcodes on each chromosome for C92_002_s7, compared to the difference expected
+if barcode patterns across haploids were completely unrelated. c. The average Hamming distance between founding barcodes at the same loci in
+C92_002_s7 and C92_033_s1, compared to the theoretical expectation if barcodes were independent. d. The same for C92_022_s7 and C92_012_s6.
+
+27
+
+Supplementary Note 15: Barcode statistics give lower bound on solid tissue sample purity
+We reasoned that the BF in solid tissue samples should give a lower bound to tumour purity, which is analogous to the cell
+fraction in figure 2. Comparing this statistic with Battenburg sample-purity estimates produces the expected relationship in
+both prostate tumour samples (supplementary Fig. S15 a) and clear cell renal carcinoma samples (supplementary Fig. S15 b).
+a
+
+b
+
+1.0
+
+1.0
+
+0.8
+sample purity estimate
+
+sample purity estimate
+
+0.8
+
+0.6
+
+0.4
+
+0.4
+
+0.2
+
+0.2
+
+0.0
+
+0.6
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+average top-two fraction
+
+0.8
+
+1.0
+
+0.0
+
+0.0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1.0
+
+average top-two fraction
+
+Fig. S15. Methylation barcode statistics give lower bounds for solid-tissue sample purity. a. Scatter plot showing the relationship between the
+
+‘top-two’ barcode statistic (x-axis) and sample purity estimate (y-axis) for prostate tumour samples. b. The same for renal cancer samples. Grey lines
+indicate y = x.
+
+28
+
+Supplementary Note 16: Extended data: Longitudinal barcode frequency plots for all nonoverlapping ‘good-eloci’ for C92_002
+140167118-140167188 140167324-140167381 140167396-140167494 140167498-140167563 140167672-140167737 140167837-140167920 140176082-140176161 140176168-140176234 140176274-140176363 140182164-140182231
+
+140182338-140182426 140182431-140182507 140182818-140182897 140201527-140201631 140202574-140202644 140202740-140202818 140202835-140202890 140202922-140202985 140203048-140203132 140203169-140203260
+
+140208927-140209014 140209034-140209112 1402090125-140209182 140209251-140209320 140209353-140209423 140209470-140209543 140209545-140209638 140209782-140209866 140215250-140215326 140215335-140215413
+
+140215468-140215522 140215587-140215653 140215656-140215751
+
+14022220-140222288
+
+140222355-140222414 140222481-140222550 140222653-140222708 140222718-140222809 140228421-140228486 140229523-140229588
+
+140229594-140229688 140229690-140229742 140229751-140229827 140229931-140229994 140230083-140230155 140230186-140230276 140237036-140237122 140237130-140237184 140237186-140237279 140237307-140237377
+
+140237474-140237533 140237666-140237744 140242204-140242259 140242276-140242354 140250046-140250130 140250134-140250191 140250193-140250250 140250260-140250334 140250403-140250470 140250481-140250547
+
+140250586-140250658 140250677-140250760 140256337-140256412 140256502-140256563 140257571-140256632 140256782-140256852 140256844-140256908 140256955-140257030 140263086-140263154 140263194-140263235
+
+140263242-140263331 140263386-140263465 140263571-140263640 140263694-140263740 140476022-140476089 140476099-140476177 140476228-140476332 140481849-140481924 140481934-140482015 140482041-140482126
+
+140482130-140482203 140503309-140503385 140516621-140516686 140531505-140531572 140531680-140531784 140637187-140537261 140537272-140537353 140537447-140537533 140554033-140554096 140559354-140559447
+
+140559474-140559562 140563870-140563970 140568550-140568623 140573646-140573721 140615656-140615742 140616023-140616096 140621260-140621371 140731333-140731391 140741318-140741383 140745716-140745807
+
+140651454-140751506 140751596-140751686 140751797-140751872 140768897-140768999 140769005-140769074 140769080-140769142 140769230-140769331 140769344-140769409 140774054-140774130 140779206-140779285
+
+140779518-140779597 140789268-140789323 140789547-140789652 140798931-140798980 140799042-140799100 140799151-140799247 140812104-140812205 140812209-140812302
+
+Fig. S16. Barcode-frequency plots for all non-overlapping ‘good’ eloci for C92_002.
+29
+
+Supplementary Note 17: Extended data: Longitudinal barcode frequency plots for all nonoverlapping ‘good-eloci’ for C92_033
+140167051
+
+140167170
+
+140167242
+
+1401672324
+
+140167383
+
+140167487
+
+140167560
+
+140167660
+
+140167730
+
+140167805
+
+140167916
+
+140175976
+
+140176049
+
+140176103
+
+140176193
+
+140176274
+
+140176372
+
+140176485
+
+140176590
+
+140176590
+
+140180884
+
+140181047
+
+140182025
+
+140182120
+
+140182191
+
+1401821271
+
+140182324
+
+140182410
+
+140182501
+
+140182584
+
+140182744
+
+140182885
+
+140188235
+
+140188307
+
+140201480
+
+140202533
+
+140202644
+
+140202718
+
+140202806
+
+140202878
+
+140202967
+
+140203028
+
+140203091
+
+140203198
+
+140208893
+
+140208977
+
+140209085
+
+1402090154
+
+140209211
+
+140209293
+
+140209361
+
+140209461
+
+140209543
+
+140209638
+
+140209724
+
+140209817
+
+140215211
+
+140215306
+
+140215357
+
+140215431
+
+140215503
+
+140215587
+
+140215656
+
+140215762
+
+140216001
+
+140222220
+
+140222295
+
+140222367
+
+140222441
+
+140222523
+
+140222594
+
+140222689
+
+140222773
+
+140229421
+
+140229489
+
+140229572
+
+140229636
+
+140229708
+
+140229802
+
+140229874
+
+140229947
+
+140230010
+
+140230119
+
+140230221
+
+140235738
+
+140236806
+
+140236925
+
+140236995
+
+140237079
+
+140237156
+
+140237242
+
+140237321
+
+140237413
+
+140237492
+
+140237560
+
+Fig. S17. Barcode-frequency plots for all non-overlapping ‘good’ eloci for C92_033.
+
+30
+
+Supplementary Note 18: Extended data: Entropy in individuals with and without large clonal
+sweeps across panel
+
+entropy
+
+chr1
+
+entropy
+
+chr2
+
+ent
+
+chr3
+
+ent
+
+chr4
+
+ent
+
+chr5
+
+ent
+
+chr6
+
+ent
+
+chr7
+
+ent
+
+chr8
+
+ent
+
+chr9
+
+ent
+
+chr10
+
+ent
+
+chr11
+
+ent
+
+chr12
+
+ent
+
+chr13
+
+ent
+
+chr14
+
+ent
+
+chr15
+
+ent
+
+chr16
+
+ent
+
+chr17
+
+ent
+
+chr18
+
+ent
+
+chr19
+
+ent
+
+chr20
+
+ent
+
+chr21
+
+ent
+
+chr22
+
+ent
+
+chrX
+
+position along panel (arbitary scale)
+Fig. S18. 10-mer methylation entropy averaged across individuals with large clonal sweeps (> 80% cell fraction, red) and without detected large clonal sweeps (< 20% cell
+fraction, blue). Ticks on x axis indicate 1000 (possibly overlapping) ten-mers.
+
+31
+
+Supplementary Note 19: Entropy across PCDH in lung cancer samples
+We considered the entropy across the protocadherin region in a set of lung cancer samples (small cell lung cancers - SCLC,
+n = 18 and lung adenocarcinomas - LUAD, n = 7) 59 . The protocadherin region had a remarkably similar entropy profile in
+these samples as was observed in blood, kidney, prostate, and bladder samples. The lack of sequencing data from healthy lung
+precluded further analysis.
+
+entropy
+
+3.0
+
+lung cancer
+(SCLC and LUAD)
+
+2.0
+
+1.0
+
+0.0
+
+Pcdh α
+Pcdh β
+position in panel (arbitary scale)
+
+Pcdh γ
+
+Fig. S19. Average entropy profile across the protocadherin region in lung cancer samples.
+
+32
+
+

@@ -8,7 +8,7 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 
 # 論文分類索引：定序平台 × single-cell 真值
 
-分類日：2026-10-18。共 19 份文獻：`tumor_phylogeny_2026/` 的 A01–A05、B01、B03–B05、B07、M01、M02、M04–M08、R01，以及 HCC1395 golden tree（H01）。`phyclone_research/` 與 M01 是同一篇論文。
+分類日：2026-10-18（2026-10-20 加入 B09）。共 20 份文獻：`tumor_phylogeny_2026/` 的 A01–A05、B01、B03–B05、B07、B09、M01、M02、M04–M08、R01，以及 HCC1395 golden tree（H01）。`phyclone_research/` 與 M01 是同一篇論文。
 
 每篇先由 5 個平行 subagent 讀 README 與全文，再由協調者統一判定邊界案例。這是**分析推論**，證據行號寫在各篇 README。
 
@@ -19,10 +19,12 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 | **C1** 短讀或未說平台（無 sc 真值） | 6 | B07、M02、M04、M05、M07、M08 |
 | **C2** long-read 特徵輔助建樹（無 sc 真值） | 1 | B01（弱） |
 | **C3a** single-cell 真值樹 × 短讀 | 11 | A01–A05、B03、R01、M01、M06、B05、H01 |
-| **C3b** single-cell 真值樹 × long-read 特徵 | 1 | B04 |
+| **C3b** single-cell 真值樹 × long-read 特徵 | 2 | B04、B09 |
 
-- 只有 **B04** 同時具備 long-read 特徵與 single-cell 驗證。它的 scDNA 只做局部驗證，且與 long-read topology 篩選不在同一病人。
-- 目前**沒有任何一篇**用 long-read 特徵重建完整 clone tree，再以完整 single-cell 真值樹評估。這是本 repo 的空缺。
+- **B04** 與 **B09** 同時具備 long-read 特徵與 single-cell 驗證。
+  - B04 的 scDNA 只做局部驗證，且與 long-read topology 篩選不在同一病人。
+  - B09 用 HP-phased ONT read 的 PCDH CpG pattern 建樹，並對照同一病人的 colony WGS 真值樹。但它建的是 read dendrogram，不是 SNV clone tree；評估只是目視與 clade fraction。
+- 目前**沒有任何一篇**用 long-read 特徵重建完整 **SNV／CN clone tree**，再以完整 single-cell 真值樹**量化**評估。這是本 repo 的空缺。
 
 ## 分類判準
 
@@ -41,7 +43,7 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 | `sc_truth_strength` | 判準 | 論文 |
 |---|---|---|
 | `reference_tree` | 從病人 single-cell／single-nucleus DNA 建出參考演化樹 | A01–A05、B03、R01 |
-| `benchmark_truth` | 用 single-cell 來源的樹當答案，評估方法 | M01、M06 |
+| `benchmark_truth` | 用 single-cell 來源的樹當答案，評估方法 | M01、M06、B09 |
 | `partial` | single-cell DNA 只佐證樹的一部分 | B05、H01、B04 |
 | `none` | 沒有 sc 真值：只有模擬真值、只有 scRNA、或沒有真值 | C1、C2 全部 |
 
@@ -61,6 +63,7 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 | C3a | `c3a_sc_benchmark_truth` | sc 來源真值當 benchmark | M01、M06 |
 | C3a | `c3a_sc_partial` | sc 只部分佐證 | B05、H01 |
 | C3b | `c3b_topology_constraint_sc_partial` | long read 篩選 topology，scDNA 局部驗證 | B04 |
+| C3b | `c3b_methylation_barcode_tree_sc_truth` | HP-phased read 的 CpG pattern 直接建樹，對照同病人 sc 來源真值 | B09 |
 
 ## 邊界案例的判定
 
@@ -74,6 +77,7 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 | M08 | C1 | 整條 read pattern 共用一個 clone 來源；資料是 454 bisulfite 與 single-cell exome，真值只來自模擬（2026-10-19 加入） | 看 MPN single-cell 輸入時可標 `c1_single_cell_input_no_truth` |
 | M04 | C1 | 病人 scDNA 推樹，但準確度只來自模擬 | 把推論的 scDNA 樹當參考時改屬 C3a |
 | M06 | C3a benchmark | DLP 樹來自細胞株，不是病人 | — |
+| B09 | C3b benchmark | ONT read 的 HP tag 與 5mC pattern 是建樹唯一輸入；真值是同病人 colony WGS 樹（2026-10-20 加入） | 只有目視比較、branch length 不符，要求量化評估時改標 `partial` |
 | H01 | C3a partial（最弱） | scCNV 只支持 CNA 異質性，沒有逐邊 SNV 真值 | 不接受部分驗證時改屬 C1 |
 
 ## 快速檢索
@@ -100,12 +104,14 @@ ls -R papers_by_category
 
 | tag | 論文 |
 |---|---|
-| `read_cooccurrence_model` | M02、M08、B04 |
+| `read_cooccurrence_model` | M02、M08、B04、B09 |
 | `haplotype_specific_cn` | A01、A04、B03、B05、B07、M04 |
 | `long_read_validation_only` | B03、H01 |
 | `phyclone_truth_source` | R01、M01 |
 | `single_cell_input` | B07、M04、M06、B05、M08 |
 | `structural_variant` | A01、A04、B01、M05 |
+| `methylation` | M08、B09 |
+| `purity_lower_bound` | B09 |
 
 ## 維護
 
@@ -152,10 +158,11 @@ ls -R papers_by_category
 | [B05](tumor_phylogeny_2026/papers/B05_medicc2_2022/README.md) | `c3a_sc_partial` | 2022 | MEDICC2: whole-genome doubling aware copy-number phylogenies for cancer evolution | bulk Illumina WGS (PCAWG); short-read scDNA (Minussi TNBC); simulated | `none` | `sc_partial_validation`（partial） | haplotype CN+WGD 改變 topology；單細胞樹仍是推論。 |
 | [H01](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/README.md) | `c3a_sc_partial` | 2021 | Fang 2021: HCC1395 community reference samples and call sets (high-confidence candidate branching tree) | Illumina bulk WGS/WES; PacBio ~40x for call-set validation only | `validation_only` | `sc_partial_validation`（partial） | bulk PhyloWGS 建樹；單細胞 CNV 只部分佐證。 |
 
-### C3b｜single-cell 真值樹 × long-read 特徵（1 篇）
+### C3b｜single-cell 真值樹 × long-read 特徵（2 篇）
 
 | ID | 子類 | 年 | 論文 | 平台（建樹資料） | long-read 角色 | sc 真值 | 一句話 |
 |---|---|---|---|---|---|---|---|
 | [B04](tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md) | `c3b_topology_constraint_sc_partial` | 2022 | Phasing analysis of lung cancer genomes using a long read sequencer | ONT PromethION bulk WGS (pair order); Illumina WGS (VAF, FACETS -> PyClone-VI -> ClonEvol) | `topology_constraint` | `sc_partial_validation`（partial） | long read 同 read 排序選出 S14 線性樹；scDNA 局部驗證。 |
+| [B09](tumor_phylogeny_2026/papers/B09_pcdh_methylation_barcode_2026/README.md) | `c3b_methylation_barcode_tree_sc_truth` | 2026 | In vivo lineage tracing across human tissues using methylation barcodes in the protocadherin gene cluster | ONT PromethION R9.4.1 bulk WGS with 5mC calls (PD6646, ~280X, mean read 10.3 kb); ONT R10.4.1 (KX004 control); targeted EM-seq short reads for 10-CpG barcodes | `tree_input` | `sc_derived_benchmark_truth`（benchmark_truth） | HP 分相的 ONT read 上 PCDH CpG pattern 建 UPGMA 樹；對照同病人 colony WGS 樹。 |
 
 <!-- END GENERATED: paper table -->
