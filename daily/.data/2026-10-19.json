@@ -1,8 +1,8 @@
 {
   "schema_version": "2",
   "date": "2026-10-19",
-  "headline": "10/21 簡報從 13 頁的盤點式報告改成 10 頁、只有一個主問題；大綱過了兩方三輪審查才動手重做，已發布成 Version 9",
-  "covers": "10-19 00:00 ~ 10-19 15:13",
+  "headline": "4 個 subagent 分頭搜尋後確認：還沒有已發表方法把長讀的 haplotype／phase set 放進演化樹模型",
+  "covers": "10-19 00:00 ~ 10-19 23:12",
   "items": [
     {
       "title": "把 `2026_10_21_slides` 改成只回答一個主問題的 10 頁",
@@ -130,6 +130,271 @@
       ]
     },
     {
+      "title": "`paper_categories.tsv` 只留有用建樹工具的論文，刪掉 4 篇",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "訂出納入標準：要用到建樹軟體或自己的建樹演算法。依此刪掉 4 篇，清單 22 → 18 篇",
+      "question": "簡報第 4 頁列出「有長讀或 phasing 特徵」的論文，使用者逐篇追問：這幾篇真的有重建演化樹嗎？骨髓瘤那篇只畫了 Fishplot，看不出樹是怎麼來的。",
+      "approach": "- 逐篇回原文查建樹步驟。\n- 使用者訂標準：「完全沒用建樹工具」的論文不收。現成軟體或自己的演算法都算，只做 VAF 分群、只用畫圖工具、人工畫的樹都不算。\n- 刪除範圍照同一套做法：論文資料夾、分類總表、各份摘要、術語表、簡報頁、舊大綱、日誌與掃描檔。\n- 另外存一條記憶，避免之後的搜尋又把它們加回來。",
+      "result": "- 刪掉 4 篇：肺癌細胞株長讀摘要（Donmez 2026，AACR 摘要）、HBV 肝癌多點長讀（Zeng 2025）、HPV 整合（Akagi 2023）、骨髓瘤 linked-read（Liu 2021）。\n- 骨髓瘤那篇的證據：Methods 只寫用 SciClone 依 VAF 分群、用 Fishplot 畫圖；NRAS 兩個突變分成兩支，是作者看 4 個 linked-read barcode 後的人工判斷。\n- 小鼠子株長讀研究（B01）保留：它用 ScisTree 建樹。長讀只提供 SNV，沒有同 read 共現或 phasing 進入建樹。\n- 分類同步檢查：18 篇、0 篇不一致。簡報第 3 頁篇數 21 → 17，第 4／5 頁特徵矩陣 6 篇 → 2 篇。",
+      "interpretation": "納入標準現在寫得出來，而且已寫進 `report_rule.md` 和記憶。以後新增論文時，先問「它用什麼建樹」。代價是「有長讀特徵」的論文只剩肺癌長讀研究與 TreeClone 兩篇，簡報那頁變得很空。",
+      "gaps": "- HBV 肝癌那篇其實有用 neighbor-joining 建樣本樹。使用者確認後仍決定刪除，所以它被刪的理由是使用者決定，不完全是標準本身。\n- 簡報特徵矩陣只剩 2 篇＋PhyClone 對照，要不要和前一頁合併還沒決定。\n- 這批刪除全部還沒 commit。",
+      "artifacts": {
+        "files": [
+          "research/paper_categories.tsv",
+          "research/PAPER_CATEGORIES.md",
+          "research/papers_by_category/",
+          "research/tumor_phylogeny_2026/methods_survey/README.md",
+          "research/tumor_phylogeny_2026/B_SUMMARY.md",
+          "research/tumor_phylogeny_2026/INTERSECTION_SUMMARY.md",
+          "research/tumor_phylogeny_2026/SEARCH_LOG.md",
+          "research/tumor_phylogeny_2026/catalog.json",
+          "research/tumor_phylogeny_2026/manifest.tsv",
+          "research/SYNTHESIS_phyclone_longphase.md",
+          "research/terminology/terms.tsv",
+          "research/TERMINOLOGY.md",
+          "report/report_rule.md",
+          "report/2026_10_21_slides/project/slides/s1-count.html",
+          "report/2026_10_21_slides/project/slides/s1-features.html",
+          "report/2026_10_21_slides/project/slides/s2-longread.html",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/excluded-papers.md"
+        ],
+        "commands": [
+          "python3 research/tools/sync_paper_categories.py --check"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "建樹工具",
+          "plain": "從資料推出演化樹形狀的軟體或演算法，例如 ScisTree、PyClone-VI 加 ClonEvol"
+        },
+        {
+          "term": "Fishplot",
+          "plain": "把已經決定好的 clone 關係畫成魚形圖的畫圖套件，自己不推論樹"
+        },
+        {
+          "term": "linked-read",
+          "plain": "短讀定序加上分子條碼，同一條長 DNA 的短 read 帶同一個條碼"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 8693,
+          "session_id": "32049fe7",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 21:28",
+          "ref": "32049fe7:8693"
+        },
+        {
+          "line": 10039,
+          "session_id": "32049fe7",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 21:40",
+          "ref": "32049fe7:10039"
+        },
+        {
+          "line": 10126,
+          "session_id": "32049fe7",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 21:41",
+          "ref": "32049fe7:10126"
+        },
+        {
+          "line": 10625,
+          "session_id": "32049fe7",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 21:51",
+          "ref": "32049fe7:10625"
+        }
+      ]
+    },
+    {
+      "title": "有沒有方法真的用長讀的 haplotype／phase set 建演化樹？目前沒有",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "4 個 subagent 分角度搜尋，沒有找到把長讀 HP／PS 放進建樹模型的已發表方法；新收 BitPhylogeny 為 M08",
+      "question": "研究主軸是用 longphase-s 的 HP1／HP2 改善 PhyClone。要確認這個方向是不是已經有人做過，以及有沒有可以直接借用的模型。",
+      "approach": "- 4 個 subagent 平行搜尋，各負責一個角度：同 read 共現與 phasing、haplotype 專屬拷貝數、single-cell 長讀與甲基化、GitHub 與近期 preprint。\n- 統一規則：一定要有建樹步驟；排除已刪的 4 篇；每項標出長讀是「進入建樹」還是「只做驗證」。\n- 合併時自己回頭核對兩件事：肺癌長讀研究的角色（補充圖 S9 顯示長讀確實讓病人 S14 選了線性樹），以及 bioRxiv 的新 DOI 前綴 10.64898（2025-12 起啟用，正確）。\n- 使用者指定把 BitPhylogeny 收進研究目錄。PDF 下載被擋，改從 Europe PMC 取全文 XML，連公式一起轉成純文字，再寫分析筆記。",
+      "result": "- 4 個角度的結論一致：沒有已發表的腫瘤 clone tree 方法把長讀 HP、PS 或同 read 共現放進 likelihood 或 prior。\n- 長讀相關工具只做到兩種：產生 phased 特徵（longphase-s、LongPhase-TO、Wakhan、Severus、SAVANA），或把變異放到已經建好的樹上（TreeHarmonizer）。\n- 新發現 1 篇真的讓 phasing 進入建樹：Hackett 2026（bioRxiv），用 LongPhase 把 read 分 HP，再對每條 read 的甲基化 pattern 建樹，和單細胞全基因體樹接近。材料是骨髓增生性腫瘤的血液，沒有公開程式。\n- BitPhylogeny（Genome Biology 2015）收為 M08：每條 read 的多位點 pattern 整筆只能來自一個 clone，clone 數與樹形在同一個貝氏模型裡一起推。",
+      "interpretation": "「把 HP／PS 接進演化樹模型」目前是空白，可以當這個研究的新穎點。BitPhylogeny 證明 read 層級共現能放進機率模型，但它沒有拷貝數、純度與 read 數模型，搬到 ONT bulk 前至少要補 5 件事（筆記裡列出）。",
+      "gaps": "- Hackett 2026 只讀到摘要層級，Methods 細節還沒核對；要不要列入分類表等使用者決定。\n- BitPhylogeny 的補充檔沒讀；論文附的 Bitbucket 程式已失效，GitHub 版沒讀。\n- 每株細胞株有多少 read 在同一 phase block 內蓋到 ≥2 個體細胞 SNV，還沒量。這決定 read 層級模型在 ONT 上有沒有資訊量。\n- 搜尋結果與 M08 都還沒 commit。",
+      "artifacts": {
+        "files": [
+          "research/tumor_phylogeny_2026/longread_tree_search_2026-10-19/README.md",
+          "research/tumor_phylogeny_2026/longread_tree_search_2026-10-19/raw/",
+          "research/tumor_phylogeny_2026/methods_survey/papers/M08_bitphylogeny_2015/README.md",
+          "research/tumor_phylogeny_2026/methods_survey/papers/M08_bitphylogeny_2015/paper.xml",
+          "research/tumor_phylogeny_2026/methods_survey/papers/M08_bitphylogeny_2015/paper.txt",
+          "research/paper_categories.tsv",
+          "research/PAPER_CATEGORIES.md",
+          "research/tumor_phylogeny_2026/methods_survey/README.md"
+        ],
+        "commands": [
+          "curl -sSL -o paper.xml https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4359483/fullTextXML",
+          "python3 research/tools/sync_paper_categories.py --check"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "HP（haplotype tag）",
+          "plain": "標出這條 read 來自父親或母親那一份染色體"
+        },
+        {
+          "term": "PS（phase set）",
+          "plain": "一段能確定哪些變異在同一份染色體上的區域"
+        },
+        {
+          "term": "同 read 共現",
+          "plain": "兩個突變出現在同一條 read 上，代表它們在同一個細胞的同一份染色體上"
+        },
+        {
+          "term": "TSSB",
+          "plain": "一種樹狀的隨機分群先驗，讓分群數和樹形一起被推論"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 11015,
+          "session_id": "4aa3a6f8",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 22:00",
+          "ref": "4aa3a6f8:11015"
+        },
+        {
+          "line": 11667,
+          "session_id": "4aa3a6f8",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 22:20",
+          "ref": "4aa3a6f8:11667"
+        },
+        {
+          "line": 12217,
+          "session_id": "4aa3a6f8",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 23:12",
+          "ref": "4aa3a6f8:12217"
+        }
+      ]
+    },
+    {
+      "title": "`2026_10_21_slides` 改問驗證資料存不存在，重做成 9 頁",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "主問題改成「有沒有既有單細胞真值樹、又有長讀特徵的資料」；大綱兩輪兩方審查後重做 9 頁並發布",
+      "question": "使用者看了下午的版本，覺得偏離主題。他要先講兩件事：有沒有研究同時用單細胞定序建真值樹、又用長讀的 haplotype／phase set 建樹；各論文的模擬資料和真實資料是怎麼產生的。",
+      "approach": "- 先寫新大綱 v5，使用者確認方向，指定第 4 頁只列有特徵的論文、不放我們自己的細胞株。\n- 兩個審查 subagent 跑兩輪。第一輪兩方都判不通過，第二輪通過但附修改建議，修到 v5.2。\n- 使用者再拿掉小鼠子株研究（v5.3）後，4 個 subagent 各做一段，再跑內容排版 review（看渲染縮圖）與全冊故事邏輯檢查，最後發布。\n- 發布後使用者要求第 4 頁寫論文全名，另加一頁名詞說明。",
+      "result": "- 9 頁標題：0 篇同時有長讀與驗證用真值樹 → 有長讀特徵的研究都沒有驗證用真值樹 → 7 篇有模擬、只有 1 篇產生 read、0 篇產生長讀 → 建樹競賽先把 read 依 haplotype 分開再植入突變 → 單細胞樹多半只是參考樹，只有 2 棵被拿來評分建樹 → 真實長讀資料都沒有驗證用真值樹 → 總結。\n- 第一輪審查抓到的事實錯誤：判準前後矛盾（「1 篇同時有」對「不存在」）、肺癌研究被寫成卵巢癌、模擬只分兩層漏掉事件層。\n- 講稿刪到每頁 224–270 字。\n- VISUAL_SPEC 新增兩節圖規格：read 層級 BAM 模擬、標靶 panel 對淺層全基因體。",
+      "interpretation": "簡報的結論從「長讀能幫哪些陷阱」改成「驗證資料不存在」。這把下一步指向自己做資料：照建樹競賽的流程改用長讀產生 read 層級的模擬。之後刪掉 4 篇論文，篇數又從 21 改成 17，簡報同步更新。",
+      "gaps": "- 縮圖用本機 Chromium 近似渲染，圖示和 x-connector 箭頭沒有在正式版核對。\n- 第 6 頁講稿暫定，只講最大難點（長讀要整條 read 指派給一個 clone）。\n- 建樹競賽的 BAM 存取條件、真值檔是否記錄每個突變的 haplotype，都還沒查。\n- 刪論文後，有長讀特徵的那頁只剩 2 篇，可能要和前一頁合併。\n- 檔案都還沒 commit。",
+      "artifacts": {
+        "files": [
+          "report/2026_10_21_slides/OUTLINE_v5.md",
+          "report/2026_10_21_slides/OUTLINE_v5.1.md",
+          "report/2026_10_21_slides/OUTLINE_v5.2.md",
+          "report/2026_10_21_slides/OUTLINE_v5.3.md",
+          "report/2026_10_21_slides/REVIEW_v5.md",
+          "report/2026_10_21_slides/BRIEF.md",
+          "report/2026_10_21_slides/project/deck.json",
+          "report/2026_10_21_slides/project/slides/s1-count.html",
+          "report/2026_10_21_slides/project/slides/s1-features.html",
+          "report/2026_10_21_slides/project/slides/s2-sim-layers.html",
+          "report/2026_10_21_slides/project/slides/s2-smchet.html",
+          "report/2026_10_21_slides/project/slides/s2-sc-trees.html",
+          "report/2026_10_21_slides/project/slides/s2-longread.html",
+          "report/2026_10_21_slides/old_v4_slides/",
+          "report/VISUAL_SPEC.md",
+          "report/report_rule.md"
+        ],
+        "outputs": [
+          "https://claude.ai/artifact/5qxSJMFd4SSGps53jSGDhF"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "驗證用真值樹",
+          "plain": "用單細胞定序另外建出、而且真的被拿來給建樹方法打分數的樹"
+        },
+        {
+          "term": "參考樹",
+          "plain": "作者自己建的單細胞樹，沒有拿來檢驗別的建樹方法"
+        },
+        {
+          "term": "read 層級模擬",
+          "plain": "模擬出真的 read 序列，而不是只抽每個位點的 read 數"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 6186,
+          "session_id": "daff772c",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 19:31",
+          "ref": "daff772c:6186"
+        },
+        {
+          "line": 8146,
+          "session_id": "daff772c",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 20:12",
+          "ref": "daff772c:8146"
+        }
+      ]
+    },
+    {
+      "title": "HCC1395 分五群和三群，PhyClone 參數有差嗎？沒有，只差分群檔",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "五群和三群用同一組 PhyClone 參數，只差 -c 分群檔；三群不能說錯，只說明分群改變樹就改變",
+      "question": "簡報第 3 頁用 HCC1395 的五群和三群對照，說明樹會跟著分群改變。使用者要確認兩版的參數，以及當初為什麼要手動合併成三群。",
+      "approach": "- 找到原始紀錄 `phyclone/hcc1395_input/RECORD.md` 與 `scripts/04_merge_clusters.py`。\n- 比對兩版的指令與輸出。\n- 使用者追問「三群也不能說錯」後，修正先前「三群擬合較差」的說法。\n- 同時修了下午版簡報的 3 頁講稿，並把兩條講稿規則寫進 `report_rule.md`。",
+      "result": "- 共同參數：burn-in 1,000、每條 chain 10,000 次、4 條 chain、seed 1，其他用預設。輸入 30,368 個 SNV，tumour_content 0.99 是 ASCAT 文獻值，不是實測純度。\n- 五群：40,000 個樣本都是同一棵線性樹。三群：線性 19,953 次、分支 20,047 次。\n- 當初合併的理由：兩對群的 CCF 幾乎重疊（0.990／0.950、0.644／0.635），分群信心低（最大指派機率中位數 0.58）。\n- 三群的 log_p 比五群低約 5,240，但 PhyClone 的 log_p 沒有對群數加懲罰，不能據此說三群錯。\n- 講稿：第 2 頁改用卡片位置帶視線、刪掉重複的五段順序條；第 5、6 頁之間補上橋接句。",
+      "interpretation": "這個例子能說明的只有「分群改變，樹就改變」，不能說哪一版對。0.64 和 0.27 附近的 subclone 比較可信；0.99 和 0.95 是不是兩個 clone 不確定。",
+      "gaps": "- 這 3 頁講稿屬於下午的簡報版本，晚上整份換掉後，s2-pitfalls、s3-gap 等頁已不在新版裡。\n- 五群和三群哪個較接近真實，沒有真值可以判斷。",
+      "artifacts": {
+        "files": [
+          "/bip8_disk/boyu114/phyclone/hcc1395_input/RECORD.md",
+          "report/report_rule.md",
+          "report/2026_10_21_slides/project/slides/agenda.html",
+          "report/2026_10_21_slides/project/slides/s2-pitfalls.html",
+          "report/2026_10_21_slides/project/slides/s3-gap.html"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "CCF",
+          "plain": "帶有這個突變的癌細胞比例"
+        },
+        {
+          "term": "log_p",
+          "plain": "PhyClone 算出的「這棵樹配上這些資料」的對數機率，越高越符合模型"
+        },
+        {
+          "term": "橋接句",
+          "plain": "上一頁結尾先說下一段為什麼和這頁有關的一句話"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 4506,
+          "session_id": "c20d1e8d",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 15:36",
+          "ref": "c20d1e8d:4506"
+        },
+        {
+          "line": 4665,
+          "session_id": "c20d1e8d",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 15:55",
+          "ref": "c20d1e8d:4665"
+        }
+      ]
+    },
+    {
       "title": "`report_rule.md` 改成先審故事主軸、不再找外行人審",
       "status": "done",
       "kind": "tooling",
@@ -182,9 +447,101 @@
           "ref": "44d7055b:582"
         }
       ]
+    },
+    {
+      "title": "`report_rule.md` 併入新規則，`VISUALS.md` 抽成全域 `VISUAL_SPEC.md`",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "`report_rule.md` 併入貼上的新規則與 9 項結構整理；`VISUALS.md` 抽成跨簡報共用的 `VISUAL_SPEC.md`",
+      "question": "使用者貼了一份較完整的規則，要和現有規則檔比對；也希望圖的規格不只適用這次簡報。",
+      "approach": "- 逐條比對兩版，列成清單讓使用者勾選：新增 19 條、現有獨有 3 條、衝突 1 處、結構問題 9 項。\n- 使用者回「A 全收、C1 用合併版、D1–D9 都做」，照此改檔。\n- 把 `2026_10_21_slides/VISUALS.md` 改寫成 `report/VISUAL_SPEC.md`，刪掉指向這次簡報的引用與暫存檔來源。",
+      "result": "- 規則開頭新增「規則效力」：大綱審查與使用者確認標為必要，其他是預設。\n- 橋接規則合併：段落之間一定要橋接，段落內的頁可以不接。\n- 配色表寫進規則：HP1 #2C5F9E、HP1-1 #8FB3E0、HP2 #D9772B、HP2-1 #F2B880、SNV #D23A2E、unphased #9AA3AE。\n- `VISUAL_SPEC.md` 保留 9 個概念，每個分定義、慣例、構圖、易錯點、出處；示範數值都標明。",
+      "interpretation": "晚上重做簡報時直接用上了這份全域規格，製作 subagent 還各補了一節（第 10、11 節）。",
+      "gaps": "- 配色是從現有簡報抄的，使用者沒有另外指定。",
+      "artifacts": {
+        "files": [
+          "report/report_rule.md",
+          "report/VISUAL_SPEC.md",
+          "report/2026_10_21_slides/VISUALS.md"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "全域規格",
+          "plain": "所有簡報共用的畫圖規則，不綁定某一份簡報"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 5125,
+          "session_id": "3bbebd98",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 17:13",
+          "ref": "3bbebd98:5125"
+        },
+        {
+          "line": 5195,
+          "session_id": "3bbebd98",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 17:17",
+          "ref": "3bbebd98:5195"
+        }
+      ]
     }
   ],
   "record": [
+    {
+      "title": "修 daily-log 輸出路徑，不再出現 daily/daily/，並補上 style.css",
+      "what": "為什麼：第一次手動試跑後，日誌寫到 daily/daily/2026-10-19.html，因為 skill 預設在日誌 repo 底下再建 daily/ 子目錄，而這台的日誌 repo 本身就叫 daily。做了什麼：在 daily-log skill 新增 day-dir 設定（預設仍是 daily，別的使用者不受影響），本機設成「.」，重新渲染並刪掉 daily/daily/；skill repo commit 36df00b、main_work commit 5df7a82。接著發現 daily/assets/style.css 不存在、頁面沒有樣式，照 render.py 用到的 class 手寫一份（卡片、狀態標籤、深色模式），commit 097932c。結果：首頁、單日頁、README 連結都正確；只有 3 個 class 沒有專屬規則，由 section／details 規則涵蓋。狀態：完成，但沒有在瀏覽器看過渲染效果；skill 本身仍不附帶樣式檔，換新日誌 repo 會再缺一次。",
+      "why_demoted": "被 5 項上限擠掉（9 分）",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "~/.claude/skills/daily-log/scripts/paths.py",
+          "~/.claude/skills/daily-log/scripts/render.py",
+          "~/.config/daily-log/day-dir",
+          "daily/assets/style.css"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 5705,
+          "session_id": "3bbebd98",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 19:12",
+          "ref": "3bbebd98:5705"
+        },
+        {
+          "line": 5990,
+          "session_id": "3bbebd98",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 19:14",
+          "ref": "3bbebd98:5990"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 下午版 10 頁 `2026_10_21_slides` 偏離主題，整份換掉",
+      "what": "為什麼：下午 14:19–14:58 的工作（本頁第一項）把簡報改成「現象→原因→空缺→解法→驗證」一條線、10 頁，發布成 Version 9；15:19–16:02 又修了其中 3 頁講稿。19:31 使用者表示這版偏離他心中的主題，他要先回答「有沒有同時用單細胞真值樹與長讀特徵的研究」與「各論文的資料怎麼產生」。做了什麼：舊 10 頁與舊 BRIEF 備份到 report/2026_10_21_slides/old_v4_slides/，線上版另存 old_v4_slides/live_backup/，再整份重做（見「10/21 簡報改問…」那一項）。結果：s1-hcc1395、s2-phyclone-io、s2-pitfalls、s3-gap、s4-hp、s4-pair、s5-validate 這些頁不在新版裡；下午寫的「PhyClone 兩個陷阱」「HP 計數與同 read 共現」解法段落不再是簡報主線。狀態：已換掉；舊頁只留在備份目錄。",
+      "why_demoted": "被 5 項上限擠掉（8 分）；翻案項最低進記錄層",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "report/2026_10_21_slides/old_v4_slides/",
+          "report/2026_10_21_slides/old_v4_slides/live_backup/"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 6186,
+          "session_id": "daff772c",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 19:31",
+          "ref": "daff772c:6186"
+        }
+      ]
+    },
     {
       "title": "設定 daily-log 個人設定與每晚 23:00 的 cron 排程",
       "status": "ongoing",
@@ -282,7 +639,7 @@
     {
       "title": "查證肺癌長讀論文 B04 有沒有單細胞真值樹：沒有",
       "status": "done",
-      "what": "why：使用者問肺癌論文（長讀＋單細胞真值）有沒有真值樹。did：讀 research/tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/ 的 README、paper.txt、supplement.txt，比對 PDF SHA256 與 README 一致。result：Sakamoto et al. 2022 Nat Commun 13:3464 沒有真值樹。演化樹由 bulk 短讀 VAF → FACETS → PyClone-VI → ClonEvol 建；scDNA（10x）只做 CN profile 的階層分群（Manhattan＋complete linkage，不是 SNV 演化樹）與檢查細胞有無 mutant read，原文用詞是 validate。長讀選 topology 的病人是 S14（同 read 先後選 linear），做 scDNA 的是 S8、S20，沒有病人同時有兩種證據；長讀與 scDNA 都覆蓋的配對 S8 只 2 對、S20 13 對。附帶發現 Fig. S10a caption 細胞數寫反（圖上標籤 S8-T=138、S20-T=376，README 採圖上標籤正確）。22 篇裡其他肺癌相關（M03、A02、M02）都不符合「長讀＋單細胞真值」。state：README 分類 C3b／partial 維持不變；這個結論後來用在簡報 P6「只在事後挑樹」。",
+      "what": "why：使用者問肺癌論文（長讀＋單細胞真值）有沒有真值樹。did：讀 research/tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/ 的 README、paper.txt、supplement.txt，比對 PDF SHA256 與 README 一致。result：Sakamoto et al. 2022 Nat Commun 13:3464 沒有真值樹。演化樹由 bulk 短讀 VAF → FACETS → PyClone-VI → ClonEvol 建；scDNA（10x）只做 CN profile 的階層分群（Manhattan＋complete linkage，不是 SNV 演化樹）與檢查細胞有無 mutant read，原文用詞是 validate。長讀選 topology 的病人是 S14（同 read 先後選 linear），做 scDNA 的是 S8、S20，沒有病人同時有兩種證據；長讀與 scDNA 都覆蓋的配對 S8 只 2 對、S20 13 對。附帶發現 Fig. S10a caption 細胞數寫反（圖上標籤 S8-T=138、S20-T=376，README 採圖上標籤正確）。其他肺癌相關論文（A02、M02）都不符合「長讀＋單細胞真值」。state：README 分類 C3b／partial 維持不變；這個結論後來用在簡報 P6「只在事後挑樹」。",
       "why_demoted": "使用者 1 則、沒有改檔（分數 4），進記錄層。",
       "artifacts": {
         "files": [
@@ -308,26 +665,63 @@
           "ref": "44d7055b:369"
         }
       ]
+    },
+    {
+      "title": "把 main_work 累積的變更分成 5 個 git commit",
+      "what": "為什麼：前幾天的論文分類、SMC-Het 筆記、資料來源查證、簡報規則與日誌都還沒進版控。做了什麼：依主題把變更拆成 5 個 commit，混主題的檔（methods_survey README 等）按段落拆 hunk。結果：a38cc57 論文分類、21fcced SMC-Het 筆記、65d54d9 資料來源、91826b9 簡報規則與 10-21 簡報、5f0f31d 日誌；commit 前分類同步檢查 22 篇、0 不一致；全部在 main，沒有 push。另外把工作目錄已刪的 report/sc_groundtruth_slides/ 與兩張舊圖一起收進簡報 commit，M07 的 PDF 因 .gitignore 排除沒進 commit。狀態：完成。這之後的工作（刪 4 篇論文、簡報 v5、搜尋、M08）都還沒 commit。",
+      "why_demoted": "落在邊界（有 commit 保底升到邊界，環境類扣分）",
+      "status": "done",
+      "evidence": [
+        {
+          "line": 5338,
+          "session_id": "3bbebd98",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 19:00",
+          "ref": "3bbebd98:5338"
+        },
+        {
+          "line": 5686,
+          "session_id": "3bbebd98",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-19 19:02",
+          "ref": "3bbebd98:5686"
+        }
+      ]
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "title": "23:00 的 cron 有啟動，但撞到 Claude 用量上限",
+      "detail": "cron 在 23:00:01 呼叫 cron_daily_log.sh，claude -p 回「You've hit your session limit · resets 11:10pm」，3 秒後 exit=1，沒有產生日誌。",
+      "resolution": "10-20 手動補寫這一天；腳本還沒有自動重試。"
+    }
+  ],
   "advisor": [],
   "questions_for_advisor": [],
   "next": [],
   "scan": {
-    "last_scanned": "2026-10-19T15:13:04",
+    "last_scanned": "2026-10-19T23:59:59",
     "sessions": [
       "6961c6f8",
       "988c2a93",
       "44d7055b",
       "3ee4c5ad",
       "ae107cee",
-      "e878ce97"
+      "e878ce97",
+      "72c80e06",
+      "d486986e",
+      "c20d1e8d",
+      "3bbebd98",
+      "daff772c",
+      "32049fe7",
+      "e8d216d5",
+      "4aa3a6f8",
+      "cd8aef32"
     ],
     "layers": {
-      "show": 2,
-      "record": 2,
-      "border": 1
+      "show": 7,
+      "record": 4,
+      "border": 2
     }
   }
 }
