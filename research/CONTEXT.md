@@ -70,7 +70,7 @@ _原文定位_：[A01 L15](tumor_phylogeny_2026/papers/A01_ovarian_cfDNA_2025/RE
 
 _別名與對照_：sample phylogeny。
 _用詞界線_：同一樣本可能含多個克隆；樣本樹不直接給出克隆樹。
-_原文定位_：[B06 L1](tumor_phylogeny_2026/papers/B06_hcc_multisite_longread_2025/README.md)。
+_原文定位_：本次語料沒有原文定位。
 
 **T009 突變樹（mutation tree）**
 
@@ -198,7 +198,7 @@ _原文定位_：[HCC L31](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：clone expansion。
 _用詞界線_：說明是絕對數量增加或相對比例增加。
-_原文定位_：[B02 L27](tumor_phylogeny_2026/papers/B02_myeloma_linkedread_2021/README.md)；[B01 L1053](tumor_phylogeny_2026/papers/B01_melanoma_longread_2026/paper.txt)。
+_原文定位_：[B01 L1053](tumor_phylogeny_2026/papers/B01_melanoma_longread_2026/paper.txt)。
 
 **T127 葉節點（leaf node）**
 
@@ -628,13 +628,13 @@ _別名與對照_：phasing switch error; phase switch。
 _用詞界線_：計算 switch error rate 時，寫明可評估的相鄰位點對。
 _原文定位_：[B05 L43](tumor_phylogeny_2026/papers/B05_medicc2_2022/README.md)；[B04 L183](tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/paper.txt)。
 
-**T053 分子連鎖（molecular linkage）**
+**T053 分子連鎖（molecular linkage）**〔支援詞〕
 
 變異由同一分子來源的觀測連接起來的證據。
 
 _別名與對照_：read-level linkage; long-range linkage。
 _用詞界線_：區分實測同一長讀段與條碼重建的長分子來源。
-_原文定位_：[PW L145](hcc1395_golden_tree_research/phylowgs_model_review.md)；[B06 L43](tumor_phylogeny_2026/papers/B06_hcc_multisite_longread_2025/README.md)。
+_原文定位_：[PW L145](hcc1395_golden_tree_research/phylowgs_model_review.md)。
 
 **T054 同一分子共現（same-molecule co-occurrence）**
 
@@ -1006,7 +1006,7 @@ _原文定位_：[A04 L9](tumor_phylogeny_2026/papers/A04_aml_strandseq_2024/REA
 
 _別名與對照_：transcript abundance。
 _用詞界線_：RNA 表現量不同不直接表示 DNA 拷貝數或基因型不同。
-_原文定位_：[B02 L21](tumor_phylogeny_2026/papers/B02_myeloma_linkedread_2021/README.md)；[A01 L1617](tumor_phylogeny_2026/papers/A01_ovarian_cfDNA_2025/paper.txt)。
+_原文定位_：[A01 L1617](tumor_phylogeny_2026/papers/A01_ovarian_cfDNA_2025/paper.txt)。
 
 **T152 表觀遺傳狀態（epigenetic state）**
 
@@ -1078,7 +1078,7 @@ _原文定位_：[A03 L27](tumor_phylogeny_2026/papers/A03_pancreatic_snDNA_2023
 
 _別名與對照_：molecular identifier。
 _用詞界線_：UMI 不等於細胞條碼；錯誤與碰撞的處理依分析流程而定。
-_原文定位_：[A05 L602](tumor_phylogeny_2026/papers/A05_mpal_multiome_2024/paper.txt)；[B02 L1020](tumor_phylogeny_2026/papers/B02_myeloma_linkedread_2021/paper.txt)。
+_原文定位_：[A05 L602](tumor_phylogeny_2026/papers/A05_mpal_multiome_2024/paper.txt)。
 
 **T187 細胞狀態（cell state）**
 

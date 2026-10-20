@@ -6,9 +6,9 @@
 
 ## 本次如何判定「共用」
 
-本次掃描三個研究目錄的正式筆記及既有論文文字。研究單位共 16 個：PhyClone、PhyloWGS、HCC1395 參考樹研究，以及 2026 文獻調查的 13 篇論文。PhyloWGS review 位於 HCC1395 目錄，但作為獨立方法研究計數。
+本次掃描三個研究目錄的正式筆記及既有論文文字。研究單位共 13 個：PhyClone、PhyloWGS、HCC1395 參考樹研究，以及 2026 文獻調查的 10 篇論文。PhyloWGS review 位於 HCC1395 目錄，但作為獨立方法研究計數。
 
-「共用詞」表示該概念在至少兩個研究單位的文字中出現。它不表示全部 16 個研究都使用該方法，也不表示原作者都量測了該特徵。筆記中對某方法的限制、否定或改進建議，也可能提到該詞。若要確認某篇論文實際使用了什麼，須回讀方法與結果。
+「共用詞」表示該概念在至少兩個研究單位的文字中出現。它不表示全部 13 個研究都使用該方法，也不表示原作者都量測了該特徵。筆記中對某方法的限制、否定或改進建議，也可能提到該詞。若要確認某篇論文實際使用了什麼，須回讀方法與結果。
 
 詞條分為三種：
 
@@ -22,17 +22,17 @@
 
 ## 本次交集與數量
 
-本次掃描 **59 份文字檔**，整理 **193 個詞條**：165 個共用詞、18 個支援詞、10 個方法補充詞。這些分類互不重疊。
+本次掃描 **52 份文字檔**，整理 **193 個詞條**：164 個共用詞、19 個支援詞、10 個方法補充詞。這些分類互不重疊。
 
 | 交集範圍 | 詞數 | 如何查閱 |
 |---|---:|---|
-| 全部 16 個研究單位的文本都出現 | 13 | `terms.tsv` 的 `study_count=16`；見下表 |
+| 全部 13 個研究單位的文本都出現 | 14 | `terms.tsv` 的 `study_count=13`；見下表 |
 | 三個研究目錄的文本都出現 | 53 | `family_count=3` |
-| 至少兩個研究單位出現的共用詞 | 165 | `scope=shared` |
+| 至少兩個研究單位出現的共用詞 | 164 | `scope=shared` |
 
 以上三種交集有重疊，不可相加。它們描述文字中的共用語言，不宣稱所有研究使用相同模型或量測。
 
-全部 16 個研究文本的嚴格詞形交集如下。定義與界線統一以 [詞彙表](CONTEXT.md) 為準。
+全部 13 個研究文本的嚴格詞形交集如下。定義與界線統一以 [詞彙表](CONTEXT.md) 為準。
 
 | 詞條 ID | 統一中文 | 英文／縮寫 |
 |---|---|---|
@@ -41,6 +41,7 @@
 | T016 | 祖先與後代關係 | ancestor–descendant relationship |
 | T029 | 拷貝數 | copy number / CN |
 | T043 | 等位基因 | allele |
+| T056 | 變異等位基因比例 | variant allele fraction / VAF |
 | T057 | 癌細胞比例 | cancer cell fraction / CCF |
 | T059 | 腫瘤細胞純度 | cellular tumor purity |
 | T063 | 定序深度 | sequencing depth |
@@ -90,11 +91,11 @@ ASD-STE100 是英文技術文件的受控語言標準。本次採用其短句、
 |---|---|---|
 | VAF、CCF、克隆專有比例、腫瘤細胞純度、腫瘤 DNA 比例 | 分母不同；包含後代的規則也不同 | [PhyClone 方法 §2、§5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)；[綜整 §3](tumor_phylogeny_2026/REPO_IMPROVEMENTS.md) |
 | clone、mutation cluster、node | 群集是統計分組；節點的生物意義依模型而定 | [PhyClone 方法 §1、§4](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md) |
-| clone tree、cell tree、sample tree、mutation tree | 節點或葉節點代表不同單位 | [A 類比較](tumor_phylogeny_2026/A_SUMMARY.md)；[B06](tumor_phylogeny_2026/papers/B06_hcc_multisite_longread_2025/README.md)；[A05](tumor_phylogeny_2026/papers/A05_mpal_multiome_2024/README.md) |
+| clone tree、cell tree、sample tree、mutation tree | 節點或葉節點代表不同單位 | [A 類比較](tumor_phylogeny_2026/A_SUMMARY.md)；[A05](tumor_phylogeny_2026/papers/A05_mpal_multiome_2024/README.md) |
 | CN、CNA、CNV、SV | CN 是量或狀態；事件分類與原文用法另記 | [MEDICC2](tumor_phylogeny_2026/papers/B05_medicc2_2022/README.md)；[Strand-seq 研究](tumor_phylogeny_2026/papers/A04_aml_strandseq_2024/README.md) |
 | major/minor CN、HP1/HP2 CN | 前者按數量排序；後者需要單倍型身份與方向 | [MEDICC2](tumor_phylogeny_2026/papers/B05_medicc2_2022/README.md)；[平行 CN 演化](tumor_phylogeny_2026/papers/B03_singlecell_mutational_processes_2022/README.md) |
-| long reads、linked reads、long-range phasing | 直接長讀段、條碼連接短讀段、跨長距離定相，是不同技術層次 | [B02](tumor_phylogeny_2026/papers/B02_myeloma_linkedread_2021/README.md)；[A04](tumor_phylogeny_2026/papers/A04_aml_strandseq_2024/README.md)；[Numbat](tumor_phylogeny_2026/papers/B07_numbat_2022/README.md) |
-| same molecule、same cell、same clone | 同分子共現、同細胞共存與共同克隆身份，是不同主張 | [B04](tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md)；[B08](tumor_phylogeny_2026/papers/B08_hpv_integration_2023/README.md) |
+| long reads、linked reads、long-range phasing | 直接長讀段、條碼連接短讀段、跨長距離定相，是不同技術層次 | [A04](tumor_phylogeny_2026/papers/A04_aml_strandseq_2024/README.md)；[Numbat](tumor_phylogeny_2026/papers/B07_numbat_2022/README.md) |
+| same molecule、same cell、same clone | 同分子共現、同細胞共存與共同克隆身份，是不同主張 | [B04](tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md) |
 | scDNA、scRNA、single-cell-derived culture | DNA 量測、RNA 量測與培養擴增材料，不可互換 | [A05](tumor_phylogeny_2026/papers/A05_mpal_multiome_2024/README.md)；[B01](tumor_phylogeny_2026/papers/B01_melanoma_longread_2026/README.md) |
 | outlier、mutation loss | 前者是模型指派；後者是生物事件 | [PhyClone 限制 §1、§3](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md) |
 | mutation multiplicity、tree-representation multiplicity | 前者計算突變拷貝；後者計算等價樹表示 | [PhyClone 方法 §3、§4](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md) |
@@ -143,7 +144,7 @@ ASD-STE100 是英文技術文件的受控語言標準。本次採用其短句、
 | PW | [PhyloWGS model review](hcc1395_golden_tree_research/phylowgs_model_review.md) |
 | HCC | [HCC1395 參考演化樹](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/README.md) |
 | A01–A05 | [病人單細胞研究索引](tumor_phylogeny_2026/A_SUMMARY.md) |
-| B01–B08 | [長讀段／長距離／單倍型研究索引](tumor_phylogeny_2026/B_SUMMARY.md) |
+| B01、B03–B05、B07 | [長讀段／長距離／單倍型研究索引](tumor_phylogeny_2026/B_SUMMARY.md) |
 | SYN | [2026 文獻綜整](tumor_phylogeny_2026/README.md)與改進建議；不當成額外論文 |
 
 原始 PDF、XLSX、HTML 視覺化、程式碼與中間 agent 產物，不作本次詞形統計的語料。前兩類研究以已整理的正式筆記為入口。2026 文獻調查另外掃描既有 `paper.txt` 與 `supplement.txt`。關鍵比例、ESS 與選樹分數另對照上游程式碼。這次沒有重新分析原始定序資料，也沒有全面改寫各篇研究筆記。

@@ -1,11 +1,11 @@
 {
   "validation": {
     "date": "2026-10-15",
-    "catalog_papers": 13,
+    "catalog_papers": 10,
     "A_core": 5,
-    "B_core": 5,
-    "valid_pdf_files": 15,
-    "pdf_pages": 429,
+    "B_core": 3,
+    "valid_pdf_files": 11,
+    "pdf_pages": 327,
     "errors": []
   },
   "files": [
@@ -76,17 +76,6 @@
       "sha256": "8811bc50ebff622b1b3663f9b25e9a749e818488a7510fb67a49187557ceb475"
     },
     {
-      "id": "B02",
-      "selection": "B_core",
-      "doi": "10.1038/s41467-021-22804-x",
-      "file": "papers/B02_myeloma_linkedread_2021/paper.pdf",
-      "version": "published",
-      "source_url": "https://www.nature.com/articles/s41467-021-22804-x.pdf",
-      "pages": 18,
-      "bytes": 6782829,
-      "sha256": "861c823952ffade2130699caee9505351d2558a43c6829ead9a491f3b1b781e6"
-    },
-    {
       "id": "B03",
       "selection": "bridge",
       "doi": "10.1038/s41586-022-05249-0",
@@ -131,28 +120,6 @@
       "sha256": "1dc022bbb36f2050f50ddbdd89bcf2464f32063079385890ae80cbe1b1ab9089"
     },
     {
-      "id": "B06",
-      "selection": "B_core",
-      "doi": "10.1101/gr.279617.124",
-      "file": "papers/B06_hcc_multisite_longread_2025/paper.pdf",
-      "version": "published",
-      "source_url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC12047258.1/PMC12047258.1.pdf",
-      "pages": 15,
-      "bytes": 1768901,
-      "sha256": "5e69c92f8dfa6db09d8a0911b8e8d7ed58242017feefeb6f1f9eaa8b815d513a"
-    },
-    {
-      "id": "B06",
-      "selection": "B_core",
-      "doi": "10.1101/gr.279617.124",
-      "file": "papers/B06_hcc_multisite_longread_2025/supplement.pdf",
-      "version": "supplement",
-      "source_url": "see paper README",
-      "pages": 23,
-      "bytes": 4046463,
-      "sha256": "923c7a6752579c1dc3fdf4cfc1a39d57d28122983068fac562800ca48e17132b"
-    },
-    {
       "id": "B07",
       "selection": "B_core",
       "doi": "10.1038/s41587-022-01468-y",
@@ -162,17 +129,6 @@
       "pages": 40,
       "bytes": 38204002,
       "sha256": "b2edf784a9d2f5c435e072e32afa8ed7188cb95ac810d7bb58df9f4cbde4a9e3"
-    },
-    {
-      "id": "B08",
-      "selection": "molecular_history_extension",
-      "doi": "10.1158/2159-8290.CD-22-0900",
-      "file": "papers/B08_hpv_integration_2023/paper.pdf",
-      "version": "accepted_manuscript_CSHL_46_pages",
-      "source_url": "https://repository.cshl.edu/40840/1/2023-Goodwin-Intratumoral-heterogeneity-and-clonal-evolution-induced-by-HPV-integration.pdf",
-      "pages": 46,
-      "bytes": 3450000,
-      "sha256": "f5aeab2885a2244c4d458346b822855eb81690b53fa92e5148c85b41ed8e4a1f"
     }
   ]
 }

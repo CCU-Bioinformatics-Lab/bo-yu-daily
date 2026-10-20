@@ -14,13 +14,10 @@
 | A04 | AML Strand-seq multiomics (Nat Genet 2024) | 作者實驗室自有工具 | `jeongdo801/scNOVA`<br>`friendsofstrandseq/mosaicatcher-pipeline`<br>`daewoooo/StrandPhaseR`<br>`jeongdo801/NO_based_HSPC_classifier`<br>`lysfyg/PloidyAssignR` | 12<br>26<br>11<br>2<br>0 |
 | A05 | MPAL multiome (Nat Commun 2024) | 下游分析腳本 | `SmithLabUCSF/MPAL` | 1 |
 | B01 | Melanoma sublines long-read (Nat Commun 2026) | **方法本體** | `KolmogorovLab/TreeHarmonizer` | 1 |
-| B02 | Myeloma linked-read (Nat Commun 2021) | pipeline | `ding-lab/10Xmapping`<br>`ding-lab/ancestry` | 11<br>4 |
 | B03 | Single-cell mutational processes (Nature 2022) | **方法本體**＋pipeline | `shahcompbio/MultiModalMuSig.jl`（MMCTM）<br>`shahcompbio/signals`<br>`shahcompbio/single_cell_pipeline`<br>`shahcompbio/wgs`<br>`marcjwilliams1/hscn_pipeline` | 20<br>14<br>28<br>13<br>2 |
 | B04 | Lung cancer long-read phasing (Nat Commun 2022) | **未發布** | 只引用第三方工具，例如 `friend1ws/nanomonsv`（99⭐）；資料在 JGA（JGAS000349），需申請 | — |
 | B05 | MEDICC2 (Genome Biol 2022) | **方法本體** | `schwarzlab-ccb/medicc2`（論文寫 Bitbucket `schwarzlab/medicc2`） | 10 |
-| B06 | HBV-HCC multisite long-read (Genome Res 2025) | 分析腳本 | `tianfuzeng/ONT_SV` | 0 |
 | B07 | Numbat (Nat Biotechnol 2022) | **方法本體** | `kharchenkolab/numbat`<br>`kharchenkolab/NumbatAnalysis`（重現論文結果） | **231**<br>10 |
-| B08 | HPV integration heterocateny (Cancer Discov 2023) | **未發布** | 只引用第三方工具，例如 `dwinter/pafr`（83⭐） | — |
 
 ## 重點
 

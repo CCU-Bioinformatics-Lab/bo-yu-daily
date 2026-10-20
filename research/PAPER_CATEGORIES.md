@@ -8,7 +8,7 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 
 # 論文分類索引：定序平台 × single-cell 真值
 
-分類日：2026-10-18。共 22 份文獻：`tumor_phylogeny_2026/` 的 A01–A05、B01–B08、M01–M07、R01，以及 HCC1395 golden tree（H01）。`phyclone_research/` 與 M01 是同一篇論文。
+分類日：2026-10-18。共 18 份文獻：`tumor_phylogeny_2026/` 的 A01–A05、B01、B03–B05、B07、M01、M02、M04–M07、R01，以及 HCC1395 golden tree（H01）。`phyclone_research/` 與 M01 是同一篇論文。
 
 每篇先由 5 個平行 subagent 讀 README 與全文，再由協調者統一判定邊界案例。這是**分析推論**，證據行號寫在各篇 README。
 
@@ -16,14 +16,13 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 
 | 類別 | 篇數 | 論文 |
 |---|---|---|
-| **C1** 短讀或未說平台（無 sc 真值） | 6 | B02、B07、M02、M04、M05、M07 |
-| **C2** long-read 特徵輔助建樹（無 sc 真值） | 4 | M03、B06、B08、B01（弱） |
+| **C1** 短讀或未說平台（無 sc 真值） | 5 | B07、M02、M04、M05、M07 |
+| **C2** long-read 特徵輔助建樹（無 sc 真值） | 1 | B01（弱） |
 | **C3a** single-cell 真值樹 × 短讀 | 11 | A01–A05、B03、R01、M01、M06、B05、H01 |
 | **C3b** single-cell 真值樹 × long-read 特徵 | 1 | B04 |
 
 - 只有 **B04** 同時具備 long-read 特徵與 single-cell 驗證。它的 scDNA 只做局部驗證，且與 long-read topology 篩選不在同一病人。
 - 目前**沒有任何一篇**用 long-read 特徵重建完整 clone tree，再以完整 single-cell 真值樹評估。這是本 repo 的空缺。
-- 與本 repo 最直接競爭的是 **M03**。它用同一批 CASTLE ONT 資料，但只有摘要。
 
 ## 分類判準
 
@@ -55,11 +54,8 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 | 類別 | subtype | 意思 | 論文 |
 |---|---|---|---|
 | C1 | `c1_bulk_short_read` | bulk 短讀或模擬 benchmark | M05、M07 |
-| C1 | `c1_read_cooccurrence_short` | 用 read／分子共現，但資料是短讀；模型可移植到 long read | M02、B02 |
+| C1 | `c1_read_cooccurrence_short` | 用 read／分子共現，但資料是短讀；模型可移植到 long read | M02 |
 | C1 | `c1_single_cell_input_no_truth` | 輸入是 single-cell，沒有 sc 真值樹 | B07、M04 |
-| C2 | `c2_local_order` | 同 read 共現排出局部突變先後 | M03 |
-| C2 | `c2_sample_tree_sv` | long-read SV breakpoint 建 sample tree | B06 |
-| C2 | `c2_molecular_history` | long read 排出局部 SV 分子史 | B08 |
 | C2 | `c2_long_read_data_only` | ONT 資料建樹，沒有 long-read 獨有特徵（弱） | B01 |
 | C3a | `c3a_patient_sc_reference` | 病人 scDNA 參考樹 | A01–A05、B03、R01 |
 | C3a | `c3a_sc_benchmark_truth` | sc 來源真值當 benchmark | M01、M06 |
@@ -71,7 +67,6 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 | ID | 判定 | 原因 | 另一種判法 |
 |---|---|---|---|
 | B01 | C2 弱子類 | ONT SNV 建樹；SV／甲基化只事後放上固定樹 | 嚴格看「long-read 特徵」時改屬 C1 |
-| B02 | C1 | linked read 是短讀加分子 barcode | 把 long-range 分子資訊當 long-read 特徵時改屬 C2 |
 | B03 | C3a | ONT 只做 SV 正交驗證，不進入建樹 | — |
 | B05 | C3a partial | 從病人 scDNA 建樹，只與原研究 clone 結構比對 | 也可標 `reference_tree` |
 | B07 | C1 | scRNA 加族群 phasing；scDNA 只佐證 CN | 接受 CN 佐證時改屬 C3a partial |
@@ -104,13 +99,12 @@ ls -R papers_by_category
 
 | tag | 論文 |
 |---|---|
-| `read_cooccurrence_model` | M02、B02、M03、B04 |
+| `read_cooccurrence_model` | M02、B04 |
 | `haplotype_specific_cn` | A01、A04、B03、B05、B07、M04 |
 | `long_read_validation_only` | B03、H01 |
 | `phyclone_truth_source` | R01、M01 |
 | `single_cell_input` | B07、M04、M06、B05 |
-| `structural_variant` | A01、A04、B01、B06、B08、M05 |
-| `castle_ont_same_data`、`direct_competitor` | M03 |
+| `structural_variant` | A01、A04、B01、M05 |
 
 ## 維護
 
@@ -124,25 +118,21 @@ ls -R papers_by_category
 
 <!-- BEGIN GENERATED: paper table -->
 
-### C1｜短讀或未說平台（無 single-cell 真值）（6 篇）
+### C1｜短讀或未說平台（無 single-cell 真值）（5 篇）
 
 | ID | 子類 | 年 | 論文 | 平台（建樹資料） | long-read 角色 | sc 真值 | 一句話 |
 |---|---|---|---|---|---|---|---|
 | [M05](tumor_phylogeny_2026/methods_survey/papers/M05_tusv_ext_2022/README.md) | `c1_bulk_short_read` | 2022 | TUSV-ext: Reconstructing tumor clonal lineage trees incorporating SNVs, CNAs and SVs | multi-region bulk short-read WGS; simulated (no platform) | `none` | `simulated_only`（none） | ILP 聯合 SNV/SV/CNA 建樹；phasing 是潛變數。 |
 | [M07](tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md) | `c1_bulk_short_read` | 2024 | SMC-Het DREAM: Crowd-sourced benchmarking of single-sample tumor subclonal reconstruction | simulated Illumina WGS (BAMSurgeon on GM24385) | `none` | `simulated_only`（none） | 短讀模擬的單樣本 benchmark，比較 31 個方法。 |
-| [B02](tumor_phylogeny_2026/papers/B02_myeloma_linkedread_2021/README.md) | `c1_read_cooccurrence_short` | 2021 | Co-evolution of tumor and immune cells during progression of multiple myeloma | 10x linked-read WGS (Illumina); bulk WGS/WES; 10x scRNA-seq | `none` | `scrna_only`（none） | linked-read 分子判定 NRAS 雙突變屬獨立分支。 |
 | [M02](tumor_phylogeny_2026/methods_survey/papers/M02_treeclone_2019/README.md) | `c1_read_cooccurrence_short` | 2019 | TreeClone: Reconstruction of tumor subclone phylogeny based on mutation pairs using next generation sequencing data | Illumina HiSeq PE100 WES; simulated | `none` | `simulated_only`（none） | 用同 read 上的 SNV pair 推 clone tree；只用 short read。 |
 | [B07](tumor_phylogeny_2026/papers/B07_numbat_2022/README.md) | `c1_single_cell_input_no_truth` | 2022 | Haplotype-aware analysis of somatic copy number variations from single-cell transcriptomes (Numbat) | 10x scRNA-seq (short read); Eagle2 population phasing reference | `none` | `scrna_only`（none） | scRNA 加族群 phasing 推 CNV 細胞樹；不是 long read。 |
 | [M04](tumor_phylogeny_2026/methods_survey/papers/M04_pharming_2026/README.md) | `c1_single_cell_input_no_truth` | 2026 | Pharming: Joint Clonal Tree Reconstruction of SNV and Copy Number Aberration Evolution from Single-Cell DNA Sequencing of Tumors | low-pass scDNA (ACT, DLP+); simulated | `none` | `simulated_only`（none） | 單細胞 SNV+CNA 聯合 clone tree；只有模擬真值。 |
 
-### C2｜long-read 特徵輔助建樹（無 single-cell 真值）（4 篇）
+### C2｜long-read 特徵輔助建樹（無 single-cell 真值）（1 篇）
 
 | ID | 子類 | 年 | 論文 | 平台（建樹資料） | long-read 角色 | sc 真值 | 一句話 |
 |---|---|---|---|---|---|---|---|
-| [M03](tumor_phylogeny_2026/methods_survey/papers/M03_donmez_aacr2026/README.md) | `c2_local_order` | 2026 | Phasing tumor clones by timing point mutations using bulk long-read sequencing (AACR 2026 Abstract 6912) | ONT R10 regular + ultra-long (CASTLE H2009, H1437) | `local_order` | `none`（none） | ONT 同 read 共現判定突變先後與分歧；沒有真值。 |
 | [B01](tumor_phylogeny_2026/papers/B01_melanoma_longread_2026/README.md) | `c2_long_read_data_only` | 2026 | Long-read sequencing of single cell-derived melanoma sublines reveals divergent and parallel genomic and epigenomic evolutionary trajectories | ONT R10.4 PromethION bulk WGS per subline | `tree_input` | `single_cell_derived_lines`（none） | ONT SNV 建樹；SV／甲基化只事後放上固定樹。 |
-| [B08](tumor_phylogeny_2026/papers/B08_hpv_integration_2023/README.md) | `c2_molecular_history` | 2023 | Intratumoral Heterogeneity and Clonal Evolution Induced by HPV Integration | ONT WGS (>=20 kb reads); PacBio HiFi; Illumina WGS | `molecular_history` | `none`（none） | long read 排出 HPV 局部 SV 分子史；不是完整 clone tree。 |
-| [B06](tumor_phylogeny_2026/papers/B06_hcc_multisite_longread_2025/README.md) | `c2_sample_tree_sv` | 2025 | Multisite long-read sequencing reveals the early contributions of somatic structural variations to HBV-related hepatocellular carcinoma tumorigenesis | ONT WGS ~37x; Illumina WGS | `sample_tree` | `none`（none） | ONT SV 建多區域 sample tree；沒有 single-cell 真值。 |
 
 ### C3a｜single-cell 真值樹 × 短讀或未說平台（11 篇）
 

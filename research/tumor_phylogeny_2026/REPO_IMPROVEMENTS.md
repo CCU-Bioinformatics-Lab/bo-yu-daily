@@ -84,8 +84,8 @@ E[VAF] = rho * f * m / [2 * (1-rho) + rho * C]
 | C1 schema | `sample,chrom,PS,HP` scope；missing phase 與 zero evidence 分開；cellular purity 與 DNA fraction 分欄 | B04、B07、lab glossary | phase provenance 與 uncertainty；輸入驗證報告 |
 | C2 multiplicity prior | HP/major-minor orientation posterior，低信心退回原本 prior；CN loss/WGD 分層；各 genotype 情況在 likelihood 中邊際化 | A04、B03、B05 | CCF／祖先關係結果；genotype 候選與權重為選用診斷，不計 multiplicity 正確率 |
 | C3 per-SNV likelihood | phased+unphased、tag-selection bias、minor-CN 錯誤與 switch-error sensitivity | B07、B03、A02 | held-out likelihood、CCF interval coverage、bias |
-| C4 topology factor | local partial order、完整 joint coverage、error／CN 限制；同 read 多 pair 的依賴性 | B04、B02；2026 AACR 線索 | held-out relation log score、conflict rate、edge posterior、ESS/runtime |
-| C5 clustering | HP linkage 可反駁錯誤 merge；先比較固定 cluster 與重新分群，不能混淆收益來源 | A05、B07、B02 | V-measure/ARI 與拓樸指標分別報告 |
+| C4 topology factor | local partial order、完整 joint coverage、error／CN 限制；同 read 多 pair 的依賴性 | B04 | held-out relation log score、conflict rate、edge posterior、ESS/runtime |
+| C5 clustering | HP linkage 可反駁錯誤 merge；先比較固定 cluster 與重新分群，不能混淆收益來源 | A05、B07 | V-measure/ARI 與拓樸指標分別報告 |
 | C6 posterior／診斷 | 輸出可識別與不可識別邊；分開 timing、assignment、topology uncertainty | A01、A02、B05、B01 | trace、pair conflict table、alternate topology 與 loss 註記 |
 
 ## 5. 最小可執行的比較設計
@@ -126,6 +126,6 @@ E[VAF] = rho * f * m / [2 * (1-rho) + rho * C]
 
 ## 8. Related work 與新穎性應如何收斂
 
-不能把「同一條 read 的 somatic mutation pairs 能推先後」本身當作新貢獻：B04已直接用來選候選樹，早期TreeClone亦使用proximal pairs；2026 AACR [abstract 6912](https://doi.org/10.1158/1538-7445.AM2026-6912) 更直接提出bulk ONT pair timing與transitive graph，且使用本repo同樣的H2009/H1437。後者目前只有摘要，需追蹤完整方法與程式，不能推測其尚未公開的實作。
+不能把「同一條 read 的 somatic mutation pairs 能推先後」本身當作新貢獻：B04已直接用來選候選樹，早期TreeClone亦使用proximal pairs。
 
 本repo較值得檢驗的差異是：在明確PS／HP／CN條件下，將局部molecular evidence接入PhyClone的posterior tree inference，同時保留multiplicity、phase error與非唯一topology的不確定性；並證明改善不是coverage、固定分群、重複計分或tagging洩漏所造成。這是待驗證的研究定位，不是已證成的原創性宣告。

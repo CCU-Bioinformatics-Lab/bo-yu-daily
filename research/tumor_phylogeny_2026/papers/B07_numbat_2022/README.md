@@ -59,8 +59,6 @@ Numbat從 scRNA-seq 的expression count與germline SNP allele count出發。popu
 | MM患者27522四時間點 | primary→remission→兩次relapse，推得g1/g2/g3 CN clones與治療後擴張，subclonal deletions有相應DNA支持 | preprint pp.7–9，Fig.5 p.26；正式P24、Fig.5 |
 | NCI-N87 gastric cell line | paired scRNA/scDNA支持其CN landscape與subclonal architecture；是細胞株，不是真實病人的single-cell truth | **正式版新增**P21、Extended Data Fig.9；本地preprint未包含 |
 
-另須避免重複計算證據：27522與MM資料來源和本研究集B02的2021 linked-read myeloma研究相關，Numbat重分析並非一個獨立招募的第二批病人。這兩篇回答不同問題，但不能把相同cohort當獨立臨床重現。
-
 主要限制為single-cell RNA的coverage、allele-specific expression與baseline ploidy不確定性；rare subclones可能在pseudobulk時被稀釋；可信clone數仍需檢視。whole-genome duplication或幾乎全基因組異常時，diploid baseline仍可能要人工校正。其perfect phylogeny假設與MEDICC2容許反覆CN變化的模型不同，不適合無限制地外推到所有parallel／recurrent CNA。[preprint pp.9–10；正式P29–P30、P50]
 
 ## 資料與程式

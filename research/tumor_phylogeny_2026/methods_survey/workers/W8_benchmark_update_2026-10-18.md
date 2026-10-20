@@ -44,7 +44,6 @@
   - 是小鼠（mm10），不是本研究的 GRCh38 人類細胞株。
   - truth 樹本身是推論結果（ScisTree＋TreeHarmonizer），不是 lineage tracing。
   - subline 是單細胞衍生，混合後沒有「祖先 clone 本身存在於樣本中」的情況，和真實腫瘤不同。
-- 作者群含 Kolmogorov，與 [M03](../papers/M03_donmez_aacr2026/README.md) 的 Donmez AACR 2026 同組。他們很可能用這份資料驗證 read-phasing 建樹，這增加了競爭風險。
 
 ## 對 `evaluation_v1.md` 的建議（推論）
 
