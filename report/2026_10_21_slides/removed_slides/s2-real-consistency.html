@@ -1,0 +1,144 @@
+<section id="s2-real-consistency" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">2 · 我們怎麼驗證</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">沒有真值時，再用兩種一致性檢查，PhyClone 與新軟體並列比較</h2>
+<div style="flex:1;display:flex;flex-direction:row;gap:32px">
+  <div style="width:816px;display:flex;flex-direction:column;gap:14px;padding:22px 24px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px">
+    <div style="display:flex;flex-direction:row;justify-content:space-between;align-items:center">
+      <h3 style="font-size:40px;font-weight:700;line-height:1.25;color:#1F2A37">purity 稀釋一致性</h3>
+      <p style="font-size:24px;line-height:1.3;color:#4A5568">比對：nominal 100% 的結果</p>
+    </div>
+    <div style="display:flex;flex-direction:row;gap:12px;align-items:center">
+      <div style="width:150px;display:flex;flex-direction:column;gap:2px;align-items:center;padding:12px 6px;background:#EEF2F6;border-radius:12px">
+        <p style="font-size:24px;font-weight:700;line-height:1.3;text-align:center;color:#1F2A37">SNV 清單</p>
+        <p style="font-size:24px;line-height:1.3;text-align:center;color:#4A5568">取自 100%</p>
+      </div>
+      <x-shape kind="arrow-right" style="width:30px;height:16px;background:#4A5568"></x-shape>
+      <div style="display:flex;flex-direction:row;gap:10px;align-items:flex-start">
+        <div style="width:78px;display:flex;flex-direction:column;gap:4px;align-items:center">
+          <svg aria-label="nominal 20%：細胞條中紅色腫瘤細胞佔 20%，其餘灰色是 normal。" width="70" height="24" viewBox="0 0 70 24"><rect x="0" y="0" width="70" height="24" rx="4" fill="#9AA3AE"/><rect x="0" y="0" width="14" height="24" rx="4" fill="#D23A2E"/></svg>
+          <p style="font-size:24px;font-weight:700;line-height:1.2;color:#1F2A37">20%</p>
+        </div>
+        <div style="width:78px;display:flex;flex-direction:column;gap:4px;align-items:center">
+          <svg aria-label="nominal 40%：細胞條中紅色腫瘤細胞佔 40%，其餘灰色是 normal。" width="70" height="24" viewBox="0 0 70 24"><rect x="0" y="0" width="70" height="24" rx="4" fill="#9AA3AE"/><rect x="0" y="0" width="28" height="24" rx="4" fill="#D23A2E"/></svg>
+          <p style="font-size:24px;font-weight:700;line-height:1.2;color:#1F2A37">40%</p>
+        </div>
+        <div style="width:78px;display:flex;flex-direction:column;gap:4px;align-items:center">
+          <svg aria-label="nominal 60%：細胞條中紅色腫瘤細胞佔 60%，其餘灰色是 normal。" width="70" height="24" viewBox="0 0 70 24"><rect x="0" y="0" width="70" height="24" rx="4" fill="#9AA3AE"/><rect x="0" y="0" width="42" height="24" rx="4" fill="#D23A2E"/></svg>
+          <p style="font-size:24px;font-weight:700;line-height:1.2;color:#1F2A37">60%</p>
+        </div>
+        <div style="width:78px;display:flex;flex-direction:column;gap:4px;align-items:center">
+          <svg aria-label="nominal 80%：細胞條中紅色腫瘤細胞佔 80%，其餘灰色是 normal。" width="70" height="24" viewBox="0 0 70 24"><rect x="0" y="0" width="70" height="24" rx="4" fill="#9AA3AE"/><rect x="0" y="0" width="56" height="24" rx="4" fill="#D23A2E"/></svg>
+          <p style="font-size:24px;font-weight:700;line-height:1.2;color:#1F2A37">80%</p>
+        </div>
+        <div style="width:78px;display:flex;flex-direction:column;gap:4px;align-items:center">
+          <svg aria-label="nominal 100%：細胞條中紅色腫瘤細胞佔 100%，其餘灰色是 normal。" width="70" height="24" viewBox="0 0 70 24"><rect x="0" y="0" width="70" height="24" rx="4" fill="#9AA3AE"/><rect x="0" y="0" width="70" height="24" rx="4" fill="#D23A2E"/></svg>
+          <p style="font-size:24px;font-weight:700;line-height:1.2;color:#1F2A37">100%</p>
+        </div>
+        <div style="width:94px;display:flex;flex-direction:column;gap:4px;align-items:center;padding:4px 0px;border:2px dashed #C96A1B;border-radius:10px">
+          <svg aria-label="純 normal 負對照：細胞條全是灰色 normal，沒有腫瘤細胞。" width="70" height="24" viewBox="0 0 70 24"><rect x="0" y="0" width="70" height="24" rx="4" fill="#9AA3AE"/></svg>
+          <p style="font-size:24px;font-weight:700;line-height:1.2;color:#C96A1B">負對照</p>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:row;gap:12px;align-items:center">
+      <div style="width:170px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;flex-direction:column;align-items:center;padding:10px 6px;background:#FDFDFB;border:3px solid #4A5568;border-radius:14px">
+          <p style="font-size:30px;font-weight:700;line-height:1.25;text-align:center;color:#4A5568">PhyClone</p>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:10px 6px;background:#EEF4FB;border:3px solid #2F6DB5;border-radius:14px">
+          <p style="font-size:30px;font-weight:700;line-height:1.25;text-align:center;color:#2F6DB5">新軟體</p>
+        </div>
+      </div>
+      <x-shape kind="arrow-right" style="width:30px;height:16px;background:#4A5568"></x-shape>
+      <div style="position:relative;width:310px;height:216px">
+        <p style="position:absolute;left:0px;top:0px;width:60px;font-size:24px;font-weight:700;line-height:1.2;color:#1F2A37">CCF</p>
+        <p style="position:absolute;left:150px;top:0px;width:160px;font-size:24px;line-height:1.2;text-align:right;color:#4A5568">虛線＝不變</p>
+        <svg aria-label="CCF 對 nominal tumor 比例的示意圖：虛線是預期不變的 CCF；灰點是 PhyClone，藍點是新軟體，在低比例時偏離虛線，到 100% 回到虛線。" width="310" height="126" viewBox="0 0 310 126" style="position:absolute;left:0px;top:30px;width:310px"><line x1="30" y1="4" x2="30" y2="120" stroke="#4A5568" stroke-width="2"/><line x1="30" y1="120" x2="300" y2="120" stroke="#4A5568" stroke-width="2"/><line x1="30" y1="40" x2="300" y2="40" stroke="#4A5568" stroke-width="2" stroke-dasharray="8 6"/><g fill="#4A5568"><circle cx="64" cy="92" r="7"/><circle cx="114" cy="74" r="7"/><circle cx="164" cy="60" r="7"/><circle cx="214" cy="50" r="7"/><circle cx="270" cy="40" r="7"/></g><g fill="#2F6DB5"><circle cx="76" cy="66" r="7"/><circle cx="126" cy="56" r="7"/><circle cx="176" cy="48" r="7"/><circle cx="226" cy="44" r="7"/></g></svg>
+        <p style="position:absolute;left:46px;top:158px;width:40px;font-size:24px;line-height:1.2;text-align:center;color:#4A5568">20</p>
+        <p style="position:absolute;left:100px;top:158px;width:40px;font-size:24px;line-height:1.2;text-align:center;color:#4A5568">40</p>
+        <p style="position:absolute;left:150px;top:158px;width:40px;font-size:24px;line-height:1.2;text-align:center;color:#4A5568">60</p>
+        <p style="position:absolute;left:200px;top:158px;width:40px;font-size:24px;line-height:1.2;text-align:center;color:#4A5568">80</p>
+        <p style="position:absolute;left:244px;top:158px;width:52px;font-size:24px;line-height:1.2;text-align:center;color:#4A5568">100</p>
+        <p style="position:absolute;left:30px;top:188px;width:280px;font-size:24px;line-height:1.2;text-align:center;color:#4A5568">nominal tumor 比例（%）</p>
+      </div>
+      <x-shape kind="arrow-right" style="width:30px;height:16px;background:#4A5568"></x-shape>
+      <div style="width:170px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;flex-direction:row;justify-content:space-between">
+          <p style="font-size:24px;font-weight:700;line-height:1.3;color:#1F2A37">一致度</p>
+          <p style="font-size:24px;font-weight:700;line-height:1.3;color:#C96A1B">示意</p>
+        </div>
+        <p style="font-size:24px;line-height:1.2;color:#4A5568">PhyClone</p>
+        <div style="width:110px;height:18px;background:#4A5568;border-radius:4px"></div>
+        <p style="font-size:24px;line-height:1.2;color:#2F6DB5">新軟體</p>
+        <div style="width:160px;height:18px;background:#2F6DB5;border-radius:4px"></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:row;gap:10px;align-items:center">
+      <x-icon name="Check" style="width:28px;height:28px;color:#C96A1B"></x-icon>
+      <p style="font-size:24px;line-height:1.3;color:#1F2A37"><span style="color:#C96A1B">負對照</span>：不應推出 clone</p>
+    </div>
+  </div>
+  <div style="width:816px;display:flex;flex-direction:column;gap:14px;padding:22px 24px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px">
+    <div style="display:flex;flex-direction:row;justify-content:space-between;align-items:center">
+      <h3 style="font-size:40px;font-weight:700;line-height:1.25;color:#1F2A37">long read 留出檢查</h3>
+      <p style="font-size:24px;line-height:1.3;color:#4A5568">比對：留出區段的 read</p>
+    </div>
+    <div style="display:flex;flex-direction:row;gap:12px;align-items:center">
+      <div style="width:210px;display:flex;flex-direction:column;gap:4px">
+        <svg aria-label="四條染色體，每條有一段橘色區段被留出，其餘灰色部分給軟體建樹。" width="200" height="78" viewBox="0 0 200 78"><rect x="0" y="2" width="200" height="12" rx="6" fill="#C9D1DB"/><rect x="0" y="22" width="180" height="12" rx="6" fill="#C9D1DB"/><rect x="0" y="42" width="160" height="12" rx="6" fill="#C9D1DB"/><rect x="0" y="62" width="140" height="12" rx="6" fill="#C9D1DB"/><rect x="120" y="2" width="44" height="12" fill="#C96A1B"/><rect x="30" y="22" width="44" height="12" fill="#C96A1B"/><rect x="90" y="42" width="44" height="12" fill="#C96A1B"/><rect x="50" y="62" width="44" height="12" fill="#C96A1B"/></svg>
+        <p style="font-size:24px;line-height:1.3;color:#1F2A37"><span style="color:#C96A1B">■ 留出</span>　<span style="color:#8E99A8">■</span> 建樹</p>
+      </div>
+      <x-shape kind="arrow-right" style="width:30px;height:16px;background:#4A5568"></x-shape>
+      <div style="width:170px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;flex-direction:column;align-items:center;padding:10px 6px;background:#FDFDFB;border:3px solid #4A5568;border-radius:14px">
+          <p style="font-size:30px;font-weight:700;line-height:1.25;text-align:center;color:#4A5568">PhyClone</p>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:10px 6px;background:#EEF4FB;border:3px solid #2F6DB5;border-radius:14px">
+          <p style="font-size:30px;font-weight:700;line-height:1.25;text-align:center;color:#2F6DB5">新軟體</p>
+        </div>
+      </div>
+      <x-shape kind="arrow-right" style="width:30px;height:16px;background:#4A5568"></x-shape>
+      <div style="position:relative;width:250px;height:140px">
+        <svg aria-label="軟體輸出的樹：根節點經 SNV1 到 clone 1，再經 SNV2 到 clone 2，表示 SNV2 是 SNV1 的後代。" width="130" height="140" viewBox="0 0 130 140" style="position:absolute;left:0px;top:0px;width:130px"><g stroke="#4A5568" stroke-width="4"><line x1="70" y1="14" x2="70" y2="70"/><line x1="70" y1="70" x2="70" y2="126"/><line x1="70" y1="70" x2="120" y2="126"/></g><circle cx="70" cy="14" r="11" fill="#4A5568"/><circle cx="70" cy="70" r="11" fill="#8E99A8"/><circle cx="70" cy="126" r="11" fill="#2A9D8F"/><circle cx="120" cy="126" r="11" fill="#7B5EA7"/><circle cx="70" cy="42" r="7" fill="#D23A2E"/><circle cx="70" cy="98" r="7" fill="#D23A2E"/></svg>
+        <p style="position:absolute;left:0px;top:26px;width:58px;font-size:24px;font-weight:700;line-height:1.2;text-align:right;color:#4A5568">SNV1</p>
+        <p style="position:absolute;left:0px;top:82px;width:58px;font-size:24px;font-weight:700;line-height:1.2;text-align:right;color:#4A5568">SNV2</p>
+        <p style="position:absolute;left:136px;top:8px;width:114px;font-size:24px;line-height:1.3;color:#1F2A37">樹說：SNV2 是 SNV1 的後代</p>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:row;gap:12px;align-items:center">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="position:relative;width:380px;height:190px">
+          <p style="position:absolute;left:120px;top:0px;width:80px;font-size:24px;font-weight:700;line-height:1.2;text-align:center;color:#4A5568">SNV1</p>
+          <p style="position:absolute;left:230px;top:0px;width:80px;font-size:24px;font-weight:700;line-height:1.2;text-align:center;color:#4A5568">SNV2</p>
+          <svg aria-label="IGV 風格的 read 堆疊，依 HP1、HP2 分區。上方是參考序列與 SNV1、SNV2 兩個位置。紅格是 alt，白格是 ref。HP1 區：兩條 read 兩處都是 alt；兩條只有 SNV1 是 alt；一條兩處都是 ref；最下面一條只有 SNV2 是 alt，用紅色虛線框標成矛盾。HP2 區：兩條 read 兩處都是 ref。" width="280" height="160" viewBox="0 0 280 160" style="position:absolute;left:50px;top:30px;width:280px"><line x1="14" y1="4" x2="264" y2="4" stroke="#4A5568" stroke-width="2"/><rect x="14" y="8" width="250" height="6" rx="3" fill="#9AA3AE"/><line x1="110" y1="16" x2="110" y2="158" stroke="#9AA3AE" stroke-width="1.5" stroke-dasharray="5 4"/><line x1="220" y1="16" x2="220" y2="158" stroke="#9AA3AE" stroke-width="1.5" stroke-dasharray="5 4"/><rect x="0" y="18" width="8" height="104" rx="3" fill="#2C5F9E"/><rect x="20" y="22" width="240" height="8" rx="4" fill="#C9D1DB"/><rect x="105" y="22" width="10" height="8" fill="#D23A2E"/><rect x="215" y="22" width="10" height="8" fill="#D23A2E"/><rect x="36" y="34" width="226" height="8" rx="4" fill="#C9D1DB"/><rect x="105" y="34" width="10" height="8" fill="#D23A2E"/><rect x="215" y="34" width="10" height="8" fill="#D23A2E"/><line x1="14" y1="48" x2="264" y2="48" stroke="#D9DDE3" stroke-width="1.5"/><rect x="26" y="54" width="232" height="8" rx="4" fill="#C9D1DB"/><rect x="105" y="54" width="10" height="8" fill="#D23A2E"/><rect x="215" y="54" width="10" height="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="1.5"/><rect x="18" y="66" width="240" height="8" rx="4" fill="#C9D1DB"/><rect x="105" y="66" width="10" height="8" fill="#D23A2E"/><rect x="215" y="66" width="10" height="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="1.5"/><line x1="14" y1="80" x2="264" y2="80" stroke="#D9DDE3" stroke-width="1.5"/><rect x="30" y="86" width="226" height="8" rx="4" fill="#C9D1DB"/><rect x="105" y="86" width="10" height="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="1.5"/><rect x="215" y="86" width="10" height="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="1.5"/><rect x="12" y="99" width="256" height="22" rx="6" fill="none" stroke="#B4442F" stroke-width="2.5" stroke-dasharray="6 4"/><rect x="22" y="106" width="236" height="8" rx="4" fill="#C9D1DB"/><rect x="105" y="106" width="10" height="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="1.5"/><rect x="215" y="106" width="10" height="8" fill="#D23A2E"/><line x1="0" y1="128" x2="268" y2="128" stroke="#4A5568" stroke-width="2"/><rect x="0" y="134" width="8" height="24" rx="3" fill="#D9772B"/><rect x="24" y="136" width="236" height="8" rx="4" fill="#C9D1DB"/><rect x="105" y="136" width="10" height="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="1.5"/><rect x="215" y="136" width="10" height="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="1.5"/><rect x="32" y="148" width="228" height="8" rx="4" fill="#C9D1DB"/><rect x="105" y="148" width="10" height="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="1.5"/><rect x="215" y="148" width="10" height="8" fill="#FDFDFB" stroke="#4A5568" stroke-width="1.5"/></svg>
+          <p style="position:absolute;left:0px;top:85px;width:48px;font-size:24px;font-weight:700;line-height:1.2;color:#2C5F9E">HP1</p>
+          <p style="position:absolute;left:0px;top:161px;width:48px;font-size:24px;font-weight:700;line-height:1.2;color:#D9772B">HP2</p>
+          <p style="position:absolute;left:322px;top:125px;width:58px;font-size:24px;font-weight:700;line-height:1.2;color:#B4442F">矛盾</p>
+        </div>
+        <p style="width:380px;font-size:24px;line-height:1.3;color:#1F2A37">同一條 read 上的兩個 SNV<br>只算同一 HP　<span style="color:#D23A2E">紅＝alt</span>　白＝ref</p>
+      </div>
+      <x-shape kind="arrow-right" style="width:30px;height:16px;background:#4A5568"></x-shape>
+      <div style="width:300px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;flex-direction:row;justify-content:space-between">
+          <p style="font-size:24px;font-weight:700;line-height:1.3;color:#1F2A37">矛盾 read 比例</p>
+          <p style="font-size:24px;font-weight:700;line-height:1.3;color:#C96A1B">示意</p>
+        </div>
+        <p style="font-size:24px;line-height:1.3;color:#4A5568">低＝好</p>
+        <div style="display:flex;flex-direction:row;gap:8px;align-items:center">
+          <p style="width:110px;font-size:24px;line-height:1.2;color:#4A5568">PhyClone</p>
+          <div style="width:140px;height:18px;background:#4A5568;border-radius:4px"></div>
+        </div>
+        <div style="display:flex;flex-direction:row;gap:8px;align-items:center">
+          <p style="width:110px;font-size:24px;line-height:1.2;color:#2F6DB5">新軟體</p>
+          <div style="width:80px;height:18px;background:#2F6DB5;border-radius:4px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">8 / 8</p>
+</div>
+<aside>參考樹只能比 driver 和 CCF，所以我們再加兩種一致性檢查，一樣讓 PhyClone 和新軟體並列比較。這也是計畫，還沒有結果。先看左邊：用 nominal 100% 的樣本定好 SNV 清單，再對 20% 到 80% 的樣本計數，兩套軟體各跑一次。加 normal 只讓突變比例等比例變小，CCF 應該不變，所以點越貼近虛線越好。橘框的純 normal 是負對照，不應推出 clone。注意，這些百分比是混合設計，不是實測 purity；20% 時腫瘤深度只有約 10 倍，所以只比兩邊都有的 clone；各樣本可能共用 read，一致度可能偏高。再看右邊：按染色體區段留出一部分，其餘拿去建樹。樹說 SNV2 是 SNV1 的後代，留出的 read 卻只帶 SNV2，就是矛盾。phasing 切錯、germline 判錯、只剩一條 haplotype 的區域和拷貝增加也會造成矛盾。PhyClone 本來不用 read，這項偏向新軟體。整個驗證段就是：先確認不退步，再用模擬量增益，最後在真實資料上比參考樹、看一致性。</aside>
+</section>
