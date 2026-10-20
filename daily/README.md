@@ -33,4 +33,4 @@ cd bo-yu-daily && xdg-open index.html      # macOS 用 open，Windows 用 start
 
 ### 2026-10
 
-- **[2026-10-19](2026-10-19.html)** —— 10/21 簡報從 13 頁的盤點式報告改成 10 頁、只有一個主問題；大綱過了兩方三輪審查才動手重做，已發布成 Version 9
+- **[2026-10-19](2026-10-19.html)** —— 4 個 subagent 分頭搜尋後確認：還沒有已發表方法把長讀的 haplotype／phase set 放進演化樹模型
