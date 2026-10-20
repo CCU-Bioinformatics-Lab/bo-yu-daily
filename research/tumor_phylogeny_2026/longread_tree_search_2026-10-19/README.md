@@ -23,13 +23,13 @@
 |---|---|---|---|---|---|
 | B04 Sakamoto 2022 肺癌 | 已收錄 | 同 read SNV pair order（WhatsHap） | topology_constraint（只在 S14） | PyClone-VI → ClonEvol 候選，long read 選 linear model | scDNA 局部（S8、S20） |
 | B01 Liu … Kolmogorov 2026 melanoma sublines | 已收錄 | ONT SNV；phased SV、Wakhan CN 只在建樹後放置 | tree_input（只有 SNV genotype） | ScisTree；TreeHarmonizer 把變異放到 MRCA | 無 |
-| **Hackett … Blundell 2026**（bioRxiv `10.64898/2026.02.23.707349`） | **新** | WhatsHap／LongPhase 把 read 分 HP；每條 read 的 PCDH CpG 5mC | **tree_input** | read × CpG 矩陣 → kNN 補值 → Hamming 距離 UPGMA | scWGS 樹；topology 相近，branch length 不符 |
+| **Hackett … Blundell 2026**（bioRxiv `10.64898/2026.02.23.707349`） | 已收錄為 [B09](../papers/B09_pcdh_methylation_barcode_2026/README.md)（2026-10-20） | WhatsHap／LongPhase 把 read 分 HP；每條 read 的 PCDH CpG 5mC | **tree_input** | read × CpG 矩陣 → kNN 補值 → Hamming 距離 UPGMA | scWGS 樹；topology 相近，branch length 不符 |
 | BitPhylogeny（Yuan … Beerenwinkel, Genome Biol 2015） | 已收錄為 [M08](../methods_survey/papers/M08_bitphylogeny_2015/README.md)（2026-10-19） | 每條 read 的多位點 methylation pattern | transferable_only | read 當成 TSSB mixture tree 的一次抽樣 | 模擬＋病人 |
 | TreeClone M02（2019） | 已收錄 | 短讀 SNV pair | transferable_only | pair likelihood＋tree prior，MCMC；只限 CN-neutral | 模擬 |
 
 註：
 
-- Hackett 的材料是 MPN 病人與健康人的血液，不是實體腫瘤。論文沒有公開 code，agent 也沒讀到全文。
+- Hackett 的材料是 MPN 病人與健康人的血液，不是實體腫瘤。論文沒有公開 code。2026-10-20 已讀全文與補充資料，見 B09 README。
 - Agent A 把 B04 標成 validation_only。這是漏看補充資料：Fig. S9c–d 顯示 long read 讓 S14 選 linear model。repo 保留 `topology_constraint`。
 - bioRxiv 從 2025-12-01 起改用 `10.64898` 前綴（openRxiv 公告），所以這個 DOI 格式正確。
 
