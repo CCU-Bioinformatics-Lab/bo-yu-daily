@@ -1,10 +1,11 @@
 # Tumor Cell-line Alignment Sample Inventory
 
-更新日期：2026-10-15
+更新日期：2026-10-20
 
 本文件整理目前 `/big8_disk/data/` 下六種主要 ONT 腫瘤細胞株的 alignment 檔路徑與
 `subsample` 純度設計。盤點只看檔案、資料夾名稱與 CRAM header，沒有讀取 read 內容。
-文末另列 PhyClone 論文的 benchmarking 資料集（`/big8_disk/boyu114/phyclone_dataset/`）。
+文末另列 PhyClone 論文的 benchmarking 資料集（`/big8_disk/boyu114/phyclone_dataset/`），
+以及 SMC-Het DREAM Challenge 資料集（`/big8_disk/boyu114/smchet_dataset/`）。
 
 ## 格式更新：BAM → CRAM（依 `.crai` mtime 推斷約在 2026-09-23～24）
 
@@ -175,3 +176,75 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 4. **只看得到大 clone。** 只有 ≥10 顆細胞核的 clone 進入建樹，rare clone 看不到。單細胞 PCR 的 allelic dropout 由 SCG 的模型吸收，沒有獨立量化。
 
 正確說法：「樹由單細胞定序加 bulk 資料推論，論文拿來當真值用。」
+
+## SMC-Het（DREAM）資料集
+
+- 根目錄：`/big8_disk/boyu114/smchet_dataset/`（解壓後共約 25G）
+- 來源：Synapse 專案 `syn2813581`，2026-10-18 下載。對應論文見 `research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/`。
+- 內容：SMC-Het DREAM Challenge 的模擬腫瘤。每個腫瘤是 **單一 bulk short-read sample**，附 SNV VCF、Battenberg CN、purity／ploidy 與 truth files。
+- 完整性：2026-10-20 執行 `md5sum -c md5.txt`，13 個檔案全部 `OK`。`md5.txt` 的值取自 Synapse 的檔案 metadata。
+- 解壓：2026-10-20 完成。每個 `.tar.gz` 都已解壓，規則如下：
+  - 壓縮檔內已有頂層目錄（`Tumour1–7`）：直接解壓在根目錄。
+  - 壓縮檔內沒有頂層目錄：解壓到同名目錄。例外是 `battenberg_files.tar.gz`，它在 2026-10-18 解壓到 `battenberg/`。
+- 本機沒有 BAM。metadata 的 `EGA_FileName` 欄指向 EGA 受控存取資料。
+
+### 目錄結構
+
+```text
+smchet_dataset/
+├── truthFiles/<Tumour>-noXY/          # 51 個 scored 腫瘤，每個 11 個檔
+├── truthfilesDownsampled/single_caller/  # T2–T6 downsampled × caller 的 truth
+├── downsampled_vcfs/                  # T2–T6 downsampled 的 caller VCF（125 個）
+├── downsampled_battenberg/            # T2–T6 downsampled 的 Battenberg refit
+├── battenberg/                        # 51 個腫瘤的 Battenberg 與 cellularity_ploidy
+├── Tumour{1,2,3,4,6,7}/               # training 腫瘤（沒有 Tumour5、Tumour8）
+├── Tumour_metadata_final.tsv          # 57 列 metadata
+├── signatures.txt、input_trinucleotide_signatures.txt
+└── md5.txt、*.tar.gz                  # 原始壓縮檔保留
+```
+
+### 每個腫瘤的檔案（`truthFiles/<T>-noXY/` 與 `Tumour*/` 格式相同）
+
+| 檔案 | 內容 |
+|---|---|
+| `*.mutect.vcf` | 輸入 SNV（MuTect call） |
+| `*.battenberg.txt` | Battenberg CN segment。subclonal segment 有第二組 `nMaj2_A/nMin2_A/frac2_A` |
+| `*.cellularity_ploidy.txt` | purity（cellularity）與 ploidy |
+| `*.truth.1A.txt` | 真實 purity |
+| `*.truth.1B.txt` | 真實 cluster 數 |
+| `*.truth.1C.txt` | 每個 cluster 一列：`cluster_id`、SNV 數、cellular prevalence |
+| `*.truth.2A.txt` | 每個 SNV 的 cluster 指派（一行一個 SNV） |
+| `*.truth.2B.gz` | SNV × SNV co-clustering 矩陣 |
+| `*.truth.3A.txt` | 樹：每列 `cluster_id parent_id`，`0` 是 root |
+| `*.truth.3B.gz` | SNV × SNV ancestor-descendant 矩陣 |
+| `*.truth.scoring_vcf.vcf` | 評分用 VCF |
+
+以 `Tumour1` 為例：1A = 0.70，cellularity 檔 = 0.7107，1B = 4。1C 第一列 cluster 1 的 CP 等於 purity（0.70），所以 1C 的 CP 是 **含 purity 的 cellular prevalence，不是 CCF**。1C 另有一列 CP = 0 的 cluster 5（509 個 SNV），但 2A 沒有指派到 cluster 5。推測 cluster 5 是 false-positive SNV，尚未對照官方評分程式確認。
+
+### 腫瘤清單
+
+| 類別 | 腫瘤 | 數量 | 說明 |
+|---|---|---:|---|
+| PCAWG-based | `P1`–`P25` | 25 | PCAWG 腫瘤的模擬 |
+| 已發表腫瘤 | `T0`–`T16` | 17 | 模擬自已發表研究（Nik-Zainal、Gundem、Bolli 等） |
+| 特殊案例 | `S2`–`S10` | 9 | 例如兩群難分（85:15）、overdispersed、caller 漏掉 rare subclone |
+| Training | `Tumour1–4,6,7` | 6 | 不屬於 51 個 scored 腫瘤 |
+
+- 51 個 scored 腫瘤的 truth 數量和論文一致。所有來源都找不到 `S1`。
+- `Tumour_metadata_final.tsv` 有 49 列 scored 腫瘤。它缺 `T7` 和 `S9`，但這兩個都有 truth 與 Battenberg 檔。
+- 51 個 scored 腫瘤的真實 cluster 數（1B）：2 個 cluster 有 3 例，3 個有 21 例，4 個有 18 例，5 個有 9 例。
+
+### Downsampled 子集
+
+- 腫瘤：`T2`–`T6`。深度：8X、16X、32X、64X、128X。另有 `full_depth` 的 Battenberg（只在 `downsampled_battenberg/`）。
+- `downsampled_vcfs/`：5 種 caller（`mutect`、`Strelka`、`somaticsniper`、`mutationseq`、`perfect`）× 5 腫瘤 × 5 深度 = 125 個 VCF。
+- `downsampled_battenberg/`：每個腫瘤 × 深度一組 `refit_cellularity_ploidy` 與 `refit_subclones_noXY`。T5、T6 沒有 128X。
+- `truthfilesDownsampled/single_caller/`：`MuTect`、`Strelka`、`somaticsniper`、`mutationseq` 各 25 組，加上 `T6_128_perfect` 1 組。
+  - `mutationseq_T5.T.8X` 只有 1A–2B，缺 3A、3B、scoring_vcf。
+  - `gmon.out` 是 profiler 殘檔，不是資料。
+
+### 和本研究的關係
+
+- 這是單一樣本 bulk 資料。它可以測 PhyClone 在 single-sample 下的表現，也可以測 subclonal CN 對 PhyClone 的影響。
+- 它沒有 long read，也沒有 haplotype／phasing 資訊。
+- PhyClone 每個 SNV 只接受一組 `major_cn/minor_cn`。轉換 Battenberg 時，要決定 subclonal segment（`frac1_A < 1`）的處理方式。
