@@ -3,7 +3,7 @@
 ######## USER: 幫我調查本repo研究目錄中這些論文的正常或是腫瘤輸入資訊有哪些，假設alt,ref reads,purity,copy number等，分別也各自輸出甚麼樹的拓樸?還是clone群數量等
 
 --- ASSISTANT:
-研究目錄裡共有 20 篇論文有逐篇筆記：6 篇方法論文（M01–M06）、13 篇應用研究（A01–A05、B01–B08），以及 R01 和 HCC1395 參考樹的論文。以下依這些筆記整理。
+研究目錄裡共有 16 篇論文有逐篇筆記：5 篇方法論文（M01、M02、M04–M06）、10 篇應用研究（A01–A05、B01、B03–B05、B07），以及 R01 和 HCC1395 參考樹的論文。以下依這些筆記整理。
 
 ## 結論
 
@@ -29,7 +29,6 @@
 |---|---|---|
 | **M01 PhyClone** | 每個 SNV、每個 sample 的 `ref_counts, alt_counts, major_cn, minor_cn, normal_cn, tumour_content`（purity，外部給定且固定）。可加 cluster 檔。CN 只能是 clonal。沒有 normal reads。 | MAP 或 consensus 樹（Newick），含 SNV→node 和每個 sample 的 cellular prevalence。也輸出 posterior trace 和 topology report。clone 數由 CRP 推論。lost SNV 歸為 outlier。**不輸出 multiplicity** |
 | **M02 TreeClone** | 同一 read 上兩個 SNV 的 8 類 read count（00/01/10/11/-0/-1/0-/1-）。只用 CN=2 區域，沒有 CN 輸入。purity 是參數 `w_t1`，可加資訊性 prior | clone 數 C（限在 Cmin–Cmax）、tree T、每個 clone 每個 pair 的 genotype Z，以及各 sample 的 clone 比例 w |
-| **M03 Donmez（AACR 摘要＋repo）** | somatic VCF＋haplotagged tumor BAM（用 HP tag）。沒有 CN、purity 或 normal | 每 10 Mb 一張 mutation graph（JSON），edge 是 sequential／co-occurring／divergent，另有 component 摘要。**沒有 clone tree、CCF 或 clone 數** |
 | **M04 Pharming**（scDNA） | 每個 cell 每個 SNV 的 var/total reads、每個 cell 每個 segment 的 haplotype-specific CN (x,y)，以及 SNV→segment 對應。沒有 purity，normal cell 分到 root (1,1) | clonal tree：每個 node 帶 segment CN 和 SNV 的 (w,z) multiplicity。也輸出 cell assignment、SNV loss 和 genotype 表。clone 數 k 由 BIC 選 |
 | **M05 TUSV-ext** | 每個 sample 一個 VCF，內含 SNV、SV 和 CNV 的**平均 copy number**（不是 read count）。沒有 purity 輸入，normal 是 U 中的 root clone | `T.dot` binary tree、`C.tsv`（每個 clone 的 allele-specific CN 和 SNV/SV copy 數）、`U.tsv`（每個 sample 的 clone 頻率）。clone 數由使用者指定上限（約 ≤9），事後再合併 |
 | **M06 PhylEx** | bulk 的 `b, d, major_cn, minor_cn`（TitanCNA），加上 scRNA 每個 cell 的 var/total reads。沒有 purity 和 normal CN | MAP tree 和 posterior samples、SNV→node、cellular prevalence、cell assignment。clone 數由 TSSB 推論 |
@@ -44,18 +43,15 @@
 | **A04 AML Strand-seq** | 每個 cell 的 read depth、strand 方向、染色體長度的 haplotype，再推出 SV | 人工整理的 clone 樹。分類結果：monoclonal 2 例、linear 3 例、branched 3 例 |
 | **A05 MPAL** | DAb-seq 每個 cell 的 genotype（20 個基因的 panel） | SCITE mutation tree。clone 定義為同 genotype >10 顆細胞，14 名病人共 36 個 clone |
 
-## 3. 應用研究：long-read／haplotype（B01–B08）
+## 3. 應用研究：long-read／haplotype（B01、B03–B05、B07）
 
 | 論文 | 輸入 | 輸出 |
 |---|---|---|
 | **B01 小鼠 melanoma（ONT）** | 每個 subline 的 bulk ONT SNV（DeepVariant，已扣 normal）。coverage ≤10 標為 missing。Wakhan CN 用 unphased 模式 | ScisTree subline tree（23 片葉、4 個 clade）。TreeHarmonizer 把 SNV/SV/CNA 放到固定樹的 edge 上 |
-| **B02 myeloma（linked-read）** | bulk VAF（SciClone 分群）。NRAS pair 用 linked-read molecule 加 HP 判斷 | Fishplot 克隆結構。這是呈現工具，不是正式推樹 |
 | **B03 SIGNALS** | DLP+ 的 total CN 和 haplotype block allele counts，推出 HSCN。ONT 只用來驗證 SV | sitka consensus cell tree，由 total CN breakpoint 建出。HSCN 之後才映射到 tips |
 | **B04 肺癌 ONT** | short-read VAF＋FACETS 的 CN/purity，進 PyClone-VI 得到 CCF cluster。ONT 跨兩個 SNV 的 read 給 partial order。HP 指派門檻：一個 HP ≥3 條 mutant read、另一個 HP ≤1 條 | ClonEvol 候選樹，再用 long-read pair 篩選（S14 從 branched 改選 linear）。scDNA 只做局部驗證 |
 | **B05 MEDICC2** | 每個 sample 或 cell 的 haplotype-specific 整數 CN profile。沒有 SNV reads。purity 和 ploidy 只在上游（Battenberg）用到 | NJ tree（葉是 sample 或 cell），加上祖先 CN、branch 事件和 WGD 判定 |
-| **B06 HCC 多部位 ONT** | ONT SV（用 blood 過濾）和 Illumina SNV，轉成 presence 矩陣。SVclone 用 VAF、FACETS CN 和 purity/ploidy | NJ sample tree（葉是採樣區域）。MutationTimeR 把 SV 分成 early／late clonal 或 subclonal |
 | **B07 Numbat** | scRNA 的 expression counts＋germline SNP allele counts＋population phasing | CNV segment、每個 cell 的 CNV genotype 機率、single-cell tree 和 clone |
-| **B08 HPV（ONT/PacBio）** | Illumina CN，以及 ≥20 kb read 上的 junction pattern | 局部 SV 的分子演化順序（人工 parsimony）。**不是 clone tree** |
 
 ## 4. 參考樹來源
 
@@ -68,7 +64,7 @@
 
 - 以上內容來自各篇的 `README.md` 筆記。筆記本身已區分「論文描述」「程式實作」「推論」。我沒有回頭讀 PDF 原文。
 - `methods_survey/README.md` 另有 46 個方法的總表，有「輸入」和「CN 處理」欄，但沒有「輸出」欄。其中只有 M01–M06 有逐篇筆記，所以上表只涵蓋這 6 篇方法。
-- 和本 repo 最接近的資料型態是 bulk ONT＋HP＋purity＋CN。逐項對照最接近的是 M01（主體）、M02/M03（read pair 證據）和 M04（`(x,y,w,z)` 狀態空間）。
+- 和本 repo 最接近的資料型態是 bulk ONT＋HP＋purity＋CN。逐項對照最接近的是 M01（主體）、M02（read pair 證據）和 M04（`(x,y,w,z)` 狀態空間）。
 
 如果需要，我可以把這份表存成 `research/tumor_phylogeny_2026/INPUT_OUTPUT_MATRIX.md`，也可以補上 46 個方法的輸出欄。
 
@@ -146,8 +142,6 @@ repo 裡**沒有** PyClone 原始論文（Roth 2014 *Nat Methods*）和 PyClone-
 | B04 肺癌 ONT | FACETS CN/purity → PyClone-VI CCF cluster | ClonEvol 候選樹，再用 long-read pair 篩選 |
 | R01 McPherson | targeted deep-seq 的 PyClone cluster | Dollo 樹；single-nucleus genotype 在 cluster 層級判斷有無 |
 | HCC1395（SuperFreq 部分） | VAF＋local CN 的 clonality 做 hierarchical clustering | SuperFreq 不建樹；樹來自 PhyloWGS |
-| B02 myeloma | SciClone VAF cluster | Fishplot 呈現，不是正式推樹 |
-| B06 HCC（timing 部分） | SVclone 的 SV＋SNV CCF coclustering | 樹另外由 binary presence 矩陣以 NJ 建出，和 CCF 分群無關 |
 | M04 Pharming（第一階段） | pseudobulk 上用 DeCiFer 估出 k 個 DCF cluster | 再列舉符合 sum condition 的樹 |
 
 **PhyClone 實務上也屬於這類：**
@@ -172,7 +166,6 @@ repo 裡**沒有** PyClone 原始論文（Roth 2014 *Nat Methods*）和 PyClone-
 | A03、A05、R01（single-nucleus） | 依 cell genotype 分群（SCG、或同 genotype >10 顆細胞） |
 | A04 | 依共享 SV |
 | B01 | 每個 subline 接近單一 clone，直接用 binary genotype 建樹 |
-| M03、B08 | 只有 pairwise 關係或分子結構，沒有 clone |
 
 ## 為何「同 CCF 等於同 clone」有問題
 

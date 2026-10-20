@@ -47,7 +47,7 @@
 | 同一條 read 上的兩個突變 | 一條 long read 同時蓋到兩個突變位置；全 deck 不用「read pair」 | P4、P10 |
 | benchmark | 有標準答案的公開考題，用來比較方法 | P11 |
 
-禁止上頁面（講稿也不用）：C1／C2／C3a／C3b、B04、M03、K10、F1、C0、Phase 0、L0–L3、PS、CP、AD、sc3、1A–3B、Battenberg、MuTect、ASCAT、tumour_content、major_cn 等程式欄位名。需要時改說白話（例如「第一份論文的分類」「肺癌論文」「會議摘要」「樹分數」「祖先關係分數」「拷貝數工具」）。
+禁止上頁面（講稿也不用）：C1／C2／C3a／C3b、B04、K10、F1、C0、Phase 0、L0–L3、PS、CP、AD、sc3、1A–3B、Battenberg、MuTect、ASCAT、tumour_content、major_cn 等程式欄位名。需要時改說白話（例如「第一份論文的分類」「肺癌論文」「會議摘要」「樹分數」「祖先關係分數」「拷貝數工具」）。
 
 ## 逐頁大綱
 

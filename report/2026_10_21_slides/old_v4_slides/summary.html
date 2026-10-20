@@ -1,0 +1,47 @@
+<section id="summary" style="background:#1F2A37;color:#F7F6F2;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#BFD0E0;letter-spacing:2px">總結</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#F7F6F2">三個子問題：前兩個有答案，第三個是驗證計畫</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:24px;padding-bottom:12px;border-bottom:1px solid #3A4A5C">
+<div style="width:56px;height:56px;border-radius:28px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">1</p></div>
+<div style="width:136px;height:80px;background:#F7F6F2;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg aria-label="兩棵小樹：左邊兄弟 clone 分支，右邊排成一串" width="120" height="72" viewBox="0 0 120 72"><line x1="28" y1="12" x2="12" y2="58" stroke="#4A5568" stroke-width="3"/><line x1="28" y1="12" x2="44" y2="58" stroke="#4A5568" stroke-width="3"/><circle cx="28" cy="12" r="8" fill="#9AA3AE"/><circle cx="12" cy="58" r="8" fill="#2F6DB5"/><circle cx="44" cy="58" r="8" fill="#C96A1B"/><line x1="60" y1="8" x2="60" y2="64" stroke="#D9DDE3" stroke-width="2"/><line x1="92" y1="10" x2="92" y2="62" stroke="#4A5568" stroke-width="3"/><circle cx="92" cy="10" r="7" fill="#9AA3AE"/><circle cx="92" cy="36" r="7" fill="#2F6DB5"/><circle cx="92" cy="62" r="7" fill="#C96A1B"/></svg></div>
+<p style="width:140px;font-size:30px;font-weight:700;color:#BFD0E0">哪裡錯</p>
+<p style="flex:1;font-size:30px;line-height:1.4;color:#F7F6F2">兄弟 clone 與 multiplicity，只用一個 bulk 樣本分不出來。</p>
+<p style="width:150px;font-size:24px;color:#BFD0E0;text-align:right">第 4–5 頁</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;padding-bottom:12px;border-bottom:1px solid #3A4A5C">
+<div style="width:56px;height:56px;border-radius:28px;background:#2F6DB5;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">2</p></div>
+<div style="width:136px;height:80px;background:#F7F6F2;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg aria-label="兩色 read：HP1 藍色 read 帶一個突變，HP2 橘色 read 同時帶兩個突變" width="120" height="72" viewBox="0 0 120 72"><rect x="6" y="14" width="108" height="12" rx="6" fill="#2C5F9E"/><circle cx="40" cy="20" r="7" fill="#D23A2E"/><rect x="6" y="46" width="108" height="12" rx="6" fill="#D9772B"/><circle cx="34" cy="52" r="7" fill="#D23A2E"/><circle cx="86" cy="52" r="7" fill="#D23A2E"/></svg></div>
+<p style="width:140px;font-size:30px;font-weight:700;color:#BFD0E0">怎麼補</p>
+<p style="flex:1;font-size:30px;line-height:1.4;color:#F7F6F2">HP 計數幫 multiplicity；同一條 read 上兩個突變排除不可能的關係（設計提案）。</p>
+<p style="width:150px;font-size:24px;color:#BFD0E0;text-align:right">第 7–8 頁</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;padding-bottom:12px">
+<div style="width:56px;height:56px;border-radius:28px;background:#C96A1B;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#F7F6F2">3</p></div>
+<div style="width:136px;height:80px;background:#F7F6F2;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg aria-label="2×2 象限，左上「有真值、無長讀」格以綠框標出" width="120" height="72" viewBox="0 0 120 72"><rect x="10" y="4" width="48" height="30" rx="4" fill="#E3EDE6" stroke="#2E7D4F" stroke-width="4"/><rect x="62" y="4" width="48" height="30" rx="4" fill="#D9DDE3"/><rect x="10" y="38" width="48" height="30" rx="4" fill="#D9DDE3"/><rect x="62" y="38" width="48" height="30" rx="4" fill="#D9DDE3"/></svg></div>
+<p style="width:140px;font-size:30px;font-weight:700;color:#BFD0E0">怎麼證明</p>
+<p style="flex:1;font-size:30px;line-height:1.4;color:#F7F6F2">尚未證明，這是驗證計畫：先在模擬資料上驗證。</p>
+<p style="width:150px;font-size:24px;color:#BFD0E0;text-align:right">第 9 頁</p>
+</div>
+<div style="display:flex;gap:24px">
+<div style="width:520px;background:#2A3847;border:1px solid #3A4A5C;border-radius:16px;padding:24px 32px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:12px"><x-icon name="Warning" style="color:#F7F6F2;width:32px;height:32px"></x-icon><p style="font-size:30px;font-weight:700;color:#F7F6F2">風險</p></div>
+<p style="font-size:30px;line-height:1.4;color:#F7F6F2">「該份只有一個拷貝的區段」可用的數量還沒算，可能不多。</p>
+<p style="font-size:24px;color:#BFD0E0">回扣第 8、9 頁</p>
+</div>
+<div style="flex:1;background:#2A3847;border:1px solid #3A4A5C;border-radius:16px;padding:24px 32px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:30px;font-weight:700;color:#F7F6F2">下一步</p>
+<div style="display:flex;align-items:center;gap:20px">
+<p style="flex:1;font-size:30px;line-height:1.4;color:#F7F6F2">① 在 HCC1395 算「該份只有一個拷貝的區段」、依 HP 篩選後的可用數量。</p>
+<x-shape kind="arrow-right" style="background:#BFD0E0;width:48px;height:24px"></x-shape>
+<p style="flex:1;font-size:30px;line-height:1.4;color:#F7F6F2">② 用這些數量設定模擬資料，在有真值的模擬資料上驗證。</p>
+</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#BFD0E0">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#BFD0E0">10 / 10</p>
+</div>
+<aside>最後回到開頭的三個問題。第一，哪裡錯？只用一個 bulk 樣本時，比例相近的兄弟 clone 會被併錯或排錯；同一個 VAF 也會因為 multiplicity 不同，對應到兩種 CCF。第二，怎麼補？HP 計數看出突變在哪一份同源染色體，幫助判斷 multiplicity；同一條 read 上兩個突變的組合，能排除不可能的關係。這兩個目前都是設計提案。第三，怎麼證明？還沒證明。今天給的是驗證計畫：先在有真值的模擬資料上驗證。風險是，該份只有一個拷貝的區段，可用的數量還沒算，可能不多。下一步：先在 HCC1395 算出依 HP 篩選後的可用數量，再用這些數量設定模擬資料來驗證。</aside>
+</section>

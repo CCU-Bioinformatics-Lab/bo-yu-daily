@@ -1,0 +1,67 @@
+{
+  "v": 4,
+  "attachments": {},
+  "createdOnFiles": {
+    "at": "2026-10-18T16:10:00+08:00",
+    "v": 1
+  },
+  "designSystems": [],
+  "faces": {
+    "jetbrains-mono": {
+      "family": "JetBrains Mono",
+      "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+    },
+    "noto-sans-tc": {
+      "family": "Noto Sans TC",
+      "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"
+    },
+    "noto-serif-tc": {
+      "family": "Noto Serif TC",
+      "href": "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap"
+    }
+  },
+  "lists": "css",
+  "order": [
+    "cover",
+    "agenda",
+    "s1-hcc1395",
+    "s2-pitfalls",
+    "s3-gap",
+    "s4-hp",
+    "s4-pair",
+    "s5-validate",
+    "summary"
+  ],
+  "sections": {
+    "s0": {
+      "description": "封面與主問題",
+      "start": "cover"
+    },
+    "s1": {
+      "description": "現象：HCC1395 的樹跟著分群改變",
+      "start": "s1-hcc1395"
+    },
+    "s2": {
+      "before": null,
+      "description": "原因：bulk 分不出兄弟 clone 與 multiplicity",
+      "start": "s2-pitfalls"
+    },
+    "s3": {
+      "description": "空缺：前人只用長讀事後挑樹",
+      "start": "s3-gap"
+    },
+    "s4": {
+      "description": "解法：HP 計數與同一條 read 上的兩個突變",
+      "start": "s4-hp"
+    },
+    "s5": {
+      "description": "驗證：模擬資料與祖先關係評分",
+      "start": "s5-validate"
+    },
+    "s6": {
+      "description": "總結",
+      "start": "summary"
+    }
+  },
+  "title": "2026-10-21 腫瘤演化樹研究進度"
+}

@@ -99,8 +99,8 @@
 - **(d) 易錯點**：
   - 分支時沒有 alt-alt read。原因：a、b 在不同的細胞譜系，同一條 DNA 分子不會同時帶有兩者。前提是兩者在同一條 haplotype，而且 C_h=1。
   - a、b 在不同 HP 時，共現永遠是 0，不能拿來判斷關係。圖上的兩個點必須畫在同一條長條上。
-  - 如果該 haplotype 有多個 copy（C_h>1）、有 ecDNA，或兩點之間跨 CN breakpoint，pattern 不再對應細胞譜系（K2、B08）。
-  - n11=0 不能直接判為分支。coverage 低時本來就可能看不到 11（K3、B02 n=4）。
+  - 如果該 haplotype 有多個 copy（C_h>1）、有 ecDNA，或兩點之間跨 CN breakpoint，pattern 不再對應細胞譜系（K2）。
+  - n11=0 不能直接判為分支。coverage 低時本來就可能看不到 11（K3）。
   - 只有 11 也不能證明 same（B04 EGFR 例）。
   - 一條 read 是一個分子觀測，不是一個細胞。
   - n00 不提供關係資訊，計分時不使用。
