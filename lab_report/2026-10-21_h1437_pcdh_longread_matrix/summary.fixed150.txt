@@ -1,0 +1,13 @@
+label	hp	windows	n_cpgs	n_reads	mean_meth	z_col	z_ff	sig_ff	minor_frac
+H1437_normal_full	HP1	31	150	20	0.65	8.07	4.53	0.74	0.050
+H1437_normal_full	HP2	25	150	20	0.71	7.34	4.57	0.80	0.050
+H1437_tumor_full	HP1	48	150	20	0.52	12.96	10.75	0.94	0.375
+H1437_tumor_full	HP2	30	150	20	0.50	5.91	5.01	0.80	0.050
+
+H1437_normal_full HP1 vs H1437_normal_full HP2	shared=18	z_ff 4.13 vs 4.58	first_higher=8/18
+H1437_tumor_full HP1 vs H1437_tumor_full HP2	shared=30	z_ff 9.14 vs 5.01	first_higher=25/30
+H1437_normal_full HP1 vs H1437_tumor_full HP1	shared=31	z_ff 4.53 vs 11.12	first_higher=6/31
+H1437_normal_full HP2 vs H1437_tumor_full HP2	shared=21	z_ff 4.57 vs 5.48	first_higher=8/21
+
+H1437_normal_full	shared=18	both_sig=9	minor HP1 0.050 HP2 0.050	|diff|<=0.1: 17	minor>=0.25: HP1 0 HP2 1
+H1437_tumor_full	shared=30	both_sig=23	minor HP1 0.400 HP2 0.050	|diff|<=0.1: 5	minor>=0.25: HP1 25 HP2 4
