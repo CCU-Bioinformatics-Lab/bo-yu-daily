@@ -1,3 +1,4 @@
 __pycache__/
 .data/_private/
 daily/.data/_private/
+.worklog_scan/
