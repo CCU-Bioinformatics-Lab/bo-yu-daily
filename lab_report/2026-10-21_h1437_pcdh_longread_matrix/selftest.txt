@@ -1,0 +1,5 @@
+independent CpGs                   z_col=   0.4 z_ff=   0.4 p_ff=0.347
+per-read offset only               z_col=   4.7 z_ff=  -2.4 p_ff=1.000
+monoclonal + 3% error              z_col=   0.1 z_ff=   0.2 p_ff=0.396
+two clones 70/30, 10% CpG differ   z_col=  12.6 z_ff=  13.9 p_ff=0.010
+two clones 50/50, 5% CpG differ    z_col=   6.4 z_ff=   5.9 p_ff=0.010

@@ -23,7 +23,7 @@ HCC1395（乳癌）的 PCDH 區幾乎整區高甲基化，barcode 多樣性大�
 
 ## 做法
 
-和 HCC1395 實驗相同。只用 5mC（`m` 設定）。
+和 HCC1395 實驗相同。只用 5mC（`m` 設定）。和 B09 原論文做法的差異，見 `lab_report/2026-10-20_hcc1395_pcdh_entropy/README.md`「做法」一節。
 
 ```bash
 python3 tools/pcdh_entropy.py <CRAM> <LABEL> <OUT_TSV>

@@ -1,0 +1,5 @@
+label	hp	window_pairs	shared_reads	agreement	shuffled	above_shuffled	agreement_ge_0.9
+H1437_tumor_full	HP1	6	8.0	1.00	0.51	6	6
+H1437_tumor_full	HP2	3	11	0.67	0.69	0	0
+H1437_normal_full	HP1	4	8.0	1.00	0.61	3	3
+H1437_normal_full	HP2	3	12	0.59	0.63	1	1

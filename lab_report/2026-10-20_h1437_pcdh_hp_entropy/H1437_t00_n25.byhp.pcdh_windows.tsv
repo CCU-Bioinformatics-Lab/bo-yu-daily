@@ -1,0 +1,2 @@
+label	win_start	win_end	n_reads	mean_meth	entropy_sub20	n_distinct_sub20	top_barcode_frac
+H1437_t00_n25_HP2	140862745	140862829	20	0.935	1.188	3.00	0.600

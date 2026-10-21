@@ -1,0 +1,19 @@
+H1437_normal_full          win= 1044 meth=0.69 ent=2.80 (2.09-3.38) <=1:6% >=3:41%
+H1437_normal_full_HP1      win=  231 meth=0.81 ent=2.12 (1.29-2.84) <=1:18% >=3:19%
+H1437_normal_full_HP2      win=  290 meth=0.83 ent=2.31 (1.39-2.94) <=1:15% >=3:24%
+H1437_tumor_full           win= 1204 meth=0.49 ent=2.95 (2.16-3.46) <=1:7% >=3:48%
+H1437_tumor_full_HP1       win= 1007 meth=0.54 ent=2.74 (1.98-3.33) <=1:9% >=3:40%
+H1437_tumor_full_HP2       win=  205 meth=0.72 ent=2.35 (1.65-2.96) <=1:11% >=3:23%
+
+tumor HP1 vs unphased: shared 1007 ent 2.74 vs 2.92 diff -0.09 (first lower 643/1007) meth 0.54 vs 0.52
+tumor HP2 vs unphased: shared 205 ent 2.35 vs 2.68 diff -0.19 (first lower 135/205) meth 0.72 vs 0.74
+normal HP1 vs unphased: shared 231 ent 2.12 vs 2.48 diff -0.25 (first lower 162/231) meth 0.81 vs 0.81
+normal HP2 vs unphased: shared 290 ent 2.31 vs 2.62 diff -0.26 (first lower 224/290) meth 0.83 vs 0.82
+HP1 tumor vs normal: shared 212 ent 2.73 vs 2.16 diff +0.46 (first lower 73/212) meth 0.54 vs 0.81
+HP2 tumor vs normal: shared 84 ent 2.11 vs 2.02 diff +0.10 (first lower 39/84) meth 0.77 vs 0.86
+tumor HP1 vs HP2: shared 190 ent 2.46 vs 2.34 diff +0.09 (first lower 87/190) meth 0.77 vs 0.74
+normal HP1 vs HP2: shared 52 ent 2.38 vs 1.97 diff +0.16 (first lower 23/52) meth 0.81 vs 0.87
+H1437_tumor_full_HP1 mid-meth windows 379 ent 3.29 top_frac 0.23
+H1437_tumor_full_HP2 mid-meth windows 63 ent 2.97 top_frac 0.26
+H1437_normal_full_HP1 mid-meth windows 66 ent 3.11 top_frac 0.27
+H1437_normal_full_HP2 mid-meth windows 89 ent 3.13 top_frac 0.26

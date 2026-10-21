@@ -35,6 +35,29 @@ python3 tools/pcdh_entropy.py <CRAM> <LABEL> <OUT_TSV>
 
 沒有 modkit 與 longphase，所以沒有分 haplotype。
 
+### 和 B09 原論文做法的差異（2026-10-21 補記）
+
+本實驗的 entropy 指標借自 B09 的**短讀 EM-seq 做法**，套用到 ONT long read，並改了兩處。B09 的 **long-read 做法**是另一套，本實驗沒有用（見 `lab_report/2026-10-21_h1437_pcdh_longread_matrix/`）。
+
+| 項目 | B09 短讀做法（血液、腎、攝護腺、膀胱） | 本實驗 |
+|---|---|---|
+| barcode | 一個 read pair 上 10 個相鄰 CpG | 一條 read 上 10 個相鄰 CpG |
+| window 排列 | 每個 CpG 起點一個 10-mer，互相重疊；作圖時取 rolling average | 每 10 個 CpG 切一段，**不重疊** |
+| 深度處理 | 用全部 read，只設最低深度：血液 ≥ 100X；腎、攝護腺、肺 ≥ 20X；膀胱 WGS ≥ 10X | 每個 window **抽 20 條**完整 read，重複 20 次取平均 |
+| 資料 | 短讀 EM-seq | ONT 5mC call |
+
+B09 的 long-read 做法（PD6646）不用 10-mer。它的步驟是：
+1. 依 HP 建「read × CpG」矩陣，window 約 29.5 kb、646 個 CpG（semi-sliding）。
+2. 篩選 read：CpG 缺值 ≤ 20%，連續缺值 ≤ 5 個。
+3. 用 Hamming kNN（k = 3）補值，再用 Hamming 距離做 UPGMA。
+
+差異的影響（分析推論）：
+- 不重疊 window 只取約 1/10 的位置。整體分布應該接近重疊做法，但沒有驗證。
+- 抽 20 條讓深度不同的樣本可以比較，但 entropy 上限變成約 4.3 bits。所以本實驗的 entropy 數值**不能和 B09 的數值直接比較**。
+- B09 也指出，10-CpG barcode 只有 1,024 種 pattern，單一時間點無法重建完整的樹。
+
+精確的說法是：本實驗借用 B09 短讀的 10-mer entropy 指標，並做了上述修改，不是照 B09 原做法。
+
 ## 結果
 
 | 指標 | t50_n00 tumor | t00_n25 normal |
