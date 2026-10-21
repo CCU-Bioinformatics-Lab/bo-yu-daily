@@ -33,4 +33,5 @@ cd bo-yu-daily && xdg-open index.html      # macOS 用 open，Windows 用 start
 
 ### 2026-10
 
+- **[2026-10-20](2026-10-20.html)** —— 5 株 cell line 裡有 3 株的 PCDH 區整區高甲基化，甲基化條碼只剩 H1437、HCC1954 還能評估
 - **[2026-10-19](2026-10-19.html)** —— 4 個 subagent 分頭搜尋後確認：還沒有已發表方法把長讀的 haplotype／phase set 放進演化樹模型
