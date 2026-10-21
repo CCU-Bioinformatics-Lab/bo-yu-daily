@@ -24,7 +24,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `research/hcc1395_golden_tree_research/`：HCC1395 golden tree 文獻整理，以及 PhyloWGS model review，可作為 HCC1395 的驗證參考。
 - `daily/`：每日工作日誌 HTML（由 `daily-log` skill 產生；`.data/`、`.worklog_scan/` 是它的掃描產物）。日誌只作導覽，不能當成事實來源。
 - `report/`：PPT／投影片的輸出目錄（見工作慣例）。
-- `tools/`：視覺化元件產生腳本（`build_visual_components.py` 會呼叫 `~/.codex/skills/svg-component-builder`）。
+- `tools/`：視覺化元件產生腳本（`build_visual_components.py` 會呼叫 `~/.codex/skills/svg-component-builder`），以及資料分析腳本（例如 `pcdh_entropy.py`）。
+- `lab_report/`：實驗結果，一個實驗一個目錄（`YYYY-MM-DD_<主題>/`），內含 `README.md`（結論、資料、做法、結果、限制）與結果檔。產生結果的腳本放 `tools/`。
 
 ## PhyClone 常用指令
 
