@@ -2,9 +2,9 @@
 
 本檔收錄 `report_rule.md`「圖」區塊中，有日期的生物基因畫法規則。它們從 `report_rule.md` 拆出。
 
-- 只在畫到對應關鍵字的概念時讀本檔。關鍵字索引在 `report_rule.md`「圖」第 8 條。
+- 只在畫到對應關鍵字的概念時讀本檔。關鍵字索引在 `report_rule.md` 的 F-IDX。
 - 本檔和 `report_rule.md` 同等效力。和 `VISUAL_SPEC.md` 衝突時，以本檔為準。
-- 固定配色仍在 `report_rule.md`「圖」第 4 條。本檔只引用，不重列。
+- 固定配色仍在 `report_rule.md` 的 F-4。本檔只引用，不重列。
 - 新增生物基因畫法規則時，加進本檔對應小節，附日期，並更新 `report_rule.md` 的索引。
 
 ## A. read 上的位點與 SNV 標示
@@ -35,7 +35,7 @@
 
 關鍵字：subclonal CN、copy number、低 purity、低深度、CCF 推不準、陷阱、限制
 
-這些是 `report_rule.md`「圖」第 7 條（困難情境要畫機制圖）的細則。
+這些是 `report_rule.md` F-7（困難情境要畫機制圖）的細則。
 
 1. subclonal CN 這類「細胞之間不同」的問題：並排畫 main clone 與 subclone 兩群細胞，各自標 CN（例如 CN 2 → CN 3）。（2026-10-20）
 2. 「某個量太低」造成的問題（低 purity、低深度）：每個量畫成數值偏低的量表。各自用箭頭接到它造成的中間效應。最後匯合指向受影響的結果（例如 CCF）。（2026-10-20）
