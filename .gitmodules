@@ -1,3 +1,12 @@
 [submodule "research/phyclone_research/PhyClone"]
 	path = research/phyclone_research/PhyClone
 	url = https://github.com/Roth-Lab/PhyClone.git
+[submodule "research/simulation_pipeline_research/upstream/pearsim"]
+	path = research/simulation_pipeline_research/upstream/pearsim
+	url = https://github.com/morrislab/pearsim.git
+[submodule "research/simulation_pipeline_research/upstream/pairtree"]
+	path = research/simulation_pipeline_research/upstream/pairtree
+	url = https://github.com/morrislab/pairtree.git
+[submodule "research/simulation_pipeline_research/upstream/TRACERx_simulation_tool"]
+	path = research/simulation_pipeline_research/upstream/TRACERx_simulation_tool
+	url = https://github.com/zaccaria-lab/TRACERx_simulation_tool.git
