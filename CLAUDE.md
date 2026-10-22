@@ -21,6 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `notes/`（`zh-TW/` 是中文版）：`00_SOURCE_MAP` 到 `07_PRESENTATION_BRIEF`，涵蓋論文全貌、方法、實驗、code mapping、evidence matrix、假設與限制。要了解 PhyClone 時優先讀這裡，再回頭查原始碼。
   - `RESEARCH_PLAN.md`：分析規範。分析 PhyClone 時，讀取範圍限制在 `research/phyclone_research/` 內，並區分「論文描述」「程式實作」「分析推論」。
   - `.agent_workspace/`：多 agent 分析的中間產物，已在 2026-10-17 刪除，內容已被 `notes/` 吸收。需要原件時，用 `git show 2a48b80:research/phyclone_research/.agent_workspace/<path>` 取回。
+- `research/simulation_pipeline_research/`：模擬資料生成流程研究。`notes/` 分析 PhyClone 模擬的論文設計、程式行為、benchmark 真值格式，以及加入 long read（HP）特徵的缺口；`phyclone_sim_code/` 是上游模擬與驗證程式的唯讀快照（來源見 `SOURCE.md`）。`upstream/` 是 Pairtree（`pearsim`、`pairtree`）與 CONIPHER（`TRACERx_simulation_tool`）模擬生成器的 git submodule（見 `upstream/SOURCE.md`）。驗證層級定義仍以根目錄 `plan.md` 為準。
 - `research/hcc1395_golden_tree_research/`：HCC1395 golden tree 文獻整理，以及 PhyloWGS model review，可作為 HCC1395 的驗證參考。
 - `daily/`：每日工作日誌 HTML（由 `daily-log` skill 產生；`.data/`、`.worklog_scan/` 是它的掃描產物）。日誌只作導覽，不能當成事實來源。
 - `report/`：PPT／投影片的輸出目錄（見工作慣例）。
