@@ -22,6 +22,7 @@
 | [notes/02_CODE_PIPELINE.md](notes/02_CODE_PIPELINE.md) | 程式實作：`fscrp.py` → `sim_data_on_tree.py` → likelihood grid；參數、已驗證行為、論文與程式的差異 |
 | [notes/03_BENCHMARK_DATASET_FORMAT.md](notes/03_BENCHMARK_DATASET_FORMAT.md) | 本機 benchmark 資料集的真值格式，以及從資料反推的生成參數 |
 | [notes/04_GAPS_FOR_LONGREAD.md](notes/04_GAPS_FOR_LONGREAD.md) | 要產生 long read 特徵還缺什麼；對應 `plan.md` 的 L1-B／L2 |
+| [simulator_survey_2026-10-24/](simulator_survey_2026-10-24/README.md) | 其他「真值樹＋模擬 SNV 資料」生成器總調查（約 90 個工具，6 個方向）與總表 `ALL_SIMULATORS.tsv` |
 | [phyclone_sim_code/](phyclone_sim_code/SOURCE.md) | PhyClone 模擬與驗證程式的快照（上游 commit `2738324`），來源對照見 `SOURCE.md` |
 | `references/` | 指向論文、補充文件、XLSX、benchmark 資料集 README 的 symlink |
 
