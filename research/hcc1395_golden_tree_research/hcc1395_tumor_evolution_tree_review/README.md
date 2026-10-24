@@ -20,7 +20,7 @@ cross_tags: ["long_read_validation_only", "cell_line", "repo_validation_referenc
 keywords_en: ["hcc1395", "seqc2", "reference call set", "phylowgs", "superfreq", "bulk wgs", "wes", "ascat", "10x single-cell cnv", "pacbio validation", "tumor-normal titration", "breast cancer cell line"]
 keywords_zh: ["乳癌細胞株", "參考樣本", "演化樹", "單細胞拷貝數", "正交驗證"]
 summary_zh: "bulk PhyloWGS 建樹；單細胞 CNV 只部分佐證。"
-category_index: "../../PAPER_CATEGORIES.md"
+category_index: "../../literature/PAPER_CATEGORIES.md"
 ---
 
 # HCC1395 high-confidence candidate branching tree topology：論文分析索引

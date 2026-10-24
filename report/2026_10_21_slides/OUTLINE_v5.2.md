@@ -147,6 +147,6 @@ P4 的格子只寫「有」「無」。「局部」「只在程式碼」「只�
 
 ## 來源
 
-- `research/paper_categories.tsv`。
+- `research/literature/paper_categories.tsv`。
 - 各篇 README（M01、M02、M04–M07、A01–A05、B01–B05、B07、R01、H01）。
 - 審查與查核結果：`REVIEW_v5.md`。

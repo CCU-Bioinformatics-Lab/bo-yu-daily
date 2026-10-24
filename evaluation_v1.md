@@ -99,7 +99,7 @@ informative_given_eligible = n_informative_pairs / n_eligible_pairs
 
 ### 2.7 SMC-Het 相容分數（附加驗證）
 
-**目的。** 用 SMC-Het 的官方定義計分，讓 PhyClone 和本 repo 的新增特徵能和 SMC-Het 的受測方法直接比較（[M07 筆記](research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md)）。PhyClone 不在 SMC-Het 的受測方法中。本節是附加驗證；§2.2–2.6 仍是主要結果。
+**目的。** 用 SMC-Het 的官方定義計分，讓 PhyClone 和本 repo 的新增特徵能和 SMC-Het 的受測方法直接比較（[M07 筆記](research/literature/papers/M07_smchet_benchmark_2024/README.md)）。PhyClone 不在 SMC-Het 的受測方法中。本節是附加驗證；§2.2–2.6 仍是主要結果。
 
 **依據。** 公式依官方評分程式 [uclahs-cds/tool-SMCHet-scoring](https://github.com/uclahs-cds/tool-SMCHet-scoring)（commit `fa67302`，2025-07-14，Apache-2.0，Python 2）的 `smc_het_eval/SMCScoring.py`。論文 Methods 只有摘要；兩者不一致時以程式為準，並在下表註明。
 
@@ -227,8 +227,8 @@ SMC-Het 相容分數（§2.7）另有三項驗收條件：
 
 - [實作與實驗計畫](plan.md)：§4.0、§4.5、§4.7、§5。
 - [PhyClone 評估指標](research/phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)：§「指標與統計方法」，AD／V 的原文依據。
-- [文獻對本 repo 的改進方案](research/tumor_phylogeny_2026/REPO_IMPROVEMENTS.md)：§4–6，分層評估、ablation 與資訊洩漏。
-- [B04 肺癌 long-read phasing](research/tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md)：局部 mutation partial order 的研究動機，不提供本規格全部指標的既有實作。
-- [M07 SMC-Het benchmark](research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md)：§2.7 的論文依據（Salcedo et al., *Nat Biotechnol* 2024，Methods「Scoring metrics」「Scoring and ranking」）。
+- [文獻對本 repo 的改進方案](research/literature/surveys/patient_sc_longread_2026/REPO_IMPROVEMENTS.md)：§4–6，分層評估、ablation 與資訊洩漏。
+- [B04 肺癌 long-read phasing](research/literature/papers/B04_lung_longread_phasing_2022/README.md)：局部 mutation partial order 的研究動機，不提供本規格全部指標的既有實作。
+- [M07 SMC-Het benchmark](research/literature/papers/M07_smchet_benchmark_2024/README.md)：§2.7 的論文依據（Salcedo et al., *Nat Biotechnol* 2024，Methods「Scoring metrics」「Scoring and ranking」）。
 - [SMC-Het 官方評分程式](https://github.com/uclahs-cds/tool-SMCHet-scoring)：commit `fa67302`；`SMCScoring.py` 的 `calculate1A`、`calculate1B`、`calculate1C`、`calculate2`、`calculate3Final`、`validate3A`、`validate3B`，以及 `scoring_harness_optimized.py` 的 `om_calculate2A`。
 - [實驗室依輸出類型驗證規範](/big8_disk/liaoyoyo2001/Knowledge/06_workflows/validation-by-output-type.md)：L30–46、L86–96、L138–154，分母、HP 語意與獨立驗證；`status: lab-canonical`。

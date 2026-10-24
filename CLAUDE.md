@@ -14,7 +14,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 目錄結構
 
-- `research/PAPER_CATEGORIES.md`：**找論文先看這裡**。22 篇依「定序平台 × single-cell 真值」分成 C1（短讀／未說平台）、C2（long-read 特徵輔助建樹）、C3a／C3b（single-cell 真值樹 × 短讀／long read）。總表是 `research/paper_categories.tsv`（唯一來源）；每篇 README 頂端有單行 YAML front-matter，可直接 `grep -rl '^category: "C2"' --include=README.md research/`；`research/papers_by_category/` 是依類的 symlink 目錄。改分類時只改 TSV，再跑 `python3 research/tools/sync_paper_categories.py`（`--check` 檢查 drift）。
+- `research/literature/`：**找論文先看這裡**。所有文獻集中在這裡，結構見 `research/literature/README.md`。
+  - `papers/`：19 篇逐篇筆記（A01–A05、B01、B03–B05、B07、B09、M01、M02、M04–M08、R01），一篇一個目錄。第 20 篇 HCC1395 golden tree（H01）仍放在 `research/hcc1395_golden_tree_research/`。
+  - `PAPER_CATEGORIES.md`：分類索引。20 篇依「定序平台 × single-cell 真值」分成 C1（短讀／未說平台）、C2（long-read 特徵輔助建樹）、C3a／C3b（single-cell 真值樹 × 短讀／long read）。總表是 `paper_categories.tsv`（唯一來源）；每篇 README 頂端有單行 YAML front-matter，可直接 `grep -rl '^category: "C2"' --include=README.md research/`；`papers_by_category/` 是依類的 symlink 目錄。改分類時只改 TSV，再跑 `python3 research/literature/tools/sync_paper_categories.py`（`--check` 檢查 drift）。
+  - `surveys/`：各次文獻調查的摘要與搜尋紀錄（`patient_sc_longread_2026/`、`methods_survey/`、`longread_tree_search_2026-10-19/`）。論文本體一律放 `papers/`，調查只放摘要。
+  - `SYNTHESIS_phyclone_longphase.md`：跨論文整合地圖。
+- `research/meeting_record/`：會議紀錄與會後整理。
 - `tumor_sample.md`：樣本／CRAM 路徑盤點（`/big8_disk/data/<cell line>/ONT*/subsample/<purity label>/<line>_<purity label>.cram`；部分舊 `.bam` symlink 已失效，以該檔為準），以及 PhyClone benchmarking 資料集（`/big8_disk/boyu114/phyclone_dataset/`）。
 - `research/phyclone_research/`：PhyClone 論文分析。
   - `PhyClone/`：上游 PhyClone 原始碼，是 **git submodule**（`https://github.com/Roth-Lab/PhyClone.git`），改動要在 submodule 內另外 commit。

@@ -89,20 +89,20 @@ ASD-STE100 是英文技術文件的受控語言標準。本次採用其短句、
 
 | 概念 | 必須保留的差異 | 研究定位 |
 |---|---|---|
-| VAF、CCF、克隆專有比例、腫瘤細胞純度、腫瘤 DNA 比例 | 分母不同；包含後代的規則也不同 | [PhyClone 方法 §2、§5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)；[綜整 §3](tumor_phylogeny_2026/REPO_IMPROVEMENTS.md) |
+| VAF、CCF、克隆專有比例、腫瘤細胞純度、腫瘤 DNA 比例 | 分母不同；包含後代的規則也不同 | [PhyClone 方法 §2、§5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)；[綜整 §3](literature/surveys/patient_sc_longread_2026/REPO_IMPROVEMENTS.md) |
 | clone、mutation cluster、node | 群集是統計分組；節點的生物意義依模型而定 | [PhyClone 方法 §1、§4](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md) |
-| clone tree、cell tree、sample tree、mutation tree | 節點或葉節點代表不同單位 | [A 類比較](tumor_phylogeny_2026/A_SUMMARY.md)；[A05](tumor_phylogeny_2026/papers/A05_mpal_multiome_2024/README.md) |
-| CN、CNA、CNV、SV | CN 是量或狀態；事件分類與原文用法另記 | [MEDICC2](tumor_phylogeny_2026/papers/B05_medicc2_2022/README.md)；[Strand-seq 研究](tumor_phylogeny_2026/papers/A04_aml_strandseq_2024/README.md) |
-| major/minor CN、HP1/HP2 CN | 前者按數量排序；後者需要單倍型身份與方向 | [MEDICC2](tumor_phylogeny_2026/papers/B05_medicc2_2022/README.md)；[平行 CN 演化](tumor_phylogeny_2026/papers/B03_singlecell_mutational_processes_2022/README.md) |
-| long reads、linked reads、long-range phasing | 直接長讀段、條碼連接短讀段、跨長距離定相，是不同技術層次 | [A04](tumor_phylogeny_2026/papers/A04_aml_strandseq_2024/README.md)；[Numbat](tumor_phylogeny_2026/papers/B07_numbat_2022/README.md) |
-| same molecule、same cell、same clone | 同分子共現、同細胞共存與共同克隆身份，是不同主張 | [B04](tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md) |
-| scDNA、scRNA、single-cell-derived culture | DNA 量測、RNA 量測與培養擴增材料，不可互換 | [A05](tumor_phylogeny_2026/papers/A05_mpal_multiome_2024/README.md)；[B01](tumor_phylogeny_2026/papers/B01_melanoma_longread_2026/README.md) |
+| clone tree、cell tree、sample tree、mutation tree | 節點或葉節點代表不同單位 | [A 類比較](literature/surveys/patient_sc_longread_2026/A_SUMMARY.md)；[A05](literature/papers/A05_mpal_multiome_2024/README.md) |
+| CN、CNA、CNV、SV | CN 是量或狀態；事件分類與原文用法另記 | [MEDICC2](literature/papers/B05_medicc2_2022/README.md)；[Strand-seq 研究](literature/papers/A04_aml_strandseq_2024/README.md) |
+| major/minor CN、HP1/HP2 CN | 前者按數量排序；後者需要單倍型身份與方向 | [MEDICC2](literature/papers/B05_medicc2_2022/README.md)；[平行 CN 演化](literature/papers/B03_singlecell_mutational_processes_2022/README.md) |
+| long reads、linked reads、long-range phasing | 直接長讀段、條碼連接短讀段、跨長距離定相，是不同技術層次 | [A04](literature/papers/A04_aml_strandseq_2024/README.md)；[Numbat](literature/papers/B07_numbat_2022/README.md) |
+| same molecule、same cell、same clone | 同分子共現、同細胞共存與共同克隆身份，是不同主張 | [B04](literature/papers/B04_lung_longread_phasing_2022/README.md) |
+| scDNA、scRNA、single-cell-derived culture | DNA 量測、RNA 量測與培養擴增材料，不可互換 | [A05](literature/papers/A05_mpal_multiome_2024/README.md)；[B01](literature/papers/B01_melanoma_longread_2026/README.md) |
 | outlier、mutation loss | 前者是模型指派；後者是生物事件 | [PhyClone 限制 §1、§3](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md) |
 | mutation multiplicity、tree-representation multiplicity | 前者計算突變拷貝；後者計算等價樹表示 | [PhyClone 方法 §3、§4](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md) |
 | particle ESS、MCMC ESS | 前者由粒子權重計算；後者依指定統計量的鏈自相關估計 | [PhyClone `Swarm.ess`、`relative_ess`](phyclone_research/PhyClone/phyclone/smc/swarm/swarm.py)；[Stan 官方文件](https://mc-stan.org/docs/2_40/reference-manual/analysis.html) |
-| MAP、MLE、consensus tree | 後驗最佳狀態、概似最佳狀態與多樹摘要，採用不同目標 | [PhyClone 方法 §9](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)；[Numbat](tumor_phylogeny_2026/papers/B07_numbat_2022/README.md) |
-| credible interval、confidence interval | 後驗機率區間與重複抽樣涵蓋率區間，解釋不同 | [A05](tumor_phylogeny_2026/papers/A05_mpal_multiome_2024/README.md)；[B07 全文](tumor_phylogeny_2026/papers/B07_numbat_2022/paper.txt) |
-| cis/trans 相位、cis/trans 表現效應 | Numbat 此處指 CNV 區域內外的表現效應，與相同／不同單倍型的相位用法分開 | [Numbat 全文 L383、L392–400](tumor_phylogeny_2026/papers/B07_numbat_2022/paper.txt) |
+| MAP、MLE、consensus tree | 後驗最佳狀態、概似最佳狀態與多樹摘要，採用不同目標 | [PhyClone 方法 §9](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)；[Numbat](literature/papers/B07_numbat_2022/README.md) |
+| credible interval、confidence interval | 後驗機率區間與重複抽樣涵蓋率區間，解釋不同 | [A05](literature/papers/A05_mpal_multiome_2024/README.md)；[B07 全文](literature/papers/B07_numbat_2022/paper.txt) |
+| cis/trans 相位、cis/trans 表現效應 | Numbat 此處指 CNV 區域內外的表現效應，與相同／不同單倍型的相位用法分開 | [Numbat 全文 L383、L392–400](literature/papers/B07_numbat_2022/paper.txt) |
 | call-set validation、tree validation | 變異存在的驗證率，不等於樹邊或祖先關係的正確率 | [HCC1395 驗證 §1、§6](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md) |
 
 特別注意 PhyClone 的介面字串 `joint-likelihood`：目前研究筆記與源碼顯示，該選樹分數包含先驗。敘述其行為時，使用「依後驗分數選樹」；原始介面字串仍保留。[方法 §9](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)；[`log_p_one`](phyclone_research/PhyClone/phyclone/tree/distributions.py)
@@ -121,7 +121,7 @@ ASD-STE100 是英文技術文件的受控語言標準。本次採用其短句、
 
 第一例：節點 CCF 為 0.70。兩個直接子節點的 CCF 分別為 0.20 與 0.30。依無流失的樹繼承模型，該節點的克隆專有比例為 `0.70 − 0.20 − 0.30 = 0.20`。[PhyClone 方法 §5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)
 
-第二例：樣本的腫瘤細胞純度為 0.80。某突變的 CCF 為 0.50。假設正常與所有癌細胞在該位點均有兩個拷貝，攜帶細胞均有一個 ALT 拷貝，且忽略觀測偏差，預期 VAF 為 `0.80 × 0.50 / 2 = 0.20`。因此三個比例分別是 80%、50% 與 20%。[簡化觀測式與條件](tumor_phylogeny_2026/REPO_IMPROVEMENTS.md)
+第二例：樣本的腫瘤細胞純度為 0.80。某突變的 CCF 為 0.50。假設正常與所有癌細胞在該位點均有兩個拷貝，攜帶細胞均有一個 ALT 拷貝，且忽略觀測偏差，預期 VAF 為 `0.80 × 0.50 / 2 = 0.20`。因此三個比例分別是 80%、50% 與 20%。[簡化觀測式與條件](literature/surveys/patient_sc_longread_2026/REPO_IMPROVEMENTS.md)
 
 ## 來源與查核方式
 
@@ -143,9 +143,9 @@ ASD-STE100 是英文技術文件的受控語言標準。本次採用其短句、
 | PC | [PhyClone](phyclone_research/notes/zh-TW/00_SOURCE_MAP.md) |
 | PW | [PhyloWGS model review](hcc1395_golden_tree_research/phylowgs_model_review.md) |
 | HCC | [HCC1395 參考演化樹](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/README.md) |
-| A01–A05 | [病人單細胞研究索引](tumor_phylogeny_2026/A_SUMMARY.md) |
-| B01、B03–B05、B07 | [長讀段／長距離／單倍型研究索引](tumor_phylogeny_2026/B_SUMMARY.md) |
-| SYN | [2026 文獻綜整](tumor_phylogeny_2026/README.md)與改進建議；不當成額外論文 |
+| A01–A05 | [病人單細胞研究索引](literature/surveys/patient_sc_longread_2026/A_SUMMARY.md) |
+| B01、B03–B05、B07 | [長讀段／長距離／單倍型研究索引](literature/surveys/patient_sc_longread_2026/B_SUMMARY.md) |
+| SYN | [2026 文獻綜整](literature/surveys/patient_sc_longread_2026/README.md)與改進建議；不當成額外論文 |
 
 原始 PDF、XLSX、HTML 視覺化、程式碼與中間 agent 產物，不作本次詞形統計的語料。前兩類研究以已整理的正式筆記為入口。2026 文獻調查另外掃描既有 `paper.txt` 與 `supplement.txt`。關鍵比例、ESS 與選樹分數另對照上游程式碼。這次沒有重新分析原始定序資料，也沒有全面改寫各篇研究筆記。
 

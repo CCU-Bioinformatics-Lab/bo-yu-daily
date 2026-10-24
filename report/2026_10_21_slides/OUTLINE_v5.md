@@ -84,10 +84,10 @@ v4.2（`OUTLINE.md`）偏離使用者指定的主題。本版只保留兩大段�
 
 - 22 篇中有沒有長讀層級的模擬。目前讀到的筆記都沒有。
 - A01–A05 的 single-cell 樹是 SNV 樹還是拷貝數樹，以及細胞數。
-- 每篇「BAM 可下載」欄。可從 `research/tumor_phylogeny_2026/ONT_DATA_AVAILABILITY.md` 與各篇資料段補。
+- 每篇「BAM 可下載」欄。可從 `research/literature/surveys/patient_sc_longread_2026/ONT_DATA_AVAILABILITY.md` 與各篇資料段補。
 - PhyClone 各模擬器的生成細節：查 `research/phyclone_research/notes/`。
 
 ## 來源
 
-- `research/paper_categories.tsv`（分類與篇數）。
+- `research/literature/paper_categories.tsv`（分類與篇數）。
 - 各篇 README：M01、M02、M04、M05、M06、M07、B01、B03、B04、R01、H01。
