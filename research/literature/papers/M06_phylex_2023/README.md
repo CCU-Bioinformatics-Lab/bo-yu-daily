@@ -207,7 +207,7 @@ P(b_n | ·) = Σ_{g ∈ G(M_n, m_n)} Binom(b_n; d_n, θ(g, ϕ_{z_n}, ε)) · 1/|
 | `P(ζ_c) ∝ 1`（cell 取樣有偏，所以用均勻） | bulk read 的來源 clone 機率**要用 clone fraction η 與 CN 加權**（`∝ η_u · CN_u(segment, HP)`），不能用均勻；normal 族群也要計入（需要 purity） |
 | `μ_{c,n}` 由祖先關係決定（0/1） | 一條 read 是否帶 SNV j，取決於該 clone 在該 haplotype 上的 multiplicity：帶突變的拷貝比例是 `w/x`（HP1）或 `z/y`（HP2）。同一條 read 上兩個 SNV 的聯合狀態，取決於它們是否落在同一條 haplotype、同一個拷貝上（拷貝層級的 phasing，比 cell 層級更細） |
 | scRNA 的 Beta-Binomial 混合（bursty、單等位表現） | **整個移除**。DNA read 沒有轉錄 burst，改成每個位點的簡單錯誤率（ONT 的 SNV basecall error），可再加 HP 指派錯誤 |
-| bulk likelihood 與 sc likelihood 條件獨立再相乘 | **不再獨立**：共現 read 本身也是 bulk read。若同一條 read 的 allele 同時算進 `b_n`、`d_n` 與 pair 項，就會重複計算。需要 composite likelihood（如 TreeClone 的做法：pair 項只用 read pair 的聯合 allele，或把共現 read 從邊際 count 扣掉） |
+| bulk likelihood 與 sc likelihood 條件獨立再相乘 | **不再獨立**：共現 read 本身也是 bulk read。若同一條 read 的 allele 同時算進 `b_n`、`d_n` 與 pair 項，就會重複計算。需要 composite likelihood（例如 pair 項只用 read pair 的聯合 allele，或把共現 read 從邊際 count 扣掉） |
 | 成本 O(C·\|V\|) | 成本變成 O(#共現 read × \|V\| × haplotype 狀態)。可以先依（SNV pair, HP, allele pattern）壓縮成計數表，成本變成 O(#pair × \|V\|) |
 
 **關鍵差異**：

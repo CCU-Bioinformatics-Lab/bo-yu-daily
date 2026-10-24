@@ -25,7 +25,6 @@
 | B01 Liu … Kolmogorov 2026 melanoma sublines | 已收錄 | ONT SNV；phased SV、Wakhan CN 只在建樹後放置 | tree_input（只有 SNV genotype） | ScisTree；TreeHarmonizer 把變異放到 MRCA | 無 |
 | **Hackett … Blundell 2026**（bioRxiv `10.64898/2026.02.23.707349`） | 已收錄為 [B09](../../papers/B09_pcdh_methylation_barcode_2026/README.md)（2026-10-20） | WhatsHap／LongPhase 把 read 分 HP；每條 read 的 PCDH CpG 5mC | **tree_input** | read × CpG 矩陣 → kNN 補值 → Hamming 距離 UPGMA | scWGS 樹；topology 相近，branch length 不符 |
 | BitPhylogeny（Yuan … Beerenwinkel, Genome Biol 2015） | 已收錄為 [M08](../../papers/M08_bitphylogeny_2015/README.md)（2026-10-19） | 每條 read 的多位點 methylation pattern | transferable_only | read 當成 TSSB mixture tree 的一次抽樣 | 模擬＋病人 |
-| TreeClone M02（2019） | 已收錄 | 短讀 SNV pair | transferable_only | pair likelihood＋tree prior，MCMC；只限 CN-neutral | 模擬 |
 
 註：
 
@@ -39,7 +38,7 @@
 |---|---|
 | Wong … Wei 2025 ecLego3（GBM ecDNA，ONT） | 畫了 ecDNA phylogeny，但沒寫演算法，視為人工樹 |
 | SVCFit（Karchin lab, bioRxiv 2025） | 用 SV CCF 建樹，但用短讀。long read 只出現在 Discussion |
-| PairClone 2019 | TreeClone 前身，不建樹 |
+| PairClone 2019 | 短讀 SNV pair 的 categorical IBP，不建樹 |
 | Foltz … Ding 2024 myeloma（10x linked read, SomaticHaplotype） | phased pair 只用來解讀資料，不建樹。這篇和已排除的 B02（Liu 2021）不同 |
 | Espejo Valle-Inclan 2025 osteosarcoma、ecSingle 2026 | long read 只做驗證 |
 | SMOOTH-seq、Hård 2023、scNanoGPS、nanoranger、LongSom | 只做 genotyping／clustering，不建樹 |
@@ -65,7 +64,7 @@
    - 現況：PhyClone 用 major/minor CN 列舉 genotype，不知道 SNV 在哪個 allele。
    - 改法：用 longphase-s 給的 HP 和 Wakhan 的 `C_h`，把 multiplicity 限制在 `1 ≤ m ≤ C_h`。只用該 HP 的 read 算 VAF：`VAF_h ≈ m / C_h × (tumor fraction on h)`。
    - 效果：減少 genotype 歧義，並能判斷 mutation 發生在 CN gain 之前或之後（timing）。
-2. **同 read 共現的 pairwise likelihood（TreeClone 式）**
+2. **同 read 共現的 pairwise likelihood**
    - 對同一 PS、同一 HP 的 SNV pair，計算 4 類 read 數：11、10、01、00。
    - 如果 i 是 j 的祖先，01（有 j 沒 i）只能來自錯誤。如果 i、j 是兄弟，11 只能來自錯誤。
    - 把這一項乘進 PhyClone 的 tree likelihood。在 SMC／PG 加入節點時更新。PhyClone 以 cluster 為單位，所以要在 cluster pair 層級加總。

@@ -162,9 +162,9 @@ outlier 的 CCF 取 Uniform 並數值積分。ν_n 可由「cluster 級 data-inf
    - SNV 所在 phase set 的 HP1/HP2 與 haplotype-specific CN（Wakhan 這類工具）對上後，可知 SNV 在 major 還是 minor haplotype，multiplicity 上限由該 haplotype 的 CN 決定，而不是一律 1..c_major。
    - 若 alt reads 全落在某一 HP，且該 HP 的 CN=2，可用 alt reads 內「同一 haplotype 拷貝數」比例區分 multiplicity 1 或 2。
    - 這只改 `get_major_cn_prior` 的輸出（cn、mu、log_pi），**DP、SMC、PG 都不必動**，是最小可行改動。
-2. **read 共現作為額外 likelihood 項**：pair likelihood（參考 M02 TreeClone 的 4 類 haplotype count）對兩個 SNV 的 ancestor／descendant／sibling 關係給分，可乘在 p(X|T) 上。難點：DP 是「每 node 一個 ρ̄ 網格」，pair 項依賴兩個 node 的 ρ̄ 與祖先關係，若要精確整合需擴充 DP；較省事的做法是只依 topology（祖先關係）打分，不積分 ρ̄。
+2. **read 共現作為額外 likelihood 項**：pair likelihood（同 PS、同 HP 的 4 類 haplotype count）對兩個 SNV 的 ancestor／descendant／sibling 關係給分，可乘在 p(X|T) 上。難點：DP 是「每 node 一個 ρ̄ 網格」，pair 項依賴兩個 node 的 ρ̄ 與祖先關係，若要精確整合需擴充 DP；較省事的做法是只依 topology（祖先關係）打分，不積分 ρ̄。
 3. **outlier 先驗**：目前用「染色體聚集度」猜 loss；有 HP 資訊後可改用「SNV 所在 HP 在某些 sample 的 CN 降為 0」直接給 high outlier prior（LOH 造成的 loss）。
-4. **single-sample 弱點**：本 repo 的 subsample 是同一 DNA 的稀釋，不是獨立 region，prevalence 順序不會在不同 sample 間反轉，多 sample 帶來的 identifiability 很有限。read 共現正好補這個缺口（TreeClone 的 Simulation 2 示範了單 sample 下 phasing 能分辨 branching）。
+4. **single-sample 弱點**：本 repo 的 subsample 是同一 DNA 的稀釋，不是獨立 region，prevalence 順序不會在不同 sample 間反轉，多 sample 帶來的 identifiability 很有限。read 共現正好補這個缺口。
 5. **最小實驗**：取 HCC1395（有 golden tree 文獻）單一 purity，跑 (a) 原版 PhyClone、(b) 只改 genotype prior 為 HP-informed 的版本；比較 multiplicity 後驗、MAP topology 與 AD F-score（相對參考樹）。不動推論核心，只換輸入的 cn/mu/log_pi。
 
 ## 核心判斷
