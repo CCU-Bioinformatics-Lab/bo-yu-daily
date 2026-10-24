@@ -11,6 +11,8 @@
 | Copy_Number_Error（450 份） | PhyClone 作者對 CONIPHER No-Noise 做的拷貝數擾動 | 否：擾動程式沒有公開 | 否 |
 | FS-CRP、TSSB | PhyClone 作者 | 否（見 `../../../lab_report/2026-10-21_phyclone_sim_rerun/README.md` 與 01 §7） | 否 |
 
+其他生成器（約 90 個工具）的總調查見 [`../simulator_survey_2026-10-24/README.md`](../simulator_survey_2026-10-24/README.md)。
+
 本機副本：三個生成器 repo 已加為 submodule，放在 `../upstream/`，版本與要看的檔案見 [`../upstream/SOURCE.md`](../upstream/SOURCE.md)。
 
 另外，三組資料轉成 PhyClone benchmark 的 `tree.json`、`data.tsv` 的轉換程式，在 PhyClone repo 裡都沒找到。Pairtree 與 CONIPHER 的轉換規則已從檔案反推出來。
