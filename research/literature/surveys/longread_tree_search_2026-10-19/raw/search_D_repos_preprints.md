@@ -107,6 +107,6 @@
 - `gh search code` 搜 `"phase set" clone tree tumor`、`haplotag subclone`、`pyclone haplotype long read`、`phylogeny "longphase"`、`clonal "whatshap" tumor tree`：0 筆。`"HP:i" clonal tree` 只回傳無關的 ontology 檔案。
 - 「clone tree／tumor phylogeny／subclonal reconstruction」的 repo，用 long／haplo／phas／nanopore 過濾後，沒有 long-read 工具。
 - 在 PhyClone、pyclone-vi、HATCHet、Pharming、longphase-s 的 issue 搜 "long read" 或 "phylogeny／clone"：0 筆。
-- Web：RECOMB／ISMB 2025–2026 沒有 long-read clone tree 論文。RECOMB 2025 的 devider 是 mixture haplotyping，與腫瘤無關，沒有深入看。arXiv 2024–2025 沒有 same-read mutation-pair 的 long-read 方法（最接近的仍是 TreeClone，already_known）。AACR 2025 沒有 phasing + clonal evolution 的 abstract（只有 Wakhan 5049，頁面 403）。PacBio HiFi 沒有 tumor phylogeny 研究。
+- Web：RECOMB／ISMB 2025–2026 沒有 long-read clone tree 論文。RECOMB 2025 的 devider 是 mixture haplotyping，與腫瘤無關，沒有深入看。arXiv 2024–2025 沒有 same-read mutation-pair 的 long-read 方法。AACR 2025 沒有 phasing + clonal evolution 的 abstract（只有 Wakhan 5049，頁面 403）。PacBio HiFi 沒有 tumor phylogeny 研究。
 - 已查但不納入：SPLONGGET（bioRxiv 10.1101/2025.09.08.674950，ONT single-cell 多體學，B-ALL）。摘要提到 "clonal dynamics"，但沒說有建樹或 phasing。屬於未驗證的可能線索，值得讀全文。
 - 依指示排除：Donmez & Kolmogorov AACR 2026 #6912、Zeng 2025 HBV HCC、Akagi/Goodwin 2023 HPV、Liu 2021 myeloma。這些都沒列出。

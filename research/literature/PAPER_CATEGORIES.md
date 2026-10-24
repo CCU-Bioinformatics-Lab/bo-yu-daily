@@ -8,7 +8,7 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 
 # 論文分類索引：定序平台 × single-cell 真值
 
-分類日：2026-10-18（2026-10-20 加入 B09）。共 20 份文獻：`literature/papers/` 的 A01–A05、B01、B03–B05、B07、B09、M01、M02、M04–M08、R01，以及 HCC1395 golden tree（H01）。`phyclone_research/` 與 M01 是同一篇論文。
+分類日：2026-10-18（2026-10-20 加入 B09）。共 19 份文獻：`literature/papers/` 的 A01–A05、B01、B03–B05、B07、B09、M01、M04–M08、R01，以及 HCC1395 golden tree（H01）。`phyclone_research/` 與 M01 是同一篇論文。
 
 每篇先由 5 個平行 subagent 讀 README 與全文，再由協調者統一判定邊界案例。這是**分析推論**，證據行號寫在各篇 README。
 
@@ -16,7 +16,7 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 
 | 類別 | 篇數 | 論文 |
 |---|---|---|
-| **C1** 短讀或未說平台（無 sc 真值） | 6 | B07、M02、M04、M05、M07、M08 |
+| **C1** 短讀或未說平台（無 sc 真值） | 5 | B07、M04、M05、M07、M08 |
 | **C2** long-read 特徵輔助建樹（無 sc 真值） | 1 | B01（弱） |
 | **C3a** single-cell 真值樹 × 短讀 | 11 | A01–A05、B03、R01、M01、M06、B05、H01 |
 | **C3b** single-cell 真值樹 × long-read 特徵 | 2 | B04、B09 |
@@ -56,7 +56,7 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 | 類別 | subtype | 意思 | 論文 |
 |---|---|---|---|
 | C1 | `c1_bulk_short_read` | bulk 短讀或模擬 benchmark | M05、M07 |
-| C1 | `c1_read_cooccurrence_short` | 用 read／分子共現，但資料是短讀；模型可移植到 long read | M02、M08 |
+| C1 | `c1_read_cooccurrence_short` | 用 read／分子共現，但資料是短讀；模型可移植到 long read | M08 |
 | C1 | `c1_single_cell_input_no_truth` | 輸入是 single-cell，沒有 sc 真值樹 | B07、M04 |
 | C2 | `c2_long_read_data_only` | ONT 資料建樹，沒有 long-read 獨有特徵（弱） | B01 |
 | C3a | `c3a_patient_sc_reference` | 病人 scDNA 參考樹 | A01–A05、B03、R01 |
@@ -73,7 +73,6 @@ keywords_zh: [論文分類, 短讀, 長讀, 單細胞真值樹, 定序平台, �
 | B03 | C3a | ONT 只做 SV 正交驗證，不進入建樹 | — |
 | B05 | C3a partial | 從病人 scDNA 建樹，只與原研究 clone 結構比對 | 也可標 `reference_tree` |
 | B07 | C1 | scRNA 加族群 phasing；scDNA 只佐證 CN | 接受 CN 佐證時改屬 C3a partial |
-| M02 | C1 | 同 read 共現模型，但只用短 PE reads | — |
 | M08 | C1 | 整條 read pattern 共用一個 clone 來源；資料是 454 bisulfite 與 single-cell exome，真值只來自模擬（2026-10-19 加入） | 看 MPN single-cell 輸入時可標 `c1_single_cell_input_no_truth` |
 | M04 | C1 | 病人 scDNA 推樹，但準確度只來自模擬 | 把推論的 scDNA 樹當參考時改屬 C3a |
 | M06 | C3a benchmark | DLP 樹來自細胞株，不是病人 | — |
@@ -104,7 +103,7 @@ ls -R papers_by_category
 
 | tag | 論文 |
 |---|---|
-| `read_cooccurrence_model` | M02、M08、B04、B09 |
+| `read_cooccurrence_model` | M08、B04、B09 |
 | `haplotype_specific_cn` | A01、A04、B03、B05、B07、M04 |
 | `long_read_validation_only` | B03、H01 |
 | `phyclone_truth_source` | R01、M01 |
@@ -125,13 +124,12 @@ ls -R papers_by_category
 
 <!-- BEGIN GENERATED: paper table -->
 
-### C1｜短讀或未說平台（無 single-cell 真值）（6 篇）
+### C1｜短讀或未說平台（無 single-cell 真值）（5 篇）
 
 | ID | 子類 | 年 | 論文 | 平台（建樹資料） | long-read 角色 | sc 真值 | 一句話 |
 |---|---|---|---|---|---|---|---|
 | [M05](papers/M05_tusv_ext_2022/README.md) | `c1_bulk_short_read` | 2022 | TUSV-ext: Reconstructing tumor clonal lineage trees incorporating SNVs, CNAs and SVs | multi-region bulk short-read WGS; simulated (no platform) | `none` | `simulated_only`（none） | ILP 聯合 SNV/SV/CNA 建樹；phasing 是潛變數。 |
 | [M07](papers/M07_smchet_benchmark_2024/README.md) | `c1_bulk_short_read` | 2024 | SMC-Het DREAM: Crowd-sourced benchmarking of single-sample tumor subclonal reconstruction | simulated Illumina WGS (BAMSurgeon on GM24385) | `none` | `simulated_only`（none） | 短讀模擬的單樣本 benchmark，比較 31 個方法。 |
-| [M02](papers/M02_treeclone_2019/README.md) | `c1_read_cooccurrence_short` | 2019 | TreeClone: Reconstruction of tumor subclone phylogeny based on mutation pairs using next generation sequencing data | Illumina HiSeq PE100 WES; simulated | `none` | `simulated_only`（none） | 用同 read 上的 SNV pair 推 clone tree；只用 short read。 |
 | [M08](papers/M08_bitphylogeny_2015/README.md) | `c1_read_cooccurrence_short` | 2015 | BitPhylogeny: a probabilistic framework for reconstructing intra-tumor phylogenies | 454/Roche bisulfite amplicon reads (IRX2 locus, Sottoriva colon cancer); single-cell exome (Hou 2012 MPN); simulated | `none` | `simulated_only`（none） | 每條 read 的多位點 pattern 當一次抽樣，用 TSSB 聯合推 clone 與樹；沒有 CN。 |
 | [B07](papers/B07_numbat_2022/README.md) | `c1_single_cell_input_no_truth` | 2022 | Haplotype-aware analysis of somatic copy number variations from single-cell transcriptomes (Numbat) | 10x scRNA-seq (short read); Eagle2 population phasing reference | `none` | `scrna_only`（none） | scRNA 加族群 phasing 推 CNV 細胞樹；不是 long read。 |
 | [M04](papers/M04_pharming_2026/README.md) | `c1_single_cell_input_no_truth` | 2026 | Pharming: Joint Clonal Tree Reconstruction of SNV and Copy Number Aberration Evolution from Single-Cell DNA Sequencing of Tumors | low-pass scDNA (ACT, DLP+); simulated | `none` | `simulated_only`（none） | 單細胞 SNV+CNA 聯合 clone tree；只有模擬真值。 |

@@ -126,6 +126,6 @@ E[VAF] = rho * f * m / [2 * (1-rho) + rho * C]
 
 ## 8. Related work 與新穎性應如何收斂
 
-不能把「同一條 read 的 somatic mutation pairs 能推先後」本身當作新貢獻：B04已直接用來選候選樹，早期TreeClone亦使用proximal pairs。
+不能把「同一條 read 的 somatic mutation pairs 能推先後」本身當作新貢獻：B04已直接用來選候選樹；BitPhylogeny（M08）也已讓整條read的多位點pattern共用一個clone來源推樹。
 
 本repo較值得檢驗的差異是：在明確PS／HP／CN條件下，將局部molecular evidence接入PhyClone的posterior tree inference，同時保留multiplicity、phase error與非唯一topology的不確定性；並證明改善不是coverage、固定分群、重複計分或tagging洩漏所造成。這是待驗證的研究定位，不是已證成的原創性宣告。

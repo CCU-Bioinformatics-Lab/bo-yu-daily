@@ -2,34 +2,21 @@
 
 Search date: 2026-10-19. Angle: same-read and same-haplotype co-occurrence of somatic SNVs, read-based phasing, PS/HP tags, germline-anchored phasing, and pair ordering.
 
-**Main finding.** No peer-reviewed tool or preprint was found that builds a tumor clone or mutation tree from long-read co-occurrence, HP, or PS evidence. The only tools whose tree model uses read-level SNV co-occurrence are short-read tools (TreeClone; its precursor PairClone has no tree). BitPhylogeny uses a read-level multi-locus pattern, but for methylation. The long-read papers found either use phasing only for interpretation or validation, or phase without building a tree (LongPhase-S, LongPhase-TO).
+**Main finding.** No peer-reviewed tool or preprint was found that builds a tumor clone or mutation tree from long-read co-occurrence, HP, or PS evidence. PairClone uses short-read SNV pair co-occurrence but has no tree. BitPhylogeny uses a read-level multi-locus pattern, but for methylation. The long-read papers found either use phasing only for interpretation or validation, or phase without building a tree (LongPhase-S, LongPhase-TO).
 
 ---
 
-## 1. TreeClone: tumor subclone phylogeny from mutation pairs  [already_known]
-- **Authors:** Tianjian Zhou ... Yuan Ji (with S. Sengupta and P. Mueller). arXiv 2017. Published in Annals of Applied Statistics 13(2), 2019.
-- **DOI/URL:** 10.1214/18-AOAS1224; https://arxiv.org/abs/1703.03853
-- **Software:** TreeClone, http://www.compgenome.org/treeclone. LocHap extracts the mutation pairs.
-- **Platform/material:** Illumina paired-end, 100 bp reads, WES. Real data: 4 lung adenocarcinoma samples from 1 patient (69 pairs). Also simulations.
-- **Long-read feature:** same-read co-occurrence of 2 nearby SNVs (local haplotype). Reads are complete or missing one locus.
-- **Role:** transferable_only (tree_input in its own model, but built for short reads).
-- **Tree/algorithm:** Each subclone has a 2x2 binary haplotype matrix per pair. The model is Bayesian latent feature allocation with a tree prior (parent vector, children inherit and add mutations). Inference: MCMC with Gibbs/MH steps, parallel tempering, and trans-dimensional moves.
-- **Evaluation:** simulation truth (error rates for subclone number, tree, genotypes, and proportions). Compared with Cloe, PhyloWGS, and PairClone. Real data has no truth; the authors used goodness-of-fit checks instead.
-- **Limits:** CN-neutral regions only ("We focus our analysis in copy number neutral regions"). Uses only 2-SNV pairs.
-- **Evidence:** "pairs of two proximal SNVs that can be mapped by the same short reads"; "The use of the tree structure in the prior greatly strengthens inference." Source: https://arxiv.org/abs/1703.03853 and https://arxiv.org/html/1703.03853v2
-- **Relevance to PhyClone + longphase-s:** This is the closest model template. Replace short-read pairs with long-read k-SNV haplotypes and HP tags. Then lift the CN-neutral restriction using haplotype-specific CN.
-
-## 2. PairClone: Bayesian subclone caller from mutation pairs  [new; no tree, near-miss]
+## 1. PairClone: Bayesian subclone caller from mutation pairs  [new; no tree, near-miss]
 - **Authors:** Tianjian Zhou ... Yuan Ji. arXiv 2017. Published in JRSS Series C 68(3), 2019.
 - **DOI/URL:** 10.1111/rssc.12328; https://arxiv.org/abs/1702.07465
 - **Software:** http://www.compgenome.org/pairclone
 - **Platform/material:** short reads, real and simulated data.
 - **Feature:** same-read SNV pair co-occurrence.
-- **Role:** transferable_only. **It fails the tree-building inclusion rule.** The model uses a categorical IBP over subclone genotypes and has no tree. It is listed only because TreeClone builds on it.
+- **Role:** transferable_only. **It fails the tree-building inclusion rule.** The model uses a categorical IBP over subclone genotypes and has no tree. It is listed as a near-miss.
 - **Evidence:** "model short reads mapped to pairs of proximal SNVs ... estimate posterior probabilities of the number, genotypes and population frequencies of subclones." Source: https://arxiv.org/abs/1702.07465
 - **Relevance:** It shows the pair likelihood before the tree prior is added. This is useful for ablation designs.
 
-## 3. BitPhylogeny: probabilistic intra-tumor phylogenies  [new; transferable]
+## 2. BitPhylogeny: probabilistic intra-tumor phylogenies  [new; transferable]
 - **Authors:** Ke Yuan ... Niko Beerenwinkel (with Sakoparnig and Markowetz). Genome Biology 16:36, 2015.
 - **DOI/URL:** 10.1186/s13059-015-0592-6; https://pmc.ncbi.nlm.nih.gov/articles/PMC4359483
 - **Software:** https://bitbucket.org/ke_yuan/bitphylogeny (Python/R, GPL3).
@@ -41,7 +28,7 @@ Search date: 2026-10-19. Angle: same-read and same-haplotype co-occurrence of so
 - **Evidence:** "the phasing of SNVs can be improved with longer reads"; the model "does not rely on mutation frequencies." Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC4359483
 - **Relevance:** It treats each read haplotype as one draw from a clone on a TSSB tree. The same idea could work for long-read multi-SNV haplotypes. Note that PhyClone already uses a related tree prior.
 
-## 4. Sakamoto et al., phasing analysis of lung cancer genomes with a long-read sequencer  [already_known]
+## 3. Sakamoto et al., phasing analysis of lung cancer genomes with a long-read sequencer  [already_known]
 - **Authors:** Yoshitaka Sakamoto ... Ayako Suzuki. Nature Communications 2022. DOI 10.1038/s41467-022-31133-6.
 - **URL fetched:** https://pmc.ncbi.nlm.nih.gov/articles/PMC9203510/
 - **Software:** no new tool. Uses WhatsHap (phasing/haplotag), PyClone-VI, ClonEvol, and FACETS.
@@ -51,7 +38,7 @@ Search date: 2026-10-19. Angle: same-read and same-haplotype co-occurrence of so
 - **Evidence:** "44 mutation pairs were successfully assigned to different clones"; "a large fraction of the mutation pairs were still mapped to the same clones".
 - **Relevance:** This is a real-data case where pair phasing disagrees with VAF clones. It motivates using pairs as a constraint inside PhyClone.
 
-## 5. Liu et al., long-read sequencing of single-cell-derived mouse melanoma sublines  [already_known]
+## 4. Liu et al., long-read sequencing of single-cell-derived mouse melanoma sublines  [already_known]
 - **Authors:** Yuelin Liu ... Mikhail Kolmogorov. Nature Communications 17:8740, 2026. DOI 10.1038/s41467-026-75172-9. bioRxiv 10.1101/2025.08.28.672865.
 - **URL fetched:** https://pmc.ncbi.nlm.nih.gov/articles/PMC13493970/
 - **Software:** ScisTree for the tree. Margin and WhatsHap for phasing. Wakhan in unphased mode.
@@ -61,7 +48,7 @@ Search date: 2026-10-19. Angle: same-read and same-haplotype co-occurrence of so
 - **Evidence:** BAMs "were phased and haplotagged using margin and Whatshap"; tree from 10,862 filtered SNVs via ScisTree.
 - **Relevance:** It is a long-read cell-line design with subline truth. It does not model co-occurrence.
 
-## 6. Foltz et al., somatic mutation phasing and haplotype extension using linked reads in multiple myeloma  [new; no tree, near-miss]
+## 5. Foltz et al., somatic mutation phasing and haplotype extension using linked reads in multiple myeloma  [new; no tree, near-miss]
 - **Authors:** Steven M. Foltz ... Li Ding. bioRxiv 2024 (10.1101/2024.08.09.607342). PMC11326269.
 - **Software:** SomaticHaplotype, https://github.com/ding-lab/SomaticHaplotype
 - **Platform/material:** 10x linked reads, 23 samples from 14 MM patients. 79.4% of 20,705 somatic mutations were phased.
@@ -70,7 +57,7 @@ Search date: 2026-10-19. Angle: same-read and same-haplotype co-occurrence of so
 - **Evidence:** "we directly observed both mutations occurring without the other, and we never observed them together" (two NRAS hotspot mutations in different subclones). Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC11326269/
 - **Relevance:** Its pair logic (both alone, never together, so branching) is the evidence type PhyClone would need. It gives no tree algorithm.
 
-## 7. LongPhase-S: purity estimation and variant recalibration with somatic haplotyping  [new; phasing only, no tree]
+## 6. LongPhase-S: purity estimation and variant recalibration with somatic haplotyping  [new; phasing only, no tree]
 - **Authors:** Ming-En Ho ... Yao-Ting Huang. bioRxiv, posted 2025-11-24. DOI 10.1101/2025.11.20.689492.
 - **Software:** https://github.com/CCU-Bioinformatics-Lab/longphase-s
 - **Platform/material:** paired tumor-normal long reads (ONT/PacBio), cell lines.
@@ -79,7 +66,7 @@ Search date: 2026-10-19. Angle: same-read and same-haplotype co-occurrence of so
 - **Evidence:** "HP1-1 and HP2-1 represent the somatically altered descendants of HP1 and HP2". Source: https://www.biorxiv.org/content/10.1101/2025.11.20.689492v1.full
 - **Relevance:** This is the project's own input source. No downstream tree method that consumes its tags was found.
 
-## 8. LongPhase-TO: somatic haplotype reconstruction from tumor-only long reads  [new; phasing only, no tree]
+## 7. LongPhase-TO: somatic haplotype reconstruction from tumor-only long reads  [new; phasing only, no tree]
 - **Authors:** Zhen-Yu Chen ... Yao-Ting Huang. bioRxiv 2026 (DOI 10.64898/2026.09.14.751225).
 - **Software:** https://github.com/CCU-Bioinformatics-Lab/longphase-to
 - **Platform/material:** tumor-only long reads, 8 datasets from 6 cancer cell lines. Median 2.9x haplotype block N50 versus germline phasers.
@@ -98,14 +85,13 @@ Search date: 2026-10-19. Angle: same-read and same-haplotype co-occurrence of so
 
 | # | Paper | Year | Platform | Feature | Role | Tree? | Status |
 |---|---|---|---|---|---|---|---|
-| 1 | TreeClone (Zhou...Ji) | 2017/2019 | short PE | SNV pair co-occurrence | transferable_only | Yes (Bayesian tree prior, MCMC) | already_known |
-| 2 | PairClone (Zhou...Ji) | 2017/2019 | short PE | SNV pair co-occurrence | transferable_only | No (IBP) | near-miss |
-| 3 | BitPhylogeny (Yuan...Beerenwinkel) | 2015 | bisulfite reads / scDNA | read-level multi-locus pattern | transferable_only | Yes (TSSB, MCMC) | new |
-| 4 | Sakamoto...Suzuki | 2022 | ONT + short | pair co-occurrence, HP | validation_only | Yes (PyClone-VI + ClonEvol, VAF only) | already_known |
-| 5 | Liu...Kolmogorov melanoma | 2026 | ONT | SNV genotypes; HP not used | tree_input (SNV only) | Yes (ScisTree) | already_known |
-| 6 | Foltz...Ding | 2024 | 10x linked | barcode pair co-occurrence | interpretation only | No | near-miss |
-| 7 | LongPhase-S (Ho...Huang) | 2025 | long read T/N | HP1-1/HP2-1/HP3 | upstream feature | No | new (no tree) |
-| 8 | LongPhase-TO (Chen...Huang) | 2026 | long read T-only | lineage haplotype graph | upstream feature | No | new (no tree) |
+| 1 | PairClone (Zhou...Ji) | 2017/2019 | short PE | SNV pair co-occurrence | transferable_only | No (IBP) | near-miss |
+| 2 | BitPhylogeny (Yuan...Beerenwinkel) | 2015 | bisulfite reads / scDNA | read-level multi-locus pattern | transferable_only | Yes (TSSB, MCMC) | new |
+| 3 | Sakamoto...Suzuki | 2022 | ONT + short | pair co-occurrence, HP | validation_only | Yes (PyClone-VI + ClonEvol, VAF only) | already_known |
+| 4 | Liu...Kolmogorov melanoma | 2026 | ONT | SNV genotypes; HP not used | tree_input (SNV only) | Yes (ScisTree) | already_known |
+| 5 | Foltz...Ding | 2024 | 10x linked | barcode pair co-occurrence | interpretation only | No | near-miss |
+| 6 | LongPhase-S (Ho...Huang) | 2025 | long read T/N | HP1-1/HP2-1/HP3 | upstream feature | No | new (no tree) |
+| 7 | LongPhase-TO (Chen...Huang) | 2026 | long read T-only | lineage haplotype graph | upstream feature | No | new (no tree) |
 
 ## Searches that returned nothing useful (no new qualifying tool)
 - "nanopore long-read tumor phylogeny phased somatic SNV clone tree method 2025"

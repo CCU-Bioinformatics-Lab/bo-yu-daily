@@ -3,7 +3,7 @@
 面向：同一 read／read pair／linked-read molecule 上的 SNV 共現（mutation-pair phasing）、germline SNP phasing、haplotype／phase set、long-read（ONT／PacBio）特徵直接進入 tree likelihood 或 topology 約束。
 查詢日：2026-10-16。GitHub stars 以 `gh api` 在查詢日取得。
 
-> 總結先講：**真正把「同一 read 上 SNV 共現」放進推樹的方法極少**。查到的只有 TreeClone（2019，short-read mutation pair，限 CN=2）、PairClone（同組，沒有樹）以及 BitPhylogeny（2015，read pattern 當作 haplotype 樣本）。其他「haplotype-aware」的推樹方法（Numbat、MEDICC2、CalicoST）用的是 **germline SNP phasing 得到的 haplotype-specific CN**，不是 somatic SNV 在 read 上的連鎖。主選因此只收 5 篇，寧缺勿濫。
+> 總結先講：**真正把「同一 read 上 SNV 共現」放進推樹的方法極少**。查到的只有 PairClone（short-read mutation pair，沒有樹）以及 BitPhylogeny（2015，read pattern 當作 haplotype 樣本）。其他「haplotype-aware」的推樹方法（Numbat、MEDICC2、CalicoST）用的是 **germline SNP phasing 得到的 haplotype-specific CN**，不是 somatic SNV 在 read 上的連鎖。主選因此只收 4 篇，寧缺勿濫。
 
 ## 搜尋紀錄
 
@@ -26,7 +26,6 @@
 - `OncoPhase cellular prevalence somatic mutation phase information germline SNP`
 - `PhylEx clonal tree bulk DNA single-cell RNA mutation co-occurrence ...`
 - `Numbat haplotype-aware copy number single-cell transcriptomes ...`
-- `Bayesian tumor subclone phylogeny "mutation pairs" OR "phased reads" OR "haplotype reads" 2020–2023 extension TreeClone`
 - `BitPhylogeny ... Genome Biology 2015`
 - `CalicoST allele-specific copy number aberrations tumor phylogeography ...`
 - `TUSV-ext reconstructing tumor clonal lineage trees ...`
@@ -47,7 +46,6 @@
 
 | 方法名 | 論文標題 | 第一作者 et al. | 年份 | 期刊/preprint | DOI(連結) | 輸入資料 | 輸出樹類型 | 模型與推論 | 是否處理 CN／multiplicity／WGD | 程式碼(URL, stars) | 驗證狀態 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| TreeClone（A；已知線索） | TreeClone: Reconstruction of tumor subclone phylogeny based on mutation pairs using next generation sequencing data | Tianjian Zhou et al.（Zhou, Sengupta, Müller, Ji） | 2019 | Ann. Appl. Stat. 13(2):874–899（arXiv 1703.03853） | [10.1214/18-AOAS1224](https://doi.org/10.1214/18-AOAS1224) | bulk short-read paired-end；相鄰 SNV pair 的 4 種 haplotype read count（含只蓋一端的 partially missing reads）；single 或 multi-sample | clone tree（subclone 以 mutation-pair haplotype 定義） | Bayesian latent feature allocation + phylogenetic tree prior；MCMC | 否：作者明言只用 copy-neutral（CN=2）區域的 mutation pair；無 multiplicity／WGD | 論文列 compgenome.org／ccte.uchicago.edu/treeclone；無官方 GitHub | verified（Project Euclid 頁） |
 | PhylEx（A'：cell-level 共現） | Reconstructing clonal tree for phylo-phenotypic characterization of cancer using single-cell transcriptomics | Seong-Hwan Jun et al.（…, Andrew Roth, Jens Lagergren） | 2023 | Nat. Commun. 14:982（bioRxiv 2021.02.16.431009） | [10.1038/s41467-023-36202-y](https://doi.org/10.1038/s41467-023-36202-y) | bulk DNA（SNV read count＋CN）＋ scRNA-seq 上 SNV 的 per-cell co-occurrence；multi-sample bulk 可 | clone tree＋cell-to-clone assignment | Bayesian；tree-structured stick-breaking（TSSB）prior＋MCMC（推論：沿用 PhyloWGS 系 TSSB） | bulk 部分沿用 CN 輸入；WGD 未見 | [junseonghwan/PhylEx](https://github.com/junseonghwan/PhylEx)（3★） | verified（Nat Commun／PMC） |
 | Numbat（B） | Haplotype-aware analysis of somatic copy number variations from single-cell transcriptomes | Teng Gao et al.（…, Po-Ru Loh, Peter Kharchenko） | 2023（online 2022-09） | Nat. Biotechnol. 41(3) | [10.1038/s41587-022-01468-y](https://doi.org/10.1038/s41587-022-01468-y) | scRNA-seq；germline het SNP 經 population-based phasing 得到 haplotype，allele＋expression 訊號；single-sample | subclone phylogeny（CNV 事件放在 branch）＋single-cell CN | HMM（haplotype-aware）＋ iterative 交替推 CN 與 phylogeny（推論：phylogeny 部分用 ML／distance 型方法） | 有 allele-specific CN（含 CN-LOH）；無 SNV multiplicity；WGD 未見 | [kharchenkolab/numbat](https://github.com/kharchenkolab/numbat)（232★） | verified（PubMed 36163550） |
 | MEDICC2（B） | MEDICC2: whole-genome doubling aware copy-number phylogenies for cancer evolution | Tom L. Kaufmann et al.（…, Roland F. Schwarz） | 2022 | Genome Biol. 23:241（bioRxiv 2021.02.28.433227） | [10.1186/s13059-022-02794-9](https://doi.org/10.1186/s13059-022-02794-9) | **haplotype-specific** CN profile（single-cell 或 multi-sample bulk）；SNV 不用 | CN event phylogeny（sample／cell tree） | minimum-event distance（FST）＋tree building；不假設 infinite sites，容許 overlapping events | 是：haplotype-specific CN、clonal／subclonal WGD | GitHub 搜到 [schwarzlab-ccb/medicc2](https://github.com/schwarzlab-ccb/medicc2)（10★；官方來源請以論文 code availability 為準） | verified（Genome Biol／DOAJ） |
@@ -55,7 +53,6 @@
 
 重點：
 
-- **TreeClone**：唯一一個正式發表、把「同一 read pair 上兩個 SNV 的 haplotype count」當作 likelihood 主體並推 clone tree 的 bulk 方法。核心創新是 tree prior 讓只有可被樹解釋的 subclone genotype 拿到非零機率，並示範 marginal VAF 相同時 phasing 可區分 linear 與 branching。主要假設：infinite sites（樹上的 genotype 單調）、CN=2、只用 short-read 可同時覆蓋的近距 pair（約數百 bp 內）。和本研究的關係：它就是「read 共現進 clone-tree likelihood」的先例；但它沒有 multiplicity／CN，也沒把 pair likelihood 和 PhyClone 式 marginal SNV＋CN likelihood 合成同一模型，long-read 長距 pair 與 germline phase set 都沒用到。
 - **PhylEx**：Roth lab 的 bulk＋single-cell 方法。它的「co-occurrence」是 **cell-level**（同一細胞的 scRNA reads），不是 molecule-level，但它示範了在 bulk clone-tree likelihood 上「加一項 co-occurrence likelihood」的作法，在 likelihood 結構上最接近我們要做的（推論）。和 PhyClone 同一個 lab，code 風格與 tree 表示可能可以互通（推論）。
 - **Numbat／MEDICC2／CalicoST**：三者都把 phasing 得到的 haplotype-specific CN 放進推樹，處理 mirrored CNA、CN-LOH（MEDICC2 還處理 WGD）。但都**不用 SNV 的 read-level 連鎖**，phasing 也來自 population／germline，不是 somatic read。和本研究的關係：它們證明 haplotype-specific CN 對推樹有用；我們要做的「把 SNV 掛到 HP1/HP2 並和 haplotype-specific CN 一起約束 multiplicity／timing」仍不在它們的範圍內。
 
@@ -75,7 +72,7 @@
 
 | 方法／論文 | DOI | 用了什麼連鎖 | 排除原因 |
 |---|---|---|---|
-| PairClone（Zhou, Müller, Sengupta, Ji），JRSS-C 68(3):705–725, 2019 | [10.1111/rssc.12328](https://doi.org/10.1111/rssc.12328) | short-read mutation pair 的 haplotype count | TreeClone 的前身，用 categorical IBP 推 subclone 數、genotype 與比例，**明確假設 subclone 彼此獨立、不推樹**。只做 clustering／deconvolution。CN=2。 |
+| PairClone（Zhou, Müller, Sengupta, Ji），JRSS-C 68(3):705–725, 2019 | [10.1111/rssc.12328](https://doi.org/10.1111/rssc.12328) | short-read mutation pair 的 haplotype count | 用 categorical IBP 推 subclone 數、genotype 與比例，**明確假設 subclone 彼此獨立、不推樹**。只做 clustering／deconvolution。CN=2。 |
 | SomaticHaplotype（Foltz, …, Li Ding；已知線索） | bioRxiv [10.1101/2024.08.09.607342](https://doi.org/10.1101/2024.08.09.607342)（PMC11326269） | 10x linked-read；phased 79.4% 的 somatic mutation，multi-sample 延長 phase block | 查詢日沒有找到正式期刊版。只做 somatic mutation phasing，用 phased pair 去**手動 refine** clonal model（例如同一 haplotype 上兩個 NRAS hotspot 在不同 subclone 獨立發生），沒有推樹演算法。 |
 | Meltos（已知線索） | 未重新查證（Bioinformatics 2020，Ricketts et al.） | 不是 read 連鎖 | 給定 SNV tree 之後放 SV，屬下游。 |
 | LongSom（已知線索） | 未重新查證 | long-read scRNA 上的 somatic SNV／CNA／fusion | 只做 clonal heterogeneity，不推樹（搜尋結果也說「does not build phylogenetic trees」）。 |
@@ -108,7 +105,6 @@
 問題：「把 phased read 上的 SNV 共現與 haplotype-specific CN 放進 PhyClone 類 bulk clone-tree likelihood」是否已經有人做過？做到什麼程度？
 
 1. **read 共現進 clone-tree likelihood：有先例，但很窄。**
-   - TreeClone（2019）是唯一正式發表、把 mutation-pair 的 4 類 haplotype read count 放進 Bayesian 推樹 likelihood 的方法。限制：short-read 近距 pair、**只用 CN=2 區域**、沒有 multiplicity、purity 與 CN 沒有和 marginal SNV likelihood 聯合，而且 subclone 以 mutation pair 為單位，不是 PhyClone 那種 SNV cluster＋CN 的 node（論文描述）。
    - BitPhylogeny（2015）把 read pattern 當作 haplotype 樣本推樹，沒有 CN（論文描述）。
    - 因此「在 tree likelihood 中使用 read 共現」**本身不能宣稱為 novelty**；要宣稱的是下面 2 到 4 點的組合。
 2. **haplotype-specific CN 進推樹：已有，但沒有和 SNV read 連鎖結合。** MEDICC2、Numbat、CalicoST 都用 phased haplotype-specific CN 推 CN-event phylogeny（MEDICC2 含 WGD），SNV 卻不在它們的 likelihood 裡，或只是外加。TUSV-ext 有 allele-specific CN 加 SNV 加 SV，但 phasing 是推出來的，不是 read 觀測。
@@ -121,13 +117,12 @@
 - (iii) 透過 germline phase set 把 SNV 指派到 HP1/HP2，並和 haplotype-specific CN 聯合，約束 multiplicity 與 CN timing；
 - (iv) 以 SMC／PG 推論 topology。
 
-最接近的部分重疊是 TreeClone（只有 ii 的 short-read 版，限 CN=2）和 MEDICC2／Numbat（只有 iii 的 CN 部分）。可宣稱的 novelty 是 (i)+(ii)+(iii) 的**聯合模型**，以及 long-read 長距 linkage 讓 pair 數量大增後的計算處理。單獨宣稱「首次用 read phasing 推腫瘤樹」**不成立**。
+最接近的部分重疊是 BitPhylogeny（只有 ii 的 read pattern 版，沒有 CN）和 MEDICC2／Numbat（只有 iii 的 CN 部分）。可宣稱的 novelty 是 (i)+(ii)+(iii) 的**聯合模型**，以及 long-read 長距 linkage 讓 pair 數量大增後的計算處理。單獨宣稱「首次用 read phasing 推腫瘤樹」**不成立**。
 
 不確定處：SomaticHaplotype 正式版未找到。Meltos、LongSom 等已知線索本次沒有重新核對 DOI。
 
 ## 給協調者的建議
 
-1. **TreeClone（AOAS 2019）**：唯一正式發表的「read pair 共現 × tree prior」likelihood。精讀它對 4 類 haplotype count 的建模與 partially-missing read 的處理，可以直接借來當作我們 pair likelihood 的起點，同時用它 CN=2 的限制界定差異。
-2. **PhylEx（Nat Commun 2023）**：Roth lab 在 bulk clone-tree likelihood 上加 co-occurrence 項的範式，和 PhyClone 同 lab，最適合拿來參考 likelihood 合成與推論實作。
-3. **MEDICC2（Genome Biol 2022）**：haplotype-specific CN 加 WGD 的推樹標竿。我們做 haplotype-specific CN 約束時，需要和它的 event model 對照，也可以當作 CN-only baseline。
-4. （次選）**OncoPhase preprint＋Demeulemeester 2022**：前者是「phase→prevalence／multiplicity」的最早想法；後者提供 phasing 偵測 ISA violation 的實證，可支撐我們用 read 共現檢驗或放寬 infinite sites 的動機。
+1. **PhylEx（Nat Commun 2023）**：Roth lab 在 bulk clone-tree likelihood 上加 co-occurrence 項的範式，和 PhyClone 同 lab，最適合拿來參考 likelihood 合成與推論實作。
+2. **MEDICC2（Genome Biol 2022）**：haplotype-specific CN 加 WGD 的推樹標竿。我們做 haplotype-specific CN 約束時，需要和它的 event model 對照，也可以當作 CN-only baseline。
+3. （次選）**OncoPhase preprint＋Demeulemeester 2022**：前者是「phase→prevalence／multiplicity」的最早想法；後者提供 phasing 偵測 ISA violation 的實證，可支撐我們用 read 共現檢驗或放寬 infinite sites 的動機。

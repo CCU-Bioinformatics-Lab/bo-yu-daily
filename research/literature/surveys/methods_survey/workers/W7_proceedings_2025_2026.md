@@ -121,7 +121,7 @@ bioRxiv 全量掃描用了三種方式：
 1. **read-level 共現**：新增的 7 個候選沒有一個用到 read／molecule 層級的 SNV 連鎖。bioRxiv 的 long-read 掃描只命中下列幾類，都不推樹：
    - calling 或 phasing 工具：LongPhase-S、LongPhase-TO、Baker 2026、Lefèbvre 2026、LRSomatic；
    - 應用論文：melanoma sublines（已在 W3、W4）。
-   F 類仍只有 TreeClone（2019）。
+   F 類在主選期間仍沒有方法。
 2. **haplotype 方向**：新出現的 haplotype-aware 工作有兩個，都不推 topology：
    - cfClone（Roth lab）：在給定 clone 結構下估 prevalence；
    - CNVeil：sc haplotype-specific CN calling。

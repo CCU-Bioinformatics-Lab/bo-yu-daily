@@ -74,7 +74,6 @@ B 主選採三篇涵蓋研究路徑：B01/B04 是 native ONT，B07 是 populatio
 | [Wakhan, 2025 preprint](https://www.medrxiv.org/content/10.64898/2025.12.11.25342098v1) | long-read chromosome-scale phased CN、SV-aware phase connection | CN reconstruction 不等於 clone-tree inference；可作 C_h／phase provenance 的候選上游 |
 | [Refphase, 2023](https://pmc.ncbi.nlm.nih.gov/articles/PMC10621967/) | 多樣本 haplotype-specific CN phasing、MEDICC2 介面 | long-range reference phasing 不代表使用 native long reads，仍需另外推樹 |
 | [Meltos, 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC8215921/) | 將 SV 放進既有 SNV evolutionary tree，另有 linked-read 支持 | 年份較早；linked reads 在該研究主要用於 assessment，不能改寫為主 likelihood |
-| [TreeClone, 2019](https://arxiv.org/abs/1703.03853) | proximal SNV pairs、Bayesian tree prior；同分子共現的早期先例 | 使用 short reads，超出近期主選，但對 C4 novelty 判斷有用；不可聲稱 co-read pair idea 始於本 repo |
 | [SomaticHaplotype, 2024 preprint](https://doi.org/10.1101/2024.08.09.607342) | somatic/germline phasing、linked-read clone constraints | preprint、局部結構與完整樹需分開，不另當獨立病人驗證 |
 | [ecSingle, 2026](https://doi.org/10.1186/s13059-026-03933-2) | patient scRNA allelic imbalance、ONT RNA/WGS、ecDNA subclonal dynamics | ecDNA 分群與縱向擴張不自動等於完整 genetic phylogeny；另須考慮 ecDNA 非樹狀遺傳 |
 | [Esophageal amplicons, 2024](https://doi.org/10.1038/s41467-024-47619-4) | long-read assembly＋DLP+ 追 organoid clonal shifts | organoid passage selection、amplicon architecture 與病人原位 lineage truth 不同；不能只因同有 scDNA/longread就當完整交集 |

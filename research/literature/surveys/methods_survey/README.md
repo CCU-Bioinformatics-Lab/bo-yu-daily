@@ -2,7 +2,7 @@
 
 查核日：2026-10-16。文件語言：繁體中文，技術名詞保留英文。
 
-> **2026-10-18**：`papers/` 下 M01、M02、M04–M08 已納入 [論文分類索引](../../PAPER_CATEGORIES.md)（平台 × single-cell 真值）。46 個方法的總表仍以本檔為準，未逐一分類。
+> **2026-10-18**：`papers/` 下 M01、M04–M08 已納入 [論文分類索引](../../PAPER_CATEGORIES.md)（平台 × single-cell 真值）。45 個方法的總表仍以本檔為準，未逐一分類。
 
 ## 為什麼重做
 
@@ -46,7 +46,7 @@
 
 ## 總覽
 
-去重後主選 **46 個方法**，另列 2 個邊界方法：
+去重後主選 **45 個方法**，另列 2 個邊界方法：
 
 | 類別 | 數量 |
 |---|---|
@@ -55,7 +55,7 @@
 | C. single-cell SNV＋CN | 6 |
 | D. CN／event phylogeny | 11 |
 | E. 多模態整合 | 5 |
-| F. read-level 連鎖 | 1 |
+| F. read-level 連鎖 | 0（另列經典基線 BitPhylogeny） |
 
 跨 worker 重複收錄的已合併：PhISCS、COMPASS、SCARLET、ConDoR、BiTSC2、Pharming、TUSV-ext 家族、CALDER、CalicoST、MEDICC2、DEVOLUTION。
 
@@ -166,11 +166,9 @@ W5 也查了 deep learning／generative 型方法（2023–2026），沒有找�
 
 | 方法 | 年份／期刊 | DOI | 重點與限制 |
 |---|---|---|---|
-| **TreeClone** | 2019 Ann Appl Stat | [18-AOAS1224](https://doi.org/10.1214/18-AOAS1224) | short-read 相鄰 SNV pair 的 4 類 haplotype read count 進 Bayesian tree likelihood（8 類 read multinomial，含 partially missing reads；pair 間未互相 phase，genotype 以鏡像對稱縮為 10 類）；CN=2 寫死在 likelihood 的「0.5×兩條 allele」項；沒有 multiplicity；程式碼目前連不上。只讀到 arXiv v2，見 [M02](../../papers/M02_treeclone_2019/README.md) |
-
 | **BitPhylogeny** | 2015 Genome Biol | [s13059-015-0592-6](https://doi.org/10.1186/s13059-015-0592-6) | 每條 read（或每個 cell）的多位點 0/1 pattern 整筆來自同一個 clone，TSSB prior＋Gibbs（加 swap move）同時推 clone 數、clone 參數與樹；clone 可在內部節點。資料是 454 bisulfite methylation 與 single-cell exome；沒有 CN、purity、read count 模型；真實資料無真值樹。Bitbucket code 已失效，GitHub `keyuan/bitphyloR`（2016）。見 [M08](../../papers/M08_bitphylogeny_2015/README.md) |
 
-這一類共 2 篇。TreeClone 用顯式 pair 計數；BitPhylogeny 用「整條 read 共用一個 clone」隱式約束。2026-10-19 依使用者決定加入 M08。
+主選期間沒有方法屬於這一類。BitPhylogeny（2015）是經典基線，用「整條 read 共用一個 clone」隱式約束。2026-10-19 依使用者決定加入 M08。
 
 ## 邊界與近似（不計主選）
 
@@ -193,7 +191,7 @@ W5 也查了 deep learning／generative 型方法（2023–2026），沒有找�
 
 依 W1、W3、W4 的交叉結果，截至 2026-10-16：
 
-1. **「在 tree likelihood 中使用同一 read 上 SNV 共現」不是 novelty**：TreeClone（2019）已經做過，限 short-read 與 CN=2。
+1. **「在推樹中使用同一 read 上 SNV 共現」不是 novelty**：BitPhylogeny（2015）已讓整條 read 的多位點 pattern 共用一個 clone 來源推樹，沒有 CN；B04（2022）已用同 read mutation pair 選候選樹。
 2. **haplotype-specific CN 推樹已有**：MEDICC2、CNETML、Numbat 都這樣做（CalicoST 的 CN 是 allele-specific，但樹只用 LOH 有無），SNV 不在它們的 likelihood 裡，或只是外加。
 3. **TUSV-ext 把 SNV、SV phase 到 allele**，但 phase 是 latent 變數，而且 allele 是 major／minor 排序，不是 germline haplotype。longphase 的 HP 可以把它變成觀測值，並修正 mirrored allelic imbalance 的身分混淆。
 4. **Pharming 的 (x,y,w,z) genotype** 在狀態空間上與「HP1/HP2 CN＋multiplicity」幾乎一一對應，但：likelihood 只用 (w+z)/(x+y)，read 不分 haplotype；SNV 落在哪條 haplotype 只靠 CN 演化約束間接推出；評估指標都是 modulo multiplicity and allele specificity，等於沒驗證這兩者；擴展到 bulk 只在 Discussion 提一句，沒有實作。HP 拆開計數後 w、z 才能分別識別，這正是它缺的一塊（推論）。
@@ -227,14 +225,13 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
 ## 建議精讀順序
 
 1. **PhyClone**：基線，已有正式版。
-2. **TreeClone**：read pair 共現 likelihood 的直接起點與差異界定。
-3. **Pharming**：haplotype CN＋multiplicity 的 genotype 表示法。
-4. **TUSV-ext**：phased SNV／SV／CN 的 ILP，可對接 longphase 的 HP。
-5. **PhylEx**：在 bulk likelihood 上加單細胞共現資訊的範式（Lagergren 組，Roth 共同通訊）；換成 read 層級共現需要改的四項見 M06。
-6. **Pairtree／Orchard**：主要 bulk 競品與 benchmark 指標來源。
-7. **MEDICC2／CNETML**：haplotype CN 沿樹轉移的模型，可作為 CN-only baseline。
-8. **SCARLET／ConDoR**：CN 約束 SNV loss 的作法，可升級成 haplotype 層級的約束。
-9. **Salcedo 2020**：評估指標。
+2. **Pharming**：haplotype CN＋multiplicity 的 genotype 表示法。
+3. **TUSV-ext**：phased SNV／SV／CN 的 ILP，可對接 longphase 的 HP。
+4. **PhylEx**：在 bulk likelihood 上加單細胞共現資訊的範式（Lagergren 組，Roth 共同通訊）；換成 read 層級共現需要改的四項見 M06。
+5. **Pairtree／Orchard**：主要 bulk 競品與 benchmark 指標來源。
+6. **MEDICC2／CNETML**：haplotype CN 沿樹轉移的模型，可作為 CN-only baseline。
+7. **SCARLET／ConDoR**：CN 約束 SNV loss 的作法，可升級成 haplotype 層級的約束。
+8. **Salcedo 2020**：評估指標。
 
 ## 待核與已知缺口
 
@@ -244,7 +241,7 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
   - 程式碼位置已查明：MEDICC2 論文寫 bitbucket.org/schwarzlab/medicc2，GitHub schwarzlab-ccb/medicc2 是同團隊目前維護的 repo（由轉址推斷）；PACTION 在 github.com/elkebir-group/paction（W5 寫的 raphael-group 是錯的 org）；Canopy2 在 github.com/annweideman/canopy2。
   - PHALCON、Phyllochron 還沒有正式版。
 - **逐篇 dossier**：精讀清單前 5 篇已建立，見下節。其餘方法沒有下載 PDF。
-- **版本限制**：TreeClone 只讀 arXiv v2（期刊 PDF 被擋）；Pharming 只讀 bioRxiv v1（JCB 正式版付費）；Sc-TUSV-ext 只讀 bioRxiv v1 與 JCB 摘要；TUSV-ext 的完整 ILP（補充材料 S1）未讀。
+- **版本限制**：Pharming 只讀 bioRxiv v1（JCB 正式版付費）；Sc-TUSV-ext 只讀 bioRxiv v1 與 JCB 摘要；TUSV-ext 的完整 ILP（補充材料 S1）未讀。
 
 ## 逐篇 dossier
 
@@ -253,7 +250,6 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
 | ID | 方法 | 本地版本 | 重點 |
 |---|---|---|---|
 | [M01](../../papers/M01_phyclone_2025/README.md) | PhyClone | 出版社正式版 10 頁＋補充 28 頁；另存 bioRxiv v1 對照 | 正式版與 preprint 差異、multiplicity 邊際化、outlier model、PG／SMC |
-| [M02](../../papers/M02_treeclone_2019/README.md) | TreeClone | arXiv v2 30 頁（期刊版未取得） | mutation-pair read likelihood、CN=2 寫死之處、推廣到 long read 的方式 |
 | [M04](../../papers/M04_pharming_2026/README.md) | Pharming | bioRxiv v1 29 頁 | (x,y,w,z) 狀態空間、JCTI、與 HP＋multiplicity 的接點 |
 | [M05](../../papers/M05_tusv_ext_2022/README.md) | TUSV-ext（附 Sc-TUSV-ext、TUSV-int） | 出版社正式版 9 頁 | ILP、latent allele phasing、改用觀測 HP 的簡化 |
 | [M06](../../papers/M06_phylex_2023/README.md) | PhylEx | 出版社正式版 16 頁＋補充 19 頁 | bulk × scRNA likelihood 合成、改成 read 層級共現要改的項 |

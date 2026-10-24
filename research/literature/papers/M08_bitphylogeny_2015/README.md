@@ -83,7 +83,7 @@ p(x_n | θ_ε) = Π_i σ(θ_{i,ε})^{x_{i,n}} · (1 − σ(θ_{i,ε}))^{1 − x_
 ### 共現資訊從哪裡進入模型（推論）
 
 - Eq. 3 是逐位點相乘，但**整條 pattern 共用同一個 `ε_n`**。所以同一條 read 上的位點只能一起被指派到同一個 clone。
-- 這就是共現約束。它沒有 TreeClone（M02）那種顯式的 pair 計數項，而是透過「整條 read 只能有一個 clone 來源」來實現。
+- 這就是共現約束。它沒有顯式的 pair 計數項，而是透過「整條 read 只能有一個 clone 來源」來實現。
 - 因此 read 帶的位點越多，指派越確定，樹也越被約束。作者也寫，read 越長，SNV phasing 越好 [L.33]。
 
 ### 父子轉移（論文描述，Eq. 4–10 [L.102–121]）
@@ -160,7 +160,7 @@ p(x_n | θ_ε) = Π_i σ(θ_{i,ε})^{x_{i,n}} · (1 − σ(θ_{i,ε}))^{1 − x_
 - 較可行的做法：保留 PhyClone 的 cluster likelihood，**再乘上一項 read-pattern likelihood**。
   - 對每條多位點 phased read 計算 `P(pattern | tree, prevalence, C_h, m) = Σ_clone w_clone(h) · Π_site p(x_site | clone, h)`，對來源 clone 邊際化。
   - 在 SMC／PG 加入節點時更新這一項。
-- 和 TreeClone（M02）相比：TreeClone 只用 pair、CN=2 寫死；BitPhylogeny 能吃任意長度的 pattern。兩者都沒有 CN 模型。
+- BitPhylogeny 能吃任意長度的 pattern，不限於 SNV pair；但它沒有 CN 模型。
 
 ## 分類判定
 
