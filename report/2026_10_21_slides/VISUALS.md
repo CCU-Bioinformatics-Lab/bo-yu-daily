@@ -62,7 +62,7 @@
   - somatic SNV 只放在一條長條上。不要兩條都放。
   - `HP:1-1` 是 read 層級標記。這條 read 在另一個待測 SNV 位點仍可能是 REF（`plan.md` §3.1）。
   - longphase-s 另有 `3`（ambiguous somatic，不是 LOH）、`4`、`1-2`、`2-2`、`.`。投影片只畫四色時，加註「另有其他 tag」。
-- **(e) 出處**：`plan.md` §3.1；`/big8_disk/liaoyoyo2001/Knowledge/05_tools/longphase-s.md`「輸出 HP tag 格式」（`1-1`/`2-1`＝支持 somatic ALT、可追溯到 HP1/HP2 的第一條 somatic haplotype）；B04 README（WhatsHap 建 haplotype block 後 haplotag，p.15：不同 block 的 allele 編號不具共同意義）；`research/SYNTHESIS_phyclone_longphase.md` K1。
+- **(e) 出處**：`plan.md` §3.1；`/big8_disk/liaoyoyo2001/Knowledge/05_tools/longphase-s.md`「輸出 HP tag 格式」（`1-1`/`2-1`＝支持 somatic ALT、可追溯到 HP1/HP2 的第一條 somatic haplotype）；B04 README（WhatsHap 建 haplotype block 後 haplotag，p.15：不同 block 的 allele 編號不具共同意義）；`research/literature/SYNTHESIS_phyclone_longphase.md` K1。
 
 ## 4. Subclonal copy number（60% 1:1、40% 2:1）
 
@@ -121,7 +121,7 @@
   - B04 只用 read pair 篩選候選，不是建樹模型。
   - 「C-2」「C-3」是 cluster，不是單一 SNV。read 證據只針對特定 SNV pair。
   - C-1 的 CCF 若未核對，不要寫數字。
-- **(e) 出處**：Sakamoto et al. 2022 *Nat Commun* 13:3464，Supplementary Fig. S9c–d（p.19–20）；`research/tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md`；BRIEF s4-topology-constraint 頁。
+- **(e) 出處**：Sakamoto et al. 2022 *Nat Commun* 13:3464，Supplementary Fig. S9c–d（p.19–20）；`research/literature/papers/B04_lung_longread_phasing_2022/README.md`；BRIEF s4-topology-constraint 頁。
 
 ## 7. 相同 CCF 不等於同一個 clone
 
@@ -155,7 +155,7 @@
   - single-cell 樹本身也是推論，不是絕對真值（K8）。
   - scRNA 不能代替 scDNA。
   - 對照時，細胞要先聚成 clone 再比較，不能直接用細胞樹比 clone tree。
-- **(e) 出處**：B04 README（10x Chromium scDNA，S8 QC 後 138 顆、S20 QC 後 376 顆細胞，Fig. S10）；SYNTHESIS K8；BRIEF s1-why-truth 頁（PhyClone HGSOC 真值來自 McPherson 2016 單核定序＋targeted deep sequencing，`research/tumor_phylogeny_2026/references/R01_mcpherson_hgsoc_2016/README.md`）；M07 Discussion（建議 single-cell WGS pseudo-bulk 當補充真值）。
+- **(e) 出處**：B04 README（10x Chromium scDNA，S8 QC 後 138 顆、S20 QC 後 376 顆細胞，Fig. S10）；SYNTHESIS K8；BRIEF s1-why-truth 頁（PhyClone HGSOC 真值來自 McPherson 2016 單核定序＋targeted deep sequencing，`research/literature/papers/R01_mcpherson_hgsoc_2016/README.md`）；M07 Discussion（建議 single-cell WGS pseudo-bulk 當補充真值）。
 
 ## 9. SMC-Het 子任務管線
 
@@ -174,4 +174,4 @@
   - 2A/2B 與 3A/3B 各是 hard 和 soft 兩個版本，不是兩個步驟。
   - 只有 7 個方法提交 phylogeny。PhyClone 沒有參賽。
   - 管線箭頭只表示任務順序。參賽方法不一定照這個順序計算。
-- **(e) 出處**：Salcedo, Tarabichi et al. 2024 *Nat Biotechnol* 43:581（Methods p.13、Table 1）；`research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md`；BRIEF s5-smchet-decompose 頁。
+- **(e) 出處**：Salcedo, Tarabichi et al. 2024 *Nat Biotechnol* 43:581（Methods p.13、Table 1）；`research/literature/papers/M07_smchet_benchmark_2024/README.md`；BRIEF s5-smchet-decompose 頁。

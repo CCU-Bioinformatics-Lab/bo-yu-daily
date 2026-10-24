@@ -1014,7 +1014,7 @@ scDNA 樹本身也是推論結果，而且只涵蓋部分細胞及部分特徵�
 
 ##### 5.8.8.1 候選來源
 
-**[資料盤點／current]** 依 `research/tumor_phylogeny_2026/A_SUMMARY.md` 及各篇 README。本計畫尚未下載任何補充資料。
+**[資料盤點／current]** 依 `research/literature/surveys/patient_sc_longread_2026/A_SUMMARY.md` 及各篇 README。本計畫尚未下載任何補充資料。
 
 | 優先序 | 來源 | 樹及特徵 | 可取得的資料 | 限制 |
 |---|---|---|---|---|
@@ -1272,7 +1272,7 @@ L1 與 L1-B 結果不一致時，兩者都要報告。不得只挑一個。
 | S08 | inferred | 本文件 §3.3、§4、§5.3–5.9 | 新介面、模型修正、QC 預設值、功能驗收、效果門檻及 L0／L1-B／L2 規格；均未產生通過結果 |
 | S09 | current | [tumor_sample.md](tumor_sample.md) | 「PhyClone Benchmarking 資料集」：I12 的目錄結構、trial 命名、md5 檢查；HCC1395 CRAM 路徑 |
 | S10 | current | `/big8_disk/boyu114/phyclone_dataset/<Dataset>/data_archive/<第一個 trial>/` | 2026-10-17 檢查：`ground_truth/` 欄位及 `program_inputs/phyclone_outliers/data.tsv` 的 CN 分布；支持 §5.9.2 表格；其他 trials 未逐一檢查 |
-| S11 | current | [A 類 scDNA 文獻整理](research/tumor_phylogeny_2026/A_SUMMARY.md) 及 `research/tumor_phylogeny_2026/papers/A0*/README.md` | 各篇的樹範圍、特徵、資料取得方式及限制；支持 §5.8.8.1 表格；補充資料尚未下載 |
+| S11 | current | [A 類 scDNA 文獻整理](research/literature/surveys/patient_sc_longread_2026/A_SUMMARY.md) 及 `research/literature/papers/A0*/README.md` | 各篇的樹範圍、特徵、資料取得方式及限制；支持 §5.8.8.1 表格；補充資料尚未下載 |
 
 本次已查閱實驗室規範及目前 repository。
 歷史知識庫 `/bip8_disk/boyu114/bip8_disk_boyu_database` 不存在，狀態為 `not-found`。

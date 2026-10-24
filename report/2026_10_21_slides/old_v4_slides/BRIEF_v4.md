@@ -85,11 +85,11 @@ Repo 根目錄：`/bip8_disk/boyu114/main_work`。Deck 原始檔根目錄 `ROOT=
 
 ## E. 主要事實來源（需要細節時讀這些檔）
 
-- `research/PAPER_CATEGORIES.md`：22 篇分類 C1/C2/C3a/C3b。
-- `research/SYNTHESIS_phyclone_longphase.md`：跨論文設計約束 K1–K12。
-- `research/tumor_phylogeny_2026/methods_survey/workers/W8_benchmark_update_2026-10-18.md`：新 benchmark 調查、Liu 2026。
-- `research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md`：SMC-Het。
-- `research/tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md`：B04。
+- `research/literature/PAPER_CATEGORIES.md`：22 篇分類 C1/C2/C3a/C3b。
+- `research/literature/SYNTHESIS_phyclone_longphase.md`：跨論文設計約束 K1–K12。
+- `research/literature/surveys/methods_survey/workers/W8_benchmark_update_2026-10-18.md`：新 benchmark 調查、Liu 2026。
+- `research/literature/papers/M07_smchet_benchmark_2024/README.md`：SMC-Het。
+- `research/literature/papers/B04_lung_longread_phasing_2022/README.md`：B04。
 - `plan.md`（§0 驗證層 L0–L3、§2 架構 C0–C6、§3 特徵 F1–F5、§4.5 pair 條件）。
 - `data_input.md`：HCC1395 tagged BAM、PhyClone baseline run。
 - `evaluation_v1.md`：評估指標（§2.2–2.7）。
@@ -120,8 +120,8 @@ Repo 根目錄：`/bip8_disk/boyu114/main_work`。Deck 原始檔根目錄 `ROOT=
 | s1-hcc1395 | `data_input.md` §2；`/bip8_disk/boyu114/phyclone/hcc1395_input/RECORD.md`（30,368 SNV、purity 0.99 文獻值、5 群線性、3 群 MAP 分支、0.65＋0.26＝0.91 ≤ 0.98、抽樣線性 19,953／分支 20,047） |
 | s2-phyclone-io | `research/phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md`（輸入 schema、輸出、單一 CN 假設）、`01_PAPER_BIG_PICTURE.md` |
 | s2-pitfalls | `VISUALS.md` §4、§7；`research/phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md`:66–68（multiplicity 列舉後積分）；陷阱 2 數字為本 repo 推算（60%/40%、VAF 0.333、CCF 0.8／0.4） |
-| s3-gap | `research/PAPER_CATEGORIES.md`、`research/paper_categories.tsv`（分類為本 repo 分析推論）；Sakamoto 2022 *Nat Commun* 13:3464 Supp. Fig. S9c–d；B04 README；M02 TreeClone README（短讀共現、只用拷貝數正常區） |
-| s4-hp | `plan.md` §3.1–3.2；`research/SYNTHESIS_phyclone_longphase.md` K1；`VISUALS.md` §3；HP 層級 VAF 0.8／0.571 為本 repo 推算 |
+| s3-gap | `research/literature/PAPER_CATEGORIES.md`、`research/literature/paper_categories.tsv`（分類為本 repo 分析推論）；Sakamoto 2022 *Nat Commun* 13:3464 Supp. Fig. S9c–d；B04 README；M02 TreeClone README（短讀共現、只用拷貝數正常區） |
+| s4-hp | `plan.md` §3.1–3.2；`research/literature/SYNTHESIS_phyclone_longphase.md` K1；`VISUALS.md` §3；HP 層級 VAF 0.8／0.571 為本 repo 推算 |
 | s4-pair | `plan.md` §4.5.1–4.5.4；SYNTHESIS K2–K3；`VISUALS.md` §5；突變密度 3.1 Gb ÷ 30,368 ≈ 102 kb |
-| s5-validate | `tumor_sample.md`；`research/tumor_phylogeny_2026/methods_survey/workers/W8_benchmark_update_2026-10-18.md`；M07 README；`evaluation_v1.md` §2.2、§2.7；`data_input.md` §3（20,470 對 co-read 計數） |
+| s5-validate | `tumor_sample.md`；`research/literature/surveys/methods_survey/workers/W8_benchmark_update_2026-10-18.md`；M07 README；`evaluation_v1.md` §2.2、§2.7；`data_input.md` §3（20,470 對 co-read 計數） |
 | summary | 前述各頁 |

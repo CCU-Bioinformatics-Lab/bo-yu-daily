@@ -23,10 +23,10 @@
 |---|---|
 | Tarabichi 2021 | Tarabichi et al., *Nat Methods* 18:144（PMC7867630） |
 | PhyClone notes | `research/phyclone_research/notes/zh-TW/` |
-| SYNTHESIS | `research/SYNTHESIS_phyclone_longphase.md` |
-| B04 | `research/tumor_phylogeny_2026/papers/B04_lung_longread_phasing_2022/README.md` |
-| M02 | `research/tumor_phylogeny_2026/methods_survey/papers/M02_treeclone_2019/README.md` |
-| M07 | `research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/README.md` |
+| SYNTHESIS | `research/literature/SYNTHESIS_phyclone_longphase.md` |
+| B04 | `research/literature/papers/B04_lung_longread_phasing_2022/README.md` |
+| M02 | `research/literature/papers/M02_treeclone_2019/README.md` |
+| M07 | `research/literature/papers/M07_smchet_benchmark_2024/README.md` |
 
 ---
 
@@ -178,7 +178,7 @@
   - scRNA 不能代替 scDNA。
   - 對照時，細胞要先聚成 clone 再比較，不能直接用細胞樹比 clone tree。
   - 判斷論文有無 single-cell 真值樹時，照 `report_rule.md`「文字與表格」第 4 條。
-- **(e) 出處**：B04（10x Chromium scDNA，S8 QC 後 138 顆、S20 QC 後 376 顆細胞，Fig. S10）；SYNTHESIS K8；PhyClone HGSOC 真值來自 McPherson 2016 單核定序＋targeted deep sequencing（`research/tumor_phylogeny_2026/references/R01_mcpherson_hgsoc_2016/README.md`）；M07 Discussion（建議 single-cell WGS pseudo-bulk 當補充真值）。
+- **(e) 出處**：B04（10x Chromium scDNA，S8 QC 後 138 顆、S20 QC 後 376 顆細胞，Fig. S10）；SYNTHESIS K8；PhyClone HGSOC 真值來自 McPherson 2016 單核定序＋targeted deep sequencing（`research/literature/papers/R01_mcpherson_hgsoc_2016/README.md`）；M07 Discussion（建議 single-cell WGS pseudo-bulk 當補充真值）。
 
 ## 9. SMC-Het 子任務管線
 
@@ -242,4 +242,4 @@
 - **(e) 出處**：
   - 標靶 panel：R01 README §4（單核不做全基因組擴增，48-plex PCR，每人 48–96 個目標，MiSeq）；A03 README（186 amplicons／93 genes，8,061 nuclei，ADO 與 doublet）；A05 README（20 個白血病基因，58,807 cells，SCITE mutation tree）。
   - 淺層全基因體：A01 README（DLP+ 平均每細胞約 0.088×，500-kb bins 拷貝數，MEDICC2 樹）；B03 README（DLP+ median 約 0.05×，total-CN breakpoints 建樹）；A02 README（clone pseudobulk 判 SNV，HUNTRESS SNV 樹，MEDICC2 固定 topology）；A04 README（Strand-seq 75-bp PE、100-kb bins、人工 clone 樹）。
-  - README 路徑見 `research/paper_categories.tsv` 的 `readme` 欄（相對於 `research/`）。
+  - README 路徑見 `research/literature/paper_categories.tsv` 的 `readme` 欄（相對於 `research/`）。

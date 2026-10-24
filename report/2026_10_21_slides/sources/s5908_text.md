@@ -66,7 +66,7 @@
 - `methods_survey/README.md` 另有 46 個方法的總表，有「輸入」和「CN 處理」欄，但沒有「輸出」欄。其中只有 M01–M06 有逐篇筆記，所以上表只涵蓋這 6 篇方法。
 - 和本 repo 最接近的資料型態是 bulk ONT＋HP＋purity＋CN。逐項對照最接近的是 M01（主體）、M02（read pair 證據）和 M04（`(x,y,w,z)` 狀態空間）。
 
-如果需要，我可以把這份表存成 `research/tumor_phylogeny_2026/INPUT_OUTPUT_MATRIX.md`，也可以補上 46 個方法的輸出欄。
+如果需要，我可以把這份表存成 `research/literature/surveys/patient_sc_longread_2026/INPUT_OUTPUT_MATRIX.md`，也可以補上 46 個方法的輸出欄。
 
 
 ######## USER: phyclone和pyclone他們的sample定義是甚麼
@@ -302,7 +302,7 @@ caller 只能報一個狀態時，會出現兩種偏差：
 --- ASSISTANT:
 我下載並讀完了這篇論文，寫了一份閱讀筆記，放在和其他論文相同的目錄結構裡：
 
-`research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/`
+`research/literature/papers/M07_smchet_benchmark_2024/`
 
 - 正式版 PDF、supplement 和 supplementary tables 都已下載。論文是 CC BY 開放取用，PDF 的 MD5 和 PMC 紀錄一致。
 - 筆記在 `README.md`，用的標記方式和 M01–M06 相同（「論文描述」和「推論」分開標）。

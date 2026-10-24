@@ -152,7 +152,7 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 
 #### HGSOC `ground_truth/` 的來源（已確認）
 
-結論：這棵樹是**單細胞資料加 bulk 資料推論出來的 reference tree**。PhyClone 論文把它當真值用，但它不是觀測到的細胞譜系。來源是 McPherson 2016（PhyClone 主文 §2.4.1.5、Fig.6），只涵蓋病人 2、3、9。細節見 `research/tumor_phylogeny_2026/references/R01_mcpherson_hgsoc_2016/README.md`。
+結論：這棵樹是**單細胞資料加 bulk 資料推論出來的 reference tree**。PhyClone 論文把它當真值用，但它不是觀測到的細胞譜系。來源是 McPherson 2016（PhyClone 主文 §2.4.1.5、Fig.6），只涵蓋病人 2、3、9。細節見 `research/literature/papers/R01_mcpherson_hgsoc_2016/README.md`。
 
 **Single-nucleus targeted PCR 做了什麼**
 
@@ -180,7 +180,7 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 ## SMC-Het（DREAM）資料集
 
 - 根目錄：`/big8_disk/boyu114/smchet_dataset/`（解壓後共約 25G）
-- 來源：Synapse 專案 `syn2813581`，2026-10-18 下載。對應論文見 `research/tumor_phylogeny_2026/methods_survey/papers/M07_smchet_benchmark_2024/`。
+- 來源：Synapse 專案 `syn2813581`，2026-10-18 下載。對應論文見 `research/literature/papers/M07_smchet_benchmark_2024/`。
 - 內容：SMC-Het DREAM Challenge 的模擬腫瘤。每個腫瘤是 **單一 bulk short-read sample**，附 SNV VCF、Battenberg CN、purity／ploidy 與 truth files。
 - 完整性：2026-10-20 執行 `md5sum -c md5.txt`，13 個檔案全部 `OK`。`md5.txt` 的值取自 Synapse 的檔案 metadata。
 - 解壓：2026-10-20 完成。每個 `.tar.gz` 都已解壓，規則如下：

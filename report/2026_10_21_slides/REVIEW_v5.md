@@ -1,7 +1,7 @@
 # OUTLINE_v5 審查摘要（2026-10-19）
 
 兩位審查者：邏輯漏洞審查者、生物資訊教授。兩位都判「不通過」。
-已用 `research/paper_categories.tsv` 核對下列事實；修改結果見 `OUTLINE_v5.1.md`。
+已用 `research/literature/paper_categories.tsv` 核對下列事實；修改結果見 `OUTLINE_v5.1.md`。
 
 ## 必改（兩位都指出，或事實錯誤）
 

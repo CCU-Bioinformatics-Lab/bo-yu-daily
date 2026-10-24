@@ -79,10 +79,10 @@ v4 舊頁與舊 BRIEF 備份在 `ROOT/old_v4_slides/`，只作版面參考，內
 
 ## E. 主要事實來源（需要細節時讀這些檔；路徑相對於 repo 根目錄）
 
-- `research/paper_categories.tsv`（分類、篇數；扣除 B01 後 21 篇）。
+- `research/literature/paper_categories.tsv`（分類、篇數；扣除 B01 後 21 篇）。
 - 各篇 README：路徑在 TSV 的 `readme` 欄（相對於 `research/`）。
 - `report/2026_10_21_slides/REVIEW_v5.md`（兩輪審查查得的事實：樹種類、細胞數、資料取得）。
-- `research/tumor_phylogeny_2026/ONT_DATA_AVAILABILITY.md`（資料取得；只涵蓋有 sc 樹的 9 篇）。
+- `research/literature/surveys/patient_sc_longread_2026/ONT_DATA_AVAILABILITY.md`（資料取得；只涵蓋有 sc 樹的 9 篇）。
 - `research/phyclone_research/notes/zh-TW/03_EXPERIMENTS*`（PhyClone 模擬器）。
 
 ## F. 逐頁規格與草圖
@@ -179,7 +179,7 @@ P9 summary
 
 | 頁 | 來源 |
 |---|---|
-| s1-count | `research/paper_categories.tsv` 的 `sc_truth_strength` 與 `platform_class`（扣 B01）；R01 README:34（選文期間外） |
+| s1-count | `research/literature/paper_categories.tsv` 的 `sc_truth_strength` 與 `platform_class`（扣 B01）；R01 README:34（選文期間外） |
 | s1-features | TSV `long_read_role`／`long_read_features`／`cross_tags`；B04、M02、B09 README；資料取得見 REVIEW_v5.md。B09 的「甲基化」欄指建樹用到 per-read 5mC pattern；PS 欄填無，因論文沒寫用 phase block（2026-10-20 加入） |
 | s1-read-features | B04 README（supplement p.19–20 Fig. S9c–d：ClonEvol 候選中依長讀選 linear）；B09 README（LongPhase haplotag、modkit per-read 5mC、Hamming＋UPGMA）；M02 paper.txt p.8–12（8 類 read multinomial、Z 與 T 聯合 MCMC）、README |
 | s1-feat-lung | B04 paper.txt:336–361（EGFR 只有雙突變、mutation pair 排序、NKAIN4–BIRC7 例）；supplement.txt:1080–1098（S14 依長讀選 linear） |

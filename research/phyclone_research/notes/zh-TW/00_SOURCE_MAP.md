@@ -20,7 +20,7 @@ cross_tags: ["baseline_method", "phyclone_truth_source", "roth_lab", "mutation_l
 keywords_en: ["phyclone", "bulk snv", "copy number", "fs-crp", "particle gibbs", "smc", "pyclone emission", "outlier mutation loss", "multi-sample", "hgsoc", "mcpherson 2016", "ancestor-descendant f-score", "clone tree"]
 keywords_zh: ["腫瘤演化樹", "bulk 定序", "貝氏推論", "粒子吉布斯", "卵巢癌", "單細胞真值樹"]
 summary_zh: "bulk SNV+CN 的貝氏 clone tree；HGSOC 真值樹來自單細胞。"
-category_index: "../../../PAPER_CATEGORIES.md"
+category_index: "../../../literature/PAPER_CATEGORIES.md"
 ---
 
 # PhyClone 來源對照表
