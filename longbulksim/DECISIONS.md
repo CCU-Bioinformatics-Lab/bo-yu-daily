@@ -11,3 +11,8 @@
 | 2026-10-25 | `data_hp.tsv` 的 `snv_hp` 用觀測多數決，沒有 tagged alt read 時寫 `.` | 方法輸入不得含真值（`plan.md` §5.8.2 規則 7） | `phyclone_hp.py` 會把 `.` 當 HP2；只影響 alt = 0 的位點 |
 | 2026-10-25 | 預設 SNV 密度 12.9／Mb | HCC1395 全基因組實測（37,330 SNV／2.9 Gb）。密度只是 spec 的 segment 長度，可改 | 在此密度下壓力測試樹只有 105 列 pair；要測 pair 特徵需另設高密度情境 |
 | 2026-10-25 | 不模擬 phasing 誤差 | 目前目標是真值樹合理性與模擬器本體；phasing 噪音延後 | 未決問題見 memory `hp-extension-open-questions` 第 5 項（germline vs somatic haplotag） |
+| 2026-10-25 | 隨機樹直接用 TRACERx 421 單區域樹當藍圖，不用參數式 prior | 每個樹都是真實腫瘤的單區域樹，合理性不需要另外論證 | 只有 NSCLC；可再加其他 cohort |
+| 2026-10-25 | CCF 先讓祖先 ≥ 子代總和，再從 root 往下封頂 1 | TRACERx 區域 CCF 常有子代 > 親代；子代 cluster 較大，估計較穩 | 不 merge 時 CCF 中位 0.59（原始 0.58） |
+| 2026-10-25 | CCF 與 parent 相差 < 0.05 的 clone 併入 parent | 單一 bulk 樣本分不開；保留會讓評分不公平 | clone 數中位 5 → 3；`merge_gap` 可改 |
+| 2026-10-25 | 移除沒有任何 clone 帶的 SNV | 真實資料不會有觀測不到的突變；v1 因此遺失偏高 | 每個 spec 中位移除 1 個 |
+| 2026-10-25 | subclonal 事件指派給整個 tumour 樹的隨機 clone，不在區域內就丟掉 | 多區域事件不全屬於這個區域；v2 因此事件過多 | 修正後遺失中位 0、Q90 2.0%（TRACERx 0、1.4%），沒有調參數 |
