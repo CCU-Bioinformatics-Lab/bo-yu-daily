@@ -2,3 +2,4 @@ __pycache__/
 .data/_private/
 daily/.data/_private/
 .worklog_scan/
+lab_report/**/trace.h5
