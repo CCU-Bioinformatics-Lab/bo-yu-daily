@@ -1,0 +1,4 @@
+segment_id	sample_id	a_hp1	a_hp2	b_hp1	b_hp2	phi
+A	S1	1	1	2	1	0.5800
+C	S1	1	1	1	1	0.0000
+D	S1	1	1	2	0	0.2900
