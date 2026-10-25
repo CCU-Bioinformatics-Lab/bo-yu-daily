@@ -1,40 +1,40 @@
 {
  "cohort_vs_generated": {
   "n_clones_median": 3.0,
-  "frac_linear": 0.737,
-  "purity_median": 0.42,
+  "frac_linear": 0.729,
+  "purity_median": 0.41,
   "subclone_ccf_median": 0.45,
-  "loss_frac_median": 0.0,
-  "loss_frac_q90": 0.020212275034610063,
-  "loss_frac_max": 0.1,
-  "loss_deletion_share": 0.3587962962962963,
-  "early_frac_gain_median": 0.2
+  "loss_frac_median": 0.0051813471502590676,
+  "loss_frac_q90": 0.030627943485086344,
+  "loss_frac_max": 0.13513513513513514,
+  "loss_deletion_share": 0.9110779930452062,
+  "early_frac_2to1_median": 0.24358974358974358,
+  "early_frac_2to0_median": 0.4230769230769231
  },
  "n_specs": 1000,
  "blueprint_n_clones_median": 5.0,
- "frac_specs_with_merge": 0.67,
- "frac_specs_with_loss": 0.408,
+ "frac_specs_with_merge": 0.649,
+ "frac_specs_with_loss": 0.556,
  "n_lost_roles": {
-  "loss": 465,
-  "cnloh": 831
+  "loss": 1834,
+  "cnloh": 179
  },
- "n_specs_with_gain_snvs_ge5": {
-  "clonal": 203,
-  "subclonal": 494
+ "n_specs_with_state_snvs_ge5": {
+  "2:1": 883,
+  "2:0": 775
  },
- "early_frac_subclonal_gain_median": 0.5,
- "subclonal_cn_snv_frac_median": 0.04020100502512563,
+ "subclonal_cn_snv_frac_median": 0.06382978723404255,
  "n_clones_hist": {
-  "1": 52,
-  "2": 222,
-  "3": 279,
-  "4": 201,
-  "5": 123,
-  "6": 78,
-  "7": 33,
-  "8": 10,
-  "9": 1,
-  "10": 1
+  "1": 55,
+  "2": 198,
+  "3": 284,
+  "4": 190,
+  "5": 131,
+  "6": 94,
+  "7": 37,
+  "8": 5,
+  "9": 3,
+  "10": 3
  },
  "end_to_end_runs_ok": "20/20"
 }

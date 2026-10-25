@@ -1,10 +1,11 @@
 metric	cohort_source	cohort	generated
 n_clones_median	TRACERx single region (before merging)	5	3.0
-frac_linear	TRACERx single region	0.73	0.737
-purity_median	TRACERx region ACF	0.41	0.42
+frac_linear	TRACERx single region	0.73	0.729
+purity_median	TRACERx region ACF	0.41	0.41
 subclone_ccf_median	TRACERx single region	0.58	0.45
-loss_frac_median	TRACERx per tumour, strict lower bound	0.0	0.0
-loss_frac_q90	TRACERx per tumour	0.014	0.0202
-loss_frac_max	TRACERx per tumour	0.117	0.1
-loss_deletion_share	TRACERx lost mutations, deletion type	0.75	0.3588
-early_frac_gain_median	PCAWG 2:1 clonal regions; generated = clonal gains	0.28	0.2
+loss_frac_median	TRACERx per tumour, strict lower bound	0.0	0.0052
+loss_frac_q90	TRACERx per tumour	0.014	0.0306
+loss_frac_max	TRACERx per tumour	0.117	0.1351
+loss_deletion_share	TRACERx lost mutations, deletion type	0.75	0.9111
+early_frac_2to1_median	PCAWG clonal 2:1 segments	0.28	0.2436
+early_frac_2to0_median	PCAWG clonal 2:0 (cnLOH) segments	0.56	0.4231

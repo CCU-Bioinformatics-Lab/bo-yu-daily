@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from longbulksim.model import parse_spec, replay, roles_in
+from longbulksim.model import lost, parse_spec, replay, roles_in
 from longbulksim.random_tree import draw_spec, load_blueprints, project_ccf
 from longbulksim.simulate import segment_states
 
@@ -54,6 +54,16 @@ class DrawnSpecs(unittest.TestCase):
             g = replay(spec)
             for s in spec.segments:
                 segment_states(spec, g, s)
+
+    def test_snvs_are_lost_by_non_loh_deletion(self):
+        """A copy carrying the SNV is deleted while its HP keeps another copy (3+1 -> 2+1)."""
+        n = 0
+        for raw in self.raws:
+            spec = parse_spec(raw)
+            g = replay(spec)
+            for c, roles in lost(spec, g).items():
+                n += sum(len(g[c][spec.roles[r].segment][spec.roles[r].hp]) > 0 for r in roles)
+        self.assertGreater(n, 0)
 
     def test_same_seed_same_spec(self):
         a = draw_spec(np.random.default_rng(5), REGIONS, EVENTS)

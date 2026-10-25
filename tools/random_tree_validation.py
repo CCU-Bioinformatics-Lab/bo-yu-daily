@@ -3,7 +3,7 @@
 Draws N specs, replays each, and summarises per spec:
   inputs     n_clones, linear, purity, subclone CCF (taken from the blueprint, so they test the
              CCF projection and clone merging)
-  emergent   mutation-loss fraction and its mechanism, early fraction in gained segments,
+  emergent   mutation-loss fraction and its mechanism, early fraction in trunk 2:1 / 2:0 segments,
              subclonal CN share of SNVs (set by event order and placement, never tuned)
 Then simulates the first --run specs end to end, to check that every output is writable.
 
@@ -32,7 +32,8 @@ COHORT = {
     "loss_frac_q90": ("TRACERx per tumour", 0.014),
     "loss_frac_max": ("TRACERx per tumour", 0.117),
     "loss_deletion_share": ("TRACERx lost mutations, deletion type", 0.75),
-    "early_frac_gain_median": ("PCAWG 2:1 clonal regions; generated = clonal gains", 0.28),
+    "early_frac_2to1_median": ("PCAWG clonal 2:1 segments", 0.28),
+    "early_frac_2to0_median": ("PCAWG clonal 2:0 (cnLOH) segments", 0.56),
 }
 
 
@@ -51,16 +52,16 @@ def spec_stats(raw):
         seg = spec.roles[r].segment
         c = next(c for c in clones if r in lost_by.get(c, ()))
         mech["loss" if tot(c, seg) < tot(spec.parent[c] or NORMAL, seg) else "cnloh"] += 1
-    early = {"clonal": [], "subclonal": []}
-    for c, ev in spec.edges.items():
-        for e in ev:
-            if getattr(e, "kind", None) == "gain":
-                carried = [sum(r in cp for cp in g[c][e.segment][h])
-                           for r, role in spec.roles.items() if role.segment == e.segment
-                           for h in HPS if any(r in cp for cp in g[c][e.segment][h])]
-                if carried:
-                    early["clonal" if c == spec.root else "subclonal"].append(
-                        (int((np.array(carried) >= 2).sum()), len(carried)))
+    # PCAWG: clonal SNVs in trunk 2:1 / 2:0 segments, early = multiplicity >= 2
+    early = {"2:1": [0, 0], "2:0": [0, 0]}
+    root_g = g[spec.root]
+    for r, role in spec.roles.items():
+        st = tuple(sorted((len(root_g[role.segment][h]) for h in HPS), reverse=True))
+        key = {(2, 1): "2:1", (2, 0): "2:0"}.get(st)
+        m = sum(r in cp for h in HPS for cp in root_g[role.segment][h])
+        if key and m:
+            early[key][0] += m >= 2
+            early[key][1] += 1
     sub_cn = {e.segment for c, ev in spec.edges.items() if c != spec.root for e in ev
               if hasattr(e, "kind")}
     return {
@@ -87,17 +88,17 @@ def main():
     a = ap.parse_args()
     out = Path(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    regions, events = load_blueprints()
+    regions, cn_profiles = load_blueprints()
     rng = np.random.default_rng(a.seed)
-    raws = [draw_spec(rng, regions, events) for _ in range(a.n)]
+    raws = [draw_spec(rng, regions, cn_profiles) for _ in range(a.n)]
     st = [spec_stats(r) for r in raws]
 
     loss = np.array([s["loss_frac"] for s in st])
     mech = {k: sum(s["loss_mech"][k] for s in st) for k in ("loss", "cnloh")}
     # PCAWG pools all SNVs in a sample's 2:1 regions; pool per spec the same way (>= 5 SNVs)
-    early = {k: [sum(a for a, _ in s["early"][k]) / sum(n for _, n in s["early"][k])
-                 for s in st if sum(n for _, n in s["early"][k]) >= 5]
-             for k in ("clonal", "subclonal")}
+    # PCAWG pools all SNVs in a sample's segments of one state; same here (>= 5 SNVs)
+    early = {k: [s["early"][k][0] / s["early"][k][1] for s in st if s["early"][k][1] >= 5]
+             for k in ("2:1", "2:0")}
     ccf = [x for s in st for x in s["subclone_ccf"]]
     got = {
         "n_clones_median": float(np.median([s["n_clones"] for s in st])),
@@ -108,7 +109,8 @@ def main():
         "loss_frac_q90": float(np.quantile(loss, 0.9)),
         "loss_frac_max": float(loss.max()),
         "loss_deletion_share": mech["loss"] / max(sum(mech.values()), 1),
-        "early_frac_gain_median": float(np.median(early["clonal"])) if early["clonal"] else None,
+        "early_frac_2to1_median": float(np.median(early["2:1"])) if early["2:1"] else None,
+        "early_frac_2to0_median": float(np.median(early["2:0"])) if early["2:0"] else None,
     }
     extra = {
         "n_specs": a.n,
@@ -116,8 +118,7 @@ def main():
         "frac_specs_with_merge": float(np.mean([s["merged"] > 0 for s in st])),
         "frac_specs_with_loss": float(np.mean(loss > 0)),
         "n_lost_roles": mech,
-        "n_specs_with_gain_snvs_ge5": {k: len(v) for k, v in early.items()},
-        "early_frac_subclonal_gain_median": float(np.median(early["subclonal"])),
+        "n_specs_with_state_snvs_ge5": {k: len(v) for k, v in early.items()},
         "subclonal_cn_snv_frac_median": float(np.median([s["subclonal_cn_snv_frac"] for s in st])),
         "n_clones_hist": {int(k): int(v) for k, v in zip(*np.unique(
             [s["n_clones"] for s in st], return_counts=True))},
