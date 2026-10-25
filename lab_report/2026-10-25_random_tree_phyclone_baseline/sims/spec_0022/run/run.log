@@ -1,0 +1,131 @@
+
+####################################################################################################
+PhyClone: Analysis Run
+####################################################################################################
+
+Running with the following parameters:
+
+Number of independent chains: 4
+Number of PG particles: 100
+Density: binomial
+Proposal distribution: semi-adapted
+Number of burn-in iterations: 100
+Number of MCMC iterations: 1000
+Random seed: 1 (user-provided)
+Outlier modelling allowed: False
+
+####################################################################################################
+
+Parsing Input Data...
+
+Num Mutations: 185
+Num Samples: 1
+Samples: S1
+
+####################################################################################################
+
+####################################################################################################
+Burnin - Chain 2
+####################################################################################################
+####################################################################################################
+Burnin - Chain 0
+####################################################################################################
+chain: 2 || iter: 0, alpha: 1.0, log_p: 62.576, num_nodes: 1, num_outliers: 0, num_roots: 1
+####################################################################################################
+Burnin - Chain 1
+####################################################################################################
+####################################################################################################
+Burnin - Chain 3
+####################################################################################################
+chain: 0 || iter: 0, alpha: 1.0, log_p: 62.576, num_nodes: 1, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 0, alpha: 1.0, log_p: 62.576, num_nodes: 1, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 0, alpha: 1.0, log_p: 62.576, num_nodes: 1, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 100, alpha: 1.0, log_p: 67.653, num_nodes: 3, num_outliers: 0, num_roots: 2
+
+####################################################################################################
+Post-burnin - Chain 2
+####################################################################################################
+
+chain: 2 || iter: 0, alpha: 1.0, log_p: 125.664, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 100, alpha: 1.0, log_p: 118.822, num_nodes: 2, num_outliers: 0, num_roots: 1
+
+####################################################################################################
+Post-burnin - Chain 3
+####################################################################################################
+
+chain: 3 || iter: 0, alpha: 1.0, log_p: 128.55, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 100, alpha: 1.0, log_p: 101.026, num_nodes: 2, num_outliers: 0, num_roots: 2
+
+####################################################################################################
+Post-burnin - Chain 1
+####################################################################################################
+
+chain: 1 || iter: 0, alpha: 1.0, log_p: 127.102, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 100, alpha: 1.0, log_p: 109.625, num_nodes: 2, num_outliers: 0, num_roots: 2
+
+####################################################################################################
+Post-burnin - Chain 0
+####################################################################################################
+
+chain: 0 || iter: 0, alpha: 1.0, log_p: 125.737, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 100, alpha: 0.097, log_p: 113.512, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 100, alpha: 0.803, log_p: 121.663, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 100, alpha: 0.132, log_p: 118.767, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 100, alpha: 0.132, log_p: 116.408, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 200, alpha: 0.336, log_p: 104.578, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 200, alpha: 1.378, log_p: 115.321, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 200, alpha: 0.891, log_p: 116.642, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 200, alpha: 0.15, log_p: 112.142, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 300, alpha: 0.02, log_p: 105.819, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 300, alpha: 0.02, log_p: 120.052, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 300, alpha: 0.087, log_p: 90.421, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 300, alpha: 0.147, log_p: 113.417, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 400, alpha: 0.126, log_p: 96.735, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 400, alpha: 0.049, log_p: 113.853, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 400, alpha: 0.003, log_p: 102.122, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 400, alpha: 0.898, log_p: 100.848, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 500, alpha: 0.057, log_p: 102.56, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 500, alpha: 0.303, log_p: 116.435, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 500, alpha: 0.007, log_p: 111.75, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 500, alpha: 0.033, log_p: 112.307, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 600, alpha: 0.798, log_p: 119.545, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 600, alpha: 0.021, log_p: 112.317, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 600, alpha: 0.008, log_p: 112.939, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 600, alpha: 0.133, log_p: 111.72, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 700, alpha: 0.249, log_p: 106.733, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 700, alpha: 0.088, log_p: 99.769, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 700, alpha: 0.028, log_p: 104.157, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 700, alpha: 0.565, log_p: 111.693, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 800, alpha: 0.026, log_p: 99.613, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 800, alpha: 0.138, log_p: 105.452, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 800, alpha: 0.213, log_p: 119.708, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 800, alpha: 0.297, log_p: 111.119, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 2 || iter: 900, alpha: 0.16, log_p: 113.334, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 3 || iter: 900, alpha: 0.205, log_p: 112.769, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 900, alpha: 0.007, log_p: 101.322, num_nodes: 2, num_outliers: 0, num_roots: 1
+chain: 1 || iter: 900, alpha: 0.238, log_p: 108.252, num_nodes: 2, num_outliers: 0, num_roots: 1
+Finished chain 3
+Finished chain 0
+Finished chain 2
+Finished chain 1
+
+####################
+
+Writing sample trace to disk.
+Saving chain 3 trace
+Saving chain 0 trace
+Saving chain 2 trace
+Saving chain 1 trace
+
+Unique trees sampled: 4000
+
+Finished.
+
+####################################################################################################
+PhyClone: Write MAP Tree Results
+####################################################################################################
+
+Loading MAP tree from trace.
+
+Finished.
+####################################################################################################

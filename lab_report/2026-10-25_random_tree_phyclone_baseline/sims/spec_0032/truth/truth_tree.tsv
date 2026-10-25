@@ -1,0 +1,5 @@
+clone	parent	sample_id	purity	clone_fraction	ccf
+C1	root	S1	0.32	0.22	1.00
+C2	C1	S1	0.32	0.16	0.78
+C3	C2	S1	0.32	0.35	0.62
+C4	C3	S1	0.32	0.27	0.27

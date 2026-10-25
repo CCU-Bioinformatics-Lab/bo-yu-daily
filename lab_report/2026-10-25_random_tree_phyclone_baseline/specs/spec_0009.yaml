@@ -1,0 +1,1410 @@
+name: tracerx_CRUK0559_SU_T1.R3
+source:
+  tumour_id: CRUK0559
+  region: CRUK0559_SU_T1.R3
+  blueprint_clones: 4
+  merged_clones: 2
+  subclonal_cn_kept: 7
+  subclonal_cn_not_in_region: 38
+  cn_steps_invalid: 0
+  unobservable_snvs_dropped: 12
+purity: 0.18
+depth: 50.0
+phased_fraction: 0.859
+clones:
+  C1:
+    parent: null
+    fraction: 0.43999999999999995
+  C2:
+    parent: C1
+    fraction: 0.56
+segments:
+  G33:
+    chrom: chr1
+    start: 1000000
+    length: 697675
+  G16:
+    chrom: chr2
+    start: 1000000
+    length: 155039
+  G112:
+    chrom: chr3
+    start: 1000000
+    length: 620156
+  G2:
+    chrom: chr4
+    start: 1000000
+    length: 542636
+  G28:
+    chrom: chr5
+    start: 1000000
+    length: 387597
+  G109:
+    chrom: chr6
+    start: 1000000
+    length: 77520
+  G53:
+    chrom: chr7
+    start: 1000000
+    length: 77520
+  G119:
+    chrom: chr8
+    start: 1000000
+    length: 232559
+  G82:
+    chrom: chr9
+    start: 1000000
+    length: 620156
+  G106:
+    chrom: chr10
+    start: 1000000
+    length: 155039
+  G80:
+    chrom: chr11
+    start: 1000000
+    length: 77520
+  G146:
+    chrom: chr12
+    start: 1000000
+    length: 155039
+  G74:
+    chrom: chr13
+    start: 1000000
+    length: 465117
+  G46:
+    chrom: chr14
+    start: 1000000
+    length: 77520
+  G52:
+    chrom: chr15
+    start: 1000000
+    length: 310078
+  G60:
+    chrom: chr16
+    start: 1000000
+    length: 77520
+  G5:
+    chrom: chr17
+    start: 1000000
+    length: 232559
+  G108:
+    chrom: chr18
+    start: 1000000
+    length: 77520
+  G39:
+    chrom: chr19
+    start: 1000000
+    length: 620156
+  G42:
+    chrom: chr20
+    start: 1000000
+    length: 232559
+  G14:
+    chrom: chr21
+    start: 1000000
+    length: 387597
+  G127:
+    chrom: chr22
+    start: 1000000
+    length: 77520
+  G56:
+    chrom: chr1
+    start: 2697675
+    length: 232559
+  G9:
+    chrom: chr2
+    start: 2155039
+    length: 465117
+  G32:
+    chrom: chr3
+    start: 2620156
+    length: 620156
+  G64:
+    chrom: chr4
+    start: 2542636
+    length: 310078
+  G24:
+    chrom: chr5
+    start: 2387597
+    length: 310078
+  G114:
+    chrom: chr6
+    start: 2077520
+    length: 232559
+  G36:
+    chrom: chr7
+    start: 2077520
+    length: 387597
+  G96:
+    chrom: chr8
+    start: 2232559
+    length: 77520
+  G40:
+    chrom: chr9
+    start: 2620156
+    length: 1007752
+  G137:
+    chrom: chr10
+    start: 2155039
+    length: 77520
+  G81:
+    chrom: chr11
+    start: 2077520
+    length: 77520
+  G142:
+    chrom: chr12
+    start: 2155039
+    length: 310078
+  G169:
+    chrom: chr13
+    start: 2465117
+    length: 310078
+  G101:
+    chrom: chr14
+    start: 2077520
+    length: 155039
+  G37:
+    chrom: chr15
+    start: 2310078
+    length: 77520
+  G72:
+    chrom: chr16
+    start: 2077520
+    length: 387597
+  G77:
+    chrom: chr17
+    start: 2232559
+    length: 77520
+  G58:
+    chrom: chr18
+    start: 2077520
+    length: 465117
+  G133:
+    chrom: chr19
+    start: 2620156
+    length: 77520
+  G17:
+    chrom: chr20
+    start: 2232559
+    length: 77520
+  G10:
+    chrom: chr21
+    start: 2387597
+    length: 77520
+  G51:
+    chrom: chr22
+    start: 2077520
+    length: 155039
+  G147:
+    chrom: chr1
+    start: 3930234
+    length: 310078
+  G185:
+    chrom: chr2
+    start: 3620156
+    length: 77520
+  G62:
+    chrom: chr3
+    start: 4240312
+    length: 77520
+  G49:
+    chrom: chr4
+    start: 3852714
+    length: 155039
+  G27:
+    chrom: chr5
+    start: 3697675
+    length: 232559
+  G55:
+    chrom: chr6
+    start: 3310079
+    length: 77520
+  G97:
+    chrom: chr7
+    start: 3465117
+    length: 155039
+  G11:
+    chrom: chr8
+    start: 3310079
+    length: 77520
+  G0:
+    chrom: chr9
+    start: 4627908
+    length: 77520
+  G73:
+    chrom: chr10
+    start: 3232559
+    length: 77520
+  G148:
+    chrom: chr11
+    start: 3155040
+    length: 155039
+  G30:
+    chrom: chr12
+    start: 3465117
+    length: 77520
+  G98:
+    chrom: chr13
+    start: 3775195
+    length: 77520
+  G67:
+    chrom: chr14
+    start: 3232559
+    length: 155039
+  G83:
+    chrom: chr15
+    start: 3387598
+    length: 77520
+  G162:
+    chrom: chr16
+    start: 3465117
+    length: 77520
+  G22:
+    chrom: chr17
+    start: 3310079
+    length: 77520
+  G104:
+    chrom: chr18
+    start: 3542637
+    length: 77520
+  G193:
+    chrom: chr19
+    start: 3697676
+    length: 77520
+  G163:
+    chrom: chr20
+    start: 3310079
+    length: 77520
+edges:
+  C1:
+  - snv: s28
+    hp: HP2
+    segment: G33
+    copy: 0
+  - snv: s48
+    hp: HP1
+    segment: G16
+    copy: 0
+  - gain: G64
+    hp: HP1
+    copy: 0
+  - snv: s66
+    hp: HP1
+    segment: G112
+    copy: 0
+  - snv: s178
+    hp: HP1
+    segment: G2
+    copy: 0
+  - gain: G5
+    hp: HP2
+    copy: 0
+  - gain: G101
+    hp: HP1
+    copy: 0
+  - gain: G11
+    hp: HP1
+    copy: 0
+  - snv: s138
+    hp: HP2
+    segment: G28
+    copy: 0
+  - gain: G62
+    hp: HP2
+    copy: 0
+  - snv: s194
+    hp: HP1
+    segment: G109
+    copy: 0
+  - gain: G32
+    hp: HP1
+    copy: 0
+  - snv: s161
+    hp: HP2
+    segment: G53
+    copy: 0
+  - snv: s81
+    hp: HP1
+    segment: G119
+    copy: 0
+  - snv: s53
+    hp: HP2
+    segment: G28
+    copy: 0
+  - snv: s25
+    hp: HP2
+    segment: G33
+    copy: 0
+  - snv: s120
+    hp: HP1
+    segment: G82
+    copy: 0
+  - snv: s93
+    hp: HP1
+    segment: G82
+    copy: 0
+  - gain: G5
+    hp: HP1
+    copy: 0
+  - snv: s51
+    hp: HP1
+    segment: G106
+    copy: 0
+  - gain: G53
+    hp: HP2
+    copy: 0
+  - snv: s99
+    hp: HP2
+    segment: G80
+    copy: 0
+  - snv: s122
+    hp: HP1
+    segment: G146
+    copy: 0
+  - snv: s144
+    hp: HP1
+    segment: G119
+    copy: 0
+  - snv: s172
+    hp: HP1
+    segment: G74
+    copy: 0
+  - snv: s158
+    hp: HP2
+    segment: G46
+    copy: 0
+  - snv: s110
+    hp: HP2
+    segment: G106
+    copy: 0
+  - gain: G30
+    hp: HP2
+    copy: 0
+  - gain: G10
+    hp: HP1
+    copy: 0
+  - gain: G112
+    hp: HP1
+    copy: 0
+  - snv: s38
+    hp: HP2
+    segment: G52
+    copy: 0
+  - snv: s129
+    hp: HP2
+    segment: G60
+    copy: 0
+  - gain: G28
+    hp: HP1
+    copy: 0
+  - snv: s174
+    hp: HP2
+    segment: G5
+    copy: 1
+  - gain: G55
+    hp: HP1
+    copy: 0
+  - gain: G52
+    hp: HP2
+    copy: 0
+  - snv: s63
+    hp: HP1
+    segment: G108
+    copy: 0
+  - snv: s141
+    hp: HP1
+    segment: G74
+    copy: 0
+  - gain: G104
+    hp: HP2
+    copy: 0
+  - snv: s126
+    hp: HP1
+    segment: G39
+    copy: 0
+  - snv: s119
+    hp: HP2
+    segment: G42
+    copy: 0
+  - snv: s4
+    hp: HP1
+    segment: G14
+    copy: 0
+  - snv: s146
+    hp: HP2
+    segment: G127
+    copy: 0
+  - gain: G22
+    hp: HP1
+    copy: 0
+  - snv: s183
+    hp: HP1
+    segment: G56
+    copy: 0
+  - snv: s49
+    hp: HP1
+    segment: G112
+    copy: 1
+  - gain: G60
+    hp: HP1
+    copy: 0
+  - snv: s132
+    hp: HP2
+    segment: G9
+    copy: 0
+  - gain: G193
+    hp: HP1
+    copy: 0
+  - snv: s97
+    hp: HP1
+    segment: G32
+    copy: 0
+  - gain: G169
+    hp: HP1
+    copy: 0
+  - snv: s90
+    hp: HP1
+    segment: G64
+    copy: 0
+  - snv: s44
+    hp: HP1
+    segment: G24
+    copy: 0
+  - snv: s143
+    hp: HP1
+    segment: G24
+    copy: 0
+  - snv: s39
+    hp: HP1
+    segment: G52
+    copy: 0
+  - gain: G163
+    hp: HP1
+    copy: 0
+  - snv: s169
+    hp: HP1
+    segment: G114
+    copy: 0
+  - snv: s17
+    hp: HP1
+    segment: G64
+    copy: 0
+  - gain: G127
+    hp: HP1
+    copy: 0
+  - snv: s176
+    hp: HP1
+    segment: G112
+    copy: 0
+  - snv: s165
+    hp: HP1
+    segment: G74
+    copy: 0
+  - loss: G169
+    hp: HP2
+    copy: 0
+  - snv: s89
+    hp: HP1
+    segment: G36
+    copy: 0
+  - snv: s113
+    hp: HP2
+    segment: G96
+    copy: 0
+  - gain: G33
+    hp: HP1
+    copy: 0
+  - snv: s30
+    hp: HP2
+    segment: G40
+    copy: 0
+  - snv: s187
+    hp: HP1
+    segment: G137
+    copy: 0
+  - snv: s64
+    hp: HP1
+    segment: G81
+    copy: 0
+  - loss: G148
+    hp: HP2
+    copy: 0
+  - gain: G162
+    hp: HP1
+    copy: 0
+  - gain: G96
+    hp: HP1
+    copy: 0
+  - gain: G53
+    hp: HP1
+    copy: 0
+  - snv: s60
+    hp: HP1
+    segment: G28
+    copy: 1
+  - snv: s68
+    hp: HP1
+    segment: G142
+    copy: 0
+  - gain: G109
+    hp: HP1
+    copy: 0
+  - snv: s103
+    hp: HP1
+    segment: G169
+    copy: 1
+  - snv: s70
+    hp: HP1
+    segment: G64
+    copy: 1
+  - snv: s163
+    hp: HP2
+    segment: G36
+    copy: 0
+  - loss: G146
+    hp: HP2
+    copy: 0
+  - snv: s159
+    hp: HP1
+    segment: G32
+    copy: 0
+  - snv: s15
+    hp: HP1
+    segment: G101
+    copy: 0
+  - gain: G46
+    hp: HP1
+    copy: 0
+  - gain: G82
+    hp: HP1
+    copy: 0
+  - gain: G162
+    hp: HP1
+    copy: 1
+  - snv: s139
+    hp: HP1
+    segment: G101
+    copy: 1
+  - snv: s190
+    hp: HP2
+    segment: G2
+    copy: 0
+  - gain: G24
+    hp: HP1
+    copy: 0
+  - gain: G108
+    hp: HP1
+    copy: 0
+  - snv: s181
+    hp: HP2
+    segment: G37
+    copy: 0
+  - gain: G67
+    hp: HP1
+    copy: 0
+  - snv: s125
+    hp: HP1
+    segment: G32
+    copy: 1
+  - snv: s6
+    hp: HP1
+    segment: G82
+    copy: 0
+  - snv: s19
+    hp: HP1
+    segment: G72
+    copy: 0
+  - gain: G14
+    hp: HP1
+    copy: 0
+  - snv: s112
+    hp: HP1
+    segment: G14
+    copy: 1
+  - gain: G53
+    hp: HP1
+    copy: 1
+  - gain: G55
+    hp: HP2
+    copy: 0
+  - loss: G27
+    hp: HP2
+    copy: 0
+  - snv: s167
+    hp: HP2
+    segment: G74
+    copy: 0
+  - snv: s135
+    hp: HP1
+    segment: G64
+    copy: 1
+  - gain: G81
+    hp: HP2
+    copy: 0
+  - gain: G37
+    hp: HP2
+    copy: 0
+  - snv: s34
+    hp: HP1
+    segment: G77
+    copy: 0
+  - snv: s58
+    hp: HP1
+    segment: G40
+    copy: 0
+  - gain: G142
+    hp: HP1
+    copy: 0
+  - snv: s3
+    hp: HP1
+    segment: G32
+    copy: 1
+  - snv: s7
+    hp: HP1
+    segment: G58
+    copy: 0
+  - snv: s20
+    hp: HP2
+    segment: G82
+    copy: 0
+  - snv: s180
+    hp: HP2
+    segment: G36
+    copy: 0
+  - snv: s32
+    hp: HP2
+    segment: G133
+    copy: 0
+  - loss: G163
+    hp: HP2
+    copy: 0
+  - snv: s105
+    hp: HP1
+    segment: G169
+    copy: 1
+  - snv: s50
+    hp: HP1
+    segment: G17
+    copy: 0
+  - gain: G27
+    hp: HP1
+    copy: 0
+  - snv: s160
+    hp: HP1
+    segment: G33
+    copy: 0
+  - snv: s13
+    hp: HP2
+    segment: G39
+    copy: 0
+  - loss: G185
+    hp: HP2
+    copy: 0
+  - gain: G33
+    hp: HP2
+    copy: 0
+  - snv: s116
+    hp: HP2
+    segment: G40
+    copy: 0
+  - gain: G37
+    hp: HP1
+    copy: 0
+  - snv: s107
+    hp: HP2
+    segment: G52
+    copy: 0
+  - snv: s124
+    hp: HP1
+    segment: G142
+    copy: 0
+  - gain: G55
+    hp: HP1
+    copy: 1
+  - gain: G106
+    hp: HP2
+    copy: 0
+  - gain: G52
+    hp: HP1
+    copy: 0
+  - snv: s173
+    hp: HP1
+    segment: G5
+    copy: 0
+  - snv: s164
+    hp: HP2
+    segment: G72
+    copy: 0
+  - snv: s98
+    hp: HP1
+    segment: G56
+    copy: 0
+  - gain: G73
+    hp: HP1
+    copy: 0
+  - snv: s1
+    hp: HP1
+    segment: G28
+    copy: 1
+  - gain: G133
+    hp: HP1
+    copy: 0
+  - snv: s171
+    hp: HP2
+    segment: G10
+    copy: 0
+  - gain: G24
+    hp: HP1
+    copy: 1
+  - snv: s136
+    hp: HP1
+    segment: G112
+    copy: 0
+  - gain: G81
+    hp: HP1
+    copy: 0
+  - gain: G185
+    hp: HP1
+    copy: 0
+  - snv: s9
+    hp: HP1
+    segment: G51
+    copy: 0
+  - gain: G72
+    hp: HP1
+    copy: 0
+  - snv: s101
+    hp: HP1
+    segment: G82
+    copy: 0
+  - snv: s166
+    hp: HP1
+    segment: G114
+    copy: 0
+  - snv: s185
+    hp: HP1
+    segment: G42
+    copy: 0
+  - snv: s31
+    hp: HP1
+    segment: G14
+    copy: 1
+  - snv: s121
+    hp: HP2
+    segment: G147
+    copy: 0
+  - snv: s54
+    hp: HP2
+    segment: G2
+    copy: 0
+  - gain: G146
+    hp: HP1
+    copy: 0
+  - snv: s82
+    hp: HP1
+    segment: G82
+    copy: 1
+  - snv: s149
+    hp: HP1
+    segment: G42
+    copy: 0
+  - snv: s96
+    hp: HP1
+    segment: G112
+    copy: 0
+  - gain: G101
+    hp: HP2
+    copy: 0
+  - snv: s71
+    hp: HP2
+    segment: G82
+    copy: 0
+  - snv: s150
+    hp: HP1
+    segment: G185
+    copy: 1
+  - gain: G64
+    hp: HP1
+    copy: 0
+  - gain: G104
+    hp: HP1
+    copy: 0
+  - snv: s29
+    hp: HP1
+    segment: G40
+    copy: 0
+  - gain: G80
+    hp: HP1
+    copy: 0
+  - gain: G109
+    hp: HP2
+    copy: 0
+  - snv: s16
+    hp: HP2
+    segment: G62
+    copy: 0
+  - snv: s140
+    hp: HP1
+    segment: G40
+    copy: 0
+  - snv: s162
+    hp: HP1
+    segment: G33
+    copy: 0
+  - snv: s35
+    hp: HP1
+    segment: G49
+    copy: 0
+  - snv: s8
+    hp: HP1
+    segment: G27
+    copy: 0
+  - snv: s80
+    hp: HP1
+    segment: G72
+    copy: 1
+  - gain: G39
+    hp: HP1
+    copy: 0
+  - gain: G10
+    hp: HP2
+    copy: 0
+  - gain: G98
+    hp: HP1
+    copy: 0
+  - gain: G17
+    hp: HP1
+    copy: 0
+  - snv: s72
+    hp: HP1
+    segment: G9
+    copy: 0
+  - snv: s94
+    hp: HP2
+    segment: G2
+    copy: 0
+  - snv: s57
+    hp: HP1
+    segment: G55
+    copy: 2
+  - gain: G9
+    hp: HP1
+    copy: 0
+  - gain: G36
+    hp: HP1
+    copy: 0
+  - gain: G137
+    hp: HP1
+    copy: 0
+  - snv: s22
+    hp: HP1
+    segment: G97
+    copy: 0
+  - snv: s148
+    hp: HP2
+    segment: G33
+    copy: 0
+  - snv: s114
+    hp: HP2
+    segment: G2
+    copy: 0
+  - snv: s26
+    hp: HP1
+    segment: G11
+    copy: 0
+  - snv: s196
+    hp: HP1
+    segment: G40
+    copy: 0
+  - snv: s157
+    hp: HP1
+    segment: G58
+    copy: 0
+  - snv: s153
+    hp: HP2
+    segment: G0
+    copy: 0
+  - loss: G97
+    hp: HP2
+    copy: 0
+  - snv: s69
+    hp: HP2
+    segment: G52
+    copy: 1
+  - snv: s175
+    hp: HP1
+    segment: G28
+    copy: 1
+  - gain: G148
+    hp: HP1
+    copy: 0
+  - gain: G55
+    hp: HP1
+    copy: 0
+  - snv: s189
+    hp: HP1
+    segment: G73
+    copy: 1
+  - snv: s86
+    hp: HP1
+    segment: G148
+    copy: 0
+  - snv: s5
+    hp: HP1
+    segment: G74
+    copy: 0
+  - snv: s76
+    hp: HP1
+    segment: G146
+    copy: 1
+  - gain: G67
+    hp: HP2
+    copy: 0
+  - snv: s91
+    hp: HP2
+    segment: G74
+    copy: 0
+  - gain: G114
+    hp: HP2
+    copy: 0
+  - loss: G77
+    hp: HP2
+    copy: 0
+  - gain: G53
+    hp: HP1
+    copy: 0
+  - snv: s195
+    hp: HP1
+    segment: G148
+    copy: 0
+  - gain: G40
+    hp: HP1
+    copy: 0
+  - loss: G49
+    hp: HP2
+    copy: 0
+  - gain: G147
+    hp: HP2
+    copy: 0
+  - snv: s134
+    hp: HP2
+    segment: G58
+    copy: 0
+  - loss: G142
+    hp: HP2
+    copy: 0
+  - snv: s102
+    hp: HP1
+    segment: G51
+    copy: 0
+  - loss: G55
+    hp: HP2
+    copy: 1
+  - snv: s123
+    hp: HP1
+    segment: G82
+    copy: 0
+  - snv: s77
+    hp: HP2
+    segment: G39
+    copy: 0
+  - gain: G114
+    hp: HP1
+    copy: 0
+  - snv: s45
+    hp: HP2
+    segment: G58
+    copy: 0
+  - snv: s42
+    hp: HP2
+    segment: G9
+    copy: 0
+  - snv: s62
+    hp: HP1
+    segment: G14
+    copy: 1
+  - snv: s106
+    hp: HP1
+    segment: G36
+    copy: 0
+  - snv: s40
+    hp: HP1
+    segment: G39
+    copy: 0
+  - gain: G133
+    hp: HP1
+    copy: 1
+  - snv: s14
+    hp: HP1
+    segment: G9
+    copy: 0
+  - snv: s188
+    hp: HP1
+    segment: G16
+    copy: 0
+  - snv: s137
+    hp: HP2
+    segment: G30
+    copy: 0
+  - snv: s75
+    hp: HP2
+    segment: G98
+    copy: 0
+  - gain: G163
+    hp: HP1
+    copy: 0
+  - snv: s186
+    hp: HP2
+    segment: G40
+    copy: 0
+  - loss: G119
+    hp: HP2
+    copy: 0
+  - gain: G51
+    hp: HP1
+    copy: 0
+  - loss: G24
+    hp: HP2
+    copy: 0
+  - gain: G30
+    hp: HP1
+    copy: 0
+  - snv: s10
+    hp: HP1
+    segment: G147
+    copy: 0
+  - gain: G24
+    hp: HP1
+    copy: 1
+  - loss: G162
+    hp: HP2
+    copy: 0
+  - snv: s79
+    hp: HP2
+    segment: G36
+    copy: 0
+  - snv: s192
+    hp: HP2
+    segment: G33
+    copy: 0
+  - snv: s104
+    hp: HP1
+    segment: G40
+    copy: 1
+  - gain: G40
+    hp: HP2
+    copy: 0
+  - snv: s67
+    hp: HP2
+    segment: G67
+    copy: 1
+  - gain: G42
+    hp: HP1
+    copy: 0
+  - snv: s23
+    hp: HP2
+    segment: G147
+    copy: 1
+  - snv: s111
+    hp: HP1
+    segment: G24
+    copy: 2
+  - gain: G39
+    hp: HP2
+    copy: 0
+  - gain: G74
+    hp: HP2
+    copy: 0
+  - snv: s147
+    hp: HP1
+    segment: G32
+    copy: 1
+  - gain: G53
+    hp: HP1
+    copy: 1
+  - gain: G147
+    hp: HP1
+    copy: 0
+  - snv: s84
+    hp: HP2
+    segment: G9
+    copy: 0
+  - gain: G55
+    hp: HP1
+    copy: 0
+  - snv: s87
+    hp: HP2
+    segment: G39
+    copy: 1
+  - gain: G27
+    hp: HP1
+    copy: 0
+  - snv: s88
+    hp: HP1
+    segment: G147
+    copy: 1
+  - snv: s118
+    hp: HP1
+    segment: G39
+    copy: 0
+  - snv: s142
+    hp: HP1
+    segment: G169
+    copy: 0
+  - gain: G163
+    hp: HP1
+    copy: 1
+  - snv: s128
+    hp: HP1
+    segment: G27
+    copy: 0
+  - gain: G106
+    hp: HP1
+    copy: 0
+  - snv: s193
+    hp: HP1
+    segment: G119
+    copy: 0
+  - snv: s151
+    hp: HP2
+    segment: G9
+    copy: 0
+  - snv: s43
+    hp: HP1
+    segment: G112
+    copy: 0
+  - snv: s154
+    hp: HP2
+    segment: G40
+    copy: 0
+  - snv: s156
+    hp: HP1
+    segment: G83
+    copy: 0
+  - snv: s2
+    hp: HP1
+    segment: G142
+    copy: 1
+  - snv: s100
+    hp: HP1
+    segment: G162
+    copy: 0
+  - gain: G83
+    hp: HP2
+    copy: 0
+  - snv: s12
+    hp: HP2
+    segment: G33
+    copy: 1
+  - snv: s133
+    hp: HP2
+    segment: G114
+    copy: 1
+  - snv: s131
+    hp: HP2
+    segment: G58
+    copy: 0
+  - gain: G55
+    hp: HP1
+    copy: 3
+  - gain: G162
+    hp: HP1
+    copy: 2
+  - snv: s73
+    hp: HP1
+    segment: G22
+    copy: 1
+  - snv: s24
+    hp: HP1
+    segment: G32
+    copy: 1
+  - snv: s145
+    hp: HP1
+    segment: G104
+    copy: 0
+  - gain: G11
+    hp: HP1
+    copy: 1
+  - snv: s108
+    hp: HP1
+    segment: G72
+    copy: 1
+  - gain: G9
+    hp: HP2
+    copy: 0
+  - loss: G51
+    hp: HP2
+    copy: 0
+  - snv: s127
+    hp: HP1
+    segment: G67
+    copy: 0
+  - snv: s184
+    hp: HP2
+    segment: G2
+    copy: 0
+  - snv: s177
+    hp: HP2
+    segment: G40
+    copy: 0
+  - gain: G83
+    hp: HP1
+    copy: 0
+  - snv: s152
+    hp: HP1
+    segment: G32
+    copy: 0
+  - snv: s21
+    hp: HP2
+    segment: G5
+    copy: 1
+  - snv: s18
+    hp: HP1
+    segment: G58
+    copy: 0
+  - gain: G72
+    hp: HP2
+    copy: 0
+  - gain: G77
+    hp: HP1
+    copy: 0
+  - snv: s182
+    hp: HP1
+    segment: G97
+    copy: 0
+  - snv: s41
+    hp: HP1
+    segment: G72
+    copy: 0
+  - snv: s130
+    hp: HP1
+    segment: G193
+    copy: 0
+  - snv: s27
+    hp: HP1
+    segment: G24
+    copy: 0
+  - gain: G97
+    hp: HP1
+    copy: 0
+  - snv: s155
+    hp: HP2
+    segment: G33
+    copy: 1
+  - snv: s11
+    hp: HP1
+    segment: G2
+    copy: 0
+  - snv: s78
+    hp: HP1
+    segment: G112
+    copy: 1
+  - snv: s92
+    hp: HP1
+    segment: G49
+    copy: 0
+  - gain: G11
+    hp: HP1
+    copy: 2
+  - snv: s65
+    hp: HP2
+    segment: G39
+    copy: 1
+  - gain: G55
+    hp: HP1
+    copy: 5
+  - snv: s95
+    hp: HP1
+    segment: G32
+    copy: 0
+  - gain: G133
+    hp: HP2
+    copy: 0
+  - gain: G10
+    hp: HP1
+    copy: 1
+  - gain: G58
+    hp: HP1
+    copy: 0
+  - snv: s170
+    hp: HP1
+    segment: G14
+    copy: 1
+  - snv: s47
+    hp: HP1
+    segment: G56
+    copy: 0
+  - snv: s83
+    hp: HP1
+    segment: G142
+    copy: 0
+  - snv: s56
+    hp: HP1
+    segment: G112
+    copy: 1
+  - gain: G108
+    hp: HP2
+    copy: 0
+  - gain: G49
+    hp: HP1
+    copy: 0
+  - snv: s191
+    hp: HP1
+    segment: G163
+    copy: 3
+  - gain: G16
+    hp: HP1
+    copy: 0
+  - snv: s55
+    hp: HP1
+    segment: G40
+    copy: 0
+  - gain: G62
+    hp: HP1
+    copy: 0
+  - snv: s46
+    hp: HP1
+    segment: G39
+    copy: 0
+  - snv: s52
+    hp: HP2
+    segment: G40
+    copy: 1
+  - gain: G133
+    hp: HP1
+    copy: 2
+  - gain: G119
+    hp: HP1
+    copy: 0
+  - gain: G55
+    hp: HP1
+    copy: 3
+  - gain: G56
+    hp: HP1
+    copy: 0
+  - gain: G55
+    hp: HP1
+    copy: 2
+  - gain: G74
+    hp: HP1
+    copy: 0
+  C2:
+  - snv: s198
+    hp: HP1
+    segment: G27
+    copy: 0
+  - gain: G112
+    hp: HP2
+    copy: 0
+  - snv: s199
+    hp: HP1
+    segment: G33
+    copy: 1
+  - snv: s197
+    hp: HP2
+    segment: G40
+    copy: 1
+  - snv: s200
+    hp: HP1
+    segment: G169
+    copy: 1
