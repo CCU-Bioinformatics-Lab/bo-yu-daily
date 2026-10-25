@@ -26,8 +26,13 @@ Emission per SNV x sample (SNV on HP h, other HP o, tumour content t, CCF f):
 
 Input: data_hp.tsv and segments.tsv from tools/hp_truth_tree_to_phyclone.py.
 
+C4 (--pairs): adds the read co-occurrence tree term of tools/phyclone_pairs.py to every tree
+score, with any emission (--hp-mode base keeps PhyClone's own loader and data.tsv).
+
 Usage:
   python tools/phyclone_hp.py --hp-mode a2 --segments SEG.tsv run -i data_hp.tsv -o trace.h5 ...
+  python tools/phyclone_hp.py --hp-mode base --pairs PAIRS.tsv --hp-data data_hp.tsv \
+      --segments SEG.tsv run -i data.tsv -o trace.h5 ...
   (everything after the wrapper options goes to `phyclone`; only `run` is patched, so map and
    topology-report can be called through this wrapper or the normal CLI)
 """
@@ -177,16 +182,28 @@ def make_loader(mode, segments_file):
 
 def main():
     ap = argparse.ArgumentParser(add_help=False)
-    ap.add_argument("--hp-mode", choices=["a1", "a2"], required=True)
+    ap.add_argument("--hp-mode", choices=["base", "a1", "a2"], required=True)
     ap.add_argument("--segments")
+    ap.add_argument("--pairs", help="pairs.tsv: add the C4 read co-occurrence tree term")
+    ap.add_argument("--hp-data", help="data_hp.tsv with observed snv_hp (needed with --pairs)")
+    ap.add_argument("--pair-eps", type=float, default=0.01)
     opts, rest = ap.parse_known_args()
     if opts.hp_mode == "a2" and not opts.segments:
         raise SystemExit("--hp-mode a2 needs --segments")
+    if opts.pairs and not (opts.segments and opts.hp_data):
+        raise SystemExit("--pairs needs --segments and --hp-data")
 
     import phyclone.run
     from phyclone.cli import main as cli_main
 
-    phyclone.run.load_data = make_loader(opts.hp_mode, opts.segments)
+    if opts.hp_mode != "base":
+        phyclone.run.load_data = make_loader(opts.hp_mode, opts.segments)
+    if opts.pairs:
+        import phyclone_pairs
+
+        table = phyclone_pairs.install_everywhere(opts.pairs, opts.hp_data, opts.segments,
+                                                  opts.pair_eps)
+        print(f"phyclone_hp: C4 pair term on, {len(table)} eligible pairs, eps = {opts.pair_eps}")
     cli_main(args=rest)
 
 

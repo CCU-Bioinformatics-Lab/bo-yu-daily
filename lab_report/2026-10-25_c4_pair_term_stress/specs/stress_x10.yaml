@@ -1,0 +1,86 @@
+name: stress_density_x10
+purity: 0.4
+depth: 200
+phased_fraction: 0.859
+clones:
+  C1:
+    parent: null
+    fraction: 0.1
+  C2:
+    parent: C1
+    fraction: 0.35
+  C3:
+    parent: C1
+    fraction: 0.1
+  C4:
+    parent: C2
+    fraction: 0.45
+segments:
+  A:
+    chrom: chr1
+    start: 10000000
+    length: 155000
+  B:
+    chrom: chr2
+    start: 10000000
+    length: 78000
+  C:
+    chrom: chr3
+    start: 10000000
+    length: 388000
+  D:
+    chrom: chr4
+    start: 10000000
+    length: 155000
+edges:
+  C1:
+  - snv: s1
+    hp: HP1
+    segment: A
+    count: 10
+  - snv: s2
+    hp: HP2
+    segment: B
+    count: 10
+  - snv: s3
+    hp: HP1
+    segment: C
+    count: 10
+  - snv: s9
+    hp: HP1
+    segment: D
+    count: 10
+  - snv: s10
+    hp: HP2
+    segment: D
+    count: 10
+  C2:
+  - snv: s4
+    hp: HP2
+    segment: C
+    count: 10
+  - gain: A
+    hp: HP1
+  - cnloh: D
+    keep: HP1
+  C3:
+  - snv: s6
+    hp: HP2
+    segment: C
+    count: 10
+  - snv: s7
+    hp: HP1
+    segment: C
+    count: 10
+  C4:
+  - snv: s5
+    hp: HP1
+    segment: C
+    count: 10
+  - snv: s8
+    hp: HP1
+    segment: A
+    count: 10
+    copy: 0
+  - loss: B
+    hp: HP2
