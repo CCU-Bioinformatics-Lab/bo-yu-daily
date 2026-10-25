@@ -12,7 +12,29 @@
 | [`01_T2T_Q100_HG002.md`](01_T2T_Q100_HG002.md) | T2T-Q100 HG002 diploid assembly、GIAB v5.0q、HG002 ONT、phasing 評估 |
 | [`02_GIAB_HG008_somatic.md`](02_GIAB_HG008_somatic.md) | GIAB 癌症樣本 HG008、mosaic 基準、stratifications、評估工具 |
 | [`03_SEQC2_COLO829_celllines.md`](03_SEQC2_COLO829_celllines.md) | SEQC2 HCC1395、SPP titration、COLO829、CASTLE／Wakhan |
-| [`04_event_evidence_real_tumors.md`](04_event_evidence_real_tumors.md) | 7 類事件在真實腫瘤的證據、參數範圍、模擬可信度標準 |
+| [`04_event_evidence_real_tumors.md`](04_event_evidence_real_tumors.md) | 7 類事件在真實腫瘤的證據、參數範圍、模擬可信度標準（第 1、3 節已依 05／06 與實測修正） |
+| [`05_tracerx_citation_check.md`](05_tracerx_citation_check.md) | TRACERx 相關數字逐篇核對：19 條，14 ✅、5 ⚠️ |
+| [`06_pcawg_other_citation_check.md`](06_pcawg_other_citation_check.md) | PCAWG 與其他文獻逐篇核對：50 條，38 ✅、12 ⚠️ |
+
+實驗（`lab_report/`）：`2026-10-25_hg008_truth_tree_plausibility`、`2026-10-25_seqc2_hcc1395_measured_purity`、`2026-10-25_tracerx_event_stats`、`2026-10-25_pcawg_event_stats`。
+
+## 總判定（2026-10-25，文獻核對＋4 組資料實測後）
+
+**一句話：7 類事件在真實腫瘤中都存在；但這棵樹把它們集中在 100 個 SNV 裡，遺失比例與事件密度高於典型腫瘤，應定位為「由真實事件組成的壓力測試樹」。**
+
+| 事件／參數 | 設計值 | 最強真實證據 | 判定 |
+|---|---|---|---|
+| ① purity | 0.40 | PCAWG 中位 0.66（17% ≤ 0.40）；TRACERx 421 中位 0.39；本機 HCC1395 實測 0.15–0.74 | ✅ 典型 |
+| ② subclonal HP gain | seg A +1 copy（C2） | TRACERx 421：91% tumour 有 haplotype-specific subclonal gain，91% 只差 1 copy；HG008 clonal 2+1 | ✅ 典型 |
+| ③ 突變遺失 | 20% SNV | TRACERx 421 每 tumour 中位 0%、最高 11.7%；TRACERx 100 換算約 4% | ⚠️ 偏高（壓力測試） |
+| ④ 低 CCF clone | C3 CCF 0.10 | TRACERx 421 單區域 8.4% subclone CCF ≤ 0.15；200× 下邊緣可偵測 | ✅ 存在，屬少數 |
+| ⑤ HP 拆分 | 兩條 HP 都有 SNV | HG008 平衡區 hap1:hap2 = 2,208:2,385 | ✅ 典型 |
+| ⑥ subclonal cnLOH | seg D（C2） | TRACERx 421：72% tumour 有 ≥ 1 Mb subclonal cnLOH，中位 7.2 Mb | ✅ 典型 |
+| ⑦ CN timing | gain 區 early 0.5；cnLOH 區 1.0 | PCAWG 中位 0.28／0.56；HG008 兩種 timing 都有 | ⚠️ gain 區 early 偏高；cnLOH 在範圍內 |
+| clone 數與形狀 | 4 clone，分岔 | PCAWG 2.3% 有 ≥ 3 subclone；TRACERx 421 單區域 20% 剛好 4 clone、73% 為直線 | ⚠️ 上尾；分岔屬少數 |
+| depth | 200× | PCAWG 中位 48.5×；NRPCC 40 只有 0.4% 樣本達到 | ⚠️ 偏高 |
+
+**建議：** 保留現有樹作為壓力測試，另外做一棵「典型樹」對照：突變遺失約 1–4%、2–3 個 clone、直線形、gain 區 early 比例約 0.3、depth 40–60×。
 
 ## 結論
 

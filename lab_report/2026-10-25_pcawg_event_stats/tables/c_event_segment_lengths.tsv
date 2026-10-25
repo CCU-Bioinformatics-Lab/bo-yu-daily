@@ -1,0 +1,5 @@
+event	n_segments	len_Mb_median	len_Mb_q25	len_Mb_q75	frac_len_ge_10Mb	derived_state_tumour_frac_median	derived_state_tumour_frac_q25	derived_state_tumour_frac_q75
+clonal_cnLOH(consensus)	22616	0.5318	0.02978	4.063	0.1488	nan	nan	nan
+subclonal_1copy_gain	71011	0.434	0.05188	2.749	0.117	0.4087	0.2165	0.6247
+subclonal_LOH	49520	0.8088	0.0603	5.123	0.1745	0.3	0.1381	0.6116
+subclonal_deletion(total<base)	91638	1.07	0.09916	5.664	0.1759	0.4284	0.2036	0.7068
