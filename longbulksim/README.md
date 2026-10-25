@@ -10,7 +10,7 @@ v0.1 範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個
 cd longbulksim
 python3 -m longbulksim specs/stress.yaml OUT --seed 1            # 壓力測試樹，200×
 python3 -m longbulksim specs/typical.yaml OUT --seed 1 --depth 200
-python3 -m unittest discover -s tests                            # 約 15 秒，17 個測試
+python3 -m unittest discover -s tests                            # 約 15 秒，18 個測試
 ```
 
 需要 `numpy`、`scipy`、`pyyaml`（系統 `python3` 已有）。PhyClone 用 `~/venvs/phyclone` 跑輸出的 TSV 即可，不需要裝本 package。
@@ -22,7 +22,7 @@ python3 -m longbulksim.random_tree SPECS_DIR --count 100 --seed 1 --n-snv 200 --
 python3 -m longbulksim SPECS_DIR/spec_0000.yaml OUT --seed 1
 ```
 
-每個 spec 取一棵 TRACERx 421 單區域真實樹（拓樸、區域 CCF、purity、各 clone 的相對突變數），再配上同一個 tumour 的 CN 事件。CN timing 與突變遺失由事件順序自然產生，不設定。spec 的 `source` 欄記錄藍圖來源與 merge／事件數。與 cohort 的比對見 `lab_report/2026-10-25_random_tree_generator/`。
+每個 spec 取一棵 TRACERx 421 單區域真實樹（拓樸、區域 CCF、purity、各 clone 的相對突變數），再配上同一個 tumour 的 allele-specific CN profile。每個 segment 的 trunk 狀態放在 root 邊上，subclonal 改變放在一個 clone 的邊上。multiplicity、CN timing 與突變遺失（含非 LOH deletion）都由事件順序自然產生，不設定。spec 的 `source` 欄記錄藍圖來源與 merge／事件數。與 cohort 的比對見 `lab_report/2026-10-25_random_tree_generator/`。
 
 ## Spec 格式
 
@@ -71,7 +71,7 @@ edges:                # 進入該 clone 的邊上的事件，依序套用
 | 端到端 | PhyClone `run`、`phyclone_hp.py --hp-mode a2`、`map`、`eval_hp_truth_phyclone.py` 都能讀輸出 | 手動 smoke run |
 | 隨機樹的 CCF 投影 | 1,426 棵藍圖都符合加總規則；不 merge 時 clone 數不變 | `test_random_tree.py` |
 | 隨機樹可用 | 100 個 spec 都能 replay；每個 SNV 至少一個 clone 帶；每個 segment 最多兩種 tumour CN 狀態 | `test_random_tree.py` |
-| 隨機樹 vs cohort | 直線比例、purity、突變遺失、clonal gain early 比例吻合；deletion 型遺失偏低 | `tools/random_tree_validation.py` |
+| 隨機樹 vs cohort | 直線比例、purity、2:1／2:0 early 比例、subclonal CN 量吻合；突變遺失高於 TRACERx 嚴格下限；deletion 型遺失偏高 | `tools/random_tree_validation.py` |
 
 read span 分布：`longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv`，由 `tools/measure_read_span.py` 從 HCC1395 ONT `t50_n00` 三個 40 Mb 區域量測（394,298 條 primary read；mean 13.1 kb，N50 21.4 kb）。
 
@@ -80,7 +80,7 @@ read span 分布：`longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv`，由 `t
 - phasing 誤差（switch error、HP 錯標）。read 的 tag 一律等於真實 HP。依目前目標先不做。
 - 定序錯誤、mapping 誤差、read 跨越 segment 邊界。
 - 多 sample。研究主軸是單一 bulk 樣本。
-- 非 LOH 的 deletion、獨立的 clonal gain、WGD。隨機樹的事件目錄目前沒有。
+- WGD 以兩條 HP 各自 gain 表示，不是同一時間發生。
 - 一個 segment 有三種以上 tumour CN 狀態時，`segments.tsv` 無法表示，會報錯。
 
 決策紀錄見 [`DECISIONS.md`](DECISIONS.md)。

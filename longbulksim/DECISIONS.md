@@ -16,3 +16,7 @@
 | 2026-10-25 | CCF 與 parent 相差 < 0.05 的 clone 併入 parent | 單一 bulk 樣本分不開；保留會讓評分不公平 | clone 數中位 5 → 3；`merge_gap` 可改 |
 | 2026-10-25 | 移除沒有任何 clone 帶的 SNV | 真實資料不會有觀測不到的突變；v1 因此遺失偏高 | 每個 spec 中位移除 1 個 |
 | 2026-10-25 | subclonal 事件指派給整個 tumour 樹的隨機 clone，不在區域內就丟掉 | 多區域事件不全屬於這個區域；v2 因此事件過多 | 修正後遺失中位 0、Q90 2.0%（TRACERx 0、1.4%），沒有調參數 |
+| 2026-10-25 | CN 目錄改成「每個 segment 的 trunk 狀態 + 最多一個 subclonal 改變」，取代 4 類 ≥ 1 Mb 事件 | 舊目錄沒有 clonal gain 和非 LOH deletion；新表示法一次涵蓋 WGD、clonal cnLOH、3+1 → 2+1 等 | 資料來自 TRACERx `scna_region`；不混用 PCAWG 樣本 |
+| 2026-10-25 | trunk 方向：只有一個狀態是 ploidy-neutral 時取它，否則取多數狀態 | PCAWG Battenberg 看不出祖先狀態；TRACERx 有 ploidy 標記 | 65% 用多數規則；遺失率與 ploidy 規則相近（2.7% vs 3.2%） |
+| 2026-10-25 | gain／loss 選隨機 copy；SNV 在當下所有 copy 中均勻選一個 | 讓 multiplicity 與遺失由順序決定 | 2:1 early 0.24、2:0 0.42，都在 PCAWG IQR 內 |
+| 2026-10-25 | 遺失率高於 TRACERx 下限時不調參數 | TRACERx 是嚴格下限；論文估計更高 | 中位 0.5%、Q90 3.1%；照實記錄 |

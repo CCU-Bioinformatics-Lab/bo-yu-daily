@@ -1,7 +1,7 @@
 """Random tree specs drawn from TRACERx 421 single-region blueprints.
 
 One spec = one real region tree (topology, region CCFs, purity, relative cluster sizes) plus
-the CN events of the same tumour. Nothing about the tree is drawn from a parametric prior:
+the allele-specific CN profile of the same tumour. Nothing is drawn from a parametric prior:
 
   tree      region subtree (clusters with region CCF > 0 and their ancestors)
   CCF       region CCF, projected onto the sum rule: an ancestor gets at least the sum of its
@@ -9,16 +9,17 @@ the CN events of the same tumour. Nothing about the tree is drawn from a paramet
             merge_gap of its parent's is merged into the parent (one bulk sample cannot tell
             them apart)
   purity    region ACF
+  CN        per segment, the trunk state (A, B) becomes gains/losses on the root edge (A and B
+            map to HP1 and HP2). A subclonal change (dA, dB) goes to a uniform non-trunk clone
+            of the whole tumour tree; it is kept only if that clone is in this region, on the
+            edge of the clone that absorbed it (the root edge if it merged into the trunk)
   SNVs      n_snv split across clones in proportion to the tumour's cluster sizes (>= 2 each);
-            segment by genome fraction, HP uniform (the other HP if this lineage lost it)
-  CN        the tumour's own events. A clonal event goes on the root edge. A subclonal event
-            (it differs between regions) goes to a uniform non-trunk clone of the whole tumour
-            tree; it is kept only if that clone is in this region, on the edge of the clone
-            that absorbed it (the root edge if it merged into the trunk). Events sit in random
-            order with that edge's SNVs, so CN timing and mutation loss follow from the order
-            instead of being set
-Each segment carries at most one event. Physical segment lengths keep the SNV density at
-`density_per_mb`, so read co-occurrence matches the density, not the event size.
+            segment by bp; copy uniform over all copies present at that moment
+Each edge holds its SNVs and CN steps in random order (on one segment and HP, gains before
+losses), and each gain or loss picks a random copy. So multiplicity, CN timing and mutation
+loss (including deletion of one of several copies) follow from the order instead of being set.
+Only segments that receive SNVs are kept. Physical segment lengths keep the SNV density at
+`density_per_mb`, so read co-occurrence matches the density, not the segment size.
 
 Usage: python3 -m longbulksim.random_tree OUT_DIR [--count 1] [--seed 1] [--n-snv 200]
                                                   [--depth 50]
@@ -32,16 +33,15 @@ import yaml
 
 from .model import DATA_DIR, HPS, parse_spec, replay, roles_in
 
-GENOME_BP = 2.88e9
 TREES = DATA_DIR / "tracerx421_region_trees.tsv"
-EVENTS = DATA_DIR / "tracerx421_cn_events.tsv"
+CN_SEGMENTS = DATA_DIR / "tracerx421_cn_segments.tsv"
 
 
 def load_blueprints():
     trees = pd.read_csv(TREES, sep="\t", dtype={"clone": str, "parent": str})
-    events = pd.read_csv(EVENTS, sep="\t")
+    cn = pd.read_csv(CN_SEGMENTS, sep="\t", dtype={"chr": str})
     regions = [(k, g) for k, g in trees.groupby(["tumour_id", "region"])]
-    return regions, {t: g for t, g in events.groupby("tumour_id")}
+    return regions, {t: g.reset_index(drop=True) for t, g in cn.groupby("tumour_id")}
 
 
 def project_ccf(parent, ccf, merge_gap):
@@ -91,8 +91,13 @@ def allocate(rng, weights, n, minimum=2):
     return dict(zip(keys, (base + rest).tolist()))
 
 
-def draw_spec(rng, regions, events, n_snv=200, depth=50, merge_gap=0.05,
-              density_per_mb=12.9, max_cn_fraction=0.9, phased_fraction=0.859):
+def cn_steps(d):
+    """Gains/losses that change an HP by d copies."""
+    return ["gain"] * d if d > 0 else ["loss"] * -d
+
+
+def draw_spec(rng, regions, cn_profiles, n_snv=200, depth=50, merge_gap=0.05,
+              density_per_mb=12.9, phased_fraction=0.859):
     (tumour, region), g = regions[rng.integers(len(regions))]
     bp_parent = {r.clone: (None if r.parent == "root" else r.parent) for r in g.itertuples()}
     parent, ccf, merged = project_ccf(bp_parent, dict(zip(g.clone, g.ccf)), merge_gap)
@@ -103,80 +108,83 @@ def draw_spec(rng, regions, events, n_snv=200, depth=50, merge_gap=0.05,
     root = next(c for c, p in parent.items() if p is None)
     fraction = {c: max(ccf[c] - sum(ccf[k] for k, p in parent.items() if p == c), 0.0)
                 for c in parent}
-
-    ev = events.get(tumour, pd.DataFrame(columns=["kind", "bp"]))
-    ev = ev.iloc[rng.permutation(len(ev))]
-    bp_root = next(c for c, p in bp_parent.items() if p is None)
-    bp_sub = [c for c in bp_parent if c != bp_root]
-    n_tumour_sub = int(g.tumour_n_clones.iloc[0]) - 1
-    cn, used, dropped, absent = [], 0.0, 0, 0
-    for e in ev.itertuples():
-        if e.kind == "clonal_cnloh":
-            clone = root
-        else:
-            i = rng.integers(max(n_tumour_sub, 1))
-            if i >= len(bp_sub):
-                absent += 1
-                continue
-            clone = merged[bp_sub[i]]
-        f = e.bp / GENOME_BP
-        if used + f > max_cn_fraction:
-            dropped += 1
-            continue
-        used += f
-        cn.append((e.kind.split("_")[1], clone, f, HPS[rng.integers(2)]))
-
-    n_by_clone = allocate(rng, {c: max(size[c], 1) for c in parent}, n_snv)
-    seg_frac = np.array([1 - used] + [f for _, _, f, _ in cn])
-    items = {c: [] for c in parent}  # clone -> [(sort key, item)]
-    k = 0
-    for c, n in n_by_clone.items():
-        for s in rng.choice(len(seg_frac), size=n, p=seg_frac / seg_frac.sum()):
-            k += 1
-            items[c].append((rng.random(), ("snv", f"s{k}", int(s))))
-    for i, (kind, clone, _, hp) in enumerate(cn, start=1):
-        items[clone].append((rng.random(), (kind, hp, i)))
-
     order = [root]
     for c in order:
         order += [k for k, p in parent.items() if p == c]
-    gone = {root: set()}  # clone -> {(segment, HP)} no longer present
-    edges = {}
+
+    cn = cn_profiles[tumour]
+    n_by_clone = allocate(rng, {c: max(size[c], 1) for c in parent}, n_snv)
+    items = {c: [] for c in parent}  # clone -> [(sort key, item)]
+    k = 0
+    for c, n in n_by_clone.items():
+        for s in rng.choice(len(cn), size=n, p=cn.bp / cn.bp.sum()):
+            k += 1
+            items[c].append((rng.random(), ("snv", f"s{k}", f"G{s}")))
+
+    bp_root = next(c for c, p in bp_parent.items() if p is None)
+    bp_sub = [c for c in bp_parent if c != bp_root]
+    n_tumour_sub = max(int(g.tumour_n_clones.iloc[0]) - 1, 1)
+    used = {seg for its in items.values() for _, (_, _, seg) in its}
+    n_sub_kept = n_sub_absent = 0
+    for s in sorted(used, key=lambda x: int(x[1:])):
+        row = cn.iloc[int(s[1:])]
+        steps = {root: [(h, "loss") if t == 0 else None for h, t in
+                        zip(HPS, (row.trunk_a, row.trunk_b))]}
+        steps[root] = [st for st in steps[root] if st] + [
+            (h, "gain") for h, t in zip(HPS, (row.trunk_a, row.trunk_b)) for _ in range(t - 1)]
+        if row.d_a or row.d_b:
+            i = rng.integers(n_tumour_sub)
+            if i < len(bp_sub):
+                n_sub_kept += 1
+                clone = merged[bp_sub[i]]
+                steps.setdefault(clone, [])
+                steps[clone] += [(h, op) for h, d in zip(HPS, (row.d_a, row.d_b))
+                                 for op in cn_steps(int(d))]
+            else:
+                n_sub_absent += 1
+        for clone, st in steps.items():
+            for h in HPS:
+                ops = sorted(op for hh, op in st if hh == h)  # "gain" < "loss"
+                keys = np.sort(rng.random(len(ops)))
+                items[clone] += [(key, (op, h, s)) for key, op in zip(keys, ops)]
+
+    copies = {}  # clone -> {(segment, HP): copy count}
+    edges, invalid = {}, 0
     for c in order:
-        lost = set(gone[parent[c]]) if parent[c] else set()
+        cps = dict(copies[parent[c]]) if parent[c] else {}
         out = []
         for _, it in sorted(items[c]):
             if it[0] == "snv":
-                seg = f"G{it[2]}"
-                hp = HPS[rng.integers(2)]
-                if (seg, hp) in lost:
-                    hp = HPS[1 - HPS.index(hp)]
-                out.append({"snv": it[1], "hp": hp, "segment": seg})
+                _, sid, seg = it
+                n = [cps.get((seg, h), 1) for h in HPS]
+                if sum(n) == 0:
+                    continue
+                j = int(rng.integers(sum(n)))
+                h = HPS[0] if j < n[0] else HPS[1]
+                out.append({"snv": sid, "hp": h, "segment": seg,
+                            "copy": j if j < n[0] else j - n[0]})
             else:
-                kind, hp, s = it
-                seg = f"G{s}"
-                if kind == "gain":
-                    out.append({"gain": seg, "hp": hp})
-                elif kind == "loss":
-                    out.append({"loss": seg, "hp": hp})
-                    lost.add((seg, hp))
-                else:
-                    out.append({"cnloh": seg, "keep": hp})
-                    lost.add((seg, HPS[1 - HPS.index(hp)]))
-        gone[c] = lost
+                op, h, seg = it
+                n = cps.get((seg, h), 1)
+                if n == 0:
+                    invalid += 1
+                    continue
+                out.append({op: seg, "hp": h, "copy": int(rng.integers(n))})
+                cps[(seg, h)] = n + (1 if op == "gain" else -1)
+        copies[c] = cps
         if out:
             edges[names[c]] = out
 
     raw = {
         "name": f"tracerx_{region}",
         "source": {"tumour_id": tumour, "region": region, "blueprint_clones": len(bp_parent),
-                   "merged_clones": len(bp_parent) - len(parent), "cn_events_used": len(cn),
-                   "cn_events_not_in_region": absent, "cn_events_dropped": dropped, "cn_genome_fraction": round(used, 4)},
+                   "merged_clones": len(bp_parent) - len(parent),
+                   "subclonal_cn_kept": n_sub_kept, "subclonal_cn_not_in_region": n_sub_absent,
+                   "cn_steps_invalid": invalid},
         "purity": float(g.purity.iloc[0]), "depth": depth, "phased_fraction": phased_fraction,
         "clones": {names[c]: {"parent": names[parent[c]] if parent[c] else None,
                               "fraction": fraction[c] / sum(fraction.values())} for c in order},
-        "segments": {f"G{s}": {"chrom": "chr1", "start": 0, "length": 1}
-                     for s in range(len(seg_frac))},
+        "segments": {s: {"chrom": "chr1", "start": 0, "length": 1} for s in used},
         "edges": edges,
     }
     return drop_unobservable(raw, density_per_mb)
@@ -219,10 +227,10 @@ def main():
     a = ap.parse_args()
     out = Path(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    regions, events = load_blueprints()
+    regions, cn_profiles = load_blueprints()
     rng = np.random.default_rng(a.seed)
     for i in range(a.count):
-        spec = draw_spec(rng, regions, events, n_snv=a.n_snv, depth=a.depth)
+        spec = draw_spec(rng, regions, cn_profiles, n_snv=a.n_snv, depth=a.depth)
         (out / f"spec_{i:04d}.yaml").write_text(yaml.safe_dump(spec, sort_keys=False))
 
 
