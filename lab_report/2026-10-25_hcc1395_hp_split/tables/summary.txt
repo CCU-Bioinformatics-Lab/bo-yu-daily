@@ -1,0 +1,13 @@
+## A. HP assignment
+SNVs with pileup	37327
+alt reads tagged (pooled)	0.859
+assigned	28563	0.765
+too few tagged alt	8009	0.215
+split	755	0.020
+assigned HP1 : HP2	14443 : 14120
+
+## C. co-occurrence
+adjacent SNV pairs (genome)	37305
+adjacent pairs < 100 kb	28944
+pairs with >=1 read carrying both ALT	7111
+pairs with >=1 read carrying exactly one ALT	13973
