@@ -169,7 +169,7 @@ def replay(spec) -> dict[str, Genome]:
     return genomes
 
 
-def _roles_in(genome):
+def roles_in(genome):
     return {r for seg in genome.values() for cps in seg.values() for cp in cps for r in cp}
 
 
@@ -187,7 +187,7 @@ def lost(spec, genomes):
     out = {}
     for c in spec.parent:
         lineage = set(ancestors(spec, c))
-        gone = {r for r, e in spec.roles.items() if e.clone in lineage} - _roles_in(genomes[c])
+        gone = {r for r, e in spec.roles.items() if e.clone in lineage} - roles_in(genomes[c])
         if gone:
             out[c] = sorted(gone)
     return out
