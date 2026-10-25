@@ -1,0 +1,4 @@
+nrpcc_bin	n_samples	subclone_ccf_median	frac_subclones_ccf_le_0.15	frac_samples_with_subclone_ccf_le_0.15
+0-10	757	0.455	0	0
+10-20	1438	0.386	0.002245	0.002782
+20-inf	463	0.332	0.01675	0.02376

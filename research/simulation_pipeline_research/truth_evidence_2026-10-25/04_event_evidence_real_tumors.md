@@ -7,14 +7,16 @@
 等級標記：〔論文實測〕＝論文報告的量測數字；〔論文主張〕＝作者的解讀或沒有直接數字；〔推論〕＝本檔的推論。
 數字來源：PubMed metadata 或 PMC／期刊全文，查詢日期 2026-10-25。
 
+> **2026-10-25 修正：** 本檔數字已逐篇核對（`05_tracerx_citation_check.md`、`06_pcawg_other_citation_check.md`），並用 TRACERx 421 與 PCAWG 公開資料實測（`lab_report/2026-10-25_tracerx_event_stats/`、`lab_report/2026-10-25_pcawg_event_stats/`）。第 1、3 節的判定已依結果更新。其他段落的細節修正見 05／06。
+
 ## 1. 結論
 
 - **7 類事件在真實腫瘤中都有大型 cohort 或 single-cell 證據。** 審查者若說「這些事件是編的」，可以逐類反駁。各類的最強證據見第 2 節。
 - **事件本身真實，但這棵樹把 7 類事件放在 100 個 SNV、4 個 clone 裡，密度遠高於真實腫瘤。** 這是壓力測試設計，不是「典型腫瘤」。文件裡要明寫這一點。〔推論〕
-- **大部分參數落在真實範圍內。** purity 0.40、4 個 clone、分岔加直線、單拷貝 subclonal gain、subclonal cnLOH、20% SNV 受遺失影響，都有對應數字（第 3 節）。
+- **大部分參數落在真實範圍內。** purity 0.40、單拷貝 subclonal gain、subclonal cnLOH、multiplicity 都有對應數字（第 3 節）。**突變遺失 20% 偏高**，4 個 clone 屬上尾，分岔形狀在單區域中屬少數（2026-10-25 實測修正）。
 - **有 3 個參數偏樂觀，要另外說明或做敏感度分析。**
   1. depth 200×：PCAWG 中位約 46×。現有 ONT 腫瘤 WGS 多在 30–60×。
-  2. C3 的 CCF 0.10（cell prevalence 0.04，期望 VAF 約 0.02）：PCAWG 只保證 CCF ≥ 0.30 的 subclone 可偵測。AML31 要約 850× 才能找回最低頻的 cluster。
+  2. C3 的 CCF 0.10（cell prevalence 0.04，期望 VAF 約 0.02）：在 200×（NRPCC ≈ 40）下屬**邊緣可偵測**，約 1/4 的 SNV 少於 3 條 alt read。PCAWG 的「CCF ≥ 0.30」只在 NRPCC = 10 時成立（06 核對修正）。在 PCAWG 約 48× 時，P(alt ≥ 3) 只有 7.5%。
   3. 每對指定 SNV 有 80 條跨越 read：真實 long read 能同時蓋到兩個 somatic SNV 的 pair 很少（B04 每例平均 69 對可排序 pair）。
 - **「模擬可信」的業界做法是：樹與參數取自真實 cohort 的重建結果，再把突變 spike-in 到真實 read。** 例如 SMC-Het 的 51 棵樹中有 25 棵來自 PCAWG 重建，並用 BAMSurgeon 把突變放進 GIAB 的真實 read。我們可以照做：用 HCC1395 等細胞株的 ONT read 當底，把設計樹 spike-in 進去。〔論文實測＋推論〕
 - **具已知真值的實體資料很少，而且都不完整。** 細胞株混合（Farahani 2017）只知道混合比例，不知道樹。單細胞衍生 sublines（B01）和單細胞參考樹（R01、B04、B09）可提供部分真值。目前沒有公開的「ONT bulk ＋ 完整 single-cell 真值樹」病人資料（未查到）。
@@ -98,15 +100,15 @@ PCAWG 的 Dentro 2021 全文前 20 萬字沒有討論 mutation loss 的頻率（
 
 | 設計 | 設計值 | 真實範圍 | 判定 |
 |---|---|---|---|
-| purity | 0.40 | TCGA ABSOLUTE 平均 0.62 ± 0.20；PDAC 中位 0.33 | **在範圍內**，約平均減 1 SD〔論文實測＋推論〕 |
-| depth | 200× | PCAWG WGS 中位約 46×；TRACERx WES 中位 413×；Griffith 建議 200–300× | **短讀 WGS 中偏高；ONT 腫瘤 WGS 更是偏高**。要加 40–60× 的敏感度組〔推論〕 |
+| purity | 0.40 | TCGA ABSOLUTE 平均 0.62 ± 0.20；PDAC 中位 0.33；PCAWG 中位 0.66，17% ≤ 0.40；TRACERx 421 中位 0.39；本機 HCC1395 subsample 0.15–0.74 | **在範圍內**〔論文實測＋資料實測〕 |
+| depth | 200× | PCAWG WGS 中位約 46×；TRACERx 421 WES 中位 413×（TRACERx 100 為 426×）；PCAWG 實測中位 48.5×，NRPCC 40 只有 0.4% 樣本達到；Griffith 建議 200–300× | **短讀 WGS 中偏高；ONT 腫瘤 WGS 更是偏高**。要加 40–60× 的敏感度組〔推論〕 |
 | NRPCC | 0.4·200／(0.4·2＋2·0.6) ≈ 40（ψ≈2） | SMC-Het 建議 ≥ 32；PCAWG 門檻 10 | 達標。若 depth 降到 60×，NRPCC ≈ 12，低於 32〔推論〕 |
-| clone 數與形狀 | 4 個 clone，C1→{C2, C3}、C2→C4 | PCAWG 95.1% 有 subclone；sibling 比 parent-child 多 3.11 倍；Minussi 7–22 個 subclone | **在範圍內**〔論文實測＋推論〕 |
-| C3 低 CCF | CCF 0.10，cell prev 0.04，期望 VAF ≈ 0.02，200× 時約 4 條 alt read | PCAWG 只保證 CCF ≥ 0.30；AML31 最低頻 cluster 需要約 850× | **生物上存在，但在 200× 低於可靠偵測下限**。模擬沒有 caller 與 error，所以 PhyClone 仍找到 C3。真實 ONT error 率接近 0.02，這群 SNV 多半不會被 call 出來〔推論〕 |
-| subclonal HP1 gain | seg A 在 C2 加 1 copy | Gerstung：80–90% gain 只加 1；Watkins：中位 18% 基因組 subclonal；TRACERx：62% 有 MSAI | **在範圍內**〔論文實測〕 |
-| cnLOH | seg D 在 C2（CCF 0.80），subclonal | 約 47% TCGA 腫瘤有 arm-level cnLOH；Alleloscope 有 subclonal cnLOH | **在範圍內**〔論文實測〕 |
-| 突變遺失比例 | s2＋s10 共 20／100 個 SNV 受影響 | TRACERx：subclonal 突變中位 13%（0–56%）來自 loss；CONIPHER 生成器 `prop_mut_lost` 0.02–0.25 | **在範圍內，偏高端**〔論文實測＋實測〕 |
-| multiplicity | s1、s9 multiplicity 2；s8 為 1 | PCAWG 22% 點突變是 early clonal（multiplicity > 1） | **在範圍內**〔論文實測〕 |
+| clone 數與形狀 | 4 個 clone，C1→{C2, C3}、C2→C4 | PCAWG-11：0／1／2／≥3 個 subclone 為 23%／53%／21%／2.3%。TRACERx 421 單區域：clone 中位 5，20% 剛好 4 個，73% 為直線，286 個 4-clone 子樹中只有 11% 與真值樹同形。Minussi 的 7–22 是 single-cell 分群，不可直接比 | **clone 數屬上尾；分岔形狀在單區域屬少數**〔資料實測〕 |
+| C3 低 CCF | CCF 0.10，cell prev 0.04，期望 VAF ≈ 0.02，200× 時約 4 條 alt read | PCAWG 門檻是期望 ≥ 3 條 alt read；NRPCC 40 時下限約 CCF 0.075。TRACERx 421 單區域：8.4% 的 subclone CCF ≤ 0.15，24% 的區域至少有 1 個。PCAWG（低 depth）只有 0.5%，屬偵測截斷 | **存在但屬少數；200× 下邊緣可偵測**（約 1/4 SNV < 3 條 alt read）。真實 ONT error 率接近 0.02，call 出來仍困難〔資料實測＋推論〕 |
+| subclonal HP1 gain | seg A 在 C2 加 1 copy | Gerstung：80–90% gain 只加 1；PCAWG 實測 71% gain bp 只 +1；Watkins：中位 18% 基因組 subclonal；TRACERx 421：91% tumour 有 haplotype-specific subclonal gain，其中 91% 只差 1 copy。MSAI（62–71%）是 mirrored 事件，不是 seg A 這種單一 allele gain，只作旁證 | **在範圍內**〔論文實測＋資料實測〕 |
+| cnLOH | seg D 在 C2（CCF 0.80），subclonal | Sivakumar 47%（不分 clonal／subclonal，只證明 cnLOH 常見）；PCAWG clonal cnLOH 67.6%；TRACERx 421：72% tumour 有 ≥ 1 Mb subclonal cnLOH，每 tumour 中位 2 個、中位 7.2 Mb；Alleloscope SU008 | **在範圍內**〔論文實測＋資料實測〕 |
+| 突變遺失比例 | s2＋s10 共 20／100 個 SNV 受影響 | TRACERx 100：subclonal 突變中位 13% 來自 loss（分母是 subclonal 突變，換算全部突變約 4%）。TRACERx 421 區域間嚴格下限：每 tumour 中位 0%、Q90 1.4%、最高 11.7%；75% 為 deletion 型、25% cnLOH 型。PCAWG subclonal deletion 中位 3.7% 基因組。CONIPHER `prop_mut_lost` 0.02–0.25（中位 0.16，只在 noise 組） | **偏高，屬壓力測試**〔論文實測＋資料實測〕 |
+| multiplicity | s1、s9 multiplicity 2；s8 為 1 | PCAWG 22% 點突變是 early clonal。PCAWG 實測：2:1 gain 區 early 比例中位 0.28（設計 0.5，只有 4.5% 樣本 ≥ 0.5）；cnLOH 區中位 0.56（設計 1.0，18% 樣本 ≥ 0.9）。HG008 gain 區 76:65、cnLOH 區 89:54 | **cnLOH 在範圍內；gain 區 early 比例偏高**〔資料實測〕 |
 | read 共現 | 指定 pair 各有 80 條跨越 read | B04 每例平均只有 69 對可排序 pair；PCAWG 短讀只有 245／1,537 例有 cis pair | **偏樂觀**。要依 SNV 間距與 read 長度分佈抽跨越 read，大部分 pair 應為 0〔推論〕 |
 | 事件密度 | 100 個 SNV 中 7 類事件 | 真實 WGS 有數千到數萬個 SNV，事件分散 | **刻意加密的壓力測試**，不是典型腫瘤〔推論〕 |
 

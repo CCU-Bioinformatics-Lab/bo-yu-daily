@@ -1,0 +1,8 @@
+scenario	purity	depth	nrpcc	exp_alt_reads_at_ccf	P(alt>=3)	frac_pcawg_nrpcc_ge_this	frac_pcawg_exp_alt_ge4
+truth_tree_200x	0.4	200	40	4	0.7619	0.004138	
+truth_tree_at_pcawg_median_depth	0.4	48.49	9.698	0.9698	0.07482	0.7321	
+truth_tree_60x	0.4	60	12	1.2	0.1205	0.5741	
+truth_tree_40x	0.4	40	8	0.8	0.04742	0.8202	
+pcawg_samples_ccf0.10	per-sample	per-sample	13.08	1.308	0.1871		0.004138
+pcawg_samples_ccf0.15	per-sample	per-sample	13.08	1.962	0.347		0.05606
+pcawg_samples_ccf0.30	per-sample	per-sample	13.08	3.924	0.692		0.4838
