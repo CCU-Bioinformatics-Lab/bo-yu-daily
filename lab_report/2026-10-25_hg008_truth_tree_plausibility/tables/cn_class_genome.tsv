@@ -1,0 +1,8 @@
+cn_class	Mb	pct_genome	Mb_in_smvar_benchmark	pct_benchmark
+LOH-deletion 1+0	1289.4	51.6	1222.8	52.2
+balanced 1+1	1084.6	43.4	995.7	42.5
+cnLOH 2+0	77.7	3.1	74.9	3.2
+hap-specific gain	48.4	1.9	47.1	2.0
+balanced gain	0.2	0.0	0.2	0.0
+homdel 0+0	0.1	0.0	0.1	0.0
+LOH-gain >2+0	0.0	0.0	0.0	0.0

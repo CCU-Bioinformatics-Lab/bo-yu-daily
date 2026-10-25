@@ -1,0 +1,67 @@
+cn_class	CN_HAP1/CN_HAP2	tumor_GT	TAC	TCN	n_SNV
+LOH-deletion 1+0	0/1	.|1	1	1	1990
+LOH-deletion 1+0	1/0	1|.	1	1	691
+LOH-deletion 1+0	0/1	.|0	0	1	82
+LOH-deletion 1+0	1/0	0|.	0	1	42
+LOH-deletion 1+0	1/0	1|.	1,0	1,1	1
+LOH-deletion 1+0	0/1	.|0	0,0	1,1	1
+LOH-deletion 1+0	0/1	.|1	1,0	1,1	1
+balanced 1+1	1/1	0|1	1	2	2385
+balanced 1+1	1/1	1|0	1	2	2208
+balanced 1+1	1/1	0|0	0	2	93
+balanced 1+1	1/1	0|0	1	2	68
+balanced 1+1	1/1	1|1	2	2	8
+balanced 1+1	1/1	1|0	2	2	8
+balanced 1+1	1/1	1|0	1	3	3
+balanced 1+1	1/1	0|0	1	3	3
+balanced 1+1	1/1	0|1	1,0	2,2	2
+balanced 1+1	1/1	1|0	1,0	2,2	2
+balanced 1+1	1/1	0|1	2,0	2,2	2
+balanced 1+1	1/1	0|1	1	3	2
+balanced 1+1	1/1	.|0	0	1	2
+balanced 1+1	1/1	.|1	2	3	2
+balanced 1+1	1/1	0|1	2	2	1
+balanced 1+1	1/1	0|2	1,1	2,2	1
+balanced 1+1	1/1	.|1	1	3	1
+balanced 1+1	1/1	1|0	2	3	1
+balanced gain	2/2	.|1	1	4	3
+cnLOH 2+0	2/0	1|.	2	2	86
+cnLOH 2+0	2/0	1|.	1	2	47
+cnLOH 2+0	0/2	.|1	1	2	7
+cnLOH 2+0	2/0	.|.	0	.	4
+cnLOH 2+0	0/2	.|1	2	2	3
+cnLOH 2+0	2/0	1|.	2,0	2,1	1
+cnLOH 2+0	0/2	.|.	0	.	1
+hap-specific gain	1/2	1|.	1	3	71
+hap-specific gain	1/2	0|1	1	3	55
+hap-specific gain	2/1	1|0	2	3	41
+hap-specific gain	1/2	0|1	2	3	35
+hap-specific gain	2/1	.|1	1	3	33
+hap-specific gain	2/1	1|0	1	3	10
+hap-specific gain	1/2	0|.	0	1	4
+hap-specific gain	2/1	.|0	0	1	2
+hap-specific gain	1/2	0|1	1	2	2
+hap-specific gain	1/3	0|1	1	4	2
+hap-specific gain	2/1	1|0	2,1	3,3	1
+hap-specific gain	2/1	.|2	2,1	3,3	1
+hap-specific gain	1/2	0|.	1	3	1
+no CNV call	-	1|0	1	2	801
+no CNV call	-	0|1	1	2	800
+no CNV call	-	1|.	1	1	116
+no CNV call	-	0|0	0	2	47
+no CNV call	-	0|0	1	2	19
+no CNV call	-	0|1	1	3	7
+no CNV call	-	1|0	2	2	5
+no CNV call	-	1|1	2	2	5
+no CNV call	-	0|.	0	1	4
+no CNV call	-	1|0	1	3	3
+no CNV call	-	2|0	1,1	2,2	2
+no CNV call	-	0|2	1,1	2,2	2
+no CNV call	-	0|1	2	2	1
+no CNV call	-	1|0	1,0	2,2	1
+no CNV call	-	0|0	1,0	2,2	1
+no CNV call	-	1|.	1	3	1
+no CNV call	-	0|.	2	3	1
+no CNV call	-	.|0	2	3	1
+no CNV call	-	.|1	3	3	1
+no CNV call	-	0|1	4	5	1

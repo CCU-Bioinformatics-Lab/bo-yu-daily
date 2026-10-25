@@ -1,6 +1,6 @@
 # Tumor Cell-line Alignment Sample Inventory
 
-更新日期：2026-10-20
+更新日期：2026-10-25
 
 本文件整理目前 `/big8_disk/data/` 下六種主要 ONT 腫瘤細胞株的 alignment 檔路徑與
 `subsample` 純度設計。盤點只看檔案、資料夾名稱與 CRAM header，沒有讀取 read 內容。
@@ -20,10 +20,14 @@
 
 ## 資料來源（2026-10-17 核對）
 
-- HCC1395、H1437、H2009、HCC1937、HCC1954 的 ONT CRAM 來自 [CASTLE panel](https://github.com/CASTLE-Panel/castle) Release 1（SRA BioProject PRJNA1086849）。
+- H1437、H2009、HCC1937、HCC1954 的 ONT CRAM，以及 HCC1395 的 `ONT_Dorado/`，來自 [CASTLE panel](https://github.com/CASTLE-Panel/castle) Release 1（SRA BioProject PRJNA1086849）。**HCC1395 的 `ONT/` 不是 CASTLE**，見下一條。
   - 下載來源是 Google mirror `brain-genomics-public/publications/park2024_deepsomatic`，見 `/big8_disk/Google_somatic_data/urls.txt`。
   - H1437／H2009 的 header 顯示是 R10.4.1、Guppy sup；tumor run 日期是 2023-01-17。它們對應 SRR28305180 和 SRR28305173。
   - 本機沒有 CASTLE Release 2 的 semi-UL E821 資料。
+- HCC1395 有兩個獨立定序的 ONT 資料集（2026-10-25 依 CRAM header 與 SRA 核對）。兩者是不同實驗室的細胞培養，subclone 組成可能不同，不要混用或直接比較 purity。
+  - `ONT/`：香港大學（ClairS 團隊）定序，SRA SRP445504／SRR25005626（2023-07-13 公開，study「Long read DNA sequencing of the HCC1395-HCC1395BL cell lines using ONT」），PromethION，tumor 約 237 Gb。本機由 zhenyu112 從 FASTQ 自行比對：minimap2 2.26 `--MD`（沒有指定 `-x`）。
+  - `ONT_Dorado/`：CASTLE Release 1（Park et al. 2024）。header 顯示 tumor 由多個 run 合併（例如 2023-03-17 的 flowcell PAK70131），比對是 minimap2 2.26 `-ax map-ont -y --eqx`。
+  - **`ONT_Dorado` 只是本機目錄名稱。** 兩個資料集的 basecaller 都沒有在 header 中記錄，尚未查證。
 - COLO829 不屬於 CASTLE。本機的 ONT_R10 和 ONT_PAO 的來源尚未核對。
 
 ## 純度標籤口徑
@@ -46,8 +50,8 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 
 - 癌症類型：乳腺癌（ductal carcinoma）
 - 原始 tumor／normal CRAM：
-  - ONT：`/big8_disk/data/HCC1395/ONT/HCC1395.cram`、`HCC1395BL.cram`
-  - ONT_Dorado：`/big8_disk/Google_somatic_data/bams/HCC1395/HCC1395_Tumor_ONT.GRCh38.sorted.cram`、`HCC1395_Normal_ONT.GRCh38.sorted.cram`。`ONT_Dorado/` 底下的 `.bam` symlink 已失效。同一目錄另有 `HCC1395_Tumor_ONT.50x.GRCh38.sorted.cram`。
+  - ONT（香港大學，SRR25005626；見「資料來源」）：`/big8_disk/data/HCC1395/ONT/HCC1395.cram`、`HCC1395BL.cram`
+  - ONT_Dorado（CASTLE）：`/big8_disk/Google_somatic_data/bams/HCC1395/HCC1395_Tumor_ONT.GRCh38.sorted.cram`、`HCC1395_Normal_ONT.GRCh38.sorted.cram`。`ONT_Dorado/` 底下的 `.bam` symlink 已失效。同一目錄另有 `HCC1395_Tumor_ONT.50x.GRCh38.sorted.cram`。
   - ONT_5khz_simplex_5mCG_5hmCG：`/big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/HCC1395.cram`、`HCC1395BL.cram`
 - `subsample` 路徑：
   - `/big8_disk/data/HCC1395/ONT/subsample/`
@@ -55,6 +59,19 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 - 純度種類：
   - ONT：`t00_n25`（0%）、`t10_n40`（20%）、`t20_n30`（40%）、`t30_n20`（60%）、`t40_n10`（80%）、`t50_n00`（100%）
   - ONT_Dorado：`t00_n25`（0%）、`t7_n29`（19.4%）、`t19_n29`（39.6%）、`t30_n20`（60%）、`t40_n10`（80%）、`t50_n00`（100%）
+- **實測細胞 purity**（2026-10-25，用 SEQC2 SNV 真值量測；細節見 `lab_report/2026-10-25_seqc2_hcc1395_measured_purity/`）：
+  - 括號中的百分比是 tumor DNA 比例，不是細胞 purity。HCC1395 的 ploidy 約 2.85，所以細胞 purity 較低。
+  - 給 PhyClone 的 `tumour_content` 要用下表的實測值。
+  - 這些值以 `t50_n00` 為 100% tumor。SEQC2 報告的 purity 約 99%，所以實際值可能再低約 1%。
+
+  | 標籤（ONT） | 實測 | 標籤（ONT_Dorado） | 實測 |
+  |---|---:|---|---:|
+  | `t00_n25` | 0.007 | `t00_n25` | 0.004 |
+  | `t10_n40` | 0.153 | `t7_n29` | 0.149 |
+  | `t20_n30` | 0.321 | `t19_n29` | 0.315 |
+  | `t30_n20` | 0.513 | `t30_n20` | 0.508 |
+  | `t40_n10` | 0.737 | `t40_n10` | 0.734 |
+  | `t50_n00` | 1.000（定義） | `t50_n00` | 1.000（定義） |
 
 ### COLO829
 
