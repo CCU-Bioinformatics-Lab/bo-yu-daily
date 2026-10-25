@@ -1,0 +1,33 @@
+# Typical HP-aware truth tree, the control for stress.yaml (tools/typical_truth_tree.py;
+# parameter evidence in lab_report/2026-10-25_typical_truth_tree/README.md).
+# Segment lengths give 12.9 SNVs/Mb, as in stress.yaml.
+name: typical
+purity: 0.40
+depth: 50
+phased_fraction: 0.859
+clones:
+  C1: {parent: null, fraction: 0.42}
+  C2: {parent: C1, fraction: 0.29}
+  C3: {parent: C2, fraction: 0.29}
+segments:
+  A: {chrom: chr1, start: 10000000, length: 930000}
+  C: {chrom: chr3, start: 10000000, length: 13950000}
+  D: {chrom: chr4, start: 10000000, length: 620000}
+edges:
+  C1:
+    - {snv: t1, hp: HP1, segment: A, count: 3}
+    - {snv: t2, hp: HP2, segment: A, count: 7}
+    - {snv: t3, hp: HP1, segment: C, count: 62}
+    - {snv: t4, hp: HP2, segment: C, count: 62}
+    - {snv: t5, hp: HP1, segment: D, count: 3}
+    - {snv: t6, hp: HP2, segment: D, count: 3}
+  C2:
+    - {gain: A, hp: HP1}
+    - {snv: t7, hp: HP1, segment: A, count: 2, copy: 0}
+    - {snv: t8, hp: HP1, segment: C, count: 17}
+    - {snv: t9, hp: HP2, segment: C, count: 17}
+  C3:
+    - {cnloh: D, keep: HP1}
+    - {snv: t10, hp: HP1, segment: D, count: 2, copy: 0}
+    - {snv: t11, hp: HP1, segment: C, count: 11}
+    - {snv: t12, hp: HP2, segment: C, count: 11}

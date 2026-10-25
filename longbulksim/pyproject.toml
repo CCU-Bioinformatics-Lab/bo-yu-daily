@@ -1,0 +1,19 @@
+[project]
+name = "longbulksim"
+version = "0.1.0"
+description = "Long-read bulk tumour simulator with HP-aware clone-tree truth"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26", "scipy", "pyyaml"]
+
+[project.scripts]
+longbulksim = "longbulksim.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["longbulksim"]
+
+[tool.setuptools.package-data]
+longbulksim = ["data/*.tsv"]
