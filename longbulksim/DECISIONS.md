@@ -23,3 +23,13 @@
 | 2026-10-25 | v0.2 加入 `mistag_rate`、`switch_rate_per_mb`、`base_error`，預設 0 | C4 穩健性測試需要（`research/phyclone_research/C4_ROBUSTNESS_PLAN.md`）。取代上面「不模擬 phasing 誤差」 | 錯誤率 0 時不抽亂數，`input/` 與 v0.1 逐位相同 |
 | 2026-10-25 | 錯標以整條 read 為單位；switch 依 read 中點決定 | haplotag 對整條 read 標記；同一 read 上的 SNV 必須同一個 tag | 推論：跨 switch 的 read 在 longphase 是依多數 het SNP 決定，中點是近似 |
 | 2026-10-25 | base error 是對稱的 ref↔alt 翻轉 | 計畫定義；只有 ref→alt 方向有實測（HCC1395BL 0.40%） | alt→ref 未量測 |
+| 2026-10-26 | v0.3 加入選填 `het_map`：tag 由 longphase-s germline 規則決定（覆蓋 ≥ 1 個 het，且只在一個 PS block） | PPC 顯示固定 tag 機率讓位點間 tag 比例太均勻（SD 0.05 vs 0.25） | 規則取自 `HaplotagStrategy.cpp`，沒有擬合參數；PPC 後 SD 0.248、聚集 0.426 vs 0.428。沒有 map 時輸出不變（`ZeroErrorsMatchV01`） |
+| 2026-10-26 | 不模擬 haplotag 的 allele 一致比例 ≥ 0.6 規則 | 模擬的 read 在 het SNP 上沒有鹼基錯誤 | 可能是 tagged alt 太少仍差 0.042 vs 0.057 的原因之一 |
+| 2026-10-26 | `het_map` 不設成預設 | 隨機樹 spec 的座標是人工的，套上 map 後 alt read 的 tag 比例中位只有 0.68（20 個 spec：0.58–0.74） | 要預設使用，需先讓隨機樹的 segment 座標落在 callable 區域；由使用者決定 |
+| 2026-10-26 | v0.4 主要入口改成參數模式 `longbulksim.generate`，輸入參數照 CONIPHER `tx_simulation` | 使用者指出：使用者不會手寫 clones／segments／edges | 手寫 spec 保留為進階用法；`random_tree` 不變 |
+| 2026-10-26 | 參數預設值用 TRACERx 421 單區域中位數（merge 後），depth 用 PCAWG 中位 | 使用者選擇。和藍圖模式同一個來源 | 數值與計算方式見 `param_tree.py` docstring |
+| 2026-10-26 | CN 比例相對於基準 ploidy 分類（非 WGD 1:1，WGD 2:2），兩組分開取中位 | 57% TRACERx tumour ploidy ≥ 3；用 1:1 當基準會把 WGD 的 2:2 算成 gain（gain 中位會變成 0.58） | ploidy ≥ 3 當作 WGD 是代理定義 |
+| 2026-10-26 | 比例由參數決定，具體 CN 狀態從 TRACERx 同類 segment 重抽 | 只給比例就能得到真實的狀態分布（3:1、2:0 等），不用另設參數 | 可逆 |
+| 2026-10-26 | `ccf_alpha` 預設 0.5 | subclone CCF 中位：0.5 → 0.44，1.0 → 0.42；TRACERx 0.45 | alpha 對結果影響小 |
+| 2026-10-26 | 不提供 `--prop-mutloss` | 遺失由事件順序產生，和藍圖模式一致；CONIPHER 是直接設定 | 實測中位 0.7%、Q90 2.8% |
+| 2026-10-26 | `random_tree` 的排邊程式抽成 `add_cn_items`、`build_edges` 供兩種模式共用 | 避免重複 | 重構前後 30 個 spec 的 sha256 相同 |

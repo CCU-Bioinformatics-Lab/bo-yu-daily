@@ -5,13 +5,15 @@ Every SNV the read covers is observed from that same molecule, so read co-occurr
 follows the tree. A read's lineage, HP and copy are drawn with probability proportional to the
 lineage's bulk cell fraction (each copy is one molecule template). Read starts are uniform and
 read spans come from a measured ONT span distribution, so the number of reads that span two
-SNVs depends on their distance as in real data.
+SNVs depends on their distance as in real data. With a het map, a read is tagged by the
+longphase-s rule (het_map.py); otherwise each read is tagged with probability phased_fraction.
 """
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 
+from . import het_map
 from .model import HPS
 
 
@@ -79,7 +81,7 @@ def place_mutations(rng, spec):
     return out
 
 
-def sample_segment(rng, spec, genomes, seg_id, span_q):
+def sample_segment(rng, spec, genomes, seg_id, span_q, het=None):
     q, span = span_q
     mean_span = np.trapezoid(span, q)
     max_span = int(span[-1])
@@ -99,7 +101,10 @@ def sample_segment(rng, spec, genomes, seg_id, span_q):
     start = start[order]
     end = start + np.interp(rng.random(n), q, span).astype(np.int64)
     mol = rng.choice(len(mols), size=n, p=w / w.sum())
-    tagged = rng.random(n) < spec.phased_fraction
+    if het is None:
+        tagged = rng.random(n) < spec.phased_fraction
+    else:
+        tagged = het_map.tagged(het, seg.chrom, start, end)
     # errors draw no random numbers when their rate is 0, so v0.1 seeds give the same reads
     flip = np.zeros(n, bool)
     if spec.mistag_rate > 0:

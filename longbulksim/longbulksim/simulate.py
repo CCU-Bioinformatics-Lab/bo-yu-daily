@@ -23,7 +23,7 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import binom
 
-from . import __version__
+from . import __version__, het_map
 from .model import HPS, NORMAL, lost, replay
 from .sample import load_read_span, place_mutations, sample_segment
 
@@ -149,8 +149,9 @@ def run(spec, seed, out_dir):
     rng = np.random.default_rng(seed)
     genomes = replay(spec)
     span_q = load_read_span(spec.read_span)
+    het = het_map.load(spec.het_map) if spec.het_map else None
     muts = place_mutations(rng, spec)
-    reads = {s: sample_segment(rng, spec, genomes, s, span_q) for s in spec.segments}
+    reads = {s: sample_segment(rng, spec, genomes, s, span_q, het) for s in spec.segments}
     obs = {m.id: observe(reads[m.segment], m.pos, m.role, rng, spec.base_error) for m in muts}
     truth = {r: role_truth(spec, genomes, r) for r in spec.roles}
 
@@ -221,6 +222,7 @@ def run(spec, seed, out_dir):
                 "phased_fraction": spec.phased_fraction, "mistag_rate": spec.mistag_rate,
                 "switch_rate_per_mb": spec.switch_rate_per_mb, "base_error": spec.base_error,
                 "read_span": str(spec.read_span),
+                "het_map": str(spec.het_map) if spec.het_map else None,
                 "n_mutations": len(muts), "n_pairs_rows": len(pairs),
                 "n_reads": {s: int(len(r.start)) for s, r in reads.items()},
                 "lineages": [NORMAL, *spec.parent]}
