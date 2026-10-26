@@ -1,7 +1,7 @@
 # 計畫：將 longphase-s HP 特徵加入 PhyClone
 
-更新日期：2026-10-17（新增 §5.9 L1-B 驗證規格、I15、AC20–AC21；新增 §5.8.8 T-sc scDNA 樹藍圖、I16、AC22）。
-前一版：2026-10-16（新增 §5.2.1 dose-response、§5.7 L0、§5.8 L2 驗證規格）。
+更新日期：2026-10-21（刪除 L0 與 L1-B：原 §5.7、§5.9、I12、I15、AC16、AC20、AC21。依 2026-10-21 會議決議，只用 long read 模擬資料集，short read 資料集都不用；見 `research/meeting_record/2026_10_21_meeting_summary.md`）。
+前一版：2026-10-17（新增 §5.8.8 T-sc scDNA 樹藍圖、I16、AC22）。
 狀態：設計文件。尚未完成 C0–C6 實作或效果驗證。
 
 本文件採用 ASD-STE100 的寫作原則：使用短句、主動語態及固定術語。每個步驟只指定一個主要動作。條件先於動作。
@@ -29,18 +29,15 @@
 第一版的主要資料是完整 HCC1395，只有一個 tumor sample。
 第一版的正確率驗證使用獨立模擬真值。HCC1395 用於資料可行性及候選樹相容性分析。
 
-驗證分為四層。每層只支持對應的結論：
+驗證分為三層。每層只支持對應的結論：
 
 | 層 | 資料 | 可支持的結論 | 規格 |
 |---|---|---|---|
-| L0 | PhyClone 論文 benchmark 及 HGSOC；無 HP 觀測 | 無 long-read 觀測時，不劣於原 PhyClone | §5.7 |
 | L1 | 參數式模擬：直接生成 counts、HP 及 pair | 指定模擬情境下支持改善；dose-response 曲線描述改善隨資訊量的變化 | §5.2、§5.2.1、§5.5 |
-| L1-B | I12 的真值樹及原始 counts，加上生成的 HP 及 pair | 在外部論文的真值樹上支持改善；baseline 可與論文及其他方法對照 | §5.9 |
 | L2 | Read-level 模擬及真實 ONT reads 的 spike-in；樹來自生成器（T-gen）或 scDNA 參考樹（T-sc） | L1 的效果經過真實 read 流程後仍存在；T-sc 只作描述，檢查效果在真實樹結構下的方向 | §5.8、§5.8.8 |
 | L3 | 真實 long-read 細胞株，第一版為 HCC1395 | 資料可行性及候選樹相容性；不宣稱真樹準確率 | §1.1、§5.1 |
 
-L0 的 benchmark 沒有 long-read 觀測。因此 L0 不能用來宣稱改善。
-L1-B 使用同一批 benchmark 的真值，但 HP 及 pair 是生成的。因此 L1-B 的結論範圍與 L1 相同，須由 L2 檢查。
+不使用 short read 資料集（例如 PhyClone 論文 benchmark、SMC-Het）當輸入，也不借用它們的真值樹。這些資料沒有 long-read 觀測。
 
 ### 0.1 固定推理設定
 
@@ -84,15 +81,13 @@ L1-B 使用同一批 benchmark 的真值，但 HP 及 pair 是生成的。因此
 | I09 | cellular purity | 主比較固定 `tumour_content=0.99` | 沿用既有 baseline 的 ASCAT 設定；核對估計來源、資料集及定義 |
 | I10 | 模擬真值 | 新增生成樹、SNV assignment、mutation-carrier CCF 及生成設定 | 與方法輸入分開保存；評分時才載入真值 |
 | I11 | 執行設定 | 新增 `run_manifest.json` | 記錄輸入版本、QC、模型開關、seeds、chains、particles、iterations、硬體及輸出位置 |
-| I12 | L0 benchmark | `/big8_disk/boyu114/phyclone_dataset/`：`FS-CRP_Loss`、`TSSB_High`、`TSSB_Low`、`Pairtree`、`CONIPHER_Noise`、`CONIPHER_No-Noise`、`Copy_Number_Error`、`HGSOC` | 只用 `program_inputs/phyclone_outliers/` 的 `data.tsv` 及 cluster 檔（HGSOC 為 `results.tsv`，trial 路徑為 `HGSOC/<p>_wgs[_t]/data_archive/<p>/`）；`ground_truth/` 在評分時才讀取；已有 `md5sum -c` 紀錄（S09） |
 | I13 | L2 spike-in 背景 reads | `/big8_disk/data/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/HCC1395BL.cram` | 與 I05 phased normal VCF 屬同一資料集；核對 sample、header、depth 及 I05 的 phasing 版本 |
 | I14 | L2 真值及生成設定 | 新增；生成樹、SNV assignment、SNV haplotype、CN 事件、read→lineage 對應、mutation-carrier CCF | 與方法輸入分開保存；評分及 pipeline 診斷時才載入 |
-| I15 | L1-B 擴增資料集 | 新增；由 I12 依 §5.9.3–5.9.4 生成：補值真值及 §1.3 格式的方法輸入 | 真值與方法輸入分開保存；不覆寫 I12；B-keep 的 total counts 須與 I12 逐列相同 |
 | I16 | T-sc 藍圖 | 新增；由已發表的 scDNA 參考樹萃取（§5.8.8.1 的來源） | 只用正文、補充表及公開 processed 資料；記錄出處及 checksum；與 I14 分開保存 |
 
 HCC1395 pilot 必須提供 I01–I09 及 I11。I10 在 pilot 標記 `not_applicable`，不得補造真值。
 模擬評估必須提供 I10、生成後的觀測與 I11；原始 HCC1395 路徑不適用時，須列出對應模擬輸入。
-L0 必須提供 I11、I12。L1-B 必須提供 I02、I05、I11、I12、I15。L2 必須提供 I05、I07、I11、I14；L2-S 另須提供 I13；T-sc 另須提供 I02、I16。
+L2 必須提供 I05、I07、I11、I14；L2-S 另須提供 I13；T-sc 另須提供 I02、I16。
 I01 的原 tumor 是完整 HCC1395，並非 `tX_nY` subsample。
 不要混用 worktree 中另一份 old-tagging 重跑 BAM，或 new-split BAM。
 
@@ -593,7 +588,7 @@ Amplified CN、subclonal CN 及 mutation loss 只作範圍外 stress test，分�
 
 **目的：** 量化改善幅度如何隨 long-read 資訊量變化。
 橫軸為資訊量，縱軸為方法對 baseline 的配對差值。
-曲線起點 D1=0、D2=0 表示沒有 phased reads 及 pair。此時 C2 仍可使用 HP 對應的 allele-specific CN（§4.3），因此起點不一定等於 baseline。完全停用 HP 路徑的情況由 L0 及 AC04 檢查。
+曲線起點 D1=0、D2=0 表示沒有 phased reads 及 pair。此時 C2 仍可使用 HP 對應的 allele-specific CN（§4.3），因此起點不一定等於 baseline。完全停用 HP 路徑的情況由 AC04 檢查。
 此曲線不參與 §5.5 的「支持改善」判定。它支持另外三類描述：改善是否隨資訊量增加、起效點及飽和點、真實資料位置的預期效益。
 
 **設計規則：**
@@ -662,12 +657,9 @@ D3 的 0.5 代表隨機錯標，作為負對照。D3 的其他格點固定 D1、
 | AC13 | 輸出完整性 | §4.7 的必要檔案齊全；每個 fallback 與 conflict 可回查 SNV／pair；不輸出虛構 multiplicity accuracy |
 | AC14 | 評分器已知答案 | 完整完美預測時 AD／V=1、CCF MAE=0、矩陣只含對角線；AD 無有效分母時仍為 NA |
 | AC15 | 缺失與失敗 | 空母體、缺 truth、缺 prediction、invalid CCF、失敗 trial 均依規格回報；不靜默刪除或填成完美分數 |
-| AC16 | L0 原版路徑 | I12 原格式輸入不需改檔即可執行；固定 seed 時，§5.7 smoke 子集的 trace scores、MAP tree 及 `results.tsv` 與 commit `2738324` 相同；同時收到 HP／link 輸入及 outlier／loss 設定時明確報錯 |
 | AC17 | L2 生成器 fixtures | 同一 read 上的所有 spike 位點使用同一 lineage（100%）；各 lineage／haplotype 的 ALT reads 數與生成紀錄完全相符；被跳過的位點與原因可回查 |
 | AC18 | L2 觀測獨立性 | 方法輸入不含 I14 欄位；HP 欄位全部可回溯到本次 longphase-s 輸出；tagging 在 spike／模擬後的 reads 上重跑，並記錄版本與參數 |
 | AC19 | Dose-response 零點 | D1=0 且 D2=0 的輸入（HP 欄位存在但全部 unphased、pair 表為空）在固定 seed 下，完整模型與 `+C2` 的 grid、tree scores 及 MAP tree 相同；容許差同 AC04 |
-| AC20 | L1-B 生成器 fixtures | 每個 SNV × sample 的六組 counts 總和等於該模式的 total counts；tagging 前的 ALT reads 100% 位於指定 haplotype；`haplotype_conflict` 的 SNV 全部為 unphased；同一 pair molecule 的兩個位點使用同一 lineage 及 haplotype |
-| AC21 | L1-B 輸入一致性 | B-keep 的 `INPUT.total.tsv` counts、CN、purity 與 I12 `data.tsv` 逐列相同；cluster 檔與 I12 相同；方法輸入不含 I15 真值欄位；固定 seed 時，B-keep baseline 與 L0-A 擴充版的 trace scores 及 MAP tree 相同 |
 | AC22 | T-sc 藍圖萃取 | 每份藍圖的 topology 及 clone prevalence 與來源圖表逐項相符；每個 sample 的 clone 加 normal 比例總和為 1（`atol≤1e-6`）；每個 SNV 都有 `feature_origin`；「僅 scDNA 特徵」母體只含 `feature_origin=scdna` 的 SNV |
 
 AC11 先固定可列舉的狀態空間、chain 長度及至少 4 組獨立 seeds。
@@ -725,11 +717,11 @@ HCC1395 pilot 不使用此表宣稱真樹準確率改善。
 | 階段 | 工作 | 必要產物 | 離開條件 |
 |---|---|---|---|
 | Phase 0 | 核對 pilot 必要輸入；小區域 C0；量化 counts、phase、CN、pair 可用性及 tagging bias | §1.3 的 pilot 輸出、待補清單、參數版本 | AC01–AC03 通過；分別記錄 C3／C4 的 GO 或 NO_GO |
-| Phase 1 | 完成 C1、C2 | HP schema、prior、fallback fixtures | AC04–AC05、AC16 通過 |
+| Phase 1 | 完成 C1、C2 | HP schema、prior、fallback fixtures | AC04–AC05 通過 |
 | Phase 2 | 完成 C3 | HP 觀測物件、聯合 likelihood、模擬偏差檢查 | AC06–AC07 通過；仍保留原版 fallback |
 | Phase 3 | 完成 C4 | Link table、三個 score API、cache／sampler 整合 | AC08–AC11 通過；subtree 更新維持 0 |
 | Phase 4 | 完成 C5、C6、評分器及正式 ablation；執行 §5.2.1 dose-response | 診斷表、四類評估檔、方法比較報告、`dose_response.tsv` | AC12–AC15、AC19 及 §5.4 通過；另依 §5.5 判定效果 |
-| Phase 5 | 執行 L0 正式子集；執行 L1-B；執行 L2 | §5.7.5、§5.9.7、§5.8.7 的交付物 | L0 依 §5.7.4 判定；AC20–AC21 通過，L1-B 依 §5.9.6 判定；AC17–AC18 通過；L2 依 §5.8.6 判定；AC22 通過後執行 T-sc，依 §5.8.8.4 描述性報告 |
+| Phase 5 | 執行 L2 | §5.8.7 的交付物 | AC17–AC18 通過；L2 依 §5.8.6 判定；AC22 通過後執行 T-sc，依 §5.8.8.4 描述性報告 |
 
 L2 生成器可與 Phase 2–4 平行開發。L2 的正式測試資料集須在 Phase 4 凍結 L1 參數，並依 §5.8.5.1 決定 `n` 後，才生成或解封。
 
@@ -748,87 +740,6 @@ PhyClone 程式變更應在 submodule 分支中獨立 commit。
 cd research/phyclone_research/PhyClone
 python -m unittest discover -s phyclone/tests/unit_tests
 ```
-
-### 5.7 L0：原 PhyClone benchmark 的不退步驗證
-
-#### 5.7.1 目的與結論範圍
-
-L0 檢查一件事：擴充版沒有 HP 觀測時，是否和原 PhyClone 一樣好。
-I12 只有 total counts、CN 及 purity，沒有 HP 欄位及 pair 表。
-因此 L0 只能支持「不劣於 baseline」。L0 不能支持「改善」。
-
-- 依 §4.2，沒有任何 HP 欄位時，使用原版路徑。
-- 不得為 I12 補造 HP 欄位、隨機 phase 或 pair。加入生成 HP 的版本屬 L1-B（§5.9），結果與 L0 分開。
-- 兩個版本使用相同的 `data.tsv`、cluster 檔、seeds 及推理預算。
-
-#### 5.7.2 執行設定
-
-| 設定 | 推理設定 | 比較 | 用途 |
-|---|---|---|---|
-| L0-A | §0.1 的固定設定：outlier／loss 關閉，subtree 更新為 0 | commit `2738324` 對擴充版（C2–C4 開啟，但無 HP／link 輸入） | 與本計畫主實驗設定一致 |
-| L0-B | 論文設定：4 chains、100 burn-in、5,000 iterations、100 particles、Beta-Binomial、semi-adapted proposal；outlier 依原 `phyclone_outliers` 輸入（S06） | 同上兩版 | 檢查論文設定下的原版路徑 |
-
-L0-B 是 §0.1 的唯一例外。只有在沒有 HP 及 link 輸入時，才允許開啟 outlier。
-若同時收到 HP／link 輸入及 outlier／loss 設定，擴充版必須報錯（AC16）。
-
-`program_outputs/phyclone_outliers/` 的既有結果來自論文使用的版本（S06：PhyClone 0.7.0）。
-它與 commit `2738324` 可能不同。既有結果只作描述性對照，不作 L0 的判定依據。
-
-#### 5.7.3 Trial 子集
-
-全部 2,532 個 trials 的計算量過大。正式 L0 使用以下分層子集。
-子集在執行前依 trial 名稱寫入 `l0_manifest.json`。不得依執行結果增減 trial。
-
-| 資料集 | 選取規則 | Trials |
-|---|---|---:|
-| `FS-CRP_Loss` | 每個 loss proportion 取 `run0`–`run4` | 15 |
-| `TSSB_High` | 每個 S 取 `run0`–`run4` | 20 |
-| `TSSB_Low` | 每個 S 取 `run0`–`run4` | 25 |
-| `Pairtree` | 144 個設定各取 `run1` | 144 |
-| `CONIPHER_Noise` | 依 sample 數分為 2–3、4–7、8+ 三組；每組取編號最小的 10 個 | 30 |
-| `CONIPHER_No-Noise` | 同上 | 30 |
-| `Copy_Number_Error` | 每個 error level 取 `LTXSIM001`–`LTXSIM010` | 30 |
-| `HGSOC` | 全部 `p{2,3,9}_wgs`、`p{2,3,9}_wgs_t` | 6 |
-| 合計 | | 300 |
-
-另定 AC16 的 smoke 子集：每個資料集取上表第一個 trial，共 8 個，使用短預算。
-Smoke 子集只檢查程式路徑，不計入 L0 判定。
-若計算資源允許，可執行全部 trials。全集結果須和子集結果分開標示。
-
-#### 5.7.4 判定規則
-
-**主要判定：逐 trial 一致性。**
-AC04 要求無 HP 時 grid 及 tree scores 相同。因此，固定 seed 時，兩版的輸出應相同。
-逐 trial 比較 trace scores、MAP tree、`results.tsv` 及 topology report。
-全部相同時，L0 記為「不退步：輸出一致」。
-
-**次要判定：統計不劣性。**
-若 AC04 允許的數值順序差異使 chain 軌跡分歧，則改用統計判定：
-
-- 每個 trial 至少使用 4 組 seeds。先彙整 seeds，再以 trial 為配對單位。
-- 依資料集分層，報告 `ΔAD_F1`、`ΔV`、`ΔCCF_MAE` 的 2,000 次 bootstrap 95% CI。
-- 沿用 §5.5 的退步界線：`ΔAD_F1` 及 `ΔV` 的 CI 下界 ≥−0.01；`ΔCCF_MAE` 的 CI 上界 ≤+0.01。
-- 任一資料集未通過時，L0 記為「未通過」，並列出該資料集。不得以合併平均掩蓋。
-- 分歧原因必須回查到具體的數值計算差異。無法解釋的分歧視為實作錯誤。
-
-**成本：** 報告兩版 runtime 及 peak RSS 比值的中位數與最大值。
-提案門檻：中位數比值 ≤1.10。超過時記錄原因，不阻擋正確率判定。
-
-**評分規則：**
-
-- 模擬資料集沿用 `evaluation_v1.md` 的固定母體規則。
-- HGSOC 另用論文規則：修剪至定義真值的突變，並折疊變空的節點（S06）。兩種規則的結果分開標示。
-- 先核對各資料集 `ground_truth/` 的欄位。沒有 mutation-carrier CCF 真值時，CCF MAE 記為 `NA: truth_unavailable`。
-- `FS-CRP_Loss` 的 loss trials 只在 L0-B 有意義。L0-A 關閉 loss 模型，其結果只作描述，不作判定。
-
-#### 5.7.5 L0 交付物
-
-| 檔案 | 完成標準 |
-|---|---|
-| `l0_manifest.json` | 固定 trial 清單、兩版 commit、設定、seeds、預算、評分規則及硬體 |
-| `l0_identity.tsv` | 每個 trial × seed 的一致性結果；不一致時記錄第一個分歧的 iteration 及數值 |
-| `metrics.tsv` | 依 `evaluation_v1.md` 格式，加上資料集、設定（L0-A／L0-B）及評分規則欄位 |
-| `l0_report.md` | 各資料集的一致性比例、不劣性 CI、成本比值、失敗 trial 及結論範圍 |
 
 ### 5.8 L2：read-level 模擬及 spike-in 驗證
 
@@ -1024,7 +935,7 @@ scDNA 樹本身也是推論結果，而且只涵蓋部分細胞及部分特徵�
 | 4 | A04（CK-AML，Strand-seq） | 人工 curated clone trees；homolog-specific SV | 補充表的 subclone 註解 | 主要是 SV；不是 scDNA 的 SNV 樹 |
 
 - 只使用論文正文、補充表及公開 processed 資料。不申請也不使用受控 raw reads。
-- HGSOC（I12）的 reference tree 來源未確認。確認是 scDNA 參考樹之前，不納入 T-sc。
+- HGSOC 的 reference tree 來源未確認。確認是 scDNA 參考樹之前，不納入 T-sc。
 - 每個來源的實際檔案、版本及 checksum，在使用前寫入 manifest。
 
 ##### 5.8.8.2 藍圖萃取
@@ -1055,7 +966,10 @@ scDNA 參考樹的特徵很少。例如 A03 PA04 只有 25 個 SNV。這些特�
    - 每條邊的 SNV 數量依 HCC1395 pilot 的實測 somatic SNV 密度設定。數量規則寫入 manifest。
    - 位置從 I02 不放回地抽取。來源 SNV 有真實座標時，保留原座標。
 3. **CN：** 來源有 allele-specific CN 時，使用來源的值。沒有時，全部設為 1:1。不得借用 HCC1395 的 CN profile。
-4. **SNV haplotype 及 HP 對應：** 依 §5.9.3 規則 3–5。
+4. **SNV haplotype 及 HP 對應：**
+   - 每個 CN segment 以 0.5 機率把兩個 allele 對應到 HP1／HP2，並記錄結果。
+   - 突變 copy 數使用來源的值；來源沒有時設為 1。
+   - 只有一條 haplotype 的 copy 數 `C_h ≥` 突變 copy 數時，指定該 haplotype。兩條都滿足時，依 `C_h` 的比例抽樣。兩條都不滿足時，記錄 `haplotype_conflict`，該 SNV 的 reads 全部為 unphased。
 5. **Sample 數：** 使用 `min(來源的 sample 數, §5.8.3 可行的 S)`。減少 sample 時，記錄被省略的 sample。
 
 補足後的完整真值寫入 I14。藍圖（I16）與 I14 分開保存，以便追溯哪些部分來自 scDNA。
@@ -1071,7 +985,7 @@ CN gain 只在 L2-R 生成，限制同 §5.8.3。
 | 評分母體 | 內容 | 用途 |
 |---|---|---|
 | 全部 SNV（主要） | 原始特徵及合成 SNV | 使用 I14 的完整真值 |
-| 僅 scDNA 特徵 | 只保留 `feature_origin=scdna` 的 SNV；樹修剪至這些 SNV，並折疊變空的節點 | 模擬真實論文的驗證方式（同 §5.7.4 的 HGSOC 規則） |
+| 僅 scDNA 特徵 | 只保留 `feature_origin=scdna` 的 SNV；樹修剪至這些 SNV，並折疊變空的節點 | 模擬真實論文的驗證方式（同 PhyClone 論文的 HGSOC 修剪及折疊規則，見 S06 E6） |
 
 **判定：** 同一份藍圖的資料集不是獨立病人。藍圖數量也少於 §5.8.5.1 的下限 10。
 
@@ -1088,150 +1002,6 @@ CN gain 只在 L2-R 生成，限制同 §5.8.3。
 | `tsc_manifest.json` | 來源檔案及 checksum、合成 SNV 數量規則、每份藍圖的資料集數、seeds、路線（L2-S／L2-R） |
 | §5.4 的評估檔 | 加上藍圖 ID、評分母體及 `feature_origin` 分層欄位 |
 | `tsc_report.md` | 逐份藍圖的結果、與 T-gen 的方向比較、兩種評分母體的差異及限制 |
-
-### 5.9 L1-B：以 I12 真值樹為藍圖的 HP 擴增
-
-#### 5.9.1 目的與結論範圍
-
-L1 使用本計畫自訂的生成樹。L1-B 改用 I12 的真值樹、CCF、CN 及原始 counts，再加上 HP 及 pair 觀測。
-L1-B 有兩個目的：
-
-1. 在外部論文定義的樹結構上，檢查 HP 特徵是否改善結果。
-2. 讓 baseline 的輸入與 I12 完全相同。因此，baseline 結果可以和論文及 `program_outputs/` 的其他方法對照。
-
-**與 L0 的關係：** L0 的輸入不變。L1-B 產生新資料集 I15，存在另一個目錄。
-§5.7.1 的「不得為 I12 補造 HP」只約束 L0。L1-B 的 HP 必須標記為生成觀測。
-
-**結論範圍：** 「在 I12 真值樹及本計畫的 HP 生成器下，支持或不支持改善」。
-HP 及 pair 仍由參數式生成器產生，因此循環論證的風險與 L1 相同。L1-B 結論須由 L2 檢查。
-L1-B 不代替 L1。§5.8.5.1 的 L2 樣本數仍只依 L1 計算。
-
-**排除 HGSOC：** HGSOC 是真實 short-read 資料。它沒有 long reads，也沒有 SNV haplotype 及 CN timing 真值。
-不得為 HGSOC 生成 HP。HGSOC 只留在 L0。
-
-#### 5.9.2 各資料集的可用真值
-
-**[資料盤點／current]** 2026-10-17 檢查各資料集第一個 trial 的 `ground_truth/` 及 `data.tsv` 欄位。其他 trials 須在建立 manifest 時逐一核對。
-
-| 資料集 | SNV 位置 | SNV haplotype | CN | L1-B 分組 |
-|---|---|---|---|---|
-| `CONIPHER_No-Noise`、`CONIPHER_Noise` | 真實 `CHR`／`POS` | 未提供；有 `MUT_CN`、`CN_A`、`CN_B` | allele-specific；有非 1:1 狀態（例：2:2、3:2、3:1） | G1 主要 |
-| `Copy_Number_Error` | 真實 `CHR`／`POS` | 同上；另有 `*_perturbed.tsv` | 同上；方法輸入使用擾動後 CN | G1 主要 |
-| `FS-CRP_Loss` | `coord` 是序號，不是基因組位置 | 未提供；`g_v` genotype 可推得突變 copy 數 | 多種 major:minor（例：2:1、3:1、5:1） | G1 主要（只用 `loss_prop_0.0`） |
-| `TSSB_High`、`TSSB_Low` | `coord` 是佔位值 | `mut_cn` 及 `g_v` | 全部 1:1 | G2 次要 |
-| `Pairtree` | 只有 `chrom` | 未提供 | 全部 1:1 | G2 次要 |
-
-G2 全部為 1:1。因此 G2 中 C2 不改變 genotype 候選，C3 的增益預期很小。G2 主要用於檢查 C4 及「HP 不造成退步」。
-`Pairtree` 的 `*.truth.pickle` 尚未讀取（目前環境沒有 numpy）。使用前須核對其欄位。
-`CN_PREVALENCE` 的定義須回 CONIPHER 模擬器確認。已檢查的 trial 中，它等於 `PURITY`。
-
-#### 5.9.3 真值補值規則
-
-補值結果寫入 I15 的真值目錄。補值只作生成設定，不作評分答案（`evaluation_v1.md` §2.4）。
-
-1. **位置：** 有真實 `CHR`／`POS` 時，保留原值。沒有時，從 I02 中同一條染色體的 SNV 位置不放回地抽取，並記錄 `position_source`。
-2. **PS 結構：** 以 I05 的 PS blocks 決定每個 SNV 所屬的 PS。不在 PS 內的 SNV，其 reads 一律為 unphased。
-3. **HP 對應：** 每個 CN segment 以 0.5 機率把 `CN_A`／`CN_B` 對應到 HP1／HP2，並記錄結果。
-4. **突變 copy 數：** 使用 `MUT_CN` 或 `mut_cn`。只有 `g_v` 時，以 `g_v` 中 B allele 的數量作為突變 copy 數。
-5. **SNV haplotype：**
-   - 只有一條 haplotype 滿足 `C_h ≥` 突變 copy 數時，指定該 haplotype。
-   - 兩條都滿足時，依 `C_h` 的比例抽樣。
-   - 兩條都不滿足時，記錄 `haplotype_conflict`。該 SNV 的 reads 全部為 unphased。
-6. **CN 狀態分層：** 若 `CN_PREVALENCE < PURITY`，該 SNV 屬 subclonal CN。依 §5.2，這類 SNV 只進 stress test 分層。
-
-#### 5.9.4 觀測生成規則
-
-L1-B 有兩種模式：
-
-| 模式 | Total counts | 用途 |
-|---|---|---|
-| B-keep（主要） | 完全使用 I12 的 `ref_counts`、`alt_counts` | Baseline 輸入與 I12 相同；可對照 L0-A 及其他方法 |
-| B-ont（次要） | 以每個位點的 binomial thinning 把 depth 降到 30× 及 60× | 接近 ONT 的實際 depth；baseline 使用相同的 thinned counts |
-
-**單位點 HP counts（F1）：**
-
-1. ALT reads 的真實 haplotype 全部是 SNV 所在的 haplotype。
-2. REF reads 依各 haplotype 的期望 REF copy 量做 multinomial 分配。期望量由 purity、CCF、`C_h`、突變 copy 數及 normal 的 1:1 計算。
-3. 每條 read 以機率 `r` 標為 phased；否則為 unphased。
-4. Phased read 以機率 `a` 標到正確 HP；否則標到另一條 HP。
-5. REF 及 ALT 可使用不同的 `r`，以模擬 allele-dependent tagging bias。
-6. 六組 counts 的總和必須等於該模式的 total counts（AC20）。
-
-**Pair 表（`PAIRS.tsv`）：**
-
-1. 只考慮同一 PS 內、距離小於 read length 上限的 SNV pairs。
-2. 依 depth 及 read length 分布，抽出跨越兩個位點的 molecule 數。
-3. 每個 molecule 依 §5.8.2 規則 4–6 抽一個 lineage 及一條 haplotype。兩個位點的 allele 都由該 lineage 及 haplotype 決定。
-4. 每個 molecule 再依步驟 3–4 的 `r`、`a` 決定 HP tag。
-5. Pair 表的邊際不強制等於單位點 counts。差異量記錄在 `pair_qc.tsv`。相依性依 §4.5.4 的 `λ` 敏感度處理。
-
-**參數來源：** Read length 分布、`r`、REF／ALT tagging 差異及 phase switch 率，使用 Phase 0 在 HCC1395 量測的值。
-這些值在 L1-B 正式執行前凍結，並寫入 manifest。
-
-**與推理模型分開的誤差：** 生成器至少加入三種推理模型沒有直接建模的誤差：REF／ALT tagging bias、PS 內 phase switch 及 HP 錯標。
-§5.2 的必要對照（打亂 pair、phase switch、short-span 對照）同樣適用於 L1-B。
-
-#### 5.9.5 Trial 子集
-
-Trial 清單在執行前寫入 `l1b_manifest.json`。不得依執行結果增減 trial。
-與 L0 重疊的資料集，使用相同 trials，以便和 L0-A 配對。
-
-| 分組 | 資料集 | 選取規則 | Trials |
-|---|---|---|---:|
-| G1 | `CONIPHER_No-Noise` | 同 §5.7.3 | 30 |
-| G1 | `CONIPHER_Noise` | 同 §5.7.3 | 30 |
-| G1 | `Copy_Number_Error` | 同 §5.7.3 | 30 |
-| G1 | `FS-CRP_Loss` | `loss_prop_0.0_run0`–`run19` | 20 |
-| G2 | `TSSB_High` | 同 §5.7.3 | 20 |
-| G2 | `TSSB_Low` | 同 §5.7.3 | 25 |
-| G2 | `Pairtree` | 同 §5.7.3 | 144 |
-| 合計 | | | 299 |
-
-- 每個 trial 只生成一個 HP 擴增版本。Trial 是比較單位。每個 trial 至少使用 4 組推理 seeds。
-- 開發資料集使用不在 `l0_manifest.json` 及上表中的 trials。每個 G1 資料集取 5 個。開發資料集不計入判定。
-- `FS-CRP_Loss` 的 `loss_prop_0.1`、`0.2` 不納入。§0.1 關閉 loss 模型。
-
-#### 5.9.6 方法、指標及判定規則
-
-**方法：** 沿用 §5.2 的六種。Baseline 使用 I15 的 `INPUT.total.tsv`。
-B-keep 的 `INPUT.total.tsv` 與 I12 的 `data.tsv` counts 相同。因此，固定 seed 時，B-keep baseline 應與 L0-A 的擴充版輸出相同（AC21）。
-
-**指標：** 沿用 §5.1 及 `evaluation_v1.md`。另依下列分層報告：
-
-- 資料集。
-- SNV 所在 CN 狀態：1:1、非 1:1 clonal、subclonal（stress test）。
-- Sample 數。
-- `Copy_Number_Error` 的 error level（0.0、0.1、0.2）。
-
-**判定：** 使用 §5.5 的比較、門檻及退步界線。
-
-- G1 每個資料集分別判定。合併平均只作描述，不作判定。
-- G2 只判定兩項：`+C4` 對 baseline 的 linkage 分層 `ΔAD_F1`，以及完整模型的退步界線。
-- `Copy_Number_Error` 另報告改善量對 error level 的趨勢。此趨勢只作描述，檢查「HP 是否讓結果在 CN 錯誤下更穩」。
-- B-keep 及 B-ont 分別判定。B-ont 是否通過不改寫 B-keep 的判定。
-
-| L1-B 結果 | 條件 | 記錄 |
-|---|---|---|
-| 支持 | §5.5 門檻及退步界線全部通過 | 「在 I12 真值樹上支持此結論」 |
-| 證據不足 | 點估計方向正確，但 CI 未達門檻 | 「方向一致，證據不足」 |
-| 不支持 | CI 排除 0 且方向相反；或退步界線未通過 | 「L1-B 不支持」；須以 pipeline 診斷分析原因 |
-
-L1 與 L1-B 結果不一致時，兩者都要報告。不得只挑一個。
-
-**與其他方法的對照：** `program_outputs/` 的 `pairtree`、`orchard`、`fastBE`、`conipher`、`pyclone-vi` 結果只用於 B-keep。
-這些方法沒有使用 HP，版本也可能不同。對照只作描述，不作 §5.5 判定。
-
-**選用：** 在 G1 執行 §5.2.1 的 D1 及 D3 dose-response。D2 受 I12 的 SNV 位置限制，不在 L1-B 執行。
-
-#### 5.9.7 L1-B 交付物
-
-| 檔案 | 完成標準 |
-|---|---|
-| `l1b_manifest.json` | Trial 清單、開發／測試分割、補值規則版本、生成參數及其 HCC1395 來源、生成 seeds、推理設定、評分規則 |
-| `l1b_truth/`（I15 真值部分） | 與方法輸入不同目錄；包含位置來源、HP 對應、SNV haplotype、`haplotype_conflict` 及 CN 分層 |
-| `l1b_inputs/` | 每個 trial × 模式的 §1.3 檔案：`INPUT.hp.tsv`、`INPUT.total.tsv`、`PAIRS.tsv`、`feature_qc.tsv` |
-| §5.4 的評估檔 | 加上分組、資料集、模式及 CN 狀態分層欄位 |
-| `l1b_report.md` | 各資料集的判定、與 L1 的差異、與其他方法的描述性對照、`Copy_Number_Error` 趨勢及限制 |
 
 ## 6. 剩餘工作與停止條件
 
@@ -1250,8 +1020,7 @@ L1 與 L1-B 結果不一致時，兩者都要報告。不得只挑一個。
 | L2-S 不能模擬 CN gain | gain 只在 L2-R 測試 | 不產生假重複 molecule 的 gain spike-in 方法 |
 | L2-S 繼承 I05 的 phasing 錯誤 | Germline phasing 錯誤只由 L2-R 評估 | 另一個具獨立 phasing 真值的背景資料 |
 | L2 只有單一背景細胞株 | 結論限於 I13 的資料特性 | 其他細胞株或 chemistry 的背景 reads |
-| L1-B 缺 SNV haplotype 及部分位置真值 | 依 §5.9.3 補值，並記錄來源；`FS-CRP_Loss`、TSSB、`Pairtree` 的位置來自 I02 | 從原模擬器重新產生含 haplotype 的真值 |
-| 單細胞驗證的真實資料只有 short reads | HGSOC 不進 L1-B；只作 L0。scDNA 樹只作 L2 的生成藍圖（§5.8.8 T-sc），結果只作描述 | 同時有 long-read bulk 及 scDNA 的資料集 |
+| 單細胞驗證的真實資料只有 short reads | scDNA 樹只作 L2 的生成藍圖（§5.8.8 T-sc），結果只作描述 | 同時有 long-read bulk 及 scDNA 的資料集 |
 | T-sc 藍圖數量少、特徵少 | 補合成 SNV；逐份藍圖報告，不作 L2 判定 | 更多公開 scDNA 參考樹；可取得 processed 資料的來源 |
 
 若真值、分母或必要輸入無法確定，停止相應正確率 claim。
@@ -1269,9 +1038,8 @@ L1 與 L1-B 結果不一致時，兩者都要報告。不得只挑一個。
 | S05 | lab-canonical | [依輸出類型驗證](/big8_disk/liaoyoyo2001/Knowledge/06_workflows/validation-by-output-type.md) | §1、§4.2、§6–8：輸出契約、分母、HP、CN／purity、獨立性及驗收分級 |
 | S06 | current | [PhyClone 實驗與指標](research/phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md) | 「指標與統計方法」：AD／V 原始定義的本地整理；開頭段落：論文推理設定（PhyClone 0.7.0、4 chains 等）；E6：HGSOC 的修剪及折疊評分規則 |
 | S07 | current | [HCC1395 golden-tree 研究](research/hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md) | §2：候選樹及缺乏完整 SNV assignment 的限制 |
-| S08 | inferred | 本文件 §3.3、§4、§5.3–5.9 | 新介面、模型修正、QC 預設值、功能驗收、效果門檻及 L0／L1-B／L2 規格；均未產生通過結果 |
-| S09 | current | [tumor_sample.md](tumor_sample.md) | 「PhyClone Benchmarking 資料集」：I12 的目錄結構、trial 命名、md5 檢查；HCC1395 CRAM 路徑 |
-| S10 | current | `/big8_disk/boyu114/phyclone_dataset/<Dataset>/data_archive/<第一個 trial>/` | 2026-10-17 檢查：`ground_truth/` 欄位及 `program_inputs/phyclone_outliers/data.tsv` 的 CN 分布；支持 §5.9.2 表格；其他 trials 未逐一檢查 |
+| S08 | inferred | 本文件 §3.3、§4、§5.3–5.8 | 新介面、模型修正、QC 預設值、功能驗收、效果門檻及 L2 規格；均未產生通過結果 |
+| S09 | current | [tumor_sample.md](tumor_sample.md) | HCC1395 CRAM 路徑 |
 | S11 | current | [A 類 scDNA 文獻整理](research/literature/surveys/patient_sc_longread_2026/A_SUMMARY.md) 及 `research/literature/papers/A0*/README.md` | 各篇的樹範圍、特徵、資料取得方式及限制；支持 §5.8.8.1 表格；補充資料尚未下載 |
 
 本次已查閱實驗室規範及目前 repository。
