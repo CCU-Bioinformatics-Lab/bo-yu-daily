@@ -25,7 +25,7 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import binom
 
-from . import __version__, het_map
+from . import __version__, depth_map, het_map
 from .model import DATA_DIR, HPS, NORMAL, lost, replay
 from .sample import load_read_span, place_mutations, sample_segment
 
@@ -174,7 +174,8 @@ def run(spec, seed, out_dir):
     span_q = load_read_span(spec.read_span)
     het = het_map.load(spec.het_map) if spec.het_map else None
     muts = place_mutations(rng, spec)
-    reads = {s: sample_segment(rng, spec, genomes, s, span_q, het) for s in spec.segments}
+    dmap = depth_map.load(spec.depth_map) if spec.depth_map else None
+    reads = {s: sample_segment(rng, spec, genomes, s, span_q, het, dmap) for s in spec.segments}
     obs = {m.id: observe(reads[m.segment], m.pos, m.role, rng, spec.base_error) for m in muts}
     truth = {r: role_truth(spec, genomes, r) for r in spec.roles}
     cnt = {m.id: counts(reads[m.segment], *obs[m.id]) for m in muts}
@@ -256,6 +257,7 @@ def run(spec, seed, out_dir):
                 "switch_rate_per_mb": spec.switch_rate_per_mb, "base_error": spec.base_error,
                 "read_span": str(spec.read_span),
                 "het_map": str(spec.het_map) if spec.het_map else None,
+                "depth_map": str(spec.depth_map) if spec.depth_map else None,
                 "caller": spec.caller, "n_mutations": len(muts), "n_detected": len(called),
                 "n_pairs_rows": len(pairs),
                 "n_reads": {s: int(len(r.start)) for s, r in reads.items()},

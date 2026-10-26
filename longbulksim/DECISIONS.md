@@ -43,4 +43,8 @@
 | 2026-10-26 | PCAWG truncal 比例只用 ≥ 1 個 subclone 的樣本 | preset 一律保留 ≥ 2 個 clone；含 0 subclone 樣本時，肺腺癌中位會是 1.0 | 全癌種 0.66（不篩選時 0.74） |
 | 2026-10-26 | preset 的 n_snv 用 PCAWG 的 WGS 規模 | 使用者沒有指定；照 preset 的定義 | 一個模擬約 3.5 分鐘；可用 `--n-snv` 縮小 |
 | 2026-10-26 | 決定 major／minor 時跳過 0:0 狀態 | `pcawg:Lung-AdenoCA` 讓細胞最多的 clone 出現 homozygous deletion，total CN = 0 讓 `phyclone_ccf` 除以零 | 之前遇到一定當掉，所以不影響既有輸出；`HomozygousDeletionInMajorClone` 測試 |
+| 2026-10-26 | v0.7 加入選填 `depth_map`：read 起點依真實 normal 的 10 kb 起點密度抽樣 | PPC 的 depth VMR 1.0 vs 真實 2.4–3.2；normal 的位置效應幾乎完全傳到 tumor | `lab_report/2026-10-26_longbulksim_depth_map/`；沒有 map 時輸出不變 |
+| 2026-10-26 | map 用 read 起點數（MAPQ ≥ 20、primary），不用逐鹼基 coverage | 模擬器抽的是 read 起點；起點密度直接對應，也包含 mappability | 10 kb 以下的變化會被長 read 平滑 |
+| 2026-10-26 | 不模擬 tumor 特有的 depth 變異 | 它延伸到 Mb 等級，符合 CN 估計誤差，不是定序雜訊；模擬器的 CN 是精確的 | 剩下的 VMR 差距照實記錄 |
+| 2026-10-26 | `depth_map` 不設成預設 | 人工座標配上 map，12–26% 的 SNV depth 為 0 | 和 `het_map` 同一個問題：要先讓 segment 座標落在可定序區域 |
 

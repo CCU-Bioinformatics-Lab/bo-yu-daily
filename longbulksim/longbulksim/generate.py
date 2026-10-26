@@ -75,6 +75,7 @@ def main():
     g.add_argument("--snv-density", type=float, help="SNVs per Mb")
     g.add_argument("--phased", type=float, help=f"without --het-map (default {d.phased_fraction})")
     g.add_argument("--het-map", help="phased het SNP map (.npz)")
+    g.add_argument("--depth-map", help="read start density map (.npz) from a real normal")
     g.add_argument("--mistag", type=float, default=0.0)
     g.add_argument("--switch-rate", type=float, default=0.0, help="per Mb")
     g.add_argument("--base-error", type=float, default=0.0)
@@ -103,6 +104,8 @@ def main():
                    caller=a.caller)
         if a.het_map:
             raw["het_map"] = str(Path(a.het_map).resolve())
+        if a.depth_map:
+            raw["depth_map"] = str(Path(a.depth_map).resolve())
         sim_seed = int(rng.integers(2**31))
         manifest = run(parse_spec(raw), sim_seed, out / name)
         (out / name / "truth/spec.yaml").write_text(yaml.safe_dump(raw, sort_keys=False))
