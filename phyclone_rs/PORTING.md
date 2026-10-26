@@ -1,0 +1,131 @@
+# PhyClone → Rust 移植計畫（haploclone）
+
+狀態：2026-10-26 建立，**尚未開始實作**。下一個 session 從這份文件開始。範圍與位置已決定（第 7 節）。
+
+## 1. 目標
+
+1. **加速。** 現在一組實驗（24 個 run × 4 chain × 1100 iteration）要 43–61 分鐘；40 棵隨機樹的長 run 中位數 1534 秒。prior、pair score 的比較要跑很多組，所以速度是主要瓶頸。〔實測，`golden/README.md` 第 5 節〕
+2. **模型語意和原版相同。** 包含 upstream PhyClone 0.8.0，以及本研究在 `tools/` 的擴充：
+   - emission：base（PhyClone `load_data`，binomial／beta-binomial）、A1、A2（`tools/phyclone_hp.py`）
+   - C4 pair term：eps、誤差模型、HP 不確定性、composite weight（`tools/phyclone_pairs.py`）
+3. **prior 可以替換。** 預留 `research/phyclone_research/FSCRP_PRIOR_PLAN.md` 的候選：固定或更新 alpha、調溫 τ、Pitman–Yor discount。τ = 1、d = 0 時要和原版一致。
+4. **trace 改成 TSV**（2026-10-26 決定，見第 5 節）。
+5. **固定 seed 時可重現。** Rust 的 RNG 不會和 numpy 逐位一致，但同一個 Rust 版本、同一個 seed，結果必須相同。
+
+非目標：GPU、分散式執行、改變模型。模型的修改（例如 FSCRP prior）在移植完成、對齊驗證之後才做。
+
+## 2. 程式碼對照
+
+| 位置 | 內容 |
+|---|---|
+| `/bip8_disk/boyu114/haploclone/` | 原版 PhyClone 的 git clone，checkout 在 `27383246`（= tag `0.8.0`，detached HEAD）。**Rust 版也放在這裡**（第 7 節）。upstream 的 Python 程式只當對照，不要修改 |
+| `research/phyclone_research/PhyClone/` | 同一個 commit 的 submodule（本 repo） |
+| `tools/phyclone_hp.py`、`tools/phyclone_pairs.py` | A1／A2／C4 擴充（repo commit `3b91b17`） |
+| `phyclone_rs/golden/` | 凍結的輸入／輸出（commit `0194713`），見該目錄 README |
+| `research/phyclone_research/notes/04_CODE_MAPPING.md` | 論文 ↔ 程式對照 |
+
+- 論文用的是 **0.7.0**（tag 存在），和 0.8.0 之間有 205 個 commit。筆記記錄的差異包括 outlier 的積分方式（`notes/06_ASSUMPTIONS_LIMITATIONS.md` 第 61、63 項）。
+- 原版非測試程式約 6,700 行。主要模組：
+
+| Python | 行數 | Rust 模組（暫定） |
+|---|---|---|
+| `data/pyclone.py`、`data/cluster_outlier_probabilities.py`、`data/validator/` | 424＋175＋203 | `data`：讀 TSV、CN prior、likelihood grid、cluster、outlier 機率 |
+| `tools/phyclone_hp.py` | 226 | `data::hp`：A1、A2 |
+| `utils/math_utils.py` | 254 | `math`：log-sum-exp、binomial／beta-binomial、FFT convolution |
+| `tree/tree.py`、`tree/base.py`、`tree/tree_node.py`、`tree/tree_shell_node_adder.py`、`tree/visitors.py` | 443＋100＋82＋469＋136 | `tree`：結構、子樹 likelihood 的增量更新 |
+| `tree/distributions.py` | 204 | `prior`、`joint`：FSCRP（可替換）、TreeJointDistribution、outlier |
+| `tools/phyclone_pairs.py` | 251 | `pairs`：pair table、四種 score |
+| `smc/kernels/*`、`smc/samplers/*`、`smc/utils.py` | ~1,090 | `smc`：semi-adapted（必要）、bootstrap（選做） |
+| `mcmc/particle_gibbs.py`、`mcmc/gibbs_mh.py`、`mcmc/concentration.py` | ~300 | `mcmc`：PG、prune-regraph、outlier Gibbs、alpha 更新 |
+| `run.py` | 436 | `run`：chain、burn-in、多 chain 平行 |
+| `process_trace/*`、`utils/save_hdf5.py`、`utils/load_hdf5.py` | ~1,070 | `trace`（TSV）、`post`：map、consensus、topology report |
+| `cli.py` | 465 | `cli`：子命令與選項，名稱盡量和原版相同 |
+
+## 3. 驗證
+
+由內而外，每一層通過才做下一層。
+
+| 層 | 資料 | 判準 |
+|---|---|---|
+| V1 數值對齊 | `phyclone_rs/golden/fixtures/`：datapoints、FSCRP prior 各項、data log-likelihood、log_p／log_p_one、pair table／pair term、clone table | `golden/README.md` 第 4 節的容許誤差（datapoints ≤ 1e-10；likelihood ≤ 1e-6；pair ≤ 1e-8） |
+| V2 後處理 | `golden/runs/*/`：把原版 trace 轉成 TSV，跑 Rust 的 map／consensus／topology-report | 和 golden 的輸出一致 |
+| V3 端到端（統計） | golden 的 7 個參考 run＋`lab_report/` 的長 run（壓力樹 12 個 sim、40 棵隨機樹） | 多個 seed 的 posterior 摘要（clone 數分布、topology 類別比例、`c3_under_c4` 等）落在 Python 版 seed 間的變異範圍內 |
+| V4 PhyClone benchmark | `/big8_disk/boyu114/phyclone_dataset/`（見第 4 節） | 和真值的評估指標，與論文輸出、Python 0.8.0 輸出比較，沒有系統性變差 |
+| V5 速度 | 同一批 run，Rust vs Python | 回報加速倍數；目標另訂 |
+
+V1–V2 是確定性的比較。V3–V4 只能做統計比較，因為 RNG 不同。
+
+## 4. 用 PhyClone 論文 dataset 驗證（V4）
+
+- 位置：`/big8_disk/boyu114/phyclone_dataset/`（46 GB）。說明見 `tumor_sample.md` 的「PhyClone Benchmarking 資料集」。
+- 每個 trial：`<Dataset>/data_archive/<Trial>/{ground_truth,program_inputs,program_outputs}/`
+  - PhyClone 輸入：`program_inputs/phyclone_outliers/data.tsv`（9 欄）、`results.tsv.gz`（PyClone-VI 分群，當 cluster 檔）
+  - 論文的 PhyClone 輸出：`program_outputs/phyclone_outliers/{results.tsv,topology_report.tsv,tree.nwk,tree.json,exit.status}`
+  - 真值：`ground_truth/tree.json`
+- 規模：TSSB_Low 500、TSSB_High 400、Pairtree 576、CONIPHER_Noise／No-Noise 各 150、Copy_Number_Error 450、FS-CRP_Loss 300、HGSOC 6 個 trial。
+- 論文的 PhyClone 設定〔論文，`notes/03_EXPERIMENTS_RESULTS.md`〕：**PhyClone 0.7.0**、4 chain、burn-in 100、5,000 iteration、100 particle、beta-binomial、semi-adapted proposal、**outlier 開啟**；點估計取 joint score 最大的樹。
+- 比較方式：
+  1. 先挑小的子集，例如每個 dataset 各 5–10 個 trial、只用小的設定（TSSB_Low S2／S4、CONIPHER、FS-CRP_Loss），控制時間。
+  2. 在同一子集上跑：Python 0.8.0（haploclone）、Rust 版。論文的 0.7.0 輸出已經在 dataset 裡。
+  3. 用相同的評估指標比較三者和真值的差距（論文用 ancestor-descendant F-score 等；評估程式要確認可用）。
+- **限制：**
+  - 論文輸出是 0.7.0，和 0.8.0 不同，只能看統計趨勢，不能逐檔比較。
+  - **dataset 的設定需要 outlier 模型，但 golden 沒有凍結 outlier。** 開始 V4 之前，要先在 golden 加上 outlier 開啟的 case（例如一個 FS-CRP_Loss trial），補凍結後再對齊。
+  - beta-binomial、cluster 檔、多樣本已經在 golden 的 `upstream_mixing_small` 涵蓋。
+
+## 5. Trace 格式：TSV（已決定）
+
+實測（同一份 trace，樹去重複）：長 run 從 h5 的 38.7 MB 降到 TSV 4.67 MB、TSV＋xz 0.55 MB、TSV＋zstd 0.75 MB；Parquet 0.56 MB，但不能直接看。〔實測，2026-10-26，轉換腳本在 session 暫存目錄，沒有保留〕
+
+```
+trace/
+  meta.json             版本、指令、全部設定、seed、樣本名、grid size
+  iterations.tsv[.zst]  chain  iter  alpha  log_p  log_p_one  num_nodes  num_outliers  num_roots  tree_id
+  trees.tsv[.zst]       tree_id  node  parent   log_prior      （相同的樹只存一次；parent = -1 表示 root）
+  assignments.tsv[.zst] tree_id  mutation  node                （outlier 用固定的 node 編號，要定義）
+  datapoints.tsv[.zst]  mutation  sample  outlier_prob  outlier_prob_not  g0 … g{grid-1}
+  clusters.tsv[.zst]    cluster_id  mutation_id                （有 cluster 檔時）
+```
+
+- 浮點數用 round-trip 精度（`%.17g`）。
+- **不壓縮**（2026-10-26 決定）。之後若要壓縮，再加選項。
+- 要寫 `trace-to-h5` 轉換器，或 `h5-to-trace`，讓原版後處理和現有工具（`tools/c4_truth_vs_map.py`、`golden/verify_against_traces.py`）可以繼續用，也讓 V2 能用原版 trace 測 Rust 後處理。
+
+## 6. 里程碑（暫定）
+
+| 步驟 | 內容 | 通過條件 |
+|---|---|---|
+| M0 | 安裝 Rust toolchain（2026-10-26 已用 rustup 裝到家目錄）；在 haploclone 建立 crate | `cargo test` 可跑 |
+| M1 | 用 cProfile 量 Python 參考 run 的時間分布 | 知道熱點，確認移植優先順序 |
+| M2 | data：讀 TSV、likelihood grid（base、A1、A2、cluster） | V1 datapoints |
+| M3 | tree＋prior＋joint：convolution、FSCRP、log_p／log_p_one | V1 trees／scores |
+| M4 | pairs：四種 pair model | V1 pairs、pair term |
+| M5 | SMC（semi-adapted）＋PG＋prune-regraph＋alpha 更新；多 chain | V3 |
+| M6 | trace TSV、map／consensus／topology-report、h5 轉換器 | V2 |
+| M7 | outlier、bootstrap proposal、loss prior 選項（`--assign-loss-prob` 等）、其餘 CLI 選項；golden 補凍結這些功能 | V1（新 case） |
+| M8 | dataset 驗證 | V4 |
+| M9 | 速度比較；prior 可替換（τ、Pitman–Yor） | V5；τ = 1、d = 0 時 V1 仍然通過 |
+
+## 7. 決定（2026-10-26）與未決問題
+
+已決定：
+
+1. **完整移植。** 資料讀取、SMC／Particle Gibbs、trace、後處理全部用 Rust，不透過 PyO3 呼叫 Python。
+2. **程式放在 `/bip8_disk/boyu114/haploclone/`。** 建議做法（實作時確認）：在這個 clone 從 tag `0.8.0` 開一個新 branch，Rust crate 放在子目錄（例如 `haploclone/rust/`）。upstream 的 Python 程式留在原位當對照，這樣 `git diff 0.8.0` 只會看到新增的 Rust 程式。
+3. **trace 用 TSV，不壓縮。**
+4. **Rust toolchain**：用 rustup 安裝到家目錄（M0）。
+5. **全部功能都支援。** 包括 outlier、bootstrap proposal（0.8.0 有已知回歸，筆記 `06` 第 63 項：Rust 版先照原版行為移植，並在文件標明；修正另外做）、`--assign-loss-prob`／`--user-provided-loss-prob`／`--high-loss-prob`、`--subtree-update-prob`、`--thin`、`--max-time`、consensus 的各種 `--weight-type` 等。golden 目前沒有凍結的功能，要先補凍結再移植（M7）。
+
+仍未決定（實作時決定，並寫回本節）：
+
+- **RNG**：演算法（例如 PCG64、ChaCha）與多 chain 的 seed 分配。
+- **dataset 評估程式**：論文的指標（AD F-score 等）用哪一支程式算，是否已經在 `tools/` 或 `lab_report/2026-10-22_pairtree_conipher_sim_rerun/` 裡。
+- **haploclone 的 branch 名稱與目錄結構**（第 2 項的建議是否採用）。
+
+## 8. 已知注意事項
+
+- 原版 trace 的 `log_p` 欄存的是 `log_p_one`；MAP 取它的最大值（`process_trace.py` `write_map_results`）。
+- PhyClone 在 `ProcessPoolExecutor(mp_context=spawn)` 裡跑 chain；C4 的 monkeypatch 必須在子 process 重裝（`tools/phyclone_pairs.py` `install_everywhere`）。Rust 版沒有這個問題，但要確認 pair term 在 SMC、PG、Gibbs-MH 都有算到。
+- C4 pair term 只加在 `log_p`、`log_p_one`、`compute_log_p_and_log_p_one`；proposal 不知道 pair term。Rust 版要先照原樣，改 proposal 是之後的事。
+- 隨機樹的短 run 可能卡在 1 個 node，alpha 一直是 1.0（`golden/README.md` 第 6 節）。這是原版行為，Rust 版重現它不算 bug。
+- 誤差模型的 pair score 用 400 點的 midpoint grid 積分；HP 不確定性的門檻 Q_MIN = 0.05。
