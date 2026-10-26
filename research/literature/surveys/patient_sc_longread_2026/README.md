@@ -2,13 +2,15 @@
 
 調查截止：2026-10-15，文件語言：繁體中文。近期範圍採 **2021–2026**；online publication 與卷期年份不同時並列，preprint 與正式版不重複計數。
 
-> **2026-10-16 補充**：本調查的選文標準是「論文裡有樹」，13 篇中多數是建樹只是手段的應用研究，真正的 phylogeny 方法論文只有 MEDICC2。以「推論 topology 為主要貢獻」重新搜尋的方法調查見 [methods_survey/README.md](../methods_survey/README.md)（46 個方法）。
+> **2026-10-16 補充**：本調查的選文標準是「論文裡有樹」，收錄的論文多數是建樹只是手段的應用研究，真正的 phylogeny 方法論文只有 MEDICC2。以「推論 topology 為主要貢獻」重新搜尋的方法調查見 [methods_survey/README.md](../methods_survey/README.md)（45 個方法）。
 
 ## 先看結論與閱讀路線
 
-本調查整理 **13 篇不同論文**：A 類 5 篇病人 single-cell 遺傳演化樹；B 類主選 5 篇 long-read／linked-read／haplotype 特徵參與演化推理的研究，另附 3 篇重要比較與延伸文獻。每篇有獨立目錄、PDF、全文文字與閱讀筆記。
+本調查整理 **11 篇不同論文**：A 類 5 篇病人 single-cell 遺傳演化樹；B 類主選 4 篇 long-read／haplotype 特徵參與演化推理的研究，另附 2 篇重要比較與延伸文獻。每篇有獨立目錄、PDF、全文文字與閱讀筆記。
 
-**B 類主選的技術並不全是實測 long reads**：B01、B04 使用 ONT；B07 是從短讀 scRNA-seq 做 population-based haplotype phasing。B04 提供局部突變順序與候選 topology 排除；兩者均不冒充完整 deconvolved clone tree。若把第二類限縮為「B 類主選均以實測 ONT/PacBio 直接重建完整 clone tree」，目前選集不符合這個更嚴條件。
+> **篇數變動**：初版（2026-10-15）為 13 篇。2026-10-20 刪除沒有建樹步驟的 B02、B06、B08，同日加入 B09，現為 11 篇。
+
+**B 類主選的技術並不全是實測 long reads**：B01、B04、B09 使用 ONT；B07 是從短讀 scRNA-seq 做 population-based haplotype phasing。B04 提供局部突變順序與候選 topology 排除；B09 建的是 read dendrogram，不是 SNV clone tree；兩者均不冒充完整 deconvolved clone tree。若把第二類限縮為「B 類主選均以實測 ONT/PacBio 直接重建完整 clone tree」，目前選集不符合這個更嚴條件。
 
 最接近使用者優先交集的是 [B04 肺癌 phasing](../../papers/B04_lung_longread_phasing_2022/README.md)：同一研究有真實病人 long reads、mutation-pair timing、single-cell DNA 驗證。**直接利用 long reads 選線性／分支樹的 S14，並不是做 scDNA 的 S8/S20**，所以仍未取得「同一病人、獨立 scDNA 完整參考樹、long-read 全樹推理」的完整閉環。
 
@@ -28,17 +30,18 @@
 
 詳見 [A 類綜整、資料 accession 與 PDF 校驗](A_SUMMARY.md)。
 
-## B：long-read／long-range／haplotype 特徵參與演化推理，主選 5 篇
+## B：long-read／haplotype 特徵參與演化推理，主選 4 篇
 
 | ID／年份 | 論文與筆記 | 特徵如何進入推理 | 關鍵邊界 |
 |---|---|---|---|
 | B01／2026 | [Long-read sequencing of single cell-derived melanoma sublines reveals divergent and parallel genomic and epigenomic evolutionary trajectories](../../papers/B01_melanoma_longread_2026/README.md) | ONT SNV 建 ScisTree；SV/CNA/DMR 由 TreeHarmonizer 放到樹上 | 小鼠細胞株的 23 個 single-cell-derived cultures；不是病人、不是直接 scDNA-seq；TreeHarmonizer 不重新推 topology |
 | B04／2022 | [Phasing analysis of lung cancer genomes using a long read sequencer](../../papers/B04_lung_longread_phasing_2022/README.md) | ONT 同 read mutation pairs 決定局部先後；S14 排除一個候選 topology | 有病人 scDNA 驗證，但不同病例與 coverage 限制阻止完整真樹宣稱 |
 | B07／online 2022、卷期 2023 | [Numbat: Haplotype-aware analysis of somatic copy number variations from single-cell transcriptomes](../../papers/B07_numbat_2022/README.md) | population phased haplotype + allele counts + expression → CNV → iterative clonal phylogeny | 可移植的 haplotype 特徵；原研究是短讀 scRNA，不是實測 long reads；RNA 等位偏差不能照搬 DNA likelihood |
+| B09／2026 | [In vivo lineage tracing across human tissues using methylation barcodes in the protocadherin gene cluster](../../papers/B09_pcdh_methylation_barcode_2026/README.md) | ONT read 依 HP 分開，用 PCDH CpG methylation pattern 建 read dendrogram（UPGMA） | 對照同病人 colony WGS 真值樹，但只有目視與 clade fraction 比較；branch length 不符；不是 SNV clone tree |
 
-主選同時覆蓋「真正 long reads 直接提供的遺傳訊號」、「長分子 linked-read 約束」與「haplotype-specific CN/LOH 如何入樹」。三者分層計數，不能合寫成 5 篇 ONT clone-tree 方法。
+主選同時覆蓋「真正 long reads 直接提供的遺傳訊號」、「HP-phased read 的 methylation lineage 訊號」與「haplotype-specific CN/LOH 如何入樹」。三者分層計數，不能合寫成 4 篇 ONT clone-tree 方法。
 
-## 補充的 3 篇與近似命中
+## 補充的 2 篇與近似命中
 
 | ID | 論文 | 納入原因／不計入 B 主選的原因 |
 |---|---|---|
@@ -60,14 +63,14 @@
 | 關鍵詞 | 優先論文 | 對本 repo 的意義 |
 |---|---|---|
 | single cell／single nucleus | A01–A05、B03、B07 | 逐細胞 genotype/CN 作參考；區分 scDNA、scRNA、培養衍生株 |
-| long read／ONT／linked read | B01、B04 | read-level cis/trans、SV breakpoint、候選樹排除 |
+| long read／ONT | B01、B04、B09 | read-level cis/trans、SV breakpoint、候選樹排除 |
 | purity／VAF／CCF | A01、B04、B05 | purity 定義、copy-number 校正、clone fraction 與 descendant-inclusive CCF |
-| haplotype／phasing／phase set | A04、B04、B07 | PS 內一致性、orientation、phasing uncertainty；HP1 不是全基因組的 clone ID |
+| haplotype／phasing／phase set | A04、B04、B07、B09 | PS 內一致性、orientation、phasing uncertainty；HP1 不是全基因組的 clone ID |
 | CNV／LOH／copy number／WGD | A01、A02、A04、B03、B05、B07 | multiplicity、平行演化、mutation loss、haplotype-specific CN |
 
 ## 檔案、驗證與證據分級
 
-每篇 `papers/<ID>/` 存放 `paper.pdf`、`paper.txt`、`README.md`；B04另附已讀的 `supplement.pdf` 與文字版。頁碼以實體 PDF 頁序為準。B07的主要閱讀PDF是bioRxiv v1，另對照正式全文；其他主要PDF為正式版或修正版。不同版本頁碼不可互換。
+每篇 `papers/<ID>/` 存放 `paper.pdf`、`paper.txt`、`README.md`；B04、B09 另附已讀的 `supplement.pdf` 與文字版；B09 另有 `paper.xml`。頁碼以實體 PDF 頁序為準。B07的主要閱讀PDF是bioRxiv v1，另對照正式全文；B09 是 bioRxiv v1 preprint；其他主要PDF為正式版或修正版。不同版本頁碼不可互換。
 
 `catalog.json` 是選文與分類資料；`manifest.tsv`／`manifest.json` 是本地實檔的 SHA-256、byte size、pdfinfo 頁數、閱讀筆記路徑。可從本目錄執行 `python3 tools/validate_bundle.py --write-manifest` 重新驗證。此檢查只驗證交付檔與連結，不代表重跑論文的科學分析。
 

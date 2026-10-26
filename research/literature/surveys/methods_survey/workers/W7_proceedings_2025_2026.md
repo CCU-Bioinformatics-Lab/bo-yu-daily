@@ -92,7 +92,6 @@ bioRxiv 全量掃描用了三種方式：
 | Statistical Inconsistency of Error-Correction Objectives for Perfect Phylogenies（Satas, Myers, Shah） | WABI 2026 | [10.4230/LIPIcs.WABI.2026.23](https://doi.org/10.4230/LIPIcs.WABI.2026.23) | 理論文：證明 min-flip 目標函數在統計上不一致。**對評估有參考價值**：sc 錯誤率下，error-correction 目標偏好不平衡的深樹 |
 | Discrete diffusion models for tumor phylogenies（Sabata & Schwartz） | bioRxiv 2026 | [10.64898/2026.03.23.713822](https://doi.org/10.64898/2026.03.23.713822) | 學習 tree 的生成分布（unconditional generation），不從病人資料推樹 |
 | Optimizing CN profiles for tumor phylogeny（Ahmed, …, Bansal） | bioRxiv 2026 | [10.64898/2026.10.05.756871](https://doi.org/10.64898/2026.10.05.756871) | 只處理 CN calling 前的 bin size 選擇，屬前處理 |
-| SCOUT（Valeriani et al.，Caravagna 組，Univ. Trieste） | bioRxiv 2026 | [10.64898/2026.06.09.731105](https://doi.org/10.64898/2026.06.09.731105) | 合成 WGS benchmark（200 多個樣本），不是推樹方法。**可作為 `evaluation_v1.md` 的模擬資料來源**（推論；需確認是否輸出 truth tree） |
 | SVCFit（Liu, …, Karchin） | bioRxiv（2026-08 v4） | [10.1101/2025.02.01.636056](https://doi.org/10.1101/2025.02.01.636056) | 主要貢獻是 SV cellular fraction 估計；建樹部分 abstract 未說明，推測沿用 PICTograph 系 |
 | cfClone（Kabeer, …, Bouchard-Côté, Roth） | bioRxiv 2026 | [10.64898/2026.07.29.741620](https://doi.org/10.64898/2026.07.29.741620) | **Roth lab 新作**。用 scWGS 得到的**既有 clonal structure**，在 cfDNA 上估 clone prevalence。模型含 haplotype-specific signal 與 MCMC，但不推 topology |
 | PHYFUM（Bousquets-Muñoz, …, Mallo） | bioRxiv 2026 | [10.64898/2026.05.05.722981](https://doi.org/10.64898/2026.05.05.722981) | 會推 topology，但對象是正常與癌前組織的 gland／stem cell，用 fluctuating methylation，不是 tumor clone tree。列為邊界 |
@@ -135,7 +134,6 @@ bioRxiv 全量掃描用了三種方式：
 5. **對評估有用的副產品**：
    - Satas et al.（WABI 2026）：min-flip 目標偏好不平衡的深樹。
    - omlta：clonal tree alignment，可作為另一種 tree 距離。
-   - SCOUT：合成 WGS benchmark，有 evolutionary ground truth。
 
 **待追蹤**：
 - Cwikla／Schwarz 的 RECOMB-CCB 2026 LBR；

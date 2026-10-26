@@ -216,7 +216,7 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
   - MLTED、CASet、DISC：與 HCC1395 參考樹比較。
   - MP3：引入 haplotype-specific loss 之後使用。
   - linear 與 branching topology 分層報告（Tomlinson 2019）。
-- **新的評估論點**：Satas et al.（WABI 2026）證明 single-cell 常用的 min-flip 目標函數在統計上不一致；SCOUT 是合成 WGS benchmark（W7）。
+- **新的評估論點**：Satas et al.（WABI 2026）證明 single-cell 常用的 min-flip 目標函數在統計上不一致。
 - **缺口**：沒有找到中立的 single-cell tree 或 CN phylogeny benchmark，現有比較都寫在方法論文自己的章節裡。
 - **2026-10-18 補查**（[W8](workers/W8_benchmark_update_2026-10-18.md)）：2025-06 後沒有新的中立 tree benchmark。新資源是 Liu et al. 2026 Nat Commun（Kolmogorov 組）的 ONT 小鼠黑色素瘤 23 subline，有已知樹，可混成 long-read pseudo-bulk 測資。EMulSI-Phy poster 比較了 PhyClone，但只有摘要。
 
