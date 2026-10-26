@@ -189,6 +189,9 @@ def main():
     ap.add_argument("--pair-eps", type=float, default=0.01)
     ap.add_argument("--pair-weight", type=float, default=1.0,
                     help="composite-likelihood weight on the pair term (1 = unweighted)")
+    ap.add_argument("--pair-error", type=float,
+                    help="per-site base error rate: score pairs with the error model (uses n00) "
+                         "instead of --pair-eps")
     opts, rest = ap.parse_known_args()
     if opts.hp_mode == "a2" and not opts.segments:
         raise SystemExit("--hp-mode a2 needs --segments")
@@ -204,8 +207,11 @@ def main():
         import phyclone_pairs
 
         table = phyclone_pairs.install_everywhere(opts.pairs, opts.hp_data, opts.segments,
-                                                  opts.pair_eps, opts.pair_weight)
-        print(f"phyclone_hp: C4 pair term on, {len(table)} eligible pairs, eps = {opts.pair_eps}, "
+                                                  opts.pair_eps, opts.pair_weight,
+                                                  opts.pair_error)
+        score = (f"error = {opts.pair_error}" if opts.pair_error is not None
+                 else f"eps = {opts.pair_eps}")
+        print(f"phyclone_hp: C4 pair term on, {len(table)} eligible pairs, {score}, "
               f"weight = {opts.pair_weight}")
     cli_main(args=rest)
 

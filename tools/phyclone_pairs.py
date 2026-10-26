@@ -15,6 +15,15 @@ The tree term is the sum over eligible pairs whose SNVs are both in the tree. A 
 to the read HP, lie in the same segment (same PS, no CN breakpoint), and that HP has exactly one
 copy in both CN states of the segment (segments.tsv a_* and b_*; phi is not used).
 
+With an error rate e (--pair-error), error_relation_scores replaces the eps scores. Each read is
+one molecule with a true genotype in {11, 10, 01, 00}; a relation allows only some genotypes
+(same: 11, 00; ancestor: 11, 10, 00; descendant: 11, 01, 00; branch: 10, 01, 00). Each site is
+then read as the other allele with probability e, so a forbidden pattern can only come from an
+error, and n00 reads are modelled too: with many 00 reads, a few 10/01 reads are expected from
+ref -> alt errors alone. Prior: pi00 ~ U(0,1) and the split of the non-00 genotypes ~ flat
+Dirichlet, so a pair with no alt reads scores the same under every relation; as e -> 0 the
+scores reduce to the Beta structure above. The integral is a midpoint grid.
+
 The scores can be scaled by a composite-likelihood weight w (C4_COMPOSITE_WEIGHT_PLAN.md). A read
 covering m SNVs enters m(m-1)/2 pairs, so the unweighted sum counts each read several times;
 w ~ 1 / (pairs per read) brings the total evidence back to about one count per read.
@@ -38,6 +47,34 @@ def relation_scores(n11, n10, n01, eps):
     ])
 
 
+_ALLOWED = (("11",), ("11", "10"), ("11", "01"), ("10", "01"))  # non-00 genotypes, RELATIONS order
+_PATTERNS = ("11", "10", "01", "00")
+
+
+def error_relation_scores(n11, n10, n01, n00, err, grid=400):
+    """(pairs x 4) log marginal likelihoods in RELATIONS order under per-site error err."""
+    counts = np.column_stack([np.asarray(x, float) for x in (n11, n10, n01, n00)])
+    site = {("1", "1"): 1 - err, ("1", "0"): err, ("0", "1"): err, ("0", "0"): 1 - err}
+    emit = {(o, g): site[o[0], g[0]] * site[o[1], g[1]] for o in _PATTERNS for g in _PATTERNS}
+    pi00 = (np.arange(grid) + 0.5) / grid
+    out = np.empty((len(counts), 4))
+    for r, allowed in enumerate(_ALLOWED):
+        if len(allowed) == 1:
+            mix = {allowed[0]: 1 - pi00, "00": pi00}
+        else:
+            rho = (np.arange(grid // 2) + 0.5) / (grid // 2)
+            a, b = np.meshgrid(pi00, rho, indexing="ij")
+            a, b = a.ravel(), b.ravel()
+            mix = {allowed[0]: (1 - a) * b, allowed[1]: (1 - a) * (1 - b), "00": a}
+        logq = np.log(np.stack([sum(w * emit[o, g] for g, w in mix.items()) for o in _PATTERNS]))
+        n = len(mix["00"])
+        for start in range(0, len(counts), 256):
+            ll = counts[start:start + 256] @ logq
+            m = ll.max(1, keepdims=True)
+            out[start:start + 256, r] = (m[:, 0] + np.log(np.exp(ll - m).sum(1))) - np.log(n)
+    return out
+
+
 class PairTable:
     """Eligible SNV pairs and their relation scores; `term` scores one tree assignment."""
 
@@ -49,7 +86,7 @@ class PairTable:
         return len(self.mut_i)
 
     @classmethod
-    def from_files(cls, pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01, weight=1.0):
+    def from_files(cls, pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01, weight=1.0, err=None):
         pairs = pd.read_csv(pairs_tsv, sep="\t")
         snv = pd.read_csv(data_hp_tsv, sep="\t").drop_duplicates("mutation_id").set_index(
             "mutation_id")
@@ -64,7 +101,11 @@ class PairTable:
             if h in ("HP1", "HP2") else False for s, h in zip(seg_i, pairs.hap)])
         ok = (hp_i == pairs.hap) & (hp_j == pairs.hap) & (seg_i == seg_j) & one_copy
         p = pairs[ok]
-        return cls(p.mutation_i, p.mutation_j, weight * relation_scores(p.n11, p.n10, p.n01, eps))
+        if err is None:
+            scores = relation_scores(p.n11, p.n10, p.n01, eps)
+        else:
+            scores = error_relation_scores(p.n11, p.n10, p.n01, p.n00, err)
+        return cls(p.mutation_i, p.mutation_j, weight * scores)
 
     def term(self, node_of, ancestors):
         """Sum of pair scores. node_of: mutation -> node; ancestors: node -> set of ancestors."""
@@ -125,11 +166,11 @@ def install(pair_table):
     T.c4_pair_table = pair_table
 
 
-def _init_worker(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight):
-    install(PairTable.from_files(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight))
+def _init_worker(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight, err):
+    install(PairTable.from_files(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight, err))
 
 
-def install_everywhere(pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01, weight=1.0):
+def install_everywhere(pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01, weight=1.0, err=None):
     """Install the pair term here and in every chain worker.
 
     phyclone/run.py runs chains in ProcessPoolExecutor(mp_context=get_context("spawn")); spawned
@@ -140,9 +181,9 @@ def install_everywhere(pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01, weight=1.
 
     import phyclone.run
 
-    table = PairTable.from_files(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight)
+    table = PairTable.from_files(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight, err)
     install(table)
     phyclone.run.ProcessPoolExecutor = functools.partial(
         phyclone.run.ProcessPoolExecutor, initializer=_init_worker,
-        initargs=(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight))
+        initargs=(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight, err))
     return table

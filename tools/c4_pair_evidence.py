@@ -5,6 +5,7 @@ difference term(truth) - term(alternative) is how strongly the pair term alone p
 truth (> 0) or the alternative (< 0). Pairs with an SNV lost in some clone are kept: C4 sees them.
 
 Usage: python3 tools/c4_pair_evidence.py SIM_DIR [SIM_DIR ...] [--eps 0.01,0.03] [--weight 0.3]
+       [--error 0.004]   (score with the per-site error model; the eps column then shows e<err>)
 Alternatives for the stress tree (truth C1 -> {C2 -> C4, C3}):
   linear  C3 under C4 (P2)        c3_under_c2  C3 under C2
 same_vs_split: over eligible pairs of one truth clone, sum of score(same) minus the better of
@@ -38,6 +39,7 @@ def main():
     ap.add_argument("sims", nargs="+")
     ap.add_argument("--eps", default="0.001,0.01,0.03,0.1")
     ap.add_argument("--weight", type=float, default=1.0, help="composite weight on the pair term")
+    ap.add_argument("--error", type=float, help="per-site error rate for the error model")
     a = ap.parse_args()
     print("sim\teps\tpairs\t" + "\t".join(f"truth_minus_{k}" for k in ALT) + "\tsame_pairs\tsame_vs_split")
     for sim in a.sims:
@@ -46,14 +48,15 @@ def main():
         with open(os.path.join(sim, "truth/truth_tree.tsv")) as fh:
             truth = {r["clone"]: r["parent"] for r in csv.DictReader(fh, delimiter="\t")}
         i = os.path.join(sim, "input")
-        for eps in map(float, a.eps.split(",")):
+        for eps in ([None] if a.error is not None else map(float, a.eps.split(","))):
             t = PairTable.from_files(f"{i}/pairs.tsv", f"{i}/data_hp.tsv", f"{i}/segments.tsv", eps,
-                                  a.weight)
+                                  a.weight, a.error)
             base = t.term(node_of, ancestors(truth))
             diff = [base - t.term(node_of, ancestors({**truth, **alt})) for alt in ALT.values()]
             same = [k for k, (x, y) in enumerate(zip(t.mut_i, t.mut_j)) if node_of[x] == node_of[y]]
             split = (t.scores[same, 0] - t.scores[same, 1:3].max(1)).sum()
-            print(f"{os.path.basename(sim.rstrip('/'))}\t{eps}\t{len(t)}\t" +
+            label = f"e{a.error}" if eps is None else eps
+            print(f"{os.path.basename(sim.rstrip('/'))}\t{label}\t{len(t)}\t" +
                   "\t".join(f"{d:.1f}" for d in diff) + f"\t{len(same)}\t{split:.1f}")
 
 

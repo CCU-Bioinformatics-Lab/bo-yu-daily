@@ -6,7 +6,9 @@ import unittest
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from phyclone_pairs import RELATIONS, PairTable, relation_scores, tree_assignment  # noqa: E402
+from phyclone_pairs import (RELATIONS, PairTable, error_relation_scores, relation_scores,  # noqa: E402
+                            tree_assignment)
+from scipy.special import betaln  # noqa: E402
 
 
 class RelationScores(unittest.TestCase):
@@ -21,6 +23,47 @@ class RelationScores(unittest.TestCase):
 
     def test_no_informative_reads_scores_zero_for_all(self):
         self.assertTrue(np.allclose(relation_scores([0], [0], [0], 0.01), 0))
+
+
+class ErrorModelScores(unittest.TestCase):
+    def best(self, n11, n10, n01, n00, err=0.004):
+        return RELATIONS[int(np.argmax(error_relation_scores([n11], [n10], [n01], [n00], err)[0]))]
+
+    def test_each_pattern_picks_its_relation(self):
+        self.assertEqual(self.best(20, 0, 0, 50), "same")
+        self.assertEqual(self.best(10, 10, 0, 50), "ancestor")
+        self.assertEqual(self.best(10, 0, 10, 50), "descendant")
+        self.assertEqual(self.best(0, 10, 10, 50), "branch")
+
+    def test_no_alt_reads_score_the_same_under_every_relation(self):
+        s = error_relation_scores([0], [0], [0], [80], 0.004)[0]
+        self.assertTrue(np.allclose(s, s[0], atol=0.01))  # e > 0: a 10 molecule can read as 00
+
+    def test_singletons_expected_from_ref_reads_do_not_split_a_clone(self):
+        """Failure mode 1: 3% base error on many 00 reads gives a few 10/01 reads in one clone."""
+        old = relation_scores([20], [3], [3], 0.01)[0]
+        self.assertNotEqual(RELATIONS[int(np.argmax(old))], "same")
+        self.assertEqual(self.best(20, 3, 3, 100, err=0.03), "same")
+
+    def test_branch_evidence_survives_the_error_model(self):
+        s = error_relation_scores([0], [10], [10], [100], 0.004)[0]
+        self.assertGreater(s[3] - max(s[:3]), 20)
+
+    def test_branch_evidence_weakens_when_errors_explain_the_singletons(self):
+        """100 00 reads at 3% error already expect ~3 false 01 reads, so 10 is weak evidence."""
+        low, high = (error_relation_scores([0], [10], [10], [100], e)[0] for e in (0.004, 0.03))
+        self.assertLess(high[3] - max(high[:3]), low[3] - max(low[:3]))
+
+    def test_small_error_reduces_to_the_beta_structure(self):
+        n11, n10, n00 = 5, 4, 30
+        s = error_relation_scores([n11], [n10], [0], [n00], 1e-9)[0]
+        want = betaln(n00 + 1, n11 + n10 + 1) + betaln(n11 + 1, n10 + 1)
+        self.assertAlmostEqual(s[1], want, places=2)
+
+    def test_from_files_uses_the_error_model_and_weight(self):
+        files = _write_inputs()
+        t = PairTable.from_files(*files, weight=0.5, err=0.004)
+        np.testing.assert_allclose(t.scores, 0.5 * error_relation_scores([3], [2], [0], [1], 0.004))
 
 
 class TreeTerm(unittest.TestCase):
@@ -95,7 +138,7 @@ def _worker_pair_scores():
 
 
 class SpawnedChainWorkers(unittest.TestCase):
-    def spawn(self, fn, weight):
+    def spawn(self, fn, weight, err=None):
         from multiprocessing import get_context
 
         import phyclone.run
@@ -103,7 +146,7 @@ class SpawnedChainWorkers(unittest.TestCase):
 
         original = phyclone.run.ProcessPoolExecutor
         try:
-            table = install_everywhere(*_write_inputs(), weight=weight)
+            table = install_everywhere(*_write_inputs(), weight=weight, err=err)
             self.assertEqual(len(table), 1)
             with phyclone.run.ProcessPoolExecutor(max_workers=1,
                                                   mp_context=get_context("spawn")) as pool:
@@ -121,6 +164,11 @@ class SpawnedChainWorkers(unittest.TestCase):
         table, scores = self.spawn(_worker_pair_scores, 0.3)
         np.testing.assert_allclose(scores, table.scores)
         np.testing.assert_allclose(scores, 0.3 * relation_scores([3], [2], [0], 0.01))
+
+    def test_spawned_workers_use_the_error_model(self):
+        table, scores = self.spawn(_worker_pair_scores, 1.0, err=0.004)
+        np.testing.assert_allclose(scores, table.scores)
+        np.testing.assert_allclose(scores, error_relation_scores([3], [2], [0], [1], 0.004))
 
 
 if __name__ == "__main__":
