@@ -135,6 +135,7 @@ trace/
   - child 的走訪順序會改變 1e-100 clip 的位置，進而改變 tail 與 `log_p_one`（實例差 0.0124）。Rust 版用 newest-first（同 rustworkx successors）。Python 的 `compute_log_S` cache 不看 child 順序，所以一般樹的順序取決於歷史，無法完全重現；這只影響 V3 以後的統計比較，不影響 V1。
   - grid ≥ 1000 的 FFT 路徑還沒移植。
 - **M4 找到的 pair term 怪癖**（Rust 照原版）：`pairs.tsv` 的 `sample_id` 沒有用到，eligibility 與 HP posterior 只看 `data_hp.tsv`／`segments.tsv` 每個 mutation／segment 的第一列；HP 不確定性模式只用 q ≥ Q_MIN 判斷，不看 `snv_hp`；用 cluster 檔時 pair 會對到 cluster id（`dp.name`），base mode 不會拒絕這種輸入。
+- **平台綁定（審查補記）**：V1 的逐位相同依賴 glibc `lgamma_r`（musl／macOS 會失去逐位一致）、OpenBLAS ddot 的加總順序，以及 `x86-64-v3`。沒有 AVX2／FMA 的 CPU 會直接 SIGILL，目前沒有 runtime 偵測。軟體 `fma` 與硬體 FMA 都是正確捨入，所以數值相同；慢 9 倍的只是速度。
 - **M8 前要加壓縮輸入。** dataset 的 cluster 檔是 `results.tsv.gz`，M2 的 loader 遇到壓縮檔會回傳 `Error::Unported`。
 - **M2 找到的原版怪癖**（Rust 版照原版行為實作）：
   - base loader 先把 `sample_id` 轉成字串再排序（"20" 在 "3" 前）；A1/A2 loader 保留整數排序。整數 mutation id 兩者都用數值排序。
