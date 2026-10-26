@@ -194,3 +194,23 @@ env PYTHONPATH=research/phyclone_research/PhyClone ~/venvs/phyclone/bin/python \
 - **「C3 變成第二個 root」不是 in-model 造成的。** 〔實測〕e0 s3 沒有任何誤差，base＋事後硬篩選也選出這棵樹（1.00）。base 在這個 seed 一律把 C1／C2 合併；在 base 的樣本裡，滿足 s4×s6 分支 call 的只剩這種樹。〔推論〕這是「bulk 分不開 C1／C2」與「pair 說 C2、C3 是分支」的結構衝突。正確的解法是分開 C1／C2，而 in-model 才有機會做到。
 - **A2＋事後挑樹錯得最少，但證據最弱。** 〔推論〕它的 0／12 來自很少的樣本。要用它，必須先讓 base／A2 的抽樣涵蓋 pair 支持的樹（例如更多 chain、更長的 run）。這等於把 C4 的搜尋成本移到抽樣。
 - **建議：** 保留 in-model C4 作為主方法。事後硬篩選可以當報告用的檢查：列出 MAP 樹違反哪些條數過門檻的 pair（肺癌研究的做法），但不拿它來選樹。
+
+## 8. pair term 太重嗎？（2026-10-26）
+
+問題：兩種失效是不是因為 pair term 的權重太重？
+
+做法：`tools/c4_pair_weight_diagnostics.py`，用第 7 節的 `run_base`（沒有 C4）。結果：`pair_weight_diagnostics.tsv`（12 個 sim）。
+
+### 8.1 結果
+
+- **pair term 的變動是 base log_p 的 6.8–33 倍（中位數 11.6）。** 〔實測〕以全部 posterior 樣本計算（依抽到次數加權），兩者的 SD 比。base log_p 的 5–95% 範圍是 12.3–23.6；pair term 是 13.1–789.7。所以 pair term 幾乎單獨決定 posterior。VAF 和 CN 的證據拉不回錯誤的 pair。
+- **同一條 read 被重複計入多個 pair。** 〔實測〕
+  - 合格 pair 計入的 read 次數是實際不同 read 數的 2.4–4.0 倍（中位數 3.2）。e0 s1：3,550 次，只有 1,043 條 read。
+  - 單一 read 最多被計入 21–105 個 pair。
+  - 原因：一條 read 覆蓋 m 個 SNV 時，它出現在 m(m−1)/2 個 pair 裡，而 C4 把每個 pair 當成獨立證據。
+- **一個鹼基錯誤會被放大。** 〔推論〕一條 read 覆蓋 10 個同 HP 的 SNV，其中 1 個位點讀錯，就會在 9 個 pair 各罰一次 log ε（ε = 0.01），合計約 41 log 單位。這比 base log_p 的整個 5–95% 範圍還大。失效模式 1（clone 被拆開）主要是這樣來的。
+- **權重不是全部原因。** 〔實測〕失效模式 2（C3 變成第二個 root）在零誤差、不用 log ε 的事後硬篩選下也會出現（第 7.4 節）。單純把 ε 調大來降權，也會讓直線樹回來（第 3 節，ε = 0.1）。
+
+### 8.2 下一步
+
+先試 composite likelihood 加權：pair term 乘上 w ≈ 1／（每個 read 平均出現在幾個 pair），這裡是 0.25–0.42。計畫：`research/phyclone_research/C4_COMPOSITE_WEIGHT_PLAN.md`。之後再考慮以 read 為單位的 likelihood。
