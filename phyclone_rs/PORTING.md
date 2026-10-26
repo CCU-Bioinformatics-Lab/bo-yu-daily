@@ -1,6 +1,6 @@
 # PhyClone → Rust 移植計畫（haploclone）
 
-狀態：2026-10-26 開始實作（pstack figure-it-out 流程）。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。
+狀態（2026-10-26）：M0–M5 完成並驗證（V1 數值層、V3 統計層）；下一步 M6。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
 
 ## 1. 目標
 

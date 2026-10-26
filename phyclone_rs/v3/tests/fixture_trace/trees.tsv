@@ -1,0 +1,5 @@
+tree_id	node	parent	log_prior	extra
+7	10	-1	-1.5	a
+7	11	10	-1.5	a
+7	12	-1	-1.5	a
+8	5	-1	-0.5	a

@@ -112,7 +112,7 @@ $PY phyclone_rs/golden/verify_against_traces.py                # 應印出 OK
 
 ## 6. 觀察到的原版行為（照實凍結，沒有修改）
 
-- **隨機樹的短 run 卡在一棵樹上。** `random_a1_bin`、`random_base_betabin` 在 220 個 iteration 中都只有 1 個 node，alpha 一直是 1.0。長 run（4 chain、1100 iteration）最多推出 3 個 clone（`2026-10-25_random_tree_phyclone_baseline`）。〔實測〕
+- **隨機樹的短 run 卡在一棵樹上。** `random_a1_bin`、`random_base_betabin` 在 220 個 iteration 中都只有 1 個 node。alpha 只有 iter 0 是 1.0，之後塌到下限約 1e-10（`random_a1_bin` 有 170／200 個樣本是 1e-10；2026-10-26 M5／V3 實測更正）。長 run（4 chain、1100 iteration）最多推出 3 個 clone（`2026-10-25_random_tree_phyclone_baseline`）。〔實測〕
 - **upstream 範例的 alpha 很高**：MAP 樣本的 alpha 是 280.6。〔實測〕原因沒有查。
 - C4 的 pair term 是本研究在 `tools/` 加的擴充，不屬於 upstream PhyClone。Rust 版如果要涵蓋它，要把 `tools/phyclone_pairs.py` 的語意一起移植。
 

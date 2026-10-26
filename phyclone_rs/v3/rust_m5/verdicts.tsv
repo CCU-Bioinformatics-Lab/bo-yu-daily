@@ -1,0 +1,94 @@
+config	summary	kind	n_python	n_candidate	python	candidate	effect	p	verdict
+b03_base_eps001	num_nodes	dist	15	10	d=17	d=17	0.178	0.9022	PASS
+b03_base_eps001	num_roots	dist	15	10	d=17	d=17	0	1	PASS
+b03_base_eps001	log_alpha_q	quant	15	10	d=3	d=3	1.53	0.1847	PASS
+b03_base_eps001	log_p_one_q	quant	15	10	d=3	d=3	1.11	0.4244	PASS
+b03_base_eps001	map_log_p_one	scalar	15	10	-914.1 [-916.8,-912]	-913.4 [-915.2,-910.3]	1.85	0.2203	PASS
+b03_base_eps001	step_change	scalar	15	10	0.1807 [0.1757,0.1884]	0.1802 [0.176,0.1847]	0.588	0.6961	PASS
+b03_base_eps001	coclust	matrix	15	10	d=4950	d=4950	0.825	0.9422	PASS
+b03_base_eps001	ancestor	matrix	15	10	d=9900	d=9900	0.826	0.9294	PASS
+b03_base_eps001	post_ari	scalar	15	10	0.1846 [0.179,0.1964]	0.1843 [0.1782,0.1888]	0.336	0.8262	PASS
+b03_base_eps001	map_ari	scalar	15	10	0.1822 [0.1439,0.2366]	0.1728 [0.126,0.2083]	1.21	0.4149	PASS
+b03_base_eps001	post_compat	scalar	15	10	0.127 [0.085,0.175]	0.1155 [0.06,0.155]	1.5	0.3095	PASS
+b03_base_eps001	map_compat	scalar	15	10	0.3333 [0,1]	0.4 [0,1]	0.667	1	PASS
+b03_base_eps001	post_c3_under_c4	scalar	15	10	0 [0,0]	0 [0,0]	0	1	PASS
+b03_base_err003_hpu	num_nodes	dist	15	10	d=17	d=17	1.5	0.402	PASS
+b03_base_err003_hpu	num_roots	dist	15	10	d=17	d=17	0	1	PASS
+b03_base_err003_hpu	log_alpha_q	quant	15	10	d=3	d=3	0.724	0.7434	PASS
+b03_base_err003_hpu	log_p_one_q	quant	15	10	d=3	d=3	1.85	0.0929	PASS
+b03_base_err003_hpu	map_log_p_one	scalar	15	10	-4233 [-4235,-4232]	-4234 [-4235,-4232]	2.08	0.1544	PASS
+b03_base_err003_hpu	step_change	scalar	15	10	0.1398 [0.1367,0.1447]	0.1418 [0.1369,0.147]	2.27	0.1105	PASS
+b03_base_err003_hpu	coclust	matrix	15	10	d=4950	d=4950	1.67	0.035	PASS
+b03_base_err003_hpu	ancestor	matrix	15	10	d=9900	d=9900	1.84	0.0409	PASS
+b03_base_err003_hpu	post_ari	scalar	15	10	0.1825 [0.1735,0.1948]	0.1868 [0.1823,0.1943]	3.03	0.0318	PASS
+b03_base_err003_hpu	map_ari	scalar	15	10	0.17 [0.1387,0.2093]	0.1692 [0.1434,0.2204]	0.124	0.9353	PASS
+b03_base_err003_hpu	post_compat	scalar	15	10	0.1167 [0.08,0.17]	0.136 [0.075,0.19]	2.15	0.1453	PASS
+b03_base_err003_hpu	map_compat	scalar	15	10	0.06667 [0,1]	0 [0,0]	1	1	PASS
+b03_base_err003_hpu	post_c3_under_c4	scalar	15	10	0 [0,0]	0 [0,0]	0	1	PASS
+e0_base_bin	num_nodes	dist	15	10	d=17	d=17	1.26	0.3887	PASS
+e0_base_bin	num_roots	dist	15	10	d=17	d=17	1.91	0.2161	PASS
+e0_base_bin	log_alpha_q	quant	15	10	d=3	d=3	0.569	0.8521	PASS
+e0_base_bin	log_p_one_q	quant	15	10	d=3	d=3	0.517	0.8761	PASS
+e0_base_bin	map_log_p_one	scalar	15	10	-64.17 [-66.31,-62.91]	-64.22 [-65.32,-61.69]	0.183	0.9034	PASS
+e0_base_bin	step_change	scalar	15	10	0.08345 [0.07924,0.08579]	0.08272 [0.07628,0.08755]	1.05	0.4796	PASS
+e0_base_bin	coclust	matrix	15	10	d=4950	d=4950	0.767	0.9797	PASS
+e0_base_bin	ancestor	matrix	15	10	d=9900	d=9900	0.772	0.8219	PASS
+e0_base_bin	post_ari	scalar	15	10	0.3573 [0.3505,0.3631]	0.3577 [0.354,0.3625]	0.56	0.7063	PASS
+e0_base_bin	map_ari	scalar	15	10	0.3885 [0.3606,0.4141]	0.3822 [0.3576,0.4141]	1.27	0.3624	PASS
+e0_base_bin	post_compat	scalar	15	10	0.4903 [0.37,0.605]	0.492 [0.35,0.57]	0.0952	0.9581	PASS
+e0_base_bin	map_compat	scalar	15	10	0.3333 [0,1]	0.5 [0,1]	1	0.6802	PASS
+e0_base_bin	post_c3_under_c4	scalar	15	10	0.4413 [0.32,0.585]	0.441 [0.38,0.605]	0.0177	1	PASS
+e0_base_bin.chains4	num_nodes	dist	15	10	d=17	d=17	0.959	0.5249	PASS
+e0_base_bin.chains4	num_roots	dist	15	10	d=17	d=17	0.25	0.8713	PASS
+e0_base_bin.chains4	log_alpha_q	quant	15	10	d=3	d=3	1.74	0.1042	PASS
+e0_base_bin.chains4	log_p_one_q	quant	15	10	d=3	d=3	0.732	0.7056	PASS
+e0_base_bin.chains4	map_log_p_one	scalar	15	10	-63.19 [-64.81,-61.46]	-63.35 [-64.22,-61.69]	0.589	0.6966	PASS
+e0_base_bin.chains4	step_change	scalar	15	10	0.08277 [0.07835,0.08537]	0.08371 [0.08192,0.08596]	2.04	0.1591	PASS
+e0_base_bin.chains4	coclust	matrix	15	10	d=4950	d=4950	1.03	0.4104	PASS
+e0_base_bin.chains4	ancestor	matrix	15	10	d=9900	d=9900	0.755	0.8807	PASS
+e0_base_bin.chains4	post_ari	scalar	15	10	0.3566 [0.3525,0.3599]	0.3567 [0.3539,0.3592]	0.129	0.9312	PASS
+e0_base_bin.chains4	map_ari	scalar	15	10	0.3746 [0.3576,0.4115]	0.3739 [0.3465,0.3987]	0.159	0.909	PASS
+e0_base_bin.chains4	post_compat	scalar	15	10	0.5021 [0.4475,0.5425]	0.5065 [0.4763,0.5713]	0.609	0.6866	PASS
+e0_base_bin.chains4	map_compat	scalar	15	10	0.2667 [0,1]	0.2 [0,1]	0.667	1	PASS
+e0_base_bin.chains4	post_c3_under_c4	scalar	15	10	0.4217 [0.3862,0.48]	0.4204 [0.3638,0.4537]	0.176	0.9082	PASS
+random_a1_bin	num_nodes	dist	15	10	d=17	d=17	0.961	0.559	PASS
+random_a1_bin	num_roots	dist	15	10	d=17	d=17	0	1	PASS
+random_a1_bin	log_alpha_q	quant	15	10	d=3	d=3	0.796	0.5939	PASS
+random_a1_bin	log_p_one_q	quant	15	10	d=3	d=3	1.55	0.136	PASS
+random_a1_bin	map_log_p_one	scalar	15	10	-136.3 [-139.1,-135.2]	-136.2 [-137.7,-135.9]	0.229	0.9019	PASS
+random_a1_bin	step_change	scalar	15	10	0.01031 [0,0.09619]	0.002587 [0,0.01473]	1	0.5355	PASS
+random_a1_bin	coclust	matrix	15	10	d=17205	d=17205	1	0.5355	PASS
+random_a1_bin	ancestor	matrix	15	10	d=34410	d=34410	1	0.5355	PASS
+random_a1_bin	post_ari	scalar	15	10	0.005299 [0,0.04222]	0.00319 [0,0.01772]	0.659	0.6885	PASS
+random_a1_bin	map_ari	scalar	15	10	0.06008 [0,0.9011]	0.06407 [0,0.6407]	0.0843	1	PASS
+random_base_betabin	num_nodes	dist	15	10	d=17	d=17	0	1	PASS
+random_base_betabin	num_roots	dist	15	10	d=17	d=17	0	1	PASS
+random_base_betabin	log_alpha_q	quant	15	10	d=3	d=3	1.06	0.4751	PASS
+random_base_betabin	log_p_one_q	quant	15	10	d=3	d=3	1.06	0.4751	PASS
+random_base_betabin	map_log_p_one	scalar	15	10	121.2 [121.2,121.2]	121.2 [121.2,121.2]	0	1	PASS
+random_base_betabin	step_change	scalar	15	10	0 [0,0]	0 [0,0]	0	1	PASS
+random_base_betabin	coclust	matrix	15	10	d=17205	d=17205	0	1	PASS
+random_base_betabin	ancestor	matrix	15	10	d=34410	d=34410	0	1	PASS
+random_base_betabin	post_ari	scalar	15	10	0 [0,0]	0 [0,0]	0	1	PASS
+random_base_betabin	map_ari	scalar	15	10	0 [0,0]	0 [0,0]	0	1	PASS
+real_a2_err004	num_nodes	dist	15	10	d=17	d=17	1.66	0.1387	PASS
+real_a2_err004	num_roots	dist	15	10	d=17	d=17	1.18	0.4494	PASS
+real_a2_err004	log_alpha_q	quant	15	10	d=3	d=3	2.77	0.0348	PASS
+real_a2_err004	log_p_one_q	quant	15	10	d=3	d=3	1.65	0.2607	PASS
+real_a2_err004	map_log_p_one	scalar	15	10	-3034 [-3039,-3024]	-3034 [-3038,-3024]	0.0877	0.9532	PASS
+real_a2_err004	step_change	scalar	15	10	0.1477 [0.1197,0.1836]	0.1606 [0.1313,0.1835]	1.79	0.21	PASS
+real_a2_err004	coclust	matrix	15	10	d=4950	d=4950	1.03	0.4729	PASS
+real_a2_err004	ancestor	matrix	15	10	d=9900	d=9900	1	0.4982	PASS
+real_a2_err004	post_ari	scalar	15	10	0.5555 [0.4778,0.628]	0.5283 [0.4537,0.6097]	1.97	0.1841	PASS
+real_a2_err004	map_ari	scalar	15	10	0.6728 [0.4719,0.7676]	0.6248 [0.4556,0.7627]	1.89	0.2038	PASS
+real_a2_err004	post_compat	scalar	15	10	0.4823 [0,1]	0.4545 [0,0.94]	0.414	0.7817	PASS
+real_a2_err004	map_compat	scalar	15	10	0.4 [0,1]	0.4 [0,1]	0	1	PASS
+real_a2_err004	post_c3_under_c4	scalar	15	10	0 [0,0]	0 [0,0]	0	1	PASS
+upstream_clusters	num_nodes	dist	15	10	d=17	d=17	0	1	PASS
+upstream_clusters	num_roots	dist	15	10	d=17	d=17	0	1	PASS
+upstream_clusters	log_alpha_q	quant	15	10	d=3	d=3	0.218	0.9858	PASS
+upstream_clusters	log_p_one_q	quant	15	10	d=3	d=3	0.218	0.9858	PASS
+upstream_clusters	map_log_p_one	scalar	15	10	-336.8 [-340.5,-332.7]	-337 [-341.4,-333.3]	0.396	0.7908	PASS
+upstream_clusters	step_change	scalar	15	10	0 [0,0]	0 [0,0]	0	1	PASS
+upstream_clusters	coclust	matrix	15	10	d=66	d=66	0	1	PASS
+upstream_clusters	ancestor	matrix	15	10	d=132	d=132	0	1	PASS

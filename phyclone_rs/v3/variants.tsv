@@ -1,0 +1,7 @@
+variant	seeds	runs	extra_args	drop_args	purpose
+ref	1-15	all			Python baseline: the golden runs.tsv argv, only the seed changes
+chains4	1-15	e0_base_bin	--num-chains 4		one 4-chain config (4 chains pooled per seed)
+np20	101-105	all	--num-particles 20		power check: weaker sampler (fewer PG particles)
+alphafixed	101-105	all	--no-concentration-update		power check: alpha never updated (stays at 1.0)
+fresh	201-205	all			null check through compare.py: 5 new Python seeds as the candidate
+noc4	101-105	real_a2_err004,b03_base_eps001,b03_base_err003_hpu		--pairs	power check: C4 pair term left out (a dropped model term)

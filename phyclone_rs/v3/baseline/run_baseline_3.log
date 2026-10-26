@@ -1,0 +1,16 @@
+baseline/runs/noc4/real_a2_err004/seed101	136.40011072158813
+baseline/runs/noc4/real_a2_err004/seed102	133.71332359313965
+baseline/runs/noc4/real_a2_err004/seed103	145.0897982120514
+baseline/runs/noc4/real_a2_err004/seed104	133.8557906150818
+baseline/runs/noc4/real_a2_err004/seed105	138.08149576187134
+baseline/runs/noc4/b03_base_eps001/seed101	70.49218940734863
+baseline/runs/noc4/b03_base_eps001/seed102	72.12464714050293
+baseline/runs/noc4/b03_base_eps001/seed103	71.21339440345764
+baseline/runs/noc4/b03_base_eps001/seed104	74.22856116294861
+baseline/runs/noc4/b03_base_eps001/seed105	72.74462985992432
+baseline/runs/noc4/b03_base_err003_hpu/seed101	70.19286918640137
+baseline/runs/noc4/b03_base_err003_hpu/seed102	73.74907612800598
+baseline/runs/noc4/b03_base_err003_hpu/seed103	71.4840726852417
+baseline/runs/noc4/b03_base_err003_hpu/seed104	74.44516253471375
+baseline/runs/noc4/b03_base_err003_hpu/seed105	71.71625018119812
+wall 145 s
