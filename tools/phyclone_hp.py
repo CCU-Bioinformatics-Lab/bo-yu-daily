@@ -192,9 +192,13 @@ def main():
     ap.add_argument("--pair-error", type=float,
                     help="per-site base error rate: score pairs with the error model (uses n00) "
                          "instead of --pair-eps")
+    ap.add_argument("--pair-hp-uncertain", action="store_true",
+                    help="with --pair-error: mix each pair over whether its SNVs sit on its HP")
     opts, rest = ap.parse_known_args()
     if opts.hp_mode == "a2" and not opts.segments:
         raise SystemExit("--hp-mode a2 needs --segments")
+    if opts.pair_hp_uncertain and opts.pair_error is None:
+        raise SystemExit("--pair-hp-uncertain needs --pair-error")
     if opts.pairs and not (opts.segments and opts.hp_data):
         raise SystemExit("--pairs needs --segments and --hp-data")
 
@@ -208,9 +212,11 @@ def main():
 
         table = phyclone_pairs.install_everywhere(opts.pairs, opts.hp_data, opts.segments,
                                                   opts.pair_eps, opts.pair_weight,
-                                                  opts.pair_error)
+                                                  opts.pair_error, opts.pair_hp_uncertain)
         score = (f"error = {opts.pair_error}" if opts.pair_error is not None
                  else f"eps = {opts.pair_eps}")
+        if opts.pair_hp_uncertain:
+            score += ", HP uncertain"
         print(f"phyclone_hp: C4 pair term on, {len(table)} eligible pairs, {score}, "
               f"weight = {opts.pair_weight}")
     cli_main(args=rest)

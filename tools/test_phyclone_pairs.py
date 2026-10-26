@@ -6,8 +6,8 @@ import unittest
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from phyclone_pairs import (RELATIONS, PairTable, error_relation_scores, relation_scores,  # noqa: E402
-                            tree_assignment)
+from phyclone_pairs import (RELATIONS, PairTable, error_relation_scores, hp_posterior,  # noqa: E402
+                            hp_uncertain_scores, relation_scores, tree_assignment)
 from scipy.special import betaln  # noqa: E402
 
 
@@ -66,6 +66,52 @@ class ErrorModelScores(unittest.TestCase):
         np.testing.assert_allclose(t.scores, 0.5 * error_relation_scores([3], [2], [0], [1], 0.004))
 
 
+class HPUncertainScores(unittest.TestCase):
+    def test_hp_posterior_follows_the_tagged_alt_reads(self):
+        q = hp_posterior([50, 90], [40, 0], [60, 89], [0, 2], 0.004)
+        self.assertGreater(q[0, 0], 0.999)                 # clear HP1 SNV
+        self.assertGreater(q[1, 1], 0.8)                   # real s1 s7_07: the data point to HP2
+        np.testing.assert_allclose(q.sum(1), 1)
+
+    def test_certain_hp_matches_the_error_model(self):
+        n = ([5, 0], [0, 6], [0, 7], [40, 50])
+        got = hp_uncertain_scores(*n, 0.004, [1.0] * 2, [1.0] * 2)
+        np.testing.assert_allclose(got, error_relation_scores(*n, 0.004), atol=1e-9)
+
+    def test_doubt_about_the_hp_caps_a_contradiction(self):
+        """s6_04 x s7_07 in real s1: two 10 reads against `same`, s7_07 on this HP with q 0.93."""
+        n = ([0], [2], [0], [4])
+        sure = error_relation_scores(*n, 0.004)[0]
+        doubt = hp_uncertain_scores(*n, 0.004, [0.999], [0.93])[0]
+        self.assertGreater(sure.max() - sure[0], 5)
+        self.assertLess(doubt.max() - doubt[0], -np.log(1 - 0.93) + 0.1)
+
+    def test_strong_branch_evidence_survives_some_doubt(self):
+        s = hp_uncertain_scores([0], [10], [10], [100], 0.004, [0.99], [0.99])[0]
+        self.assertGreater(s[3] - max(s[:3]), 5)
+
+    def test_from_files_admits_pairs_by_hp_posterior(self):
+        import tempfile
+
+        d = tempfile.mkdtemp()
+        files = {
+            "pairs.tsv": "mutation_i\tmutation_j\tsample_id\tchrom\tps_block\thap\tn11\tn10\tn01"
+                         "\tn00\tcallable_pair_reads\tdistance\n"
+                         "a\tb\tS1\tchr1\tA\tHP1\t3\t0\t0\t5\t8\t10\n"
+                         "a\tc\tS1\tchr1\tA\tHP1\t0\t3\t0\t5\t8\t10\n",
+            "data_hp.tsv": "mutation_id\tsnv_hp\tsegment_id\tref_hp1\talt_hp1\tref_hp2\talt_hp2\n"
+                           "a\tHP1\tA\t20\t10\t30\t0\nb\tHP1\tA\t20\t10\t30\t0\n"
+                           "c\tHP2\tA\t30\t0\t20\t10\n",
+            "segments.tsv": "segment_id\ta_hp1\ta_hp2\tb_hp1\tb_hp2\nA\t1\t1\t1\t1\n",
+        }
+        for name, text in files.items():
+            with open(os.path.join(d, name), "w") as fh:
+                fh.write(text)
+        paths = [os.path.join(d, f) for f in ("pairs.tsv", "data_hp.tsv", "segments.tsv")]
+        t = PairTable.from_files(*paths, err=0.004, hp_uncertain=True)
+        self.assertEqual(list(zip(t.mut_i, t.mut_j)), [("a", "b")])   # c is surely on HP2
+
+
 class TreeTerm(unittest.TestCase):
     def test_term_uses_the_tree_relation(self):
         s = relation_scores([5, 0], [5, 6], [0, 7], 0.01)
@@ -79,14 +125,16 @@ class TreeTerm(unittest.TestCase):
         self.assertEqual(table.term({"a": "r"}, {"r": set()}), 0.0)
 
 
-def _write_inputs(n11=3):
+def _write_inputs(n11=3, hp=False):
     import tempfile
 
     d = tempfile.mkdtemp()
     for name, text in {
         "pairs.tsv": "mutation_i\tmutation_j\tsample_id\tchrom\tps_block\thap\tn11\tn10\tn01"
                      f"\tn00\tcallable_pair_reads\tdistance\na\tb\tS1\tchr1\tA\tHP1\t{n11}\t2\t0\t1\t4\t10\n",
-        "data_hp.tsv": "mutation_id\tsnv_hp\tsegment_id\na\tHP1\tA\nb\tHP1\tA\n",
+        "data_hp.tsv": ("mutation_id\tsnv_hp\tsegment_id\tref_hp1\talt_hp1\tref_hp2\talt_hp2\n"
+                        "a\tHP1\tA\t20\t3\t30\t0\nb\tHP1\tA\t20\t3\t30\t0\n" if hp else
+                        "mutation_id\tsnv_hp\tsegment_id\na\tHP1\tA\nb\tHP1\tA\n"),
         "segments.tsv": "segment_id\ta_hp1\ta_hp2\tb_hp1\tb_hp2\nA\t1\t1\t1\t1\n",
     }.items():
         with open(os.path.join(d, name), "w") as fh:
@@ -138,7 +186,7 @@ def _worker_pair_scores():
 
 
 class SpawnedChainWorkers(unittest.TestCase):
-    def spawn(self, fn, weight, err=None):
+    def spawn(self, fn, weight, err=None, hp_uncertain=False):
         from multiprocessing import get_context
 
         import phyclone.run
@@ -146,7 +194,8 @@ class SpawnedChainWorkers(unittest.TestCase):
 
         original = phyclone.run.ProcessPoolExecutor
         try:
-            table = install_everywhere(*_write_inputs(), weight=weight, err=err)
+            table = install_everywhere(*_write_inputs(hp=hp_uncertain), weight=weight, err=err,
+                                       hp_uncertain=hp_uncertain)
             self.assertEqual(len(table), 1)
             with phyclone.run.ProcessPoolExecutor(max_workers=1,
                                                   mp_context=get_context("spawn")) as pool:
@@ -169,6 +218,11 @@ class SpawnedChainWorkers(unittest.TestCase):
         table, scores = self.spawn(_worker_pair_scores, 1.0, err=0.004)
         np.testing.assert_allclose(scores, table.scores)
         np.testing.assert_allclose(scores, error_relation_scores([3], [2], [0], [1], 0.004))
+
+    def test_spawned_workers_use_hp_uncertainty(self):
+        table, scores = self.spawn(_worker_pair_scores, 1.0, err=0.004, hp_uncertain=True)
+        np.testing.assert_allclose(scores, table.scores)
+        self.assertFalse(np.allclose(scores, error_relation_scores([3], [2], [0], [1], 0.004)))
 
 
 if __name__ == "__main__":
