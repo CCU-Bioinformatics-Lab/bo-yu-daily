@@ -1,0 +1,41 @@
+
+####################################################################################################
+PhyClone: Analysis Run
+####################################################################################################
+
+Running with the following parameters:
+
+Number of independent chains: 1
+Number of PG particles: 100
+Density: binomial
+Proposal distribution: semi-adapted
+Number of burn-in iterations: 20
+Number of MCMC iterations: 200
+Random seed: 1 (user-provided)
+Outlier modelling allowed: False
+
+####################################################################################################
+
+phyclone_hp: 186 mutations, 1 samples, emission = a1
+####################################################################################################
+Burnin - Chain 0
+####################################################################################################
+chain: 0 || iter: 0, alpha: 1.0, log_p: -136.083, num_nodes: 1, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 20, alpha: 1.0, log_p: -136.083, num_nodes: 1, num_outliers: 0, num_roots: 1
+
+####################################################################################################
+Post-burnin - Chain 0
+####################################################################################################
+
+chain: 0 || iter: 0, alpha: 1.0, log_p: -136.083, num_nodes: 1, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 100, alpha: 0.0, log_p: -159.109, num_nodes: 1, num_outliers: 0, num_roots: 1
+Finished chain 0
+
+####################
+
+Writing sample trace to disk.
+Saving chain 0 trace
+
+Unique trees sampled: 1
+
+Finished.

@@ -1,0 +1,1 @@
+{"case":"random_spec_0000","options":{"eps":0.01,"weight":0.3},"pair_model":"eps0.01_w0.3","pairs":[{"i":"s112_00","j":"s154_00","scores":[-0.0060608121952558346,-0.21095925492403403,-0.21095925492403403,-1.3815510557964272]}],"relations":["same","ancestor","descendant","branch"]}

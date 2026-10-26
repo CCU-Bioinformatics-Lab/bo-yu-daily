@@ -1,0 +1,8 @@
+run	case	argv
+e0_base_bin	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial
+real_a2_err004	stress_real_s1	--hp-mode a2 --segments {in}/segments.tsv --pairs {in}/pairs.tsv --hp-data {in}/data_hp.tsv --pair-error 0.004 run -i {in}/data_hp.tsv -d binomial
+b03_base_eps001	stress_b03_s1	--hp-mode base --segments {in}/segments.tsv --pairs {in}/pairs.tsv --hp-data {in}/data_hp.tsv --pair-eps 0.01 run -i {in}/data.tsv -d binomial
+b03_base_err003_hpu	stress_b03_s1	--hp-mode base --segments {in}/segments.tsv --pairs {in}/pairs.tsv --hp-data {in}/data_hp.tsv --pair-error 0.03 --pair-hp-uncertain run -i {in}/data.tsv -d binomial
+random_a1_bin	random_spec_0000	--hp-mode a1 run -i {in}/data_hp.tsv -d binomial
+random_base_betabin	random_spec_0000	--hp-mode base run -i {in}/data.tsv -d beta-binomial
+upstream_clusters	upstream_mixing_small	--hp-mode base run -i {in}/mixing_small.tsv -c {in}/mixing_small_clusters.tsv

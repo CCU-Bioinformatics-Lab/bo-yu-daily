@@ -1,0 +1,1 @@
+tools/phyclone_hp.py --hp-mode base run -i phyclone_rs/golden/cases/upstream_mixing_small/input/mixing_small.tsv -c phyclone_rs/golden/cases/upstream_mixing_small/input/mixing_small_clusters.tsv -b 20 -n 200 --num-chains 1 --seed 1 -o phyclone_rs/golden/runs/upstream_clusters/trace.h5

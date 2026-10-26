@@ -1,0 +1,53 @@
+
+####################################################################################################
+PhyClone: Analysis Run
+####################################################################################################
+
+Running with the following parameters:
+
+Number of independent chains: 1
+Number of PG particles: 100
+Density: beta-binomial
+Proposal distribution: semi-adapted
+Number of burn-in iterations: 20
+Number of MCMC iterations: 200
+Random seed: 1 (user-provided)
+Outlier modelling allowed: False
+
+####################################################################################################
+
+Parsing Input Data...
+
+Tumour content column not found. Setting values to 1.0.
+Num Mutations: 12
+Num Samples: 4
+Samples: SRR385938, SRR385939, SRR385940, SRR385941
+
+Setting outlier probability values to 0.0
+
+Using input clustering with 7 clusters
+
+####################################################################################################
+
+####################################################################################################
+Burnin - Chain 0
+####################################################################################################
+chain: 0 || iter: 0, alpha: 1.0, log_p: -4871.32, num_nodes: 1, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 20, alpha: 1.0, log_p: -377.691, num_nodes: 7, num_outliers: 0, num_roots: 1
+
+####################################################################################################
+Post-burnin - Chain 0
+####################################################################################################
+
+chain: 0 || iter: 0, alpha: 1.0, log_p: -377.691, num_nodes: 7, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 100, alpha: 87.631, log_p: -346.379, num_nodes: 7, num_outliers: 0, num_roots: 1
+Finished chain 0
+
+####################
+
+Writing sample trace to disk.
+Saving chain 0 trace
+
+Unique trees sampled: 1
+
+Finished.

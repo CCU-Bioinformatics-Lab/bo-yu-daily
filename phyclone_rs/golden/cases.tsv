@@ -1,0 +1,6 @@
+case	source	note
+stress_e0_s1	lab_report/2026-10-25_c4_robustness/sims/x10_e0_s1	stress tree x10, no observation error
+stress_real_s1	lab_report/2026-10-25_c4_robustness/sims/x10_real_s1	stress tree x10, calibrated ONT errors; low-VAF s7_07 has a flipped snv_hp
+stress_b03_s1	lab_report/2026-10-25_c4_robustness/sims/x10_b03_s1	stress tree x10, 3% base error (failure mode 1)
+random_spec_0000	lab_report/2026-10-25_random_tree_phyclone_baseline/sims/spec_0000	TRACERx random tree, 186 SNVs, many CN segments, depth 50
+upstream_mixing_small	research/phyclone_research/PhyClone/examples/data	upstream example: 4 samples, beta-binomial, cluster file

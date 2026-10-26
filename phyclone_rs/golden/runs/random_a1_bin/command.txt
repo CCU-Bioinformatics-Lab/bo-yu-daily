@@ -1,0 +1,1 @@
+tools/phyclone_hp.py --hp-mode a1 run -i phyclone_rs/golden/cases/random_spec_0000/input/data_hp.tsv -d binomial -b 20 -n 200 --num-chains 1 --seed 1 -o phyclone_rs/golden/runs/random_a1_bin/trace.h5

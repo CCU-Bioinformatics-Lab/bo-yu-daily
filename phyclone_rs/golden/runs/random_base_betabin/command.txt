@@ -1,0 +1,1 @@
+tools/phyclone_hp.py --hp-mode base run -i phyclone_rs/golden/cases/random_spec_0000/input/data.tsv -d beta-binomial -b 20 -n 200 --num-chains 1 --seed 1 -o phyclone_rs/golden/runs/random_base_betabin/trace.h5
