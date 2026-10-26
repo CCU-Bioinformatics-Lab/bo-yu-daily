@@ -52,6 +52,8 @@ def main():
     g.add_argument("--mistag", type=float, default=0.0)
     g.add_argument("--switch-rate", type=float, default=0.0, help="per Mb")
     g.add_argument("--base-error", type=float, default=0.0)
+    g.add_argument("--caller", choices=("none", "clairs", "deepsomatic"), default="none",
+                   help="drop SNVs this ONT somatic caller would miss")
     a = ap.parse_args()
 
     p = Params(n_clones=a.n_clones, tree_shape=a.tree_shape, p_linear=a.p_linear,
@@ -67,7 +69,8 @@ def main():
         rng = np.random.default_rng([a.seed, i])
         name = f"sim_{i:04d}"
         raw = draw_spec(rng, pools, p, name)
-        raw.update(mistag_rate=a.mistag, switch_rate_per_mb=a.switch_rate, base_error=a.base_error)
+        raw.update(mistag_rate=a.mistag, switch_rate_per_mb=a.switch_rate, base_error=a.base_error,
+                   caller=a.caller)
         if a.het_map:
             raw["het_map"] = str(Path(a.het_map).resolve())
         sim_seed = int(rng.integers(2**31))
@@ -76,7 +79,8 @@ def main():
         manifest["params"] = dataclasses.asdict(p)
         manifest["generate_seed"] = [a.seed, i]
         (out / name / "manifest.json").write_text(json.dumps(manifest, indent=1))
-        print(f"{name}: {len(raw['clones'])} clones, {manifest['n_mutations']} SNVs")
+        print(f"{name}: {len(raw['clones'])} clones, {manifest['n_mutations']} SNVs, "
+              f"{manifest['n_detected']} called")
 
 
 if __name__ == "__main__":

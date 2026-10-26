@@ -8,7 +8,9 @@ OUT/input/  what a method may read (plan.md §5.8.2 rule 7)
   pairs.tsv      per SNV pair x HP: tagged reads that cover both SNVs, by allele pattern
                  (plan.md §1.3 PAIRS.tsv; ps_block = segment; phase switches stay inside it)
 Counts, snv_hp and pairs use the observed HP tag and observed alleles, so mistags, phase
-switches and base errors reach every input file the same way.
+switches and base errors reach every input file the same way. With a caller, each SNV is
+detected with the caller's fitted P(call | alt, depth) (data/caller_detection_hcc1395.tsv);
+missed SNVs are left out of every input file and marked detected = 0 in truth.tsv.
 OUT/truth/
   truth.tsv, truth_tree.tsv, clusters_truth.tsv  same columns as tools/hp_truth_tree_to_phyclone.py
   genome.json    replayed genome: lineage -> segment -> HP -> copies (sorted role lists)
@@ -24,10 +26,28 @@ import numpy as np
 from scipy.stats import binom
 
 from . import __version__, het_map
-from .model import HPS, NORMAL, lost, replay
+from .model import DATA_DIR, HPS, NORMAL, lost, replay
 from .sample import load_read_span, place_mutations, sample_segment
 
 SAMPLE = "S1"
+CALLERS = DATA_DIR / "caller_detection_hcc1395.tsv"
+
+
+def load_caller(name):
+    rows = [ln.split("\t") for ln in CALLERS.read_text().splitlines() if ln and ln[0] != "#"]
+    coef = {r[0]: [float(x) for x in r[1:]] for r in rows[1:]}
+    if name not in coef:
+        raise ValueError(f"caller must be none or one of {sorted(coef)}: {name}")
+    return coef[name]
+
+
+def detect(rng, coef, alt, depth):
+    """Bernoulli draws of P(call) = sigmoid(b0 + b1 log alt + b2 log depth); never when alt = 0."""
+    alt, depth = np.asarray(alt, float), np.asarray(depth, float)
+    ok = alt > 0
+    z = np.full(len(alt), -np.inf)
+    z[ok] = coef[0] + coef[1] * np.log(alt[ok]) + coef[2] * np.log(depth[ok])
+    return rng.random(len(alt)) < 1 / (1 + np.exp(-z))
 
 
 def cn_state(genome, seg):
@@ -154,14 +174,22 @@ def run(spec, seed, out_dir):
     reads = {s: sample_segment(rng, spec, genomes, s, span_q, het) for s in spec.segments}
     obs = {m.id: observe(reads[m.segment], m.pos, m.role, rng, spec.base_error) for m in muts}
     truth = {r: role_truth(spec, genomes, r) for r in spec.roles}
+    cnt = {m.id: counts(reads[m.segment], *obs[m.id]) for m in muts}
+    if spec.caller == "none":  # draws no random numbers, so earlier seeds are unchanged
+        detected = {m.id: True for m in muts}
+    else:
+        hit = detect(rng, load_caller(spec.caller), [cnt[m.id]["alt"] for m in muts],
+                     [cnt[m.id]["ref"] + cnt[m.id]["alt"] for m in muts])
+        detected = {m.id: bool(h) for m, h in zip(muts, hit)}
+    called = [m for m in muts if detected[m.id]]
 
     base = ["mutation_id", "sample_id", "ref_counts", "alt_counts", "major_cn", "minor_cn",
             "normal_cn", "tumour_content"]
     hp_cols = ["snv_hp", "segment_id", "cn_hp1", "cn_hp2", "ref_hp1", "alt_hp1", "ref_hp2",
                "alt_hp2", "ref_unphased", "alt_unphased"]
     data, data_hp = [], []
-    for m in muts:
-        c = counts(reads[m.segment], *obs[m.id])
+    for m in called:
+        c = cnt[m.id]
         dom = dominant_state(spec, genomes, m.segment)
         row = [m.id, SAMPLE, c["ref"], c["alt"], max(dom), min(dom), 2, spec.purity]
         snv_hp = ("." if c["alt_hp1"] == c["alt_hp2"] else
@@ -181,7 +209,7 @@ def run(spec, seed, out_dir):
 
     pairs = []
     for s in spec.segments:
-        seg_muts = [m for m in muts if m.segment == s]
+        seg_muts = [m for m in called if m.segment == s]
         if seg_muts:
             pairs += pair_rows(spec, reads[s], seg_muts, obs)
     write_tsv(out / "input/pairs.tsv",
@@ -191,11 +219,13 @@ def run(spec, seed, out_dir):
     roles = spec.roles
     write_tsv(out / "truth/truth.tsv",
               ["mutation_id", "role", "origin_clone", "hp", "segment", "chrom", "pos",
-               "origin_ccf", "carrier_fraction", "phyclone_ccf_expected", "vaf_expected"],
+               "origin_ccf", "carrier_fraction", "phyclone_ccf_expected", "vaf_expected",
+               "detected"],
               [[m.id, m.role, roles[m.role].clone, roles[m.role].hp, m.segment,
                 spec.segments[m.segment].chrom, m.pos,
                 *(f"{truth[m.role][k]:.4f}" for k in ("origin_ccf", "carrier_fraction",
-                                                       "phyclone_ccf_expected", "vaf_expected"))]
+                                                       "phyclone_ccf_expected", "vaf_expected")),
+                int(detected[m.id])]
                for m in muts])
     write_tsv(out / "truth/clusters_truth.tsv", ["mutation_id", "cluster_id"],
               [[m.id, roles[m.role].clone] for m in muts])
@@ -223,7 +253,8 @@ def run(spec, seed, out_dir):
                 "switch_rate_per_mb": spec.switch_rate_per_mb, "base_error": spec.base_error,
                 "read_span": str(spec.read_span),
                 "het_map": str(spec.het_map) if spec.het_map else None,
-                "n_mutations": len(muts), "n_pairs_rows": len(pairs),
+                "caller": spec.caller, "n_mutations": len(muts), "n_detected": len(called),
+                "n_pairs_rows": len(pairs),
                 "n_reads": {s: int(len(r.start)) for s, r in reads.items()},
                 "lineages": [NORMAL, *spec.parent]}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1))

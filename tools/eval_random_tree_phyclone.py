@@ -78,7 +78,9 @@ def relation(x, y, anc):
 
 
 def score(sim, run):
-    truth = {r["mutation_id"]: r for r in read_tsv(os.path.join(sim, "truth/truth.tsv"))}
+    # SNVs a simulated caller missed (detected = 0) are not in the method input
+    truth = {r["mutation_id"]: r for r in read_tsv(os.path.join(sim, "truth/truth.tsv"))
+             if r.get("detected", "1") == "1"}
     tree = read_tsv(os.path.join(sim, "truth/truth_tree.tsv"))
     t_parent = {r["clone"]: r["parent"] for r in tree if r["parent"] != "root"}
     table = {r["mutation_id"]: r for r in read_tsv(os.path.join(sim, run, "map_table.tsv"))}
