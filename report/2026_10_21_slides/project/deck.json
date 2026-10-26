@@ -28,7 +28,8 @@
     "s1-feat-methyl",
     "s2-sim-check",
     "s2-sim-plan",
-    "s2-real-ref"
+    "s2-real-ref",
+    "s2-smchet-split"
   ],
   "sections": {
     "s0": {

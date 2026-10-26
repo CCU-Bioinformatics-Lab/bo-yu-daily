@@ -85,7 +85,7 @@
 </div>
 <div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
 <p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
-<p style="font-size:24px;color:#6B7480">3 / 7</p>
+<p style="font-size:24px;color:#6B7480">3 / 8</p>
 </div>
 <aside>這頁的結論是：long read 能直接看到兩個突變的先後，但這篇只用它來挑候選樹。先看左邊。藍色和橘色是兩條同源染色體。一條 long read 就能同時跨過兩個紅色突變，而且先分到同一條染色體上。再看中間，我們來數 read。有兩點都有的，有只有左邊的，但打叉的「只有右邊」完全沒看到。所以右邊的突變只出現在已經帶左邊突變的細胞裡，左邊比較早。最後看右邊。樹其實是短讀先排的：先用 PyClone-VI 依突變比例分群，再用 ClonEvol 排出分支和線性兩棵。作者看 long read 支持 SNV1 早於 SNV2，也就是 C-2 在 C-3 之前，用虛線這一步人工挑了右邊。樹上每個 clone 旁的百分比是 CCF：C-1 是 100%，C-2 是 40%，C-3 是 30%。這只在一位病人身上示範。下一頁看甲基化條碼研究。</aside>
 </section>
