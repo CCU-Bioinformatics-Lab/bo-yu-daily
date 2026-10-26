@@ -2,7 +2,7 @@
 
 輸入一組摘要參數（clone 數、SNV 數、CN 比例、purity、depth 等，像 CONIPHER 的 `tx_simulation`），或一棵手寫的 HP-aware clone tree spec。輸出一個 bulk ONT 樣本的 PhyClone 輸入、HP 計數、SNV pair 共現表，以及獨立的真值目錄。
 
-範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個 lineage、一條 HP、一個 copy。不產生 FASTQ／BAM（`plan.md` §5.8.4 L2-R 留到之後）。v0.2 加入觀測誤差：HP 錯標、phase switch、鹼基錯誤（見「觀測誤差」）。v0.3 加入選填的 het map tagging（見「HP tag」）。v0.4 加入參數模式（見「參數模式」），這是主要入口。v0.5 加入 somatic caller 的漏抓（見「Caller 漏抓」）。
+範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個 lineage、一條 HP、一個 copy。不產生 FASTQ／BAM（`plan.md` §5.8.4 L2-R 留到之後）。v0.2 加入觀測誤差：HP 錯標、phase switch、鹼基錯誤（見「觀測誤差」）。v0.3 加入選填的 het map tagging（見「HP tag」）。v0.4 加入參數模式（見「參數模式」），這是主要入口。v0.5 加入 somatic caller 的漏抓（見「Caller 漏抓」）。v0.6 加入 cohort preset（見「Preset」），WGD 改成依機率抽。
 
 ## 參數模式（主要入口）
 
@@ -10,13 +10,16 @@
 cd longbulksim
 python3 -m longbulksim.generate OUT --n-sims 10 --seed 1                      # 全部用預設值
 python3 -m longbulksim.generate OUT --n-clones 5 --tree-shape branched --purity 0.3 --depth 50
+python3 -m longbulksim.generate OUT --preset pcawg:Lung-AdenoCA --caller clairs   # PCAWG 肺腺癌 + ClairS 漏抓
+python3 -m longbulksim.generate --list-presets
 python3 -m longbulksim.generate --help
 ```
 
-使用者不寫樹。樹、CCF、SNV、CN 由參數產生；產生的 spec 存在 `OUT/sim_<i>/truth/spec.yaml`，參數存在 `manifest.json`。
+使用者不寫樹。樹、CCF、SNV、CN 由參數產生；產生的 spec 存在 `OUT/sim_<i>/truth/spec.yaml`，參數存在 `manifest.json`。參數的來源依序是：明確給的選項 > `--preset` > TRACERx 中位數（下表的預設）。
 
 | 參數 | 意思 | 預設 | 預設的來源 |
 |---|---|---|---|
+| `--preset` | tracerx／pcawg／pcawg:<癌種>（見「Preset」） | tracerx | |
 | `--n-sims`、`--seed` | 模擬數、seed | 1、1 | |
 | `--n-clones` | clone 數（含 trunk） | 3 | TRACERx 單區域中位（merge 後） |
 | `--tree-shape` | random／linear／branched | random | |
@@ -26,7 +29,7 @@ python3 -m longbulksim.generate --help
 | `--n-snv` | SNV 數 | 450 | TRACERx 每區域中位（WES） |
 | `--prop-truncal` | truncal SNV 比例 | 0.91 | TRACERx 單區域中位（merge 後） |
 | `--n-segments` | CN segment 數 | 129 | TRACERx 每 tumour 中位 |
-| `--wgd` | yes／no | yes | TRACERx 57% tumour ploidy ≥ 3 |
+| `--wgd`、`--wgd-prob` | auto（每個模擬依機率抽）／yes／no；WGD 機率 | auto、0.57 | TRACERx 57% tumour ploidy ≥ 3 |
 | `--prop-gain`、`--prop-loss`、`--prop-loh` | trunk CN 類別的 bp 比例（相對 1:1 或 WGD 的 2:2） | WGD：0.083／0.328／0.267；非 WGD：0.124／0／0.274 | TRACERx 中位 |
 | `--prop-subclonal-cn` | 有 subclonal CN 改變的 segment 比例 | 0.096 | TRACERx 區域內 bp 比例中位 |
 | `--purity`、`--depth` | purity、depth | 0.41、50 | TRACERx 區域 purity 中位；PCAWG depth 中位 |
@@ -40,6 +43,30 @@ python3 -m longbulksim.generate --help
 - 研究主軸是單一 bulk 樣本，所以沒有 CONIPHER 的 `n_samples`、`min/max_clones_per_sample`。CONIPHER 的 `fract_noise`（假 cluster）改由 long read 觀測誤差取代。
 - 1,000 個預設 spec 的實測：直線 0.625、subclone CCF 中位 0.452、truncal 0.907、gain 0.077、loss 0.347、LOH 0.230、subclonal CN 0.078、遺失中位 0.7%（Q90 2.8%）。LOH 和 subclonal CN 低於設定，因為那些區段的部分 SNV 被 LOH 移除（SNV 加權）。
 
+## Preset（v0.6）
+
+```bash
+python3 -m longbulksim.generate OUT --preset pcawg              # PCAWG 全癌種中位數
+python3 -m longbulksim.generate OUT --preset pcawg:Skin-Melanoma
+python3 -m longbulksim.presets list                             # 27 個 preset 與樣本數
+```
+
+- **樹相關參數**（`--n-clones`、`--p-linear`、`--ccf-alpha`、`--min-ccf`、`--min-gap`）一律用 TRACERx，preset 不改。PCAWG open 資料沒有樹的拓樸，subclone 數也受 48× 偵測力限制。
+- **preset 設定的參數：** `n_snv`、SNV 密度、truncal 比例、purity、depth、WGD 機率、segment 數、subclonal CN 比例、兩個 WGD 組的 gain／loss／LOH 比例。
+- **preset 不設定的參數：** 觀測層（`--het-map`、`--mistag`、`--switch-rate`、`--base-error`、`--caller`）。
+- PCAWG 數值來自本機 open 檔（`/big8_disk/boyu114/benchmark_data/PCAWG/`，2,658 個 preferred 樣本），表在 `longbulksim/data/pcawg_presets.tsv`。重建：`python3 -m longbulksim.presets build /big8_disk/boyu114/benchmark_data/PCAWG`。癌種只收 ≥ 20 個樣本的 26 種。
+- truncal 比例只用「至少 1 個 subclone」的樣本計算，因為 preset 一律保留 ≥ 2 個 clone。
+- 具體的 CN 狀態與 subclonal 改變仍從 TRACERx 重抽。
+- **執行成本：** `--preset pcawg` 是 WGS 規模（中位 5,414 個 SNV，等於整個基因組），一個模擬約 3.5 分鐘、536 MB 記憶體，`reads.tsv.gz` 約 113 MB。Skin-Melanoma 中位有 72,690 個 SNV，會更慢。要快速測試，可以用 `--n-snv` 縮小。
+
+| preset | n_snv | SNV／Mb | truncal | purity | depth | WGD 機率 |
+|---|---:|---:|---:|---:|---:|---:|
+| tracerx | 450 | 12.9 | 0.91 | 0.41 | 50 | 0.57 |
+| pcawg | 5,414 | 1.88 | 0.66 | 0.66 | 48.5 | 0.30 |
+| pcawg:Lung-AdenoCA | 22,660 | 7.87 | 0.58 | 0.49 | 37.3 | 0.61 |
+| pcawg:Breast-AdenoCA | 5,115 | 1.78 | 0.65 | 0.56 | 48.1 | 0.49 |
+| pcawg:Skin-Melanoma | 72,690 | 25.2 | 0.79 | 0.73 | 55.4 | 0.54 |
+
 ## 手寫 spec（進階）
 
 ```bash
@@ -47,7 +74,7 @@ python3 -m longbulksim specs/stress.yaml OUT --seed 1            # 壓力測試�
 python3 -m longbulksim specs/typical.yaml OUT --seed 1 --depth 200
 python3 -m longbulksim specs/stress.yaml OUT --mistag 0.025 --switch-rate 1 --base-error 0.004
 python3 -m longbulksim specs/stress.yaml OUT --het-map longbulksim/data/hcc1395bl_phased_het.npz
-python3 -m unittest discover -s tests                            # 約 30 秒，47 個測試
+python3 -m unittest discover -s tests                            # 約 40 秒，54 個測試
 ```
 
 需要 `numpy`、`scipy`、`pyyaml`（系統 `python3` 已有）。PhyClone 用 `~/venvs/phyclone` 跑輸出的 TSV 即可，不需要裝本 package。
@@ -159,6 +186,7 @@ edges:                # 進入該 clone 的邊上的事件，依序套用
 | 隨機樹 vs cohort | 直線比例、purity、2:1／2:0 early 比例、subclonal CN 量吻合；突變遺失高於 TRACERx 嚴格下限；deletion 型遺失偏高 | `tools/random_tree_validation.py` |
 | PPC vs 真實 HCC1395 | split-HP、跨越 read、HP 深度吻合；有 het map 時，位點間 tag 比例的分布與聚集也吻合（SD 0.248 vs 0.250）；depth 過度離散、< 1 kb 同 HP 聚集（kataegis）不吻合；mistag 0.025 重複計算 | `lab_report/2026-10-26_longbulksim_ppc/` |
 | caller 漏抓 | alt = 0 不會被 call；VAF 固定時 depth 高較易被 call；DeepSomatic 比 ClairS 敏感；漏掉的 SNV 不在任何輸入檔；偵測數符合曲線期望值；`none` 保留全部 | `test_caller.py` |
+| preset | tracerx = 內建預設；PCAWG 數值；未知名稱報錯；WGD 機率；明確參數 > preset > TRACERx 樹參數；preset + caller 端到端 | `test_param_tree.py`、`test_caller.py` |
 | 參數模式 | clone 數與樹形照設定；CCF 規則；truncal 比例；gain 比例；無 WGD 時沒有 loss 類；比例總和 > 1 時報錯；CLI 端到端 | `test_param_tree.py` |
 | het map 規則 | 不覆蓋 het → 不標；跨 PS block → 不標；end 不含；只收 phased 位點；`phased_fraction` 不影響輸出 | `test_het_map.py` |
 

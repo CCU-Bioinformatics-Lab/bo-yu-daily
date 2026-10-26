@@ -11,6 +11,7 @@ from pathlib import Path
 import numpy as np
 
 from longbulksim.model import HPS, load_spec, parse_spec, replay
+from longbulksim import presets
 from longbulksim.param_tree import Params, categorize, draw_spec, load_pools
 
 POOLS = load_pools()
@@ -101,3 +102,37 @@ class GenerateCLI(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Presets(unittest.TestCase):
+    def test_tracerx_is_params_default(self):
+        self.assertEqual(Params(**presets.load("tracerx")), Params())
+
+    def test_pcawg_values(self):
+        v = presets.load("pcawg")
+        self.assertEqual(v["n_snv"], 5414)
+        self.assertAlmostEqual(v["wgd_prob"], 0.2991, 3)
+        self.assertNotIn("n_clones", v)  # tree parameters stay TRACERx
+        self.assertIn("pcawg:Lung-AdenoCA", presets.names())
+
+    def test_unknown(self):
+        with self.assertRaises(ValueError):
+            presets.load("pcawg:Nope")
+
+    def test_wgd_probability(self):
+        got = [raw["source"]["wgd"] for raw in specs(Params(wgd_prob=0.3, n_snv=20, n_segments=5), 400)]
+        self.assertLess(abs(np.mean(got) - 0.3), 4 * np.sqrt(0.3 * 0.7 / 400))
+        self.assertTrue(all(r["source"]["wgd"] for r in specs(Params(wgd=True, n_snv=20), 20)))
+
+    def test_cli_precedence(self):
+        out = Path(tempfile.mkdtemp())
+        subprocess.run([sys.executable, "-m", "longbulksim.generate", str(out), "--preset",
+                        "pcawg:Prost-AdenoCA", "--n-snv", "60", "--n-segments", "20",
+                        "--depth", "20", "--snv-density", "12.9"],
+                       cwd=ROOT, check=True, capture_output=True)
+        m = json.loads((out / "sim_0000/manifest.json").read_text())
+        want = presets.load("pcawg:Prost-AdenoCA")
+        self.assertEqual(m["preset"], "pcawg:Prost-AdenoCA")
+        self.assertEqual(m["params"]["n_snv"], 60)                       # explicit wins
+        self.assertAlmostEqual(m["params"]["purity"], want["purity"])    # preset
+        self.assertEqual(m["params"]["n_clones"], Params().n_clones)     # TRACERx tree

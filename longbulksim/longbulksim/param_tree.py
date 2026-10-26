@@ -21,9 +21,10 @@ random_tree.build_edges, so they are not set directly.
 
 Defaults are TRACERx 421 single-region medians after the same merge (min_gap 0.05): 3 clones,
 63% linear for >= 3 clones, subclone CCF median 0.45 (ccf_alpha 0.5 gives 0.44), 450 SNVs,
-91% truncal, purity 0.41, 129 segments, WGD (57% of tumours have ploidy >= 3), gain/loss/loh
-bp shares 0.083/0.328/0.267 with WGD and 0.124/0/0.274 without, subclonal CN 0.096 of bp in a
-region. depth 50 is the PCAWG median (TRACERx is high-depth WES).
+91% truncal, purity 0.41, 129 segments, WGD with probability 0.57 (tumours with ploidy >= 3),
+gain/loss/loh bp shares 0.083/0.328/0.267 with WGD and 0.124/0/0.274 without, subclonal CN
+0.096 of bp in a region. depth 50 is the PCAWG median (TRACERx is high-depth WES).
+presets.py swaps the genome and sample values for another cohort.
 """
 from dataclasses import asdict, dataclass
 
@@ -34,8 +35,6 @@ from .model import HPS
 from .random_tree import CN_SEGMENTS, add_cn_items, allocate, build_edges, cn_steps, drop_unobservable
 
 CATEGORIES = ("gain", "loss", "loh")
-CN_DEFAULTS = {True: {"gain": 0.083, "loss": 0.328, "loh": 0.267},
-               False: {"gain": 0.124, "loss": 0.0, "loh": 0.274}}
 
 
 @dataclass(frozen=True)
@@ -49,8 +48,15 @@ class Params:
     n_snv: int = 450
     prop_truncal: float = 0.91
     n_segments: int = 129
-    wgd: bool = True
-    prop_gain: float | None = None   # None: TRACERx median for the WGD group
+    wgd_prob: float = 0.57           # each simulation draws WGD with this probability
+    wgd: bool | None = None          # set to force WGD on or off
+    gain_wgd: float = 0.083          # bp shares of trunk CN categories by WGD group
+    loss_wgd: float = 0.328
+    loh_wgd: float = 0.267
+    gain_nowgd: float = 0.124
+    loss_nowgd: float = 0.0
+    loh_nowgd: float = 0.274
+    prop_gain: float | None = None   # set to use one share for both groups
     prop_loss: float | None = None
     prop_loh: float | None = None
     prop_subclonal_cn: float = 0.096
@@ -59,10 +65,10 @@ class Params:
     density_per_mb: float = 12.9
     phased_fraction: float = 0.859
 
-    def cn_shares(self):
-        d = CN_DEFAULTS[self.wgd]
-        s = {k: d[k] if getattr(self, f"prop_{k}") is None else getattr(self, f"prop_{k}")
-             for k in CATEGORIES}
+    def cn_shares(self, wgd):
+        tag = "wgd" if wgd else "nowgd"
+        s = {k: getattr(self, f"{k}_{tag}") if getattr(self, f"prop_{k}") is None
+             else getattr(self, f"prop_{k}") for k in CATEGORIES}
         if sum(s.values()) > 1:
             raise ValueError(f"gain + loss + loh shares exceed 1: {s}")
         return s
@@ -134,6 +140,7 @@ def draw_fractions(rng, parent, p):
 
 def draw_spec(rng, pools, p=Params(), name="param"):
     states, deltas, seg_bp = pools
+    wgd = p.wgd if p.wgd is not None else bool(rng.random() < p.wgd_prob)
     parent = draw_tree(rng, p)
     order = list(parent)
     names = {c: c for c in order}
@@ -152,10 +159,10 @@ def draw_spec(rng, pools, p=Params(), name="param"):
             k += 1
             items[c].append((rng.random(), ("snv", f"s{k}", f"G{s}")))
 
-    shares = p.cn_shares()
+    shares = p.cn_shares(wgd)
     cats = ("neutral",) + CATEGORIES
     probs = [1 - sum(shares.values())] + [shares[c] for c in CATEGORIES]
-    base = 2 if p.wgd else 1
+    base = 2 if wgd else 1
     used = sorted({seg for its in items.values() for _, (_, _, seg) in its}, key=lambda x: int(x[1:]))
     n_sub_cn = 0
     for s in used:
@@ -163,7 +170,7 @@ def draw_spec(rng, pools, p=Params(), name="param"):
         if cat == "neutral":
             a, b = base, base
         else:
-            pool = states[(p.wgd, cat)]
+            pool = states[(wgd, cat)]
             a, b = (int(x) for x in pool[rng.integers(len(pool))])
         if rng.random() < 0.5:
             a, b = b, a
@@ -171,7 +178,7 @@ def draw_spec(rng, pools, p=Params(), name="param"):
         trunk += [(h, "gain") for h, t in zip(HPS, (a, b)) for _ in range(t - 1)]
         steps = {order[0]: trunk}
         if subs and rng.random() < p.prop_subclonal_cn:
-            da, db = (int(x) for x in deltas[p.wgd][rng.integers(len(deltas[p.wgd]))])
+            da, db = (int(x) for x in deltas[wgd][rng.integers(len(deltas[wgd]))])
             if rng.random() < 0.5:
                 da, db = db, da
             clone = subs[rng.integers(len(subs))]
@@ -182,7 +189,7 @@ def draw_spec(rng, pools, p=Params(), name="param"):
 
     raw = {
         "name": name,
-        "source": {"generator": "param_tree", "params": asdict(p),
+        "source": {"generator": "param_tree", "params": asdict(p), "wgd": wgd,
                    "ccf": {c: round(float(v), 4) for c, v in ccf.items()},
                    "subclonal_cn_segments": n_sub_cn, "cn_steps_invalid": invalid},
         "purity": p.purity, "depth": p.depth, "phased_fraction": p.phased_fraction,

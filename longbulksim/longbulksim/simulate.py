@@ -55,10 +55,13 @@ def cn_state(genome, seg):
 
 
 def dominant_state(spec, genomes, seg):
+    """Tumour CN state with the most cells, among states that keep DNA (a 0:0 clone gives no
+    reads, and PhyClone needs total CN > 0)."""
     w = {}
     for c, f in spec.fraction.items():
         st = cn_state(genomes[c], seg)
-        w[st] = w.get(st, 0) + f
+        if sum(st):
+            w[st] = w.get(st, 0) + f
     return max(w, key=w.get)
 
 

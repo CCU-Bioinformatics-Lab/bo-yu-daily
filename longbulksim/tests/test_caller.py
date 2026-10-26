@@ -76,3 +76,26 @@ class Simulation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PresetWithCaller(unittest.TestCase):
+    def test_cli(self):
+        import json
+        import subprocess
+        import sys
+        import tempfile
+        from pathlib import Path
+        root = Path(__file__).resolve().parent.parent
+        base = ["--preset", "pcawg:Lung-AdenoCA", "--n-snv", "80", "--n-segments", "20",
+                "--snv-density", "12.9", "--depth", "30"]
+        n = {}
+        for c in ("none", "deepsomatic"):
+            out = Path(tempfile.mkdtemp())
+            subprocess.run([sys.executable, "-m", "longbulksim.generate", str(out), *base,
+                            "--caller", c], cwd=root, check=True, capture_output=True)
+            m = json.loads((out / "sim_0000/manifest.json").read_text())
+            self.assertEqual(m["caller"], c)
+            n[c] = (m["n_mutations"], m["n_detected"])
+        self.assertEqual(n["none"][0], n["deepsomatic"][0])  # same tree and reads
+        self.assertEqual(n["none"][1], n["none"][0])
+        self.assertLess(n["deepsomatic"][1], n["deepsomatic"][0])

@@ -1,6 +1,6 @@
 [project]
 name = "longbulksim"
-version = "0.5.0"
+version = "0.6.0"
 description = "Long-read bulk tumour simulator with HP-aware clone-tree truth"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.26", "scipy", "pyyaml"]
