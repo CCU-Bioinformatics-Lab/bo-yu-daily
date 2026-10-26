@@ -3,3 +3,8 @@ __pycache__/
 daily/.data/_private/
 .worklog_scan/
 lab_report/**/trace.h5
+research/**/*.pdf
+/lab_report/
+/report/
+/research/
+/tools/
