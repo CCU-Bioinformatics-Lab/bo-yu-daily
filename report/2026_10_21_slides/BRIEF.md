@@ -255,3 +255,23 @@ P9 summary
 資料範圍：不放我們自己的 6 株 ONT 細胞株。已發表論文的細胞株資料（HCC1395 社群資料）可以列。
 
 用語：全冊用「long read」，不用「長讀」（2026-10-20 使用者改指定；封面標題也是）。「短讀」維持中文，使用者未指定。
+
+## J. 第 8 頁 s2-smchet-split（2026-10-21 加入）
+
+- 使用者要求：第 8 頁新增 SMC-Het 對建樹問題的拆解，並列出 SMC-Het benchmark 的資料。使用者點名 SMC-Het，所以頁面標出這個名稱（「文字與表格」第 5 條例外）。
+- 來源：`research/literature/papers/M07_smchet_benchmark_2024/README.md`；`pmc_fulltext.txt`（Results 第 1–2 段、Fig. 1 圖說）。
+- 論文描述：7 個子題（1A purity、1B clone 數、1C CCF、2A／2B 分群確定版／機率版、3A／3B 樹確定版／機率版）；51 棵設計樹＝25 PCAWG＋16 文獻＋10 特殊情境；titration 5 個腫瘤 × 8×／16×／32×／64×／128×；HG002 300× Illumina 植入突變；參賽者只拿 SNV VCF、Battenberg CN segment 與 purity；BAM 在 EGA、calls 與真值在 Synapse；PhyClone 不在受測方法中。
+- 分析推論（講稿口語標明）：「前一步錯，後一步通常跟著錯」；「可以補上 PhyClone 基線」。
+- 示意：三張卡的柱高、點數、樹形，以及深度柱高（log 等距）都是示意。
+- 頁尾全部改 /8；第 7 頁講稿結尾補橋接句。
+
+## K. 第 4 頁 s1-feat-methyl 改版（2026-10-21）
+
+- 使用者要求：寫明樹是由 PCDH 區的甲基化重建，並顯示 single-cell 真值樹。
+- 步驟 ③ 改成兩棵樹並排：左＝一段 PCDHα（exon 2–4）window、HP1 read 的 UPGMA 樹；右＝PD6646 colony WGS 真值樹（Williams 2022）。
+- 來源：B09 `paper.pdf` p.6 Fig. 4a（真值樹與 clade fraction 表：non-cancer 0.16、DNMT3A 0.84、JAK2:DNMT3A 0.65、CBL:DNMT3A 0.12、other:DNMT3A 0.07）與 Fig. 4c（haploid A／B dendrogram 形狀），已目視確認。論文的 haploid A 在頁面寫成 HP1。
+- 配色：真值樹顏色改用本冊 clone 配色（DNMT3A／其他 #4A5568、JAK2 #2A9D8F、CBL #7B5EA7、非癌 #8E99A8），不用論文原色。
+- 示意：左邊 read 樹的色條長度大致依真值比例畫，樹的細節是簡化示意，不是逐 read 重畫。
+- 論文描述：「closely resembled」是目視比對；分支長度不符（L.33）。
+- 真值樹的百分比是論文值，屬論文描述；這是「細節數字先不放」規則的例外，因為比對的就是 clone 大小。
+- 2026-10-21：依使用者指示，在 ② 與真值對照之間補上「③ 甲基化矩陣 → UPGMA 建樹」，真值對照改為 ④。內容取自 B09 paper.txt L.80–82：每個 HP 一個 read × CpG 矩陣，缺值用 Hamming 距離 kNN（k=3）補，再用 Hamming 距離＋average linkage（UPGMA）分群。卡上 8 列 × 10 欄矩陣、缺值位置與樹形都是示意。四張卡寬度改為 290／290／324／640。

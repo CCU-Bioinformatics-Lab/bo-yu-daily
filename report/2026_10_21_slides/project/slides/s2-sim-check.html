@@ -65,7 +65,7 @@
   </div>
   <div style="position:absolute; left:128px; right:128px; bottom:64px; display:flex; flex-direction:row; justify-content:space-between">
     <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-10-21 腫瘤演化樹研究進度</p>
-    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">5 / 7</p>
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">5 / 8</p>
   </div>
   <aside>這頁是第一個檢查，也是計畫，還沒有結果。新軟體加了 long read 特徵，但不能因此在原本的短讀資料上退步。所以我們先拿 PhyClone 原論文用的短讀資料集，同一份輸入分別交給 PhyClone 和新軟體，各輸出一棵樹。新軟體先拆成 HP1、HP2 兩棵樹，再把兩棵樹的 SNV 合併回同一組 clone，變成一棵合併後的樹，才能和 PhyClone 的樹比。再比對兩棵樹，比對標準沿用 PhyClone 論文的兩個分數：AD F-score 看每兩個突變之間「誰是誰的祖先」有沒有一致；V-measure 看突變分群有沒有一致。右邊的圖是示意：重疊的圓代表 AD F-score，兩邊祖孫關係重疊越多越高；上下兩排色點代表 V-measure，分群越一致越高。兩棵樹的差距要小，才能說新軟體沒有把原本的能力弄壞，下一頁用模擬資料量到的差別才能採信。如果差很多，要先找出原因，再做後面的比較。</aside>
 </section>
