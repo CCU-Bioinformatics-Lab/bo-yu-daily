@@ -7,13 +7,15 @@ lineage's bulk cell fraction (each copy is one molecule template). Read starts a
 read spans come from a measured ONT span distribution, so the number of reads that span two
 SNVs depends on their distance as in real data. With a het map, a read is tagged by the
 longphase-s rule (het_map.py); otherwise each read is tagged with probability phased_fraction.
+With a depth map, read starts follow a real normal's start density (depth_map.py), so depth
+varies along the genome as in real data; otherwise starts are uniform.
 """
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 
-from . import het_map
+from . import depth_map, het_map
 from .model import HPS
 
 
@@ -81,7 +83,7 @@ def place_mutations(rng, spec):
     return out
 
 
-def sample_segment(rng, spec, genomes, seg_id, span_q, het=None):
+def sample_segment(rng, spec, genomes, seg_id, span_q, het=None, dmap=None):
     q, span = span_q
     mean_span = np.trapezoid(span, q)
     max_span = int(span[-1])
@@ -95,8 +97,13 @@ def sample_segment(rng, spec, genomes, seg_id, span_q, het=None):
     w = np.asarray(w)
     # depth is the mean coverage of a diploid normal genome, so one copy gives depth/2
     lam = spec.depth / 2 * w.sum() * (seg.length + max_span) / mean_span
+    if dmap is not None:
+        lam *= depth_map.mean_weight(dmap, seg.chrom, seg.start - max_span, seg.end)
     n = rng.poisson(lam)
-    start = rng.integers(seg.start - max_span, seg.end, size=n)
+    if dmap is None:
+        start = rng.integers(seg.start - max_span, seg.end, size=n)
+    else:
+        start = depth_map.draw_starts(rng, dmap, seg.chrom, seg.start - max_span, seg.end, n)
     order = np.argsort(start, kind="stable")
     start = start[order]
     end = start + np.interp(rng.random(n), q, span).astype(np.int64)

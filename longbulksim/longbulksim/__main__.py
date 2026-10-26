@@ -1,5 +1,5 @@
 """Usage: python3 -m longbulksim SPEC.yaml OUT_DIR [--seed 1] [--depth D] [--phased F]
-       [--mistag R] [--switch-rate R_PER_MB] [--base-error R] [--het-map NPZ]
+       [--mistag R] [--switch-rate R_PER_MB] [--base-error R] [--het-map NPZ] [--depth-map NPZ]
        [--caller none|clairs|deepsomatic]"""
 import argparse
 import dataclasses
@@ -21,6 +21,7 @@ def main():
     ap.add_argument("--switch-rate", type=float, help="override the spec's switch_rate_per_mb")
     ap.add_argument("--base-error", type=float, help="override the spec's base_error")
     ap.add_argument("--het-map", help="phased het SNP map (.npz); tags reads by the longphase-s rule")
+    ap.add_argument("--depth-map", help="read start density map (.npz) from a real normal")
     ap.add_argument("--caller", help="drop SNVs this caller would miss: none, clairs, deepsomatic")
     a = ap.parse_args()
     spec = load_spec(a.spec)
@@ -34,6 +35,8 @@ def main():
             spec = dataclasses.replace(spec, **{field: getattr(a, arg)})
     if a.caller is not None:
         spec = dataclasses.replace(spec, caller=a.caller)
+    if a.depth_map is not None:
+        spec = dataclasses.replace(spec, depth_map=Path(a.depth_map))
     if a.het_map is not None:
         spec = dataclasses.replace(spec, het_map=Path(a.het_map))
     print(json.dumps(run(spec, a.seed, a.out_dir), indent=1))

@@ -2,7 +2,30 @@
 
 輸入一組摘要參數（clone 數、SNV 數、CN 比例、purity、depth 等，像 CONIPHER 的 `tx_simulation`），或一棵手寫的 HP-aware clone tree spec。輸出一個 bulk ONT 樣本的 PhyClone 輸入、HP 計數、SNV pair 共現表，以及獨立的真值目錄。
 
-範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個 lineage、一條 HP、一個 copy。不產生 FASTQ／BAM（`plan.md` §5.8.4 L2-R 留到之後）。v0.2 加入觀測誤差：HP 錯標、phase switch、鹼基錯誤（見「觀測誤差」）。v0.3 加入選填的 het map tagging（見「HP tag」）。v0.4 加入參數模式（見「參數模式」），這是主要入口。v0.5 加入 somatic caller 的漏抓（見「Caller 漏抓」）。v0.6 加入 cohort preset（見「Preset」），WGD 改成依機率抽。
+範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個 lineage、一條 HP、一個 copy。不產生 FASTQ／BAM（`plan.md` §5.8.4 L2-R 留到之後）。v0.2 加入觀測誤差：HP 錯標、phase switch、鹼基錯誤（見「觀測誤差」）。v0.3 加入選填的 het map tagging（見「HP tag」）。v0.4 加入參數模式（見「參數模式」），這是主要入口。v0.5 加入 somatic caller 的漏抓（見「Caller 漏抓」）。v0.6 加入 cohort preset（見「Preset」），WGD 改成依機率抽。v0.7 加入選填的 depth map（見「Depth map」）。
+
+## 預設值與來源（先讀）
+
+**用預設值執行時，不會套用任何從單一資料集校正出來的觀測模型。** 下列功能都要明確加上選項才會啟用：
+
+| 功能 | 選項 | 預設 | 校正來源 |
+|---|---|---|---|
+| 位置相關的 HP tag | `--het-map` | 不用 | HCC1395BL ONT |
+| depth 過度離散 | `--depth-map` | 不用 | HCC1395BL ONT |
+| caller 漏抓 | `--caller` | none | HCC1395（CASTLE、HKU） |
+| HP 錯標、phase switch、鹼基錯誤 | `--mistag`、`--switch-rate`、`--base-error` | 0 | HCC1395BL、LongPhase 論文 |
+
+這些都只在 HCC1395 一株細胞株、一到兩個定序批次上校正過，不保證能推廣到其他 long read 資料或其他癌種。
+
+**有 3 個預設值仍來自 HCC1395。** 模擬一定需要它們，所以無法關閉。用在其他資料時，請依自己的資料調整：
+
+| 預設值 | 數值 | 來源 | 調整方式 |
+|---|---|---|---|
+| read 長度分布 | mean 13.1 kb、N50 21.4 kb | HCC1395 ONT `t50_n00` 實測 | 手寫 spec 的 `read_span` 欄位指向自己的分位數表（格式同 `longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv`，用 `tools/measure_read_span.py` 量測） |
+| HP tag 機率 | 0.859 | HCC1395 alt read 實測 | `--phased` |
+| SNV 密度 | 12.9／Mb | HCC1395 全基因組 | `--snv-density`，或用 `--preset pcawg:<癌種>` |
+
+樹與 CN 的預設值來自 TRACERx 421（只有 NSCLC），可用 `--preset` 換成 PCAWG。
 
 ## 參數模式（主要入口）
 
@@ -36,6 +59,7 @@ python3 -m longbulksim.generate --help
 | `--snv-density` | 每 Mb SNV 數（決定 read 共現） | 12.9 | HCC1395 |
 | `--het-map`、`--phased`、`--mistag`、`--switch-rate`、`--base-error` | 觀測參數 | 不用 map、0.859、0、0、0 | 見「HP tag」「觀測誤差」 |
 | `--caller` | none／clairs／deepsomatic：移除這個 caller 會漏掉的 SNV | none | 見「Caller 漏抓」 |
+| `--depth-map` | read 起點密度地圖（.npz），讓 depth 隨位置變化 | 不用 | 見「Depth map」 |
 
 - 具體的 CN 狀態（例如 3:1、2:0）與 subclonal 改變（例如 +1 HP1），從 TRACERx 同一類別、同一 ploidy 組的 segment 重抽。HP 方向隨機。
 - multiplicity、CN timing、突變遺失由事件順序產生，不設定（和隨機樹相同）。
@@ -74,7 +98,7 @@ python3 -m longbulksim specs/stress.yaml OUT --seed 1            # 壓力測試�
 python3 -m longbulksim specs/typical.yaml OUT --seed 1 --depth 200
 python3 -m longbulksim specs/stress.yaml OUT --mistag 0.025 --switch-rate 1 --base-error 0.004
 python3 -m longbulksim specs/stress.yaml OUT --het-map longbulksim/data/hcc1395bl_phased_het.npz
-python3 -m unittest discover -s tests                            # 約 40 秒，54 個測試
+python3 -m unittest discover -s tests                            # 約 40 秒，60 個測試
 ```
 
 需要 `numpy`、`scipy`、`pyyaml`（系統 `python3` 已有）。PhyClone 用 `~/venvs/phyclone` 跑輸出的 TSV 即可，不需要裝本 package。
@@ -131,6 +155,18 @@ edges:                # 進入該 clone 的邊上的事件，依序套用
 - 座標要對應 GRCh38。spec 的 segment 如果落在沒有 het SNP 的區域，tag 比例會變低。內建 map 只含 SEQC2 high-confidence 區域內的 het SNP。所以隨機樹 spec（人工座標）的 alt read tag 比例中位是 0.68（20 個 spec：0.58–0.74）。壓力測試樹與典型樹是 0.87／0.94，真實 HCC1395 是 0.87。
 - 與真實資料的比對見 `lab_report/2026-10-26_longbulksim_ppc/`。
 
+## Depth map（v0.7）
+
+`depth_map`（CLI `--depth-map`，兩種模式都有）預設不用：read 起點在 segment 內均勻分布，depth 的變異只有 Poisson（VMR ≈ 1）。
+
+設定後，read 起點依真實 normal 的起點密度抽樣，每個 segment 的 read 總數也乘上該區的平均權重。
+
+- 內建 map：`longbulksim/data/hcc1395bl_ont_depth_10kb.npz`（314 KB）。HKU HCC1395BL ONT normal，每 10 kb 一格，MAPQ ≥ 20 的 primary read 起點數，除以體染色體平均。
+- 建立其他 map：`python3 -m longbulksim.depth_map NORMAL.cram REF.fa OUT.npz [--bin 10000] [--mapq 20]`。
+- PPC：VMR 從 1.0 升到 1.81–2.46（真實 HCC1395 2.39–3.24），depth 分位接近真實。剩下的差距來自 tumor 的 CN 變異，不是定序雜訊。
+- **座標要對應 GRCh38 的真實可定序區域。** 參數模式的人工座標配上 map，預設參數下有 12–26% 的 SNV depth 為 0（N 區間），所以目前是選填。
+- 比對與分析：`lab_report/2026-10-26_longbulksim_depth_map/`。
+
 ## Caller 漏抓（v0.5）
 
 `caller`（CLI `--caller`，兩種模式都有）預設 `none`：每個 SNV 都進 `input/`，和之前相同。
@@ -185,6 +221,7 @@ edges:                # 進入該 clone 的邊上的事件，依序套用
 | 錯誤流到 pair | base error 讓 s4×s6 出現 n11；錯標讓 s3×s4（HP1）出現 n01，但 s4×s6 的 n11 仍為 0；switch 讓 s3×s4（HP1）出現 n01 | `ErrorsReachPairs` |
 | 隨機樹 vs cohort | 直線比例、purity、2:1／2:0 early 比例、subclonal CN 量吻合；突變遺失高於 TRACERx 嚴格下限；deletion 型遺失偏高 | `tools/random_tree_validation.py` |
 | PPC vs 真實 HCC1395 | split-HP、跨越 read、HP 深度吻合；有 het map 時，位點間 tag 比例的分布與聚集也吻合（SD 0.248 vs 0.250）；depth 過度離散、< 1 kb 同 HP 聚集（kataegis）不吻合；mistag 0.025 重複計算 | `lab_report/2026-10-26_longbulksim_ppc/` |
+| depth map | 起點依權重分布；權重 0 的格子沒有 read；segment 平均權重；depth 隨 map 變化且平均維持目標值；整段權重 0 時不當掉 | `test_depth_map.py` |
 | caller 漏抓 | alt = 0 不會被 call；VAF 固定時 depth 高較易被 call；DeepSomatic 比 ClairS 敏感；漏掉的 SNV 不在任何輸入檔；偵測數符合曲線期望值；`none` 保留全部 | `test_caller.py` |
 | preset | tracerx = 內建預設；PCAWG 數值；未知名稱報錯；WGD 機率；明確參數 > preset > TRACERx 樹參數；preset + caller 端到端 | `test_param_tree.py`、`test_caller.py` |
 | 參數模式 | clone 數與樹形照設定；CCF 規則；truncal 比例；gain 比例；無 WGD 時沒有 loss 類；比例總和 > 1 時報錯；CLI 端到端 | `test_param_tree.py` |
@@ -194,7 +231,7 @@ read span 分布：`longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv`，由 `t
 
 ## 尚未做的事
 
-- depth 過度離散。PPC 實測 depth VMR 3 vs 1。
+- depth 過度離散中 CN 相關的部分。depth map 只補技術性的部分（PPC VMR 1.8–2.5 vs 真實 2.4–3.2）。
 - PS block 的 HP 方向。真實資料中，每個 block 的 HP1／HP2 方向是任意的；模擬的 `obs_hp` 在所有 block 用同一個方向。`pairs.tsv` 的 `ps_block` 仍是 segment。
 - 隨機樹 spec 的座標沒有對應真實 callable 區域，所以用 het map 時 tag 比例偏低。
 - 位點相關的錯誤。v0.2 的 base error 在位點與 read 之間獨立，但實測有長尾（HCC1395BL：1.2% 位點 > 5%）。
