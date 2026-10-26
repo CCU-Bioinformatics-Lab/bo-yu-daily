@@ -1,17 +1,52 @@
 # longbulksim：long read bulk 腫瘤模擬器
 
-輸入一棵 HP-aware clone tree spec。輸出一個 bulk ONT 樣本的 PhyClone 輸入、HP 計數、SNV pair 共現表，以及獨立的真值目錄。
+輸入一組摘要參數（clone 數、SNV 數、CN 比例、purity、depth 等，像 CONIPHER 的 `tx_simulation`），或一棵手寫的 HP-aware clone tree spec。輸出一個 bulk ONT 樣本的 PhyClone 輸入、HP 計數、SNV pair 共現表，以及獨立的真值目錄。
 
-範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個 lineage、一條 HP、一個 copy。不產生 FASTQ／BAM（`plan.md` §5.8.4 L2-R 留到之後）。v0.2 加入觀測誤差：HP 錯標、phase switch、鹼基錯誤（見「觀測誤差」）。
+範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個 lineage、一條 HP、一個 copy。不產生 FASTQ／BAM（`plan.md` §5.8.4 L2-R 留到之後）。v0.2 加入觀測誤差：HP 錯標、phase switch、鹼基錯誤（見「觀測誤差」）。v0.3 加入選填的 het map tagging（見「HP tag」）。v0.4 加入參數模式（見「參數模式」），這是主要入口。
 
-## 用法
+## 參數模式（主要入口）
 
 ```bash
 cd longbulksim
+python3 -m longbulksim.generate OUT --n-sims 10 --seed 1                      # 全部用預設值
+python3 -m longbulksim.generate OUT --n-clones 5 --tree-shape branched --purity 0.3 --depth 50
+python3 -m longbulksim.generate --help
+```
+
+使用者不寫樹。樹、CCF、SNV、CN 由參數產生；產生的 spec 存在 `OUT/sim_<i>/truth/spec.yaml`，參數存在 `manifest.json`。
+
+| 參數 | 意思 | 預設 | 預設的來源 |
+|---|---|---|---|
+| `--n-sims`、`--seed` | 模擬數、seed | 1、1 | |
+| `--n-clones` | clone 數（含 trunk） | 3 | TRACERx 單區域中位（merge 後） |
+| `--tree-shape` | random／linear／branched | random | |
+| `--p-linear` | random 時直線樹的機率 | 0.63 | TRACERx 單區域（≥ 3 clones） |
+| `--ccf-alpha` | clone 細胞比例的 Dirichlet 參數 | 0.5 | 校正到 subclone CCF 中位 0.45（TRACERx） |
+| `--min-ccf`、`--min-gap` | subclone 最小 CCF、與 parent 的最小 CCF 差 | 0.05、0.05 | 與 TRACERx merge 規則相同 |
+| `--n-snv` | SNV 數 | 450 | TRACERx 每區域中位（WES） |
+| `--prop-truncal` | truncal SNV 比例 | 0.91 | TRACERx 單區域中位（merge 後） |
+| `--n-segments` | CN segment 數 | 129 | TRACERx 每 tumour 中位 |
+| `--wgd` | yes／no | yes | TRACERx 57% tumour ploidy ≥ 3 |
+| `--prop-gain`、`--prop-loss`、`--prop-loh` | trunk CN 類別的 bp 比例（相對 1:1 或 WGD 的 2:2） | WGD：0.083／0.328／0.267；非 WGD：0.124／0／0.274 | TRACERx 中位 |
+| `--prop-subclonal-cn` | 有 subclonal CN 改變的 segment 比例 | 0.096 | TRACERx 區域內 bp 比例中位 |
+| `--purity`、`--depth` | purity、depth | 0.41、50 | TRACERx 區域 purity 中位；PCAWG depth 中位 |
+| `--snv-density` | 每 Mb SNV 數（決定 read 共現） | 12.9 | HCC1395 |
+| `--het-map`、`--phased`、`--mistag`、`--switch-rate`、`--base-error` | 觀測參數 | 不用 map、0.859、0、0、0 | 見「HP tag」「觀測誤差」 |
+
+- 具體的 CN 狀態（例如 3:1、2:0）與 subclonal 改變（例如 +1 HP1），從 TRACERx 同一類別、同一 ploidy 組的 segment 重抽。HP 方向隨機。
+- multiplicity、CN timing、突變遺失由事件順序產生，不設定（和隨機樹相同）。
+- 觀測到的 SNV 數比 `--n-snv` 少約 5%：truncal SNV 若在 clonal LOH 之前、位在被刪掉的 HP 上，所有 clone 都不帶，真實資料也看不到，所以移除。
+- 研究主軸是單一 bulk 樣本，所以沒有 CONIPHER 的 `n_samples`、`min/max_clones_per_sample`。CONIPHER 的 `fract_noise`（假 cluster）改由 long read 觀測誤差取代。
+- 1,000 個預設 spec 的實測：直線 0.625、subclone CCF 中位 0.452、truncal 0.907、gain 0.077、loss 0.347、LOH 0.230、subclonal CN 0.078、遺失中位 0.7%（Q90 2.8%）。LOH 和 subclonal CN 低於設定，因為那些區段的部分 SNV 被 LOH 移除（SNV 加權）。
+
+## 手寫 spec（進階）
+
+```bash
 python3 -m longbulksim specs/stress.yaml OUT --seed 1            # 壓力測試樹，200×
 python3 -m longbulksim specs/typical.yaml OUT --seed 1 --depth 200
 python3 -m longbulksim specs/stress.yaml OUT --mistag 0.025 --switch-rate 1 --base-error 0.004
-python3 -m unittest discover -s tests                            # 約 25 秒，27 個測試
+python3 -m longbulksim specs/stress.yaml OUT --het-map longbulksim/data/hcc1395bl_phased_het.npz
+python3 -m unittest discover -s tests                            # 約 30 秒，41 個測試
 ```
 
 需要 `numpy`、`scipy`、`pyyaml`（系統 `python3` 已有）。PhyClone 用 `~/venvs/phyclone` 跑輸出的 TSV 即可，不需要裝本 package。
@@ -30,7 +65,8 @@ python3 -m longbulksim SPECS_DIR/spec_0000.yaml OUT --seed 1
 ```yaml
 purity: 0.40          # 細胞 purity（模擬真值，不是 nominal tumor fraction）
 depth: 200            # 二倍體 normal 區的平均 depth
-phased_fraction: 0.859
+phased_fraction: 0.859  # 沒有 het_map 時才使用
+het_map: hcc1395bl_phased_het.npz  # 選填（v0.3），見「HP tag」
 mistag_rate: 0        # 選填，預設 0（見「觀測誤差」）
 switch_rate_per_mb: 0
 base_error: 0
@@ -50,6 +86,22 @@ edges:                # 進入該 clone 的邊上的事件，依序套用
 ```
 
 模擬器從 root 依序重播事件，得到每個 clone 的 genome（segment → HP → copies，每個 copy 是它帶的 SNV role 集合）。突變遺失、multiplicity、CN timing 都由重播決定，不手寫。
+
+## HP tag（v0.3）
+
+沒有 `het_map` 時，每條 read 以機率 `phased_fraction` 被標記，和位置無關。
+
+有 `het_map` 時，照 longphase-s germline haplotag 的規則（`src/haplotag/HaplotagStrategy.cpp` 的 `judgeReadHap`）：
+- read 沒有覆蓋任何 phased het SNP → 不標。
+- read 覆蓋的 het SNP 跨兩個以上 PS block → 不標。
+- 「allele 一致比例 ≥ 0.6」這條規則不模擬。read 在 het SNP 上都帶正確的 haplotype allele。
+
+這個規則沒有可調參數。`phased_fraction` 不使用。
+
+- 內建 map：`longbulksim/data/hcc1395bl_phased_het.npz`。來源是 SEQC2 HCC1395BL germline het SNP，用 `longphase-s phase --ont` 在 HCC1395BL ONT 上 phase（`tools/hcc1395_hp_split_prepare.sh`）。共 1,804,018 個 het SNP、4,060 個 PS block。
+- 建立其他 map：`python3 -m longbulksim.het_map PHASED.vcf.gz OUT.npz`。
+- 座標要對應 GRCh38。spec 的 segment 如果落在沒有 het SNP 的區域，tag 比例會變低。內建 map 只含 SEQC2 high-confidence 區域內的 het SNP。所以隨機樹 spec（人工座標）的 alt read tag 比例中位是 0.68（20 個 spec：0.58–0.74）。壓力測試樹與典型樹是 0.87／0.94，真實 HCC1395 是 0.87。
+- 與真實資料的比對見 `lab_report/2026-10-26_longbulksim_ppc/`。
 
 ## 觀測誤差（v0.2）
 
@@ -92,11 +144,17 @@ edges:                # 進入該 clone 的邊上的事件，依序套用
 | 錯誤率 | 量到的錯標率、鹼基錯誤率在設定值 4 SE 內；switch 數在 Poisson 4 SE 內；`obs_hp` 反轉 = read 中點前 switch 數為奇數 | `test_errors.py` |
 | 錯誤流到 pair | base error 讓 s4×s6 出現 n11；錯標讓 s3×s4（HP1）出現 n01，但 s4×s6 的 n11 仍為 0；switch 讓 s3×s4（HP1）出現 n01 | `ErrorsReachPairs` |
 | 隨機樹 vs cohort | 直線比例、purity、2:1／2:0 early 比例、subclonal CN 量吻合；突變遺失高於 TRACERx 嚴格下限；deletion 型遺失偏高 | `tools/random_tree_validation.py` |
+| PPC vs 真實 HCC1395 | split-HP、跨越 read、HP 深度吻合；有 het map 時，位點間 tag 比例的分布與聚集也吻合（SD 0.248 vs 0.250）；depth 過度離散、< 1 kb 同 HP 聚集（kataegis）不吻合；mistag 0.025 重複計算 | `lab_report/2026-10-26_longbulksim_ppc/` |
+| 參數模式 | clone 數與樹形照設定；CCF 規則；truncal 比例；gain 比例；無 WGD 時沒有 loss 類；比例總和 > 1 時報錯；CLI 端到端 | `test_param_tree.py` |
+| het map 規則 | 不覆蓋 het → 不標；跨 PS block → 不標；end 不含；只收 phased 位點；`phased_fraction` 不影響輸出 | `test_het_map.py` |
 
 read span 分布：`longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv`，由 `tools/measure_read_span.py` 從 HCC1395 ONT `t50_n00` 三個 40 Mb 區域量測（394,298 條 primary read；mean 13.1 kb，N50 21.4 kb）。
 
 ## 尚未做的事
 
+- depth 過度離散。PPC 實測 depth VMR 3 vs 1。
+- PS block 的 HP 方向。真實資料中，每個 block 的 HP1／HP2 方向是任意的；模擬的 `obs_hp` 在所有 block 用同一個方向。`pairs.tsv` 的 `ps_block` 仍是 segment。
+- 隨機樹 spec 的座標沒有對應真實 callable 區域，所以用 het map 時 tag 比例偏低。
 - 位點相關的錯誤。v0.2 的 base error 在位點與 read 之間獨立，但實測有長尾（HCC1395BL：1.2% 位點 > 5%）。
 - switch 只影響 HP tag，不影響 PS block 切分（`ps_block` = segment）。
 - mapping 誤差、read 跨越 segment 邊界。

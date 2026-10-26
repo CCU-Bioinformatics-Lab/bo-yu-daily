@@ -63,6 +63,8 @@ class Spec:
     mistag_rate: float = 0.0         # tagged read gets the other HP's tag (whole read)
     switch_rate_per_mb: float = 0.0  # Poisson phase switch points per Mb of segment
     base_error: float = 0.0          # per read and SNV site: allele read as the other allele
+    # phased germline het SNP map (v0.3); when set, it decides tagging and phased_fraction is unused
+    het_map: Path | None = None
 
     @property
     def root(self):
@@ -132,10 +134,14 @@ def parse_spec(raw, base_dir=Path(".")):
                 raise ValueError(f"HP must be one of {HPS}: {e}")
     span = raw.get("read_span", "hcc1395_ont_t50_n00_read_span.tsv")
     span_path = DATA_DIR / span if (DATA_DIR / span).exists() else base_dir / span
+    het = raw.get("het_map")
+    het_path = None if het is None else (DATA_DIR / het if (DATA_DIR / het).exists()
+                                         else base_dir / het)
     return Spec(raw["name"], float(raw["purity"]), float(raw["depth"]),
                 float(raw.get("phased_fraction", 0.859)), span_path, parent, fraction,
                 segments, edges, float(raw.get("mistag_rate", 0)),
-                float(raw.get("switch_rate_per_mb", 0)), float(raw.get("base_error", 0)))
+                float(raw.get("switch_rate_per_mb", 0)), float(raw.get("base_error", 0)),
+                het_path)
 
 
 def load_spec(path):

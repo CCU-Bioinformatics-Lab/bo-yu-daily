@@ -142,12 +142,38 @@ def draw_spec(rng, regions, cn_profiles, n_snv=200, depth=50, merge_gap=0.05,
                                  for op in cn_steps(int(d))]
             else:
                 n_sub_absent += 1
-        for clone, st in steps.items():
-            for h in HPS:
-                ops = sorted(op for hh, op in st if hh == h)  # "gain" < "loss"
-                keys = np.sort(rng.random(len(ops)))
-                items[clone] += [(key, (op, h, s)) for key, op in zip(keys, ops)]
+        add_cn_items(rng, items, steps, s)
+    edges, invalid = build_edges(rng, parent, order, names, items)
 
+    raw = {
+        "name": f"tracerx_{region}",
+        "source": {"tumour_id": tumour, "region": region, "blueprint_clones": len(bp_parent),
+                   "merged_clones": len(bp_parent) - len(parent),
+                   "subclonal_cn_kept": n_sub_kept, "subclonal_cn_not_in_region": n_sub_absent,
+                   "cn_steps_invalid": invalid},
+        "purity": float(g.purity.iloc[0]), "depth": depth, "phased_fraction": phased_fraction,
+        "clones": {names[c]: {"parent": names[parent[c]] if parent[c] else None,
+                              "fraction": fraction[c] / sum(fraction.values())} for c in order},
+        "segments": {s: {"chrom": "chr1", "start": 0, "length": 1} for s in used},
+        "edges": edges,
+    }
+    return drop_unobservable(raw, density_per_mb)
+
+
+def add_cn_items(rng, items, steps, seg):
+    """Queue CN steps {clone: [(HP, "gain"|"loss")]} of one segment at random times on each
+    edge; on one HP, gains come before losses."""
+    for clone, st in steps.items():
+        for h in HPS:
+            ops = sorted(op for hh, op in st if hh == h)  # "gain" < "loss"
+            keys = np.sort(rng.random(len(ops)))
+            items[clone] += [(key, (op, h, seg)) for key, op in zip(keys, ops)]
+
+
+def build_edges(rng, parent, order, names, items):
+    """Replay queued items {clone: [(time, item)]} root first: each SNV takes a uniform copy
+    of those present at that moment, each gain or loss a uniform copy of its HP. Returns the
+    spec edges and the number of losses skipped because the HP had no copy left."""
     copies = {}  # clone -> {(segment, HP): copy count}
     edges, invalid = {}, 0
     for c in order:
@@ -174,20 +200,7 @@ def draw_spec(rng, regions, cn_profiles, n_snv=200, depth=50, merge_gap=0.05,
         copies[c] = cps
         if out:
             edges[names[c]] = out
-
-    raw = {
-        "name": f"tracerx_{region}",
-        "source": {"tumour_id": tumour, "region": region, "blueprint_clones": len(bp_parent),
-                   "merged_clones": len(bp_parent) - len(parent),
-                   "subclonal_cn_kept": n_sub_kept, "subclonal_cn_not_in_region": n_sub_absent,
-                   "cn_steps_invalid": invalid},
-        "purity": float(g.purity.iloc[0]), "depth": depth, "phased_fraction": phased_fraction,
-        "clones": {names[c]: {"parent": names[parent[c]] if parent[c] else None,
-                              "fraction": fraction[c] / sum(fraction.values())} for c in order},
-        "segments": {s: {"chrom": "chr1", "start": 0, "length": 1} for s in used},
-        "edges": edges,
-    }
-    return drop_unobservable(raw, density_per_mb)
+    return edges, invalid
 
 
 def drop_unobservable(raw, density_per_mb):
