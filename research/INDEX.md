@@ -5,7 +5,6 @@
 | 主題 | 入口 | 內容 |
 |---|---|---|
 | **論文分類（平台 × single-cell 真值）** | [分類索引](literature/PAPER_CATEGORIES.md) | 19 篇分 C1 短讀／未說平台、C2 long-read 特徵、C3a／C3b single-cell 真值 × 平台；每篇 README 有可 grep 的 front-matter；`literature/papers_by_category/` 依類瀏覽 |
-| Long-read 新特徵第一版評估 | [評估規格](../evaluation_v1.md) | AD／V、CCF MAE、四類關係矩陣與 pair 可用比例；multiplicity 保留於 likelihood，不計正確率 |
 | 腫瘤演化樹重建**方法**（2019–2026） | [方法調查](literature/surveys/methods_survey/README.md) | 45 個推論 topology 的方法，分 bulk／single-cell／CN／多模態／read-level 連鎖；novelty 邊界與評估指標 |
 | 腫瘤演化樹：病人 single-cell 與 long-read／haplotype 特徵 | [2026 文獻調查](literature/surveys/patient_sc_longread_2026/README.md) | A 類 5 篇、B 類主選 4 篇、補充 2 篇；逐篇 PDF／閱讀筆記、證據分級、資料取得與本 repo 改進方案 |
 | 文獻去重與 PhyClone × longphase-s 整合地圖 | [整合地圖](literature/SYNTHESIS_phyclone_longphase.md) | 檔案層級重複、12 條跨論文收斂約束（對應 C0–C6）、每篇唯一貢獻、過時內容 |
