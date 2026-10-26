@@ -1,6 +1,6 @@
 # PhyClone → Rust 移植計畫（haploclone）
 
-狀態：2026-10-26 建立，**尚未開始實作**。下一個 session 從這份文件開始。範圍與位置已決定（第 7 節）。
+狀態：2026-10-26 開始實作（pstack figure-it-out 流程）。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。
 
 ## 1. 目標
 
@@ -116,13 +116,31 @@ trace/
 4. **Rust toolchain**：用 rustup 安裝到家目錄（M0）。
 5. **全部功能都支援。** 包括 outlier、bootstrap proposal（0.8.0 有已知回歸，筆記 `06` 第 63 項：Rust 版先照原版行為移植，並在文件標明；修正另外做）、`--assign-loss-prob`／`--user-provided-loss-prob`／`--high-loss-prob`、`--subtree-update-prob`、`--thin`、`--max-time`、consensus 的各種 `--weight-type` 等。golden 目前沒有凍結的功能，要先補凍結再移植（M7）。
 
-仍未決定（實作時決定，並寫回本節）：
+實作時決定（2026-10-26）：
 
-- **RNG**：演算法（例如 PCG64、ChaCha）與多 chain 的 seed 分配。
+6. **branch 與目錄**：採用第 2 項的建議。haploclone 的 branch `rust-port` 從 tag `0.8.0` 開出，crate 名稱 `haploclone`，放在 `haploclone/rust/`。M0 commit `8941bf3`。
+7. **RNG**：`rand_chacha` 的 ChaCha8。用 `seed_from_u64(seed)` 起始；stream 0 給主 RNG（資料讀取等），chain i 用 stream i+1。這對應原版 `rng_main.spawn(num_chains)`（`run.py` 第 115 行）的角色，但數值不同。
+8. **golden 路徑**：Rust 測試用環境變數 `HAPLOCLONE_GOLDEN` 找 `phyclone_rs/golden/`，預設是本 repo 的絕對路徑。
+
+仍未決定：
+
 - **dataset 評估程式**：論文的指標（AD F-score 等）用哪一支程式算，是否已經在 `tools/` 或 `lab_report/2026-10-22_pairtree_conipher_sim_rerun/` 裡。
-- **haploclone 的 branch 名稱與目錄結構**（第 2 項的建議是否採用）。
 
 ## 8. 已知注意事項
+
+- **lgamma 綁定 C libm。** numba 把 `math.lgamma` 編成 glibc 的 `lgamma`。Rust 版用 FFI 呼叫 `lgamma_r`，才能逐位相同（M2 實測：85,000 個值全同；`libm` crate 有 1,724 個不同）。
+- **convolution 的逐位對齊條件**（M3 實測）：
+  - grid < 1000 時原版走 `np.convolve` → OpenBLAS `cblas_ddot`（Haswell／Zen kernel）。Rust 版照它的加總順序（16 個 FMA accumulator）實作，fixture 上 0 差。換成 AVX-512 機器，OpenBLAS 會換 kernel，Python 自己的結果也會變〔推論〕。
+  - crate 設 `target-cpu=x86-64-v3`（`rust/.cargo/config.toml`）。沒有硬體 FMA 時 `mul_add` 變成軟體呼叫，kernel 慢 9 倍；結果不受影響。
+  - child 的走訪順序會改變 1e-100 clip 的位置，進而改變 tail 與 `log_p_one`（實例差 0.0124）。Rust 版用 newest-first（同 rustworkx successors）。Python 的 `compute_log_S` cache 不看 child 順序，所以一般樹的順序取決於歷史，無法完全重現；這只影響 V3 以後的統計比較，不影響 V1。
+  - grid ≥ 1000 的 FFT 路徑還沒移植。
+- **M8 前要加壓縮輸入。** dataset 的 cluster 檔是 `results.tsv.gz`，M2 的 loader 遇到壓縮檔會回傳 `Error::Unported`。
+- **M2 找到的原版怪癖**（Rust 版照原版行為實作）：
+  - base loader 先把 `sample_id` 轉成字串再排序（"20" 在 "3" 前）；A1/A2 loader 保留整數排序。整數 mutation id 兩者都用數值排序。
+  - major_cn = 0 的過濾在建立 sample 清單之前，所以全為 0 的 sample 會消失。
+  - data 裡不在 cluster 檔的 mutation 會被靜默丟掉；同一個 mutation 在兩個 cluster 時兩邊都算。
+  - A1/A2 loader 沒有 validator、去重複與 major_cn 過濾。
+  - scipy 1.15 的 `logsumexp` 和 numpy 依 axis 不同的加總順序都會影響末位；Rust 版照原版順序。
 
 - 原版 trace 的 `log_p` 欄存的是 `log_p_one`；MAP 取它的最大值（`process_trace.py` `write_map_results`）。
 - PhyClone 在 `ProcessPoolExecutor(mp_context=spawn)` 裡跑 chain；C4 的 monkeypatch 必須在子 process 重裝（`tools/phyclone_pairs.py` `install_everywhere`）。Rust 版沒有這個問題，但要確認 pair term 在 SMC、PG、Gibbs-MH 都有算到。

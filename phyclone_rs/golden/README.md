@@ -97,7 +97,7 @@ $PY phyclone_rs/golden/verify_against_traces.py                # 應印出 OK
 |---|---|
 | L2 datapoints | 每個元素 \|差\| ≤ 1e-10，或相對差 ≤ 1e-12 |
 | L3 prior 各項、multiplicity | ≤ 1e-10（只有對數階乘與加總） |
-| L3 data_log_likelihood、log_p、log_p_one | ≤ 1e-6。原版用 FFT 做 convolution，換成不同的 FFT 或直接 convolution，會有 ~1e-9 量級的差 |
+| L3 data_log_likelihood、log_p、log_p_one | ≤ 1e-6。grid < 1000 時原版用 `np.convolve`（OpenBLAS `cblas_ddot`），不是 FFT（2026-10-26 M3 實測更正）；Rust 版照 OpenBLAS 的加總順序實作，fixture 上逐位相同 |
 | L4 pair scores、pair term | ≤ 1e-8（midpoint grid 積分；grid 大小必須一樣是 400） |
 | L5 clone table | node 對應後 ccf ≤ 1e-6；結構完全相同 |
 | L6 端到端 | 不能逐位比較。用相同設定跑多個 seed，比較 posterior 摘要（clone 數分布、topology 類別比例、`c3_under_c4` 等）與 `lab_report/` 的長 run 結果是否在 seed 間的變異範圍內 |
