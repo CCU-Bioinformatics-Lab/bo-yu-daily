@@ -1,0 +1,587 @@
+{
+  "schema_version": "2",
+  "date": "2026-10-24",
+  "headline": "公開生成器縮到只剩 SISTEM 能直接餵 PhyClone；不給 HP 資訊時，PhyClone 有 99.8% 把遺失的 SNV 併進低 CCF clone，拓樸也分不出來",
+  "covers": "10-23 23:00 ~ 10-24 23:00",
+  "items": [
+    {
+      "title": "還有哪些公開程式能同時生成真值樹和模擬 SNV 資料？",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "有 30 多個，但沒有一個做完整條 HP 流程：讀了約 90 個工具，沒有一個產生 long read 上 somatic SNV 共現的真值",
+      "question": "目前只看過 Pairtree 和 CONIPHER 兩個生成器。要驗證 HP-aware PhyClone，需要知道有沒有現成工具能同時給真值樹、SNV 資料和 haplotype 資訊，不必自己寫。",
+      "approach": "- 依 6 個方向各派一個 subagent 調查：bulk 方法論文附帶的生成器、read 層、long read／haplotype、演化模型、single-cell、CN-aware bulk。\n- 第一輪 GitHub 搜尋碰到次數上限，OncoSim、CancerSim、TumorSim、Moonshot 四個名字再各派一個 subagent 補查。\n- 整合成 README 和一張總表，所有工具都只讀程式碼，沒有執行。",
+      "result": "- **約 90 個工具中，超過 30 個同時輸出真值樹和 SNV 計數或 read。**\n- **沒有一個做完整條流程**：clone tree → 樹邊上的 haplotype-specific SNV 與 CN → long read BAM → 每條 read 的 HP 真值。\n- **沒有任何工具輸出「同一條 long read 上 somatic SNV 共現」的真值。**\n- 補查的 4 個名字都沒找到符合需求的同名工具。Moonshot 不是模擬器；SEQC2（HCC1395）是真實資料的真值集，沒有 clone tree。\n- 總表 `ALL_SIMULATORS.tsv` 有 129 列，已 commit。",
+      "interpretation": "read 層與 HP 真值不能靠現成工具，要自己寫。現成工具最多只能提供真值骨架或 bulk baseline。當天稍後的範圍更正把推薦名單縮到只剩 SISTEM（見下一項）。",
+      "gaps": "- 所有工具都只讀程式碼，沒有執行（後來只試跑了 clonesim 和 SISTEM）。\n- 部分論文出處憑記憶填寫，總表標成 `unverified`。\n- GitLab、Zenodo、PyPI、CRAN 的全文沒有查。\n- 第一輪推薦的前 5 名（clonesim、SISTEM、PSiTE、ProCESS、VISOR），當天就移出或刪除 4 個；commit 裡的 README 是更正前的版本。",
+      "artifacts": {
+        "files": [
+          "research/simulation_pipeline_research/simulator_survey_2026-10-24/README.md",
+          "research/simulation_pipeline_research/simulator_survey_2026-10-24/ALL_SIMULATORS.tsv",
+          "research/simulation_pipeline_research/simulator_survey_2026-10-24/01_bulk_method_simulators.md",
+          "research/simulation_pipeline_research/simulator_survey_2026-10-24/10_moonshot.md",
+          "research/simulation_pipeline_research/README.md",
+          "research/INDEX.md"
+        ],
+        "outputs": [
+          "commit 2d4101c"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "真值樹",
+          "plain": "模擬程式自己定好的正確答案樹，用來檢查建樹軟體猜得對不對"
+        },
+        {
+          "term": "read 層",
+          "plain": "模擬到一條一條定序 read，而不只是每個位點的 ref／alt 數字"
+        },
+        {
+          "term": "somatic SNV 共現",
+          "plain": "兩個腫瘤突變出現在同一條 read 上，代表它們在同一份 DNA 上"
+        }
+      ],
+      "details": "session 18fc1cc2 10-24 13:53–14:19。報告 01–06 是第一輪 6 個方向，07–10 是補查（OncoSim、CancerSim、TumorSim、Moonshot）。總表第一版 104 列，補查後 129 列；被兩組都調查到的工具出現兩列。commit 2d4101c：25 個檔、+1581 行。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 5139,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 14:08",
+          "ref": "18fc1cc2:5139"
+        },
+        {
+          "line": 5528,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 14:16",
+          "ref": "18fc1cc2:5528"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 生成器只留能直接餵 PhyClone 的：clonesim、VISOR、PSiTE 移出，ProCESS、SCOUT 全部刪除",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "篩選標準改成「輸出能直接當 bulk 建樹軟體的輸入，真值能對上 clone tree」；調查裡符合的新工具只剩 SISTEM",
+      "question": "原本：上午的調查推薦 clonesim 當 HP 真值骨架，ProCESS 用來測 HP 特徵，VISOR、PSiTE 用來產生 read。下午追問後發現，這些工具的輸出都不能直接給 PhyClone 這類 bulk 建樹軟體。",
+      "approach": "- 回頭查每個工具最後輸出給誰用：\n  - clonesim 的 read 只有 single-cell，給 Pharming 等 single-cell 建樹軟體。\n  - ProCESS 的真值是細胞層級的樹，要自己收斂成 clone tree。\n  - VISOR 沒有樹；PSiTE 只輸出 short read FASTQ。\n- 全研究目錄搜尋所有提到這些工具的描述，逐檔處理。",
+      "result": "- **新標準**：輸出最終能當 PhyClone 這類 bulk 建樹軟體的輸入，而且真值能直接對應 clone tree。\n- **clonesim、VISOR、PSiTE 移出**：推薦表、建議路線和比較圖拿掉它們。報告保留原始內容，開頭加「已移出」。\n- **ProCESS（含前身 rRACES）與 SCOUT 全部刪除**：使用者要求刪掉所有文字紀錄。刪完後全研究目錄搜尋是 0 筆。\n- cancerSimCraft 也套用同一標準，不再說它「值得注意」。\n- **調查裡符合標準的新工具只剩 SISTEM**。bulk 比較組是 Pairtree、CONIPHER、SISTEM。",
+      "interpretation": "之後不再考慮 single-cell 生成器或只做 read 的工具。HP 驗證資料要自己寫：真值骨架用 SISTEM 或自寫，read 層與 HP 觀察值也要自己做。這條規則已寫進記憶，之後的調查會照這個標準篩。",
+      "gaps": "- 這批改動都還沒 commit。commit 2d4101c 裡的調查 README 仍是更正前的版本。\n- 10-28 簡報大綱 `OUTLINE_v4.md` 第 153 行仍用 VISOR 當問答範例，照簡報規則沒有改。\n- `notes/06_CLONESIM.md` 和 clonesim 試跑紀錄保留在 repo，只加註「已排除」。",
+      "artifacts": {
+        "files": [
+          "research/simulation_pipeline_research/simulator_survey_2026-10-24/README.md",
+          "research/simulation_pipeline_research/simulator_survey_2026-10-24/04_evolutionary_simulators.md",
+          "research/simulation_pipeline_research/simulator_survey_2026-10-24/10_moonshot.md",
+          "research/simulation_pipeline_research/notes/06_CLONESIM.md",
+          "research/simulation_pipeline_research/notes/08_SIMULATOR_COMPARISON.md",
+          "research/literature/surveys/methods_survey/README.md",
+          "research/literature/surveys/methods_survey/workers/W7_proceedings_2025_2026.md",
+          "research/literature/surveys/methods_survey/workers/W8_benchmark_update_2026-10-18.md",
+          "lab_report/2026-10-24_sim_truth_tree_comparison/README.md"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "bulk 建樹軟體",
+          "plain": "把一整塊組織混在一起定序的資料拿來推演化樹的軟體，例如 PhyClone"
+        },
+        {
+          "term": "single-cell 生成器",
+          "plain": "一顆細胞一顆細胞模擬定序資料的程式，輸出不能直接給 bulk 軟體用"
+        },
+        {
+          "term": "cell-level 樹",
+          "plain": "每顆細胞一個節點的族譜，比 clone 樹細很多"
+        }
+      ],
+      "details": "session 18fc1cc2 10-24 15:47–16:05。順序：15:47 確認 clonesim 只有 single-cell read；15:50 移出 clonesim 並重畫比較圖成 3 個工具；15:57–16:01 問 ProCESS 後決定全刪（含 rRACES、CLONES、SCOUT）；16:04 VISOR、PSiTE 移出、methods_survey 的 SCOUT 刪除 5 處。記憶檔：clonesim-excluded-bulk-scope.md。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 8089,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 15:50",
+          "ref": "18fc1cc2:8089"
+        },
+        {
+          "line": 8880,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 16:01",
+          "ref": "18fc1cc2:8880"
+        },
+        {
+          "line": 9449,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 16:05",
+          "ref": "18fc1cc2:9449"
+        }
+      ]
+    },
+    {
+      "title": "Pairtree、CONIPHER、clonesim、SISTEM 的真值各記了什麼？",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "CONIPHER 輸出檔資訊最多（12 項中 10 分）；只有 SISTEM 的 allele 標籤能當 haplotype 真值",
+      "question": "要選 HP 驗證資料的真值來源，需要知道各生成器的真值裡有什麼：CN 有沒有放在樹上、SNV 在哪個 allele、有沒有 mutation loss、purity 多少。",
+      "approach": "- 在本機實際跑 clonesim 和 SISTEM，各兩個 seed，檢查能不能重現。\n- 寫 `notes/06`、`07`、`08`：逐工具拆解程式，再做四方比較。\n- 從現有結果各抽一棵樹畫比較圖。依使用者要求重畫兩次：每個 clone 標 CCF 百分比和新增 SNV 數；CN 用爸（藍）媽（紅）長條；mutation loss 用橘色。\n- 用 12 個資訊項目計分：直接讀得到 1 分，要額外處理 0.5 分，沒有 0 分。",
+      "result": "- **資訊計分（滿分 12）**：CONIPHER **10**、SISTEM **8.5**、clonesim **7.5**、Pairtree **2.5**。\n- **SISTEM 的 allele 0／1 可以當 haplotype 真值**：同一條染色體的所有 copy 都保留起始 homolog 的標籤，全基因組一致。\n- **CONIPHER 的 A／B 不是 haplotype**：每個位點獨立模擬，A 只代表「這個位點帶突變的那一側」。\n- **SISTEM 的 bulk 計數不能直接用**：alt 數是 `round(depth × fraction)`，沒有 binomial 抽樣，混合 VAF 也沒有用 CN 加權。實測和正確值最多差 0.12。\n- **clonesim 有 bug**：帶突變的 allele 擴增時，新 copy 一律帶突變（18／18 個案例）。\n- 比較圖：CONIPHER 的 CN 是沿樹重放事件算出的，6 棵樹混合後和真值檔逐列相同。",
+      "interpretation": "第一個 PhyClone baseline 用 CONIPHER：它有現成資料，也能逐 byte 重現。要跨位點的 HP 約束（兩個 SNV 是否同一條 haplotype），只有 SISTEM 的真值做得到，但 read count 要用它的真值重抽。",
+      "tables": [
+        {
+          "caption": "四個生成器的真值資訊（12 項計分；clonesim 後來移出 bulk 範圍）",
+          "columns": [
+            "工具",
+            "得分",
+            "allele 標籤全基因組一致",
+            "可直接用的 read count",
+            "seed 可重現",
+            "授權"
+          ],
+          "rows": [
+            [
+              "CONIPHER",
+              "10",
+              "否",
+              "是",
+              "是",
+              "BSD-3"
+            ],
+            [
+              "SISTEM",
+              "8.5",
+              "是",
+              "有，但模型不對",
+              "外部設定後可以",
+              "GPL-3.0"
+            ],
+            [
+              "clonesim",
+              "7.5",
+              "是",
+              "否（只有 single-cell）",
+              "是",
+              "無"
+            ],
+            [
+              "Pairtree",
+              "2.5",
+              "否",
+              "是",
+              "否",
+              "無"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-10-24/sim_truth_tree_comparison.png",
+          "caption": "Pairtree、CONIPHER、SISTEM 各抽一棵真值樹（15:53 版，已移除 clonesim）。紅藍長條是媽／爸的 copy 數，深色是該 clone 新發生的改變，橘色是 mutation loss。"
+        }
+      ],
+      "gaps": "- clonesim 和 SISTEM 都只跑了小設定，各兩個 seed。比較圖每個工具只抽一棵，不能代表樹形分布。\n- 12 項計分每項權重相同，「部分」是主觀判斷。\n- SISTEM 轉成 PhyClone 輸入的程式能跑，但結果還沒丟給 PhyClone。\n- 全部都還沒 commit。",
+      "artifacts": {
+        "files": [
+          "research/simulation_pipeline_research/notes/06_CLONESIM.md",
+          "research/simulation_pipeline_research/notes/07_SISTEM.md",
+          "research/simulation_pipeline_research/notes/08_SIMULATOR_COMPARISON.md",
+          "tools/plot_sim_tree_comparison.py",
+          "tools/sistem_snv_presence.py",
+          "tools/sistem_to_phyclone.py",
+          "tools/clonesim_inspect.py"
+        ],
+        "commands": [
+          "python3 tools/plot_sim_tree_comparison.py lab_report/2026-10-24_sim_truth_tree_comparison"
+        ],
+        "outputs": [
+          "lab_report/2026-10-24_clonesim_sistem_trial/",
+          "lab_report/2026-10-24_sim_truth_tree_comparison/sim_truth_tree_comparison.png",
+          "lab_report/2026-10-24_sim_truth_tree_comparison/sim_truth_tree_figures.zip"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "allele 標籤",
+          "plain": "標記一段 DNA 來自爸爸還是媽媽那一份"
+        },
+        {
+          "term": "haplotype",
+          "plain": "來自同一個親本、連在同一條染色體上的那一組序列"
+        },
+        {
+          "term": "mutation loss",
+          "plain": "突變所在的那段 DNA 後來被刪掉，後代細胞就不再帶這個突變"
+        },
+        {
+          "term": "CCF",
+          "plain": "腫瘤細胞中帶這個突變的比例"
+        }
+      ],
+      "details": "session 18fc1cc2 10-24 14:19–15:45。clonesim commit f148511，build 要改兩處設定，同 seed 5 個輸出逐 byte 相同；bug 在 L662。SISTEM 1.0.5（git 627f888），外部設 np.random.seed 後 12 個輸出逐 byte 相同；計數問題在 reads.py:296–302。CONIPHER allele 判斷依據 evolution.py:163–180。比較圖 15:12 版加 CCF／SNV 數／事件位置／purity；15:31 版改紅藍長條與橘色 loss；15:53 版移除 clonesim。圖上 purity：Pairtree 約 1.00、CONIPHER 0.86–0.89、SISTEM 0.83。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 7979,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 15:45",
+          "ref": "18fc1cc2:7979"
+        },
+        {
+          "line": 7374,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 15:31",
+          "ref": "18fc1cc2:7374"
+        },
+        {
+          "line": 6103,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 14:43",
+          "ref": "18fc1cc2:6103"
+        }
+      ]
+    },
+    {
+      "title": "不給 HP 資訊時，PhyClone 能還原 HP 真值樹嗎？",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "不能：跑 10 次，MAP 有 9 次選錯拓樸；遺失的 s10 有 99.8% 被併進低 CCF clone，outlier 機制抓不到",
+      "question": "手繪的 HP 真值樹（下圖）預測：不給 HP 資訊時，PhyClone 會低估 CCF、把遺失的 SNV 放錯 clone、弄錯低 CCF clone 的位置。要用實際 run 驗證這些預測，當作之後加 HP 的基線。",
+      "approach": "- 依真值樹產生 100 個 SNV：10 種角色，每種 10 個。1 個 sample、平均 200×、purity 0.40。\n- 只給 PhyClone 現有的 8 個欄位，沒有 HP 拆分計數，也沒有 cluster 檔，由 PhyClone 自己分群建樹。\n- 兩種模式：outlier 關閉（`-l 0`）和開啟（`-l 0.05`），各跑 5 個 MCMC seed。每次 run 都做 `map` 和 `topology-report`。\n- 自寫腳本，把每棵抽樣樹簡化成幾個關鍵問題再加權統計。",
+      "result": "- **MAP 選到錯的拓樸**：10 次中 9 次 MAP 是直線樹，把 C3 放在 C4 之下。但 posterior 裡直線樹只佔 **36–42%**，和真值形狀一致的分岔樹佔 **57–63%**。\n- **5 個 seed 都穩定在約 4:6**，所以這是資料分不出來，不是 MCMC 沒收斂。只有一個 sample 時，兩種樹都符合 CCF 加總規則。\n- **C1、C2 被合併**：posterior 100%。合併後的 clone CCF 是 0.89，落在真值 1.00 和 0.80 之間。\n- **s10（cnLOH 造成遺失）被併進 C3**：約 99.8%。\n- **s2（deletion 造成遺失）被拆到多個 clone**：100%。\n- **outlier 機制抓不到遺失**：s2、s10 進 outlier 的比例只有 0.13–0.44%，和正常 SNV（0.13–0.49%）差不多。",
+      "interpretation": "這組結果指出 HP 與 read 資訊該補在哪兩處。拓樸：帶 s6 的 read 從不帶 s4，可以直接排除直線樹。遺失：seg D 的 HP2 depth 下降、HP1 上升，可以指出 s10 是 cnLOH 造成的遺失，不是低 CCF clone。另外，只看 MAP 會得到錯的拓樸結論，評估時要看 posterior。",
+      "tables": [
+        {
+          "caption": "10 次 run 的 posterior 摘要（每次 4000 棵抽樣樹，同一份資料，只換 MCMC seed）",
+          "columns": [
+            "模式",
+            "run 數",
+            "直線樹比例",
+            "分岔樹比例",
+            "C1／C2 合併",
+            "s10 併進 C3",
+            "遺失 SNV 進 outlier"
+          ],
+          "rows": [
+            [
+              "-l 0",
+              "5",
+              "0.38–0.40",
+              "0.59–0.62",
+              "1.000",
+              "0.998–0.999",
+              "0"
+            ],
+            [
+              "-l 0.05",
+              "5",
+              "0.36–0.42",
+              "0.57–0.63",
+              "1.000",
+              "0.997–0.999",
+              "0.13–0.44%"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-10-24/hp_truth_tree.png",
+          "caption": "這次測試用的 HP 真值樹（手動設計）：低 purity、subclonal CN、mutation loss、低 CCF clone、cnLOH、CN timing，右側是 bulk 資料與 PhyClone 預期錯誤"
+        },
+        {
+          "type": "svg",
+          "content": "<svg viewBox=\"0 0 640 300\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"inherit\" font-size=\"12\"><rect x=\"120\" y=\"12\" width=\"12\" height=\"12\" fill=\"#d4a72c\"/><text x=\"138\" y=\"22\" fill=\"#57606a\">直線樹（C3 錯放在 C4 下）</text><rect x=\"340\" y=\"12\" width=\"12\" height=\"12\" fill=\"#1f6feb\"/><text x=\"358\" y=\"22\" fill=\"#57606a\">分岔樹（形狀和真值一致）</text><text x=\"112\" y=\"52\" text-anchor=\"end\" fill=\"#57606a\">-l 0 · s1</text><rect x=\"120\" y=\"40\" width=\"175.1\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"295.1\" y=\"40\" width=\"261.4\" height=\"16\" fill=\"#1f6feb\"/><text x=\"291.1\" y=\"52\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.40</text><text x=\"552.5\" y=\"52\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.59</text><text x=\"112\" y=\"74\" text-anchor=\"end\" fill=\"#57606a\">-l 0 · s2</text><rect x=\"120\" y=\"62\" width=\"165.9\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"285.9\" y=\"62\" width=\"271.0\" height=\"16\" fill=\"#1f6feb\"/><text x=\"281.9\" y=\"74\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.38</text><text x=\"552.9\" y=\"74\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.62</text><text x=\"112\" y=\"96\" text-anchor=\"end\" fill=\"#57606a\">-l 0 · s3</text><rect x=\"120\" y=\"84\" width=\"169.8\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"289.8\" y=\"84\" width=\"261.8\" height=\"16\" fill=\"#1f6feb\"/><text x=\"285.8\" y=\"96\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.39</text><text x=\"547.6\" y=\"96\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.59</text><text x=\"112\" y=\"118\" text-anchor=\"end\" fill=\"#57606a\">-l 0 · s4</text><rect x=\"120\" y=\"106\" width=\"168.5\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"288.5\" y=\"106\" width=\"267.5\" height=\"16\" fill=\"#1f6feb\"/><text x=\"284.5\" y=\"118\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.38</text><text x=\"552.0\" y=\"118\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.61</text><text x=\"112\" y=\"140\" text-anchor=\"end\" fill=\"#57606a\">-l 0 · s5</text><rect x=\"120\" y=\"128\" width=\"166.3\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"286.3\" y=\"128\" width=\"266.6\" height=\"16\" fill=\"#1f6feb\"/><text x=\"282.3\" y=\"140\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.38</text><text x=\"549.0\" y=\"140\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.61</text><text x=\"112\" y=\"162\" text-anchor=\"end\" fill=\"#57606a\">-l 0.05 · s1</text><rect x=\"120\" y=\"150\" width=\"163.7\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"283.7\" y=\"150\" width=\"269.7\" height=\"16\" fill=\"#1f6feb\"/><text x=\"279.7\" y=\"162\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.37</text><text x=\"549.4\" y=\"162\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.61</text><text x=\"112\" y=\"184\" text-anchor=\"end\" fill=\"#57606a\">-l 0.05 · s2</text><rect x=\"120\" y=\"172\" width=\"172.0\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"292.0\" y=\"172\" width=\"260.5\" height=\"16\" fill=\"#1f6feb\"/><text x=\"288.0\" y=\"184\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.39</text><text x=\"548.5\" y=\"184\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.59</text><text x=\"112\" y=\"206\" text-anchor=\"end\" fill=\"#57606a\">-l 0.05 · s3</text><rect x=\"120\" y=\"194\" width=\"182.6\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"302.6\" y=\"194\" width=\"252.1\" height=\"16\" fill=\"#1f6feb\"/><text x=\"298.6\" y=\"206\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.41</text><text x=\"550.7\" y=\"206\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.57</text><text x=\"112\" y=\"228\" text-anchor=\"end\" fill=\"#57606a\">-l 0.05 · s4</text><rect x=\"120\" y=\"216\" width=\"157.1\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"277.1\" y=\"216\" width=\"279.0\" height=\"16\" fill=\"#1f6feb\"/><text x=\"273.1\" y=\"228\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.36</text><text x=\"552.0\" y=\"228\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.63</text><text x=\"112\" y=\"250\" text-anchor=\"end\" fill=\"#57606a\">-l 0.05 · s5</text><rect x=\"120\" y=\"238\" width=\"173.8\" height=\"16\" fill=\"#d4a72c\"/><rect x=\"293.8\" y=\"238\" width=\"260.5\" height=\"16\" fill=\"#1f6feb\"/><text x=\"289.8\" y=\"250\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.40</text><text x=\"550.3\" y=\"250\" text-anchor=\"end\" fill=\"#ffffff\" font-size=\"11\">0.59</text><line x1=\"340.0\" y1=\"36\" x2=\"340.0\" y2=\"264\" stroke=\"#57606a\" stroke-dasharray=\"3,3\"/><text x=\"340.0\" y=\"278\" text-anchor=\"middle\" fill=\"#57606a\" font-size=\"11\">0.5</text><text x=\"120\" y=\"278\" fill=\"#57606a\" font-size=\"11\">0</text><text x=\"560\" y=\"278\" text-anchor=\"end\" fill=\"#57606a\" font-size=\"11\">1</text></svg>",
+          "caption": "每次 run 的 posterior 裡，直線樹與分岔樹各佔多少。10 次都在 0.5 線附近，MAP 卻有 9 次選直線樹。"
+        }
+      ],
+      "gaps": "- 只有一份資料、一個 sample、每種角色 10 個 SNV，只能當單一案例，不代表 PhyClone 的準確率。\n- 只測了不給 HP 的基線。PhyClone 沒有欄位能收 HP 資訊，要改模型或另寫工具才能測「加了 HP 之後」。\n- `--assign-loss-prob` 沒測，它需要 cluster 檔和 `chrom` 欄。\n- 沒試第二個 sample 或 ONT 實際的 30–60× depth。\n- lab_report 目錄有 392 MB（trace.h5 與 seeds/），還沒決定要不要進 git；全部都還沒 commit。",
+      "artifacts": {
+        "files": [
+          "tools/draw_hp_truth_tree.py",
+          "tools/hp_truth_tree_to_phyclone.py",
+          "tools/eval_hp_truth_phyclone.py",
+          "tools/summarize_hp_truth_topologies.py",
+          "lab_report/2026-10-24_hp_truth_tree_phyclone/README.md",
+          "lab_report/2026-10-24_hp_truth_tree_phyclone/run_seeds.sh"
+        ],
+        "commands": [
+          "bash lab_report/2026-10-24_hp_truth_tree_phyclone/run_seeds.sh 2 3 4 5",
+          "python3 tools/summarize_hp_truth_topologies.py <input> <run 目錄…>"
+        ],
+        "outputs": [
+          "lab_report/2026-10-24_hp_truth_tree_phyclone/topology_posterior_summary.tsv",
+          "research/simulation_pipeline_research/figures/hp_truth_tree.png"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "MAP 樹",
+          "plain": "所有抽到的樹裡，機率最高的那一棵"
+        },
+        {
+          "term": "posterior",
+          "plain": "把所有抽到的樹一起看，每種形狀出現的比例"
+        },
+        {
+          "term": "cnLOH",
+          "plain": "一份染色體被另一份的複本取代，總 copy 數不變，所以只看總深度看不出來"
+        },
+        {
+          "term": "outlier",
+          "plain": "PhyClone 判定不屬於樹上任何 clone、另外放一邊的突變"
+        }
+      ],
+      "details": "session e623fed9 10-24 17:05–18:29。PhyClone 用 submodule＋~/venvs/phyclone，`-d binomial -b 100 -n 1000 --num-chains 4`。seed 1 的 MAP：`-l 0` 是 (((2)1)0)root，`-l 0.05` 是 ((1,2)0)root。每次 run 約 3240–3505 種不同的 tree_hash（hash 含 SNV 指派），所以直接看 topology-report 的 count 太分散，改讀 topologies.tar.gz 的每棵樹再加權。eval 腳本原本在 newick_parents 有一段會讓摘要卡住，刪掉後 10 次 run 17 秒跑完。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 10379,
+          "session_id": "e623fed9",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 17:05",
+          "ref": "e623fed9:10379"
+        },
+        {
+          "line": 11370,
+          "session_id": "e623fed9",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 18:29",
+          "ref": "e623fed9:11370"
+        },
+        {
+          "line": 11372,
+          "session_id": "e623fed9",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 18:29",
+          "ref": "e623fed9:11372"
+        }
+      ]
+    },
+    {
+      "title": "PhyClone 的 CONIPHER benchmark 資料是怎麼轉出來的？",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "作者直接轉 Zenodo 的現成輸出；給 PhyClone 的 cluster 檔和 PyClone-VI 輸出逐檔相同（兩組各 150/150）",
+      "question": "10-23 已確認 CONIPHER 的生成程式能重現資料。今天要弄清楚：生成器的輸入輸出是什麼，以及 PhyClone benchmark 的檔案是怎麼從生成器輸出變來的。",
+      "approach": "- 對照 Pairtree（`pearsim`）和 CONIPHER（`TRACERx_simulation_tool`）生成程式的參數、步驟與輸出。\n- 逐一比對 PhyClone `data_archive/` 的檔案和 Zenodo 生成器輸出，反推轉換規則。\n- 把 `program_inputs/phyclone_outliers/clusters.tsv.gz` 和 PyClone-VI 的輸出逐檔比對。\n- 結果寫進 `05_OTHER_SIMULATORS.md` 三個新節。",
+      "result": "- **PhyClone 作者沒有自己跑生成器**：他們拿 CONIPHER 論文發布在 Zenodo 的輸出，用沒公開的程式轉成 PhyClone 格式。\n- **PhyClone 的 cluster 輸入不是真值**：和 PyClone-VI 的分群結果逐檔相同，No-Noise 和 Noise 兩組都是 **150/150**。例如 LTXSIM001 真值有 13 個 node，PyClone-VI 只分出 8 群。\n- **轉換時 CN 被四捨五入成整數**，subclonal CN 資訊不見；purity 直接用真值。\n- **病人摘要表不是必要輸入**：真正生成資料的 `tx_simulation()` 直接收參數，必填 6 個。\n- Pairtree 不能重現的原因是程式 bug：記錄的種子沒有傳進亂數產生器。",
+      "interpretation": "PhyClone 在 CONIPHER 資料上的分數，是在「cluster 由 PyClone-VI 先分好」的條件下得到的。我們自己做模擬時，可以直接呼叫 `tx_simulation()`，照 ONT 細胞株的 purity 與 depth 給參數。",
+      "gaps": "- 轉換程式沒有公開，規則是從檔案反推的；`data.tsv` 的列順序找不到規則，無法逐 byte 重現。\n- Copy_Number_Error（450 份）的擾動程式也沒有公開。\n- `05_OTHER_SIMULATORS.md` 的這三節還沒 commit。",
+      "artifacts": {
+        "files": [
+          "research/simulation_pipeline_research/notes/05_OTHER_SIMULATORS.md",
+          "lab_report/2026-10-22_pairtree_conipher_sim_rerun/README.md"
+        ],
+        "outputs": [
+          "/big8_disk/boyu114/phyclone_dataset/CONIPHER_No-Noise/data_archive/",
+          "/big8_disk/boyu114/phyclone_dataset/CONIPHER_Noise/data_archive/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "PyClone-VI",
+          "plain": "另一支把 SNV 依 CCF 分群的軟體，PhyClone 拿它的結果當分群輸入"
+        },
+        {
+          "term": "病人摘要表",
+          "plain": "CONIPHER 生成程式附的一張表，用來抽出像 TRACERx 病人的參數"
+        },
+        {
+          "term": "Zenodo",
+          "plain": "公開存放研究資料的網站"
+        }
+      ],
+      "details": "session 18b3c0e3 10-24 13:16–13:36。版本：pearsim@0b9b249、TRACERx_simulation_tool@8c8d173。Zenodo 實測：Noise 組 fract_noise 0.05–0.10、prop_mut_lost 0.02–0.25；No-Noise 組兩者都是 0（150 份）。轉換規則：major_cn＝round(max(CN_A,CN_B))、minor_cn＝round(min)、tumour_content＝PURITY 真值、mutation_id＝s<VAR_POS>；tree.json 去掉 normal→truncal 邊，沒有非 noise SNV 的 clone 被刪（Noise 13/150）。新增三節：輸入與輸出比較、病人摘要表、PhyClone 的 CONIPHER 資料怎麼來。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 2877,
+          "session_id": "18b3c0e3",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 13:29",
+          "ref": "18b3c0e3:2877"
+        },
+        {
+          "line": 3027,
+          "session_id": "18b3c0e3",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 13:34",
+          "ref": "18b3c0e3:3027"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "設計一棵能同時測 5 種難題、細分 HP1／HP2 的模擬真值樹",
+      "status": "done",
+      "what": "為什麼：要讓模擬資料能同時測 mutation loss、subclonal CN、低 purity、低 CCF clone 的拓樸，並細分 HP1／HP2，需要先把「真值長什麼樣、bulk 資料要給什麼」畫清楚。做了什麼：先釐清三件事。(1) SISTEM 的 allele 0／1 可以當 haplotype 真值（重新下載 SISTEM 1.0.5 原始碼核對：起點兩個 homolog、複製保留 allele、事件記錄所在 allele），但它不等於 longphase 的 HP：longphase 只在 PS block 內一致、需要 germline het SNP、有 switch error。(2) CONIPHER 的 [nA, nB, m] 只記「幾份帶突變」，A 只在單一位點內有意義，不能判斷兩個 SNV 是否同側。(3) PhyClone 看不到 subclonal CN 的原因在輸入格式和模型：每列只有一組整數 major／minor（pyclone.py L300–301），帶突變的 tumour cell 只有一個 CN（math_utils.py L216–244）。接著用 tools/draw_hp_truth_tree.py 畫 hp_truth_tree.png：Normal → C1 → C2 → C4、C1 → C3，seg A–D，purity 0.40，C3 CCF 0.10；右側是 bulk 資料欄位、HP 拆分計數、read 共現表、phasing 層。使用者選 1＋2＋4 再補：cnLOH（seg D、s9／s10）、gain 後才發生的 s8、PhyClone 預期 CCF（s1 0.92、s2 0.60、s9 0.90、s10 0.12、s8 0.44）。結果：圖完成，之後直接轉成 PhyClone 輸入實跑（見呈現層第 4 項）。狀態：圖是手動設計，不是 SISTEM 實際輸出；沒 commit。",
+      "why_demoted": "被 5 項上限擠掉（11 分）；它的實跑結果已在呈現層第 4 項",
+      "artifacts": {
+        "files": [
+          "tools/draw_hp_truth_tree.py"
+        ],
+        "outputs": [
+          "research/simulation_pipeline_research/figures/hp_truth_tree.png"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 9651,
+          "session_id": "e623fed9",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 16:11",
+          "ref": "e623fed9:9651"
+        },
+        {
+          "line": 10114,
+          "session_id": "e623fed9",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 16:36",
+          "ref": "e623fed9:10114"
+        },
+        {
+          "line": 10196,
+          "session_id": "e623fed9",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 16:41",
+          "ref": "e623fed9:10196"
+        }
+      ]
+    },
+    {
+      "title": "文獻集中到 research/literature/，移除 M02 後 commit 並 push",
+      "status": "done",
+      "what": "為什麼：論文筆記原本分散在 tumor_phylogeny_2026/papers、methods_survey、references 等 3 個目錄，找論文要翻多處。做了什麼：新建 research/literature/，底下有 papers/（18 篇）、papers_by_category/（symlink 重建）、surveys/（patient_sc_longread_2026、methods_survey、longread_tree_search_2026-10-19）、tools/sync_paper_categories.py 和新 README。44 個檔案的連結改到新位置，包括 CLAUDE.md、plan.md、tumor_sample.md、report/ 的 brief 與投影片。CLAUDE.md 篇數從 22 改成 19（papers/ 18 篇＋H01）。結果：全 repo 0 個壞連結，sync_paper_categories.py --check 0 drift，validate_bundle.py 0 errors。用暫存 worktree 只 commit 這次整理的檔案（f73262f，156 檔），再把之前未 commit 的 M02 TreeClone 刪除獨立 commit（966468c，18 檔）。meeting_record/ 原本沒進 git，因 INDEX 連到它而一起 commit。push 4a05ae0..966468c，連同先前的 0321ee4、4d5c508 共 4 個 commit。狀態：完成；plan.md、report/ 等其他未 commit 改動仍在本地。",
+      "why_demoted": "被 5 項上限擠掉（11 分），屬於整理文件",
+      "artifacts": {
+        "files": [
+          "research/literature/README.md",
+          "research/literature/PAPER_CATEGORIES.md",
+          "research/literature/paper_categories.tsv",
+          "research/literature/tools/sync_paper_categories.py",
+          "CLAUDE.md",
+          "research/INDEX.md"
+        ],
+        "commands": [
+          "python3 research/literature/tools/sync_paper_categories.py --check",
+          "git push origin main"
+        ],
+        "outputs": [
+          "commit f73262f",
+          "commit 966468c"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 3719,
+          "session_id": "1f6c574c",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 13:43",
+          "ref": "1f6c574c:3719"
+        },
+        {
+          "line": 4333,
+          "session_id": "1f6c574c",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 13:50",
+          "ref": "1f6c574c:4333"
+        }
+      ]
+    },
+    {
+      "title": "CONIPHER 真值樹的 clone 為什麼這麼多？",
+      "status": "done",
+      "what": "為什麼：使用者看比較圖時發現，CONIPHER 的真值樹常把 CCF 相近的 clone 分開，clone 數很多。做了什麼：讀 TRACERx_simulation_tool 的 sequencing.py，並寫 tools/conipher_clone_resolvability.py 統計全部 150 份 No-Noise 資料。結果：每棵真值樹 clone 數中位數 19（8–29），PhyClone 實際收到的 PyClone-VI 群數中位數 8；新增 SNV ≤5 的 clone 占 33%；所有 sample 比例都是 0 的 clone 占 16%；CCF 和 parent 完全相同的占 9%（容許差 0.1 時 18%）。就算合併 CCF 相同的 clone，群數也只從 19 降到 16，所以主因是 SNV 太少的小 clone。原因：生成器先決定 clone 數，再隨機分 SNV；每個 sample 只挑 3–8 個 clone 給比例。推論：這組 benchmark 的 topology 分數有上限，來自真值定義。建議評估時加算「可辨識真值」（合併 CCF 相同的 clone、SNV 少於門檻的併入 parent），自己的生成器要設每個 clone 的最少 SNV 數。狀態：寫進 notes/05_OTHER_SIMULATORS.md 新節，沒 commit。",
+      "why_demoted": "被 5 項上限擠掉（9 分），使用者只問了 1 則",
+      "artifacts": {
+        "files": [
+          "tools/conipher_clone_resolvability.py",
+          "research/simulation_pipeline_research/notes/05_OTHER_SIMULATORS.md"
+        ],
+        "commands": [
+          "python3 tools/conipher_clone_resolvability.py"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 7344,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 15:27",
+          "ref": "18fc1cc2:7344"
+        },
+        {
+          "line": 7359,
+          "session_id": "18fc1cc2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 15:27",
+          "ref": "18fc1cc2:7359"
+        }
+      ]
+    },
+    {
+      "title": "用 daily-log 寫完 10-23 日誌",
+      "status": "done",
+      "what": "為什麼：10-23 23:00 的排程跑 daily-log。做了什麼：collect_day.sh 第 218 行 find | head -100 在 pipefail 下中斷（改過的檔超過 100 個），腳本是 sensitive file 改不了，改用 extract_transcript.py 和 cursor.py pend 補完步驟。結果：daily/2026-10-23.html 呈現 6 項、記錄 2 項，涵蓋 10-21 23:00 到 10-23 23:00，游標推進到 2026-10-23T23:00:12。狀態：本次 collect_day.sh 正常跑完；日誌 repo 沒有 commit。",
+      "why_demoted": "環境維護類（0 分），而且大部分在上次的掃描範圍內",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-10-23.json"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 2124,
+          "session_id": "84550fcc",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 23:07",
+          "ref": "84550fcc:2124"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "title": "拓樸摘要腳本跑超過 600 秒",
+      "detail": "tools/summarize_hp_truth_topologies.py 摘要 10 次 run 時兩次逾時。先懷疑 tar.gz 重複解壓，但壓縮檔只有 956 KB；用 faulthandler 定位到 eval_hp_truth_phyclone.py 的 newick_parents。",
+      "resolution": "刪掉 newick_parents 裡處理 pending 節點的那段，10 次 run 17 秒跑完。"
+    }
+  ],
+  "advisor": [],
+  "questions_for_advisor": [],
+  "next": [],
+  "scan": {
+    "last_scanned": "2026-10-24T23:00:07",
+    "sessions": [
+      "84550fcc",
+      "18b3c0e3",
+      "1f6c574c",
+      "18fc1cc2",
+      "c021672a",
+      "e623fed9",
+      "5cd026f1"
+    ],
+    "layers": {
+      "show": 5,
+      "record": 4,
+      "border": 0
+    }
+  }
+}
