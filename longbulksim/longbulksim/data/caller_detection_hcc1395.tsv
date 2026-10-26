@@ -1,0 +1,6 @@
+# P(call) = sigmoid(b0 + b_log_alt*log(alt) + b_log_depth*log(depth)); 0 when alt = 0.
+# Fit on SEQC2 v1.2.1 HighConf SNVs in CASTLE HCC1395 tumour ONT (median depth 84) vs PASS calls.
+# Source: tools/caller_detection_calibration.py, lab_report/2026-10-26_caller_detection/
+caller	b0	b_log_alt	b_log_depth
+clairs	3.8024	4.6929	-3.3706
+deepsomatic	4.7587	4.1788	-2.7786

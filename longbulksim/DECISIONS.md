@@ -33,3 +33,8 @@
 | 2026-10-26 | `ccf_alpha` 預設 0.5 | subclone CCF 中位：0.5 → 0.44，1.0 → 0.42；TRACERx 0.45 | alpha 對結果影響小 |
 | 2026-10-26 | 不提供 `--prop-mutloss` | 遺失由事件順序產生，和藍圖模式一致；CONIPHER 是直接設定 | 實測中位 0.7%、Q90 2.8% |
 | 2026-10-26 | `random_tree` 的排邊程式抽成 `add_cn_items`、`build_edges` 供兩種模式共用 | 避免重複 | 重構前後 30 個 spec 的 sha256 相同 |
+| 2026-10-26 | v0.5 加入 `caller`（none／clairs／deepsomatic）：用 P(call \| alt, depth) 抽樣，漏掉的 SNV 移出 `input/` | 原本每個 SNV 都進輸入，即使只有 1 條 alt read；真實 caller 約要 5–10 條 | 曲線來自 CASTLE HCC1395（84×、purity 約 1）vs SEQC2，`lab_report/2026-10-26_caller_detection/`。預設 `none`，舊輸出不變 |
+| 2026-10-26 | 曲線用 log(alt) 與 log(depth) 的 logistic | 表格顯示 alt 相同時 depth 越高越難 call，所以 caller 看的是 VAF；兩個變數就能描述 | 抽查與分層表吻合；位點特性（context、MAPQ）未納入 |
+| 2026-10-26 | `truth.tsv` 保留漏掉的 SNV，加 `detected` 欄；評分只用 `detected = 1` | 漏掉的 SNV 也是真值，例如可以看出整個 clone 都看不見 | 評分腳本：`tools/eval_hp_truth_phyclone.py`、`tools/eval_random_tree_phyclone.py` |
+| 2026-10-26 | 預設 caller 仍是 `none` | 曲線只在 purity 約 1 的樣本上校正，用在低 purity 時可能高估漏抓 | 要改成預設，先在低 purity subsample 上驗證曲線 |
+

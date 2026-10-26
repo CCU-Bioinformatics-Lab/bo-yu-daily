@@ -48,7 +48,9 @@ def newick_parents(text):
 
 
 def main(inp, run):
-    truth = {r["mutation_id"]: r for r in read_tsv(os.path.join(inp, "truth.tsv"))}
+    # SNVs a simulated caller missed (detected = 0) are not in the method input
+    truth = {r["mutation_id"]: r for r in read_tsv(os.path.join(inp, "truth.tsv"))
+             if r.get("detected", "1") == "1"}
     table = read_tsv(os.path.join(run, "map_table.tsv"))
     with open(os.path.join(run, "map_tree.nwk")) as fh:
         parents = newick_parents(fh.read())
