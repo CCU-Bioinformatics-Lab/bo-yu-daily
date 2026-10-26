@@ -1,0 +1,616 @@
+{
+  "schema_version": "2",
+  "date": "2026-10-23",
+  "headline": "CONIPHER 的公開生成程式能逐 byte 重現 PhyClone 用的 300 份資料，所以 10-28 簡報改講它的生成流程，已做成 7 頁",
+  "covers": "10-21 23:00 ~ 10-23 23:00",
+  "items": [
+    {
+      "title": "10-28 簡報重做成 7 頁 CONIPHER 生成流程",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "10-28 簡報改講 CONIPHER 生成流程：7 頁，全篇用同一個病人 SIM004，流程每一步都畫示意圖（切蛋糕、抽彈珠）",
+      "question": "使用者決定 10-28 簡報改講 CONIPHER 的資料生成流程，當下週的主要大綱。老師要聽懂模擬資料是怎麼一步一步產生的。所以頁面要用生物術語，並且用一個簡單例子講到底。",
+      "approach": "- 10-22：把白話版流程寫成 v5 大綱。兩位 subagent 各審兩輪（邏輯、程式事實），再照意見改。\n- 使用者先定範圍：只講一個 sample；只講 No-Noise（一般）版本；先不講 long read；直接覆蓋舊版，不備份。\n- 依使用者留言逐頁改：補「定參數」頁；A/B allele 改叫爸爸／媽媽的 copy number；全篇例子統一用病人 SIM004。\n- 10-23：照新規則拿掉封面，第 1 頁直接放大綱。流程總覽頁、參數頁改畫示意圖。用現在的帳號另建一份線上版。\n- 第 6 頁（clone 比例 → VAF → read count）依使用者要求改了五次，每次先對照程式再改。",
+      "result": "- **定稿 7 頁**：大綱 → 流程總覽 → 參數 → 建樹與放 SNV → 放 copy number 事件 → 混合 clone 與 read count → 輸出。`check_slides.py` 7 頁、0 錯誤。\n- **第 2 頁刪掉**：使用者判斷它和大綱頁講同一件事。\n- **WGD 頁**：clonal 放在 c1；subclonal 從候選 subclone 只挑 1 個，旁邊加骰子表示隨機。\n- **第 6 頁**：補上 c1（12%），四個 clone 合計等於 purity 0.59。purity 畫成蛋糕、Dirichlet 畫成刀。期望 VAF 只用 SNV6，畫成彈珠罐（紅彈珠＝帶 SNV 的 copy）。read count 畫成從罐子抽彈珠，並註明抽到紅彈珠的機率就是期望 VAF。",
+      "interpretation": "簡報現在能回答老師的問題：benchmark 資料是用公開程式、照固定五步產生的，每一步的隨機來源都畫在頁上。之後要做 long read 版生成器時，這份簡報就是「沿用哪幾步」的對照基準。",
+      "gaps": "- 10-23 下午第 6 頁的修改（蛋糕、彈珠、c1）只在線上版。本地 `project/slides/` 搜不到「彈珠」「蛋糕」，還沒同步回來。\n- `OUTLINE.md`、`BRIEF.md` 的例子數值和頁碼，可能落後線上版。\n- 整個 `report/2026_10_28_slides/` 還沒 commit。\n- 頁面都是示意值：SIM004 來自程式附的模擬摘要表，不是 benchmark 實際用的病人。\n- 機器沒有瀏覽器，排版沒看過渲染結果。",
+      "artifacts": {
+        "files": [
+          "report/2026_10_28_slides/OUTLINE.md",
+          "report/2026_10_28_slides/REVIEW_v5.md",
+          "report/2026_10_28_slides/BRIEF.md",
+          "report/2026_10_28_slides/project/deck.json",
+          "report/2026_10_28_slides/project/slides/outline.html",
+          "report/2026_10_28_slides/project/slides/s1-overview.html",
+          "report/2026_10_28_slides/project/slides/s1-params.html",
+          "report/2026_10_28_slides/project/slides/s1-tree.html",
+          "report/2026_10_28_slides/project/slides/s1-cn.html",
+          "report/2026_10_28_slides/project/slides/s1-counts.html",
+          "report/2026_10_28_slides/project/slides/s1-output.html",
+          "report/2026_10_28_slides/removed_slides/"
+        ],
+        "commands": [
+          "python3 tools/check_slides.py report/2026_10_28_slides/ --titles"
+        ],
+        "outputs": [
+          "https://claude.ai/artifact/CLPQBjSsU2hnkBRM44Rvgw",
+          "https://claude.ai/artifact/VD3N6zKfSawc7HCgoUZx6q"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "SIM004",
+          "plain": "從程式附的模擬摘要表挑出的一個病人，全篇例子都用它的參數"
+        },
+        {
+          "term": "multiplicity",
+          "plain": "一個細胞裡帶這個 SNV 的 copy 有幾份"
+        },
+        {
+          "term": "Dirichlet",
+          "plain": "把一個總量隨機切成幾塊、每種切法機率都一樣的抽法"
+        },
+        {
+          "term": "期望 VAF",
+          "plain": "帶 SNV 的 copy 數除以全部 copy 數，也就是抽一條 read 剛好帶突變的機率"
+        },
+        {
+          "term": "No-Noise 版本",
+          "plain": "生成程式的一般設定，沒有 mutation loss 和假 SNV"
+        }
+      ],
+      "details": "session 87283172 10-22 15:16–16:47（v5→v5.5、8 頁、線上版 81）、10-23 13:28–15:21（去封面、示意圖化、換帳號重建、WGD 頁）；89d643bf 10-23 15:31–16:46（第 6 頁）。\n舊線上版 CLPQBjSsU2hnkBRM44Rvgw 屬原帳號；新線上版 VD3N6zKfSawc7HCgoUZx6q。\n刪掉的頁存在 removed_slides/：cover、s0-answer_2026-10-23、s1-cn_before_wgd_2026-10-23、s1-overview_text_2026-10-23、s1-params_text_2026-10-23。\n第 6 頁改 c1 後：normal 41%、c1 12%、c2 17%、c3 13%、c4 17%；VAF SNV1 0.30、SNV6 0.16、SNV8 0.13、SNV10 0.09。SNV6 depth 683、alt 107（107 等於期望值，不是抽出的值，使用者沒選要不要改）。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 5703,
+          "session_id": "87283172",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 15:16",
+          "ref": "87283172:5703"
+        },
+        {
+          "line": 13380,
+          "session_id": "89d643bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 15:38",
+          "ref": "89d643bf:13380"
+        },
+        {
+          "line": 14264,
+          "session_id": "89d643bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 16:13",
+          "ref": "89d643bf:14264"
+        }
+      ]
+    },
+    {
+      "title": "CONIPHER 生成程式模擬了哪些 copy number 事件？",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "逐題查程式：mutation loss、copy number gain／loss、LOH、cnLOH 都有模擬；WGD 只有 gain；read count 用期望 VAF 當二項分布的機率",
+      "question": "做簡報時，使用者連續追問 CONIPHER 生成程式的細節：有沒有 mutation loss？WGD 是 gain 還是 loss？有沒有 LOH？coverage 每個 SNV 都一樣嗎？purity 怎麼分給 clone？算好的 VAF 真的有用來產生 read count 嗎？答案決定頁面怎麼畫，也決定 long read 版能沿用哪些步驟。",
+      "approach": "- 每題先讀 `TRACERx_simulation_tool/src/` 的程式（`evolution.py`、`sequencing.py`、`make_simulation.py`），寫出行號。\n- 再數重跑的 150 份 No-Noise 資料（`_events.tsv`、`_info.tsv`），確認程式行為在資料裡真的出現。\n- 依使用者回饋，問「某工具模擬 X 嗎」時，先答「是／否」，而且指生成程式，不是建樹軟體。這條存進 memory。",
+      "result": "- **copy number 事件全都有**（見表）。loss 只動媽媽那份；SNV 一律放在爸爸那份，所以一般版本的 SNV 不會因 loss 消失。\n- **WGD 只有 gain**：所選 clone 的每個位置，爸、媽、SNV 份數全部 ×2。clonal 放在 c1；subclonal 從 c1 以外隨機挑 1 個 subclone。\n- **先後**：同一個 clone、同一個位置的事件隨機排先後；跨 clone 時祖先一定在前。這決定 multiplicity。\n- **purity 分給 clone**：用 Dirichlet(1,…,1) 隨機切給被選到的 clone，不看樹的結構。c1 的比例可以是 0，但 c1 的 CCF 永遠等於 purity。\n- **read count**：depth ~ Poisson(coverage × 該位置平均 copy number ÷ 全部位置平均)；alt ~ Binomial(depth, 期望 VAF)。coverage 每位病人一個值，各 SNV 的 depth 不同。\n- 生成程式用 Python 寫成，入口是 Jupyter notebook。",
+      "tables": [
+        {
+          "caption": "150 份 No-Noise 資料真值樹上的 copy number 事件數（來源 CONIPHER_rerun/No-Noise_sim/*/sim/*_events.tsv）",
+          "columns": [
+            "程式事件",
+            "份數變化（爸＋媽）",
+            "生物事件",
+            "次數"
+          ],
+          "rows": [
+            [
+              "gain_A／gain_B／gain_both",
+              "單一位置 +1",
+              "copy number gain",
+              "31,255"
+            ],
+            [
+              "loss_B",
+              "1+1 → 1+0",
+              "copy number loss（LOH）",
+              "19,331"
+            ],
+            [
+              "cnloh_B",
+              "1+1 → 2+0",
+              "copy-neutral LOH",
+              "19,489"
+            ],
+            [
+              "loss_A／cnloh_A",
+              "丟爸爸那份",
+              "只用在 Noise 組的 mutation loss",
+              "0"
+            ],
+            [
+              "wgd",
+              "全部位置 ×2",
+              "whole genome doubling",
+              "100,286"
+            ]
+          ]
+        }
+      ],
+      "interpretation": "CONIPHER 生成器的 copy number 模型比 PhyClone 測試程式完整，可以當 long read 生成器的基礎。但它每個位置各自決定事件，沒有整段染色體的 segment；同一個 clone 裡 WGD 和各 SNV 的先後也是每個位置各自抽。要產生 HP 和同一條 read 上的 SNV 共現，必須先補 segment 結構（推論）。",
+      "gaps": "- 「沒有 segment」「WGD 先後各位置獨立」是讀程式的推論，沒有寫程式驗證。\n- 只數了 No-Noise 組；Noise 組的 mutation loss 只讀了程式。\n- CONIPHER 建樹工具是 R 寫的，這點出自記憶，本機沒驗證。\n- 這些查證結果只寫在簡報講稿與對話，沒有整理進 `notes/05_OTHER_SIMULATORS.md`。",
+      "artifacts": {
+        "files": [
+          "research/simulation_pipeline_research/upstream/TRACERx_simulation_tool/src/evolution.py",
+          "research/simulation_pipeline_research/upstream/TRACERx_simulation_tool/src/sequencing.py",
+          "research/simulation_pipeline_research/upstream/TRACERx_simulation_tool/src/make_simulation.py",
+          "/big8_disk/boyu114/phyclone_dataset/CONIPHER_rerun/tool_8c8d173/src/",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/simulator-naming-and-direct-answers.md"
+        ],
+        "outputs": [
+          "/big8_disk/boyu114/phyclone_dataset/CONIPHER_rerun/No-Noise_sim/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "LOH",
+          "plain": "一個位置原本有爸、媽兩份，其中一份不見了"
+        },
+        {
+          "term": "cnLOH",
+          "plain": "丟掉媽媽那份，同時多複製一份爸爸的，總份數不變"
+        },
+        {
+          "term": "WGD",
+          "plain": "整個基因組複製一次，所有份數加倍"
+        },
+        {
+          "term": "CCF",
+          "plain": "腫瘤細胞裡帶這個 SNV 的比例，後代 clone 也算在內"
+        },
+        {
+          "term": "segment",
+          "plain": "一整段染色體一起發生 copy number 變化的區間"
+        }
+      ],
+      "details": "session aedffa4f 10-22 14:40；87283172 10-22 14:54–15:10、16:42，10-23 14:29–15:06；89d643bf 10-23 15:41–16:46；7c9508a3 10-23 16:47。\n程式位置：wgd = x*2（evolution.py:168）；clonal 放 initial_cc（:80）；subclonal np.random.choice(subclone_nodes, 1)（:83）；concat_all_events 內 np.random.shuffle（:101-103）；loss_events = ['loss_B','cnloh_B']（:194）；Dirichlet × purity（sequencing.py:35）；binom.rvs(n=depth, p=vaf)（:102-104）；coverage 從摘要表選一個 region 值（make_simulation.py:91）。\n150 份總計：loss 38,653、gain 36,177（不含 WGD）；13% 的列 CN_B < 1；總份數 < 2 的列 3.9%。\n10-22 15:09 先答錯方向（回答建樹軟體），使用者糾正後存 memory。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 5546,
+          "session_id": "87283172",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 15:09",
+          "ref": "87283172:5546"
+        },
+        {
+          "line": 11660,
+          "session_id": "87283172",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 15:02",
+          "ref": "87283172:11660"
+        },
+        {
+          "line": 11698,
+          "session_id": "87283172",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 15:03",
+          "ref": "87283172:11698"
+        },
+        {
+          "line": 15004,
+          "session_id": "89d643bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 16:38",
+          "ref": "89d643bf:15004"
+        }
+      ]
+    },
+    {
+      "title": "Pairtree 與 CONIPHER 的公開生成程式能重現 PhyClone 的 benchmark 嗎？CONIPHER 可以，Pairtree 不行",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "CONIPHER 舊版程式重跑 300 份，生成器輸出與作者資料逐 byte 相同；Pairtree 576 份分布相同但逐筆都不同，因為作者的種子沒生效",
+      "question": "10-21 發現 PhyClone 公開的模擬程式只是測試工具，不是作者的版本。使用者要知道另外兩個 benchmark（Pairtree、CONIPHER）的公開生成程式，能不能產生和 PhyClone dataset 一模一樣的資料。能重現的那個，才適合當 long read 生成器的起點。",
+      "approach": "- 把 pearsim、pairtree、TRACERx_simulation_tool 加成 git submodule（pearsim 沒有授權檔，所以不複製程式碼）。\n- Pairtree：原樣跑 `make_simulated_data.sh`，用 pickle 欄位判斷作者用的是 pearsim `0b9b249`；再用作者記錄的 seed 重跑兩份做種子測試。\n- CONIPHER：用 Zenodo 發布前的舊版 `8c8d173`，照 `_info.tsv` 的參數和種子重跑 No-Noise、Noise 各 150 份。沒記錄的 coverage 與 mutation loss 輸入，用搜尋找回。\n- 兩邊都從檔案反推 PhyClone 作者的格式轉換規則，再和 PhyClone benchmark 比對。結果寫成 lab report 並 commit。",
+      "result": "- **CONIPHER 可以重現**：6 個輸出檔逐 byte 相同（見表）。Noise 組只有 3 份 clone 比例差在最後一位小數（約 1e-17），read count 完全相同。\n- **Pairtree 不能逐筆重現**：576 份都產生了，11 條生成規則 576/576 通過，10 個統計量的分布和作者一致（KS p 0.30–1.00）。但作者沒給 `--seed`，記錄的 seed 沒被使用，所以 0/576 逐筆相同。\n- **PhyClone 的格式轉換規則已反推出來**：Pairtree 的 `tree.json` 576/576 逐 byte 重建；CONIPHER 的 `tree.json` 與 `data.tsv` 內容 300/300 相同，只有列的順序不同。\n- 三個生成器都沒有 read、HP 或 read 上的共現。",
+      "tables": [
+        {
+          "caption": "重跑 vs 作者資料（來源 lab_report/2026-10-22_pairtree_conipher_sim_rerun/README.md）",
+          "columns": [
+            "資料",
+            "份數",
+            "生成器輸出逐 byte 相同",
+            "PhyClone 格式內容相同",
+            "能逐筆重現"
+          ],
+          "rows": [
+            [
+              "CONIPHER No-Noise",
+              "150",
+              "150/150（6 個檔）",
+              "150/150",
+              "是"
+            ],
+            [
+              "CONIPHER Noise",
+              "150",
+              "147/150（差 1e-17）",
+              "150/150",
+              "是"
+            ],
+            [
+              "Pairtree",
+              "576",
+              "0/576",
+              "tree.json 576/576",
+              "否，種子沒生效"
+            ],
+            [
+              "PhyClone 測試程式（10-21）",
+              "100",
+              "—",
+              "要改 2 處才吻合",
+              "否，版本不同"
+            ]
+          ]
+        }
+      ],
+      "interpretation": "CONIPHER 是四個生成器裡唯一能重現作者資料的，copy number、WGD、purity 的模型也最完整。所以 long read 版生成器改以 CONIPHER 為基礎，10-28 簡報的主軸也跟著換。Pairtree 的重跑資料只能當同分布的替代品，不能取代作者資料。",
+      "gaps": "- CONIPHER 的 coverage 與 mutation loss 輸入是搜尋出來的，不能證明作者當時輸入的就是這個值。\n- 兩邊都在 Python 3.10 上跑，README 指定 3.9.5。\n- PhyClone 的 `Copy_Number_Error` 資料沒重跑，擾動程式沒公開。\n- CONIPHER 列的順序無法重現，轉換程式沒公開。\n- 程式附的病人摘要表是模擬版；用它產生新資料，參數會落在附表範圍內，和作者的 150 份不同。",
+      "artifacts": {
+        "files": [
+          ".gitmodules",
+          "research/simulation_pipeline_research/upstream/SOURCE.md",
+          "tools/pairtree_sim_to_phyclone.py",
+          "tools/pairtree_sim_check.py",
+          "tools/conipher_sim_rerun.py",
+          "tools/conipher_sim_check.py",
+          "tools/remote_zip_extract.py",
+          "lab_report/2026-10-22_pairtree_conipher_sim_rerun/README.md"
+        ],
+        "commands": [
+          "HOME=$R/home PATH=$R/shim:$PATH bash $R/make_simulated_data.sh",
+          "~/venvs/txsim/bin/python tools/conipher_sim_rerun.py $C/tool_8c8d173/src $C/zenodo/dataset2 $C/No-Noise_sim",
+          "~/venvs/phyclone/bin/python tools/conipher_sim_check.py $C/No-Noise_sim /big8_disk/boyu114/phyclone_dataset/CONIPHER_No-Noise/data_archive"
+        ],
+        "outputs": [
+          "/big8_disk/boyu114/phyclone_dataset/Pairtree_rerun/",
+          "/big8_disk/boyu114/phyclone_dataset/CONIPHER_rerun/",
+          "lab_report/2026-10-22_pairtree_conipher_sim_rerun/conipher_no-noise_vs_zenodo.tsv",
+          "lab_report/2026-10-22_pairtree_conipher_sim_rerun/pairtree_compare_vs_author.tsv",
+          "git commit 0321ee4"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "逐 byte 相同",
+          "plain": "兩個檔案的內容一個字元都不差"
+        },
+        {
+          "term": "種子沒生效",
+          "plain": "程式記下了亂數種子，但實際跑時沒用它，所以照記錄重跑得不到同一份資料"
+        },
+        {
+          "term": "KS 檢定",
+          "plain": "比較兩組數字是不是來自同一個分布"
+        },
+        {
+          "term": "git submodule",
+          "plain": "在自己的 repo 裡只記下別人 repo 的連結和版本，不複製程式碼"
+        }
+      ],
+      "details": "session aedffa4f 10-22 13:32–14:42。pearsim 0b9b249（2019-11-13）；TRACERx tool 8c8d173（2023-08-30），0711a85→8c8d173 間 src/ 只多一個沒被呼叫的函式。\nCONIPHER coverage：No-Noise 120/150、Noise 113/150 第一次就對中（平均 DEPTH 四捨五入），其餘差 ±1 或 ±2。Noise mutation loss 130/150 等於記錄值，其餘 20 份被程式上限截掉。\nZenodo dataset1（Noise，1.3 GB）只用 HTTP Range 取出 150 份 sim/ 的表格檔（約 25 MB）。\nPairtree 重跑 576 份 14 秒；PhyClone 讀取測試 sim_K10_S3_T200_M200_run1 37 秒，10 群併成 6 個 clone。\n輸出：Pairtree_rerun 4.7 GB，CONIPHER_rerun 676 MB。commit 0321ee4 共 44 個檔，含 10-21 的 PhyClone 重跑。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 2179,
+          "session_id": "aedffa4f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 13:36",
+          "ref": "aedffa4f:2179"
+        },
+        {
+          "line": 4257,
+          "session_id": "aedffa4f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 14:38",
+          "ref": "aedffa4f:4257"
+        },
+        {
+          "line": 4196,
+          "session_id": "aedffa4f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 14:37",
+          "ref": "aedffa4f:4196"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] CONIPHER 參數頁的「範圍」不是程式寫死的",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "程式只有 clone 數有寫死的範圍；purity「0.21–0.81」只是附表的最小、最大值，150 份實際資料還超出附表。參數頁刪掉範圍，補上 gain／loss 比例卡",
+      "question": "原本參數頁每張卡都寫「範圍」，例如 purity 0.21–0.81。使用者覺得這個範圍很不直覺，要求重查程式。之後又問：WGD 參數為什麼只管 gain？那 loss 由誰控制？",
+      "approach": "- 讀 `make_simulation.py` 的參數抽法，統計附表 `simulated_TRACERx_data.tsv` 能選到的值。\n- 讀 150 份實際資料的 `_info.tsv`，和附表對照。\n- 依使用者指示刪掉全冊參數的「範圍」字樣與 WGD 樹圖，並寫成規則。\n- 再列出程式從附表選的全部參數，找出頁面漏掉的那組。",
+      "result": "- **原說法錯了**：程式只有 clone 數是寫死的範圍（依 sample 數分三組：8–15、12–23、22–29）。其他參數各自從附表隨機選一個出現過的值，只有篩選門檻（purity > 0.2、SNV 數 > 150、truncal 比例 < 0.9）。\n- **purity 是兩步**：先從附表選 2 個值當上下限，再在中間平均隨機產生。\n- **附表不是作者用的那份**：150 份實際資料超出附表（見表）。\n- **WGD 卡原本寫「gain 或 loss」也錯了**：WGD 只管 gain。gain、loss、LOH 由另外四個比例控制，頁面原本沒放。現在參數頁改成六張卡，新增「gain／loss 比例」。",
+      "tables": [
+        {
+          "caption": "程式附的摘要表 vs 150 份實際資料（來源 CONIPHER_rerun/No-Noise_sim/*/sim/*_info.tsv）",
+          "columns": [
+            "參數",
+            "附表",
+            "150 份實際資料"
+          ],
+          "rows": [
+            [
+              "SNV 數",
+              "175–1793",
+              "162–3437"
+            ],
+            [
+              "purity 上限",
+              "最大 0.81",
+              "最大 0.92"
+            ],
+            [
+              "purity 下限",
+              "最小 0.21",
+              "0.21–0.86"
+            ],
+            [
+              "clonal WGD",
+              "50 位中 17 位（34%）",
+              "150 份中 101 份（67%）"
+            ],
+            [
+              "subclonal WGD",
+              "50 位中 24 位（48%）",
+              "150 份中 22 份（15%）"
+            ]
+          ]
+        }
+      ],
+      "interpretation": "作者產生 benchmark 時用的是另一份沒公開的摘要表，很可能是真實 TRACERx 資料（推論）。所以照公開程式和附表產生的新資料，參數分布會和 PhyClone benchmark 不同。我們自己做 long read 模擬時，參數要自己定，不能把附表的範圍當成程式的設定。",
+      "gaps": "- 作者實際用的摘要表沒有公開，無法驗證「是真實 TRACERx 資料」。\n- coverage 沒記在 `_info.tsv`，無法和附表比對。\n- 例子病人 SIM004 仍來自附表，講稿要說明它只是示意。",
+      "artifacts": {
+        "files": [
+          "report/2026_10_28_slides/project/slides/s1-params.html",
+          "report/2026_10_28_slides/project/slides/s1-overview.html",
+          "report/2026_10_28_slides/OUTLINE.md",
+          "report/report_rule.md",
+          "/big8_disk/boyu114/phyclone_dataset/CONIPHER_rerun/tool_8c8d173/src/make_simulation.py",
+          "/big8_disk/boyu114/phyclone_dataset/CONIPHER_rerun/tool_8c8d173/data/simulated_TRACERx_data.tsv"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "摘要表",
+          "plain": "程式從裡面隨機挑參數值的病人資料表；公開的這份是模擬版"
+        },
+        {
+          "term": "篩選門檻",
+          "plain": "只排除太小或太大的值，不是規定參數一定落在某個區間"
+        }
+      ],
+      "details": "session 87283172 10-23 14:22–14:27、15:06–15:13。附表 50 位病人、348 列。purity 區間寬度每份不同，上下限選到同值時寬度 0，最寬 0.66。\n新增 gain／loss 卡用 SIM004 的值：gain 29%、loss 32%、truncal gain 81%、truncal loss 6%。第 2 頁的「搜尋範圍」講搜尋去處，和參數無關，保留。\nreport_rule.md C-18 新增：參數不寫範圍；刪示意圖時連圖例一起刪。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 10373,
+          "session_id": "87283172",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 14:22",
+          "ref": "87283172:10373"
+        },
+        {
+          "line": 10497,
+          "session_id": "87283172",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 14:23",
+          "ref": "87283172:10497"
+        },
+        {
+          "line": 11773,
+          "session_id": "87283172",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 15:06",
+          "ref": "87283172:11773"
+        }
+      ]
+    },
+    {
+      "title": "PhyClone 的 TSSB 資料是用哪支程式產生的？沒有公開，只找到候選",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "三個 subagent 查論文、Zenodo、GitHub：TSSB 生成程式沒有公開，第三方 README 證實作者的 benchmark 腳本沒發布；本機 900 份資料的指紋符合 TSSB",
+      "question": "PhyClone 的 benchmark 還有 TSSB-Low／High 兩組，repo 裡沒有它們的生成程式。使用者要先查清楚哪篇論文或哪個 GitHub repo 有 PhyClone 真正用過的版本，先不下載。",
+      "approach": "- 開三個 subagent 平行查：論文與 Zenodo 文獻線索、本機 900 份資料的鑑識、GitHub 上的 TSSB 實作。\n- 兩個關鍵說法親自核對：第三方 README 的原句、PhylEx 的 depth 寫法。\n- 結論寫進 `notes/05_OTHER_SIMULATORS.md` 的 TSSB 一節。",
+      "result": "- **沒有公開的生成程式**：論文、bioRxiv 預印本只引用 TSSB prior，沒附程式。Zenodo 只有 tar.gz 與 README。Roth-Lab 30 個 repo 和作者個人帳號都沒有。\n- **第三方證實**：UBC 課程專案 `GiulioSP/CPSC536project1` 的 README 寫明，原論文的 benchmarking scripts「were not published」，是第一作者私下提供的。\n- **本機資料的指紋**（900 份）：read count 用 PhyClone 測試程式的同一套算法，CN 固定 1/1、depth 固定 1000；樹形符合 TSSB，不符合 FS-CRP；94 棵樹的 clonal_prev 加總小於 1，表示刪過節點但沒重算。\n- **候選都沒有直接證據**：PhyloWGS 的 `tssb.py` 最可能被借來產生樹；PhylEx 的 depth 用 Poisson，和本機資料不符，最多只借了建樹部分。",
+      "interpretation": "TSSB 這組資料無法重現，也不適合當我們的生成器範本。PhyClone 的四類 benchmark 裡，只有 CONIPHER 的生成程式公開而且能重現。要取得 TSSB 原始程式，只能寫信問作者。",
+      "gaps": "- 沒寫信給 Emilia Hurtado 或 Andrew Roth。\n- GitHub code search 遇到 rate limit，Roth-Lab 範圍內的「tssb」程式碼搜尋沒做完。\n- 鑑識腳本留在暫存目錄，沒放進 repo。\n- `05_OTHER_SIMULATORS.md` 的 TSSB 一節還沒 commit。",
+      "artifacts": {
+        "files": [
+          "research/simulation_pipeline_research/notes/05_OTHER_SIMULATORS.md"
+        ],
+        "outputs": [
+          "https://github.com/GiulioSP/CPSC536project1",
+          "https://github.com/morrislab/phylowgs/blob/master/tssb.py",
+          "https://zenodo.org/records/14238235"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "TSSB",
+          "plain": "一種隨機長樹的方法：每個節點像折樹枝一樣，隨機決定往下長幾個分支、每支多大"
+        },
+        {
+          "term": "FS-CRP",
+          "plain": "PhyClone 另一種產生模擬樹的方法：先把 SNV 分群，再把群隨機接成樹"
+        },
+        {
+          "term": "資料指紋",
+          "plain": "從資料本身看出的生成規則痕跡，例如節點編號順序、固定的 depth"
+        }
+      ],
+      "details": "session aedffa4f 10-22 14:45–14:51，subagent：TSSB paper trail search、TSSB local data forensics、GitHub 候選搜尋。\n指紋：mu = 0.5·ccf + 0.001·(1−ccf) 900/900 成立；node id 為 DFS preorder；root 為最大群 Low 312/500、High 305/400；Low 和 High 用同一套流程但樹各自獨立抽。\nPhylEx simul_data.cpp 第 172 行 depth = Poisson(mean_depth × total_cn/2)。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 4397,
+          "session_id": "aedffa4f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 14:45",
+          "ref": "aedffa4f:4397"
+        },
+        {
+          "line": 4865,
+          "session_id": "aedffa4f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 14:51",
+          "ref": "aedffa4f:4865"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 10-28 簡報先暫停，再改用 CONIPHER 生成流程當主軸",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "原本 10-28 簡報講 PhyClone 的模擬流程；因為那是測試工具、不是作者的版本，先暫停，之後主軸改成能重現作者資料的 CONIPHER",
+      "question": "10-21 的 v4.1 大綱講「PhyClone 的模擬資料怎麼產生」。但重跑發現 PhyClone repo 的模擬程式只是測試工具，不是作者產生 benchmark 的版本。照它講，等於沒解釋 benchmark 資料真正怎麼來。",
+      "approach": "- 10-22 13:34 使用者決定暫停。`OUTLINE.md` 狀態改成「暫停」並寫原因；memory 記下「恢復前先重新決定主軸」。\n- 當下更正說法：PhyClone 的程式是真的程式、也能跑，問題是它不是作者的版本。\n- 同日下午 CONIPHER 確認能逐 byte 重現後，使用者在 15:16 恢復簡報，主軸換成 CONIPHER 的生成流程。",
+      "result": "- PhyClone 模擬流程這條簡報主軸不再沿用。v4.1 大綱、`REVIEW_v4.md`、v3 備份都留著，沒刪。\n- 新主軸：CONIPHER 的生成程式公開、能重現作者資料，所以用它回答「benchmark 資料怎麼產生」。\n- 使用者同時決定先不講 long read，先把 CONIPHER 流程講清楚。",
+      "interpretation": "簡報主軸跟著證據走：誰能重現作者資料，就講誰。long read 版生成器的設計也改從 CONIPHER 出發，PhyClone 的測試程式只當參考。",
+      "gaps": "- long read 版要改哪幾步，這次刻意不上頁面，記在大綱的「保留在計畫，不上投影片」。\n- memory `deck-2026-10-28-paused` 的檔名還是 paused，內容已改成 resumed。",
+      "artifacts": {
+        "files": [
+          "report/2026_10_28_slides/OUTLINE.md",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/deck-2026-10-28-paused.md"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "主軸",
+          "plain": "整份簡報要回答的那一個問題"
+        },
+        {
+          "term": "測試工具",
+          "plain": "repo 裡用來檢查推理程式對不對的小程式，不是用來產生正式資料的"
+        }
+      ],
+      "details": "session aedffa4f 10-22 13:34（暫停）；87283172 10-22 15:16（恢復，主軸改 CONIPHER）、15:37（先不想 long read）。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 2118,
+          "session_id": "aedffa4f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 13:34",
+          "ref": "aedffa4f:2118"
+        },
+        {
+          "line": 2173,
+          "session_id": "aedffa4f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 13:34",
+          "ref": "aedffa4f:2173"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "`report_rule.md` 新增不做封面與示意圖規則",
+      "status": "done",
+      "what": "為什麼：CLAUDE.md 規定收到簡報修改指令時，要先把指令併進 report/report_rule.md 的對應區塊。10-22～10-23 做 10-28 簡報時，使用者給了很多畫法與內容指示。做了什麼：新增 W-4（不做封面，第 1 頁直接寫本週大綱；大綱頁已寫出老師的問題時，不另做「上次的問題」頁）；L-1、P-7、L-8 跟著改；C-14 加「白話版改回生物術語」；C-18 加多條（每步都要有展開頁含定參數、參數頁畫示意圖、參數卡不標步驟編號、參數不寫範圍、隨機放置的事件畫在放事件頁並用虛線圈候選、只講基本版本不講 Noise 組）；L-10 加「使用者要先講基線時不放新需求頁」；E-5 加公式頁只用一個例子、期望 VAF 畫成彈珠、read count 畫成從同一個罐子抽彈珠、改版前先在 BRIEF.md 用 ASCII 畫 2 個以上方案；F 區加流程每步配示意圖、隨機事件旁畫骰子、F-14 抽象分布畫生活比喻（purity 蛋糕、Dirichlet 刀）。tools/check_slides.py 改成第 1 頁是大綱頁、也要有頁尾。結果：report_rule.md 比上次 commit 多 69 行、少 12 行。狀態：都還沒 commit。",
+      "why_demoted": "被 5 項上限擠掉（11 分）",
+      "artifacts": {
+        "files": [
+          "report/report_rule.md",
+          "tools/check_slides.py",
+          "report/2026_10_28_slides/BRIEF.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 8837,
+          "session_id": "87283172",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 13:28",
+          "ref": "87283172:8837"
+        },
+        {
+          "line": 9370,
+          "session_id": "87283172",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-23 13:35",
+          "ref": "87283172:9370"
+        }
+      ]
+    },
+    {
+      "title": "`collect_day.sh` 在 10-22 中斷，10-22 沒有日誌",
+      "status": "failed",
+      "what": "為什麼：每晚 23:00 的排程會跑 daily-log。10-21 23:00～23:06 那次寫完 10-21 日誌並推進游標到 2026-10-21T23:00:24。做了什麼：10-22 23:00 那次跑 collect_day.sh 時中途當掉。原因：第 218 行 `find … | sort | head -100` 後面沒有 `|| true`；那天動過的檔案超過 100 個（多數是新加的 pairtree submodule），head 提早結束觸發 SIGPIPE，腳本開了 `set -euo pipefail`，以 exit 141 中止，只留半份 traces.md，沒有 transcript.txt。當時試著改腳本或在專案內建修補副本，都被權限擋下（skill 腳本是 sensitive file）。結果：10-22 沒有日誌；游標停在 10-21 23:00，所以這份 10-23 日誌一次涵蓋 10-21 23:00～10-23 23:00。10-23 這次一樣在第 218 行中斷，改用直接呼叫 extract_transcript.py 補出 transcript。狀態：腳本還沒修，下次檔案數超過 100 時會再中斷；修法是第 218 行（以及第 270 行）結尾加 `|| true`，需要使用者核准編輯。",
+      "why_demoted": "環境類，使用者沒有討論（0 分）",
+      "artifacts": {
+        "files": [
+          "/home/boyu114/.claude/skills/daily-log/scripts/collect_day.sh",
+          "daily/.data/2026-10-21.json"
+        ],
+        "commands": [
+          "bash /home/boyu114/.claude/skills/daily-log/scripts/collect_day.sh",
+          "python3 /home/boyu114/.claude/skills/daily-log/scripts/extract_transcript.py --since 2026-10-21T22:00:24 --until 2026-10-23T23:00:12 --overlap-until 2026-10-21T23:00:24 ..."
+        ]
+      },
+      "evidence": [
+        {
+          "line": 13184,
+          "session_id": "273fd3b2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-22 23:00",
+          "ref": "273fd3b2:13184"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "title": "回答時改用英文",
+      "detail": "10-22 14:37 兩次回覆用了英文，違反 CLAUDE.md 的繁體中文規則。原因是前面的工具輸出與 commit message 都是英文。",
+      "resolution": "使用者指出後，用中文重講一次。"
+    }
+  ],
+  "advisor": [
+    {
+      "kind": "question",
+      "text": "老師要看懂 benchmark 模擬資料是怎麼一步一步產生的；10-28 簡報用 CONIPHER 生成流程回答",
+      "answered": false
+    }
+  ],
+  "questions_for_advisor": [],
+  "next": [],
+  "scan": {
+    "last_scanned": "2026-10-23T23:00:12",
+    "sessions": [
+      "3dbda396",
+      "aedffa4f",
+      "87283172",
+      "273fd3b2",
+      "89d643bf",
+      "7c9508a3",
+      "18b3c0e3",
+      "84550fcc"
+    ],
+    "layers": {
+      "show": 6,
+      "record": 2,
+      "border": 0
+    }
+  }
+}

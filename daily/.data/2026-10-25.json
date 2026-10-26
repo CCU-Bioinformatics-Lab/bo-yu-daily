@@ -1,0 +1,778 @@
+{
+  "schema_version": "2",
+  "date": "2026-10-25",
+  "headline": "HP 真值樹的 7 類事件在 HG008、TRACERx、PCAWG 都找得到實例，但事件密度與突變遺失偏高，所以原樹改當壓力測試，另設計一棵典型樹",
+  "covers": "10-24 23:00 ~ 10-25 23:00",
+  "items": [
+    {
+      "title": "HP 真值樹的 7 類事件在真實腫瘤裡都找得到嗎？",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "HG008、TRACERx 421、PCAWG 實測：7 類事件各自都有真實實例；但突變遺失 20%、4 個 clone 分岔、gain 區 early 比例 0.5 都在上尾，原樹改稱壓力測試樹",
+      "question": "模擬出來的 long read bulk 資料要有人相信，前提是 `hp_truth_tree.png` 這棵真值樹本身合理。今天把「先證明真值樹合理」訂為最優先目標，再做模擬器。",
+      "approach": "- 多個 subagent 平行調查 T2T-Q100（HG002）、GIAB HG008、SEQC2／COLO829／CASTLE，以及 7 類事件的真實腫瘤文獻。\n- 小檔下載到 `/big8_disk/boyu114/benchmark_data/`（T2T_Q100、GIAB、SEQC2、COLO829、CASTLE）；在 chrX 驗證 GIAB v5.0q 的 GT 順序。\n- 用 HG008 的 haplotype-resolved benchmark 統計事件。\n- 再派 subagent 下載 TRACERx 421（Zenodo）與 PCAWG open bucket，各自算事件頻率；另兩個 subagent 逐條核對文獻數字。\n- 依實測中位數設計一棵「典型樹」並畫圖，最後寫成 `SUMMARY.md`。",
+      "result": "- **7 類事件都有真實實例。** HG008 有 haplotype-specific gain、cnLOH、gain 前／後的 SNV（multiplicity 2:1 = 76:65），平衡區 SNV hap1:hap2 = 2,208:2,385。\n- **在範圍內的參數：** purity 0.40（TRACERx 中位 0.39）、HP +1 gain（TRACERx 91% tumour 有，91% 只差 1 copy）、subclonal cnLOH（TRACERx 72% tumour 有）。\n- **偏高的參數：** 突變遺失 20%（TRACERx 嚴格下限中位 0%、最大 11.7%）、gain 區 early 比例 0.5（PCAWG 中位 0.28，只有 4.5% 樣本 ≥ 0.5）、3 個 subclone（PCAWG 只有 2.3% 樣本 ≥ 3 個）。\n- **樹形：** TRACERx 單區域子樹 73% 是直線；4-clone 子樹只有 11% 和原樹同形。\n- 典型樹：C1（1.00）→ C2（0.58）→ C3（0.29），直線、3 個 clone、突變遺失 1.5%，保留 7 類中的 6 類（拿掉低 CCF clone）。",
+      "interpretation": "原樹的每個事件都真實存在，但全部塞進 100 個 SNV，密度遠高於一般腫瘤。所以報告要兩棵樹一起呈現：原樹檢查方法在極端情況下的表現，典型樹代表一般腫瘤。這也決定了後面模擬器的隨機樹要從 TRACERx 實際樹抽，而不是手寫。",
+      "tables": [
+        {
+          "caption": "原樹（壓力測試樹）的事件參數與真實 cohort 實測的對照（數字見各 lab_report）",
+          "columns": [
+            "事件",
+            "原樹設定",
+            "真實資料實測",
+            "判定"
+          ],
+          "rows": [
+            [
+              "① 低 purity",
+              "0.40",
+              "TRACERx tumour 中位 0.39；PCAWG 17% ≤ 0.40；本機 HCC1395 實測 0.32–0.51",
+              "在範圍內"
+            ],
+            [
+              "② subclonal HP gain",
+              "HP1 +1",
+              "TRACERx 91% tumour 有，其中 91% 只差 1 copy；HG008 有 subclonal 2+1 gain",
+              "在範圍內"
+            ],
+            [
+              "③ 突變遺失",
+              "20% SNV",
+              "TRACERx 每 tumour 中位 0%，最大 11.7%；PCAWG 只有代理值",
+              "偏高"
+            ],
+            [
+              "④ 低 CCF clone",
+              "C3 CCF 0.10",
+              "TRACERx 單區域 8.4% subclone ≤ 0.15；PCAWG 0.5%（受偵測下限影響）",
+              "尾端"
+            ],
+            [
+              "⑤ HP 拆分",
+              "每個 SNV 屬 HP1 或 HP2",
+              "HG008 2,208:2,385；HCC1395 ONT 14,443:14,120",
+              "支持"
+            ],
+            [
+              "⑥ cnLOH",
+              "seg D subclonal",
+              "TRACERx 72% tumour 有 subclonal cnLOH；HG008 只有 clonal",
+              "在範圍內"
+            ],
+            [
+              "⑦ CN timing",
+              "gain 區 early 0.5",
+              "PCAWG 中位 0.28（IQR 0.18–0.40）",
+              "偏高"
+            ],
+            [
+              "樹形",
+              "4 clone、分岔",
+              "TRACERx 單區域 73% 直線；PCAWG ≥ 3 subclone 只佔 2.3%",
+              "上尾"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-10-25/typical_truth_tree.png",
+          "caption": "典型 HP-aware 真值樹：每個參數取自 TRACERx／PCAWG／HG008 的實測中位數或常見值"
+        }
+      ],
+      "gaps": "- 「突變遺失」在單一 bulk 樣本內的頻率沒有直接資料：TRACERx 只量得到區域間的嚴格下限。\n- subclonal cnLOH 在 PCAWG 無法量（Battenberg 表示不了 (1,1)/(2,0)）。\n- 典型樹只做了設計，沒有跑 PhyClone（中途開跑的 run 被叫停、目錄已刪）。\n- CASTLE／Wakhan 的 haplotype-specific CN 還沒拿來對照。",
+      "artifacts": {
+        "files": [
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/README.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/SUMMARY.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/01_T2T_Q100_HG002.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/02_GIAB_HG008_somatic.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/03_SEQC2_COLO829_celllines.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/04_event_evidence_real_tumors.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/05_tracerx_citation_check.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/06_pcawg_other_citation_check.md",
+          "tools/download_benchmark_small.sh",
+          "tools/hg008_truth_tree_stats.py",
+          "tools/tracerx_export.R",
+          "tools/tracerx_event_stats.py",
+          "tools/pcawg_event_stats.py",
+          "tools/pcawg_clipp_ccf.py",
+          "tools/typical_truth_tree.py",
+          "tools/draw_typical_truth_tree.py"
+        ],
+        "outputs": [
+          "lab_report/2026-10-25_hg008_truth_tree_plausibility/",
+          "lab_report/2026-10-25_tracerx_event_stats/",
+          "lab_report/2026-10-25_pcawg_event_stats/",
+          "lab_report/2026-10-25_typical_truth_tree/",
+          "research/simulation_pipeline_research/figures/typical_truth_tree.png",
+          "/big8_disk/boyu114/benchmark_data/",
+          "commits 4c9338a 68b9b07 ac226c3 90eb060 0949eb9 a0b66be a98657b"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "壓力測試樹",
+          "plain": "故意把很多難題塞進同一棵樹，用來看方法在最壞情況下會不會壞掉"
+        },
+        {
+          "term": "典型樹",
+          "plain": "每個參數都取真實腫瘤最常見的值，代表一般病人"
+        },
+        {
+          "term": "突變遺失",
+          "plain": "突變所在的那段 DNA 後來被刪掉或被另一條拷貝取代，突變就從後代細胞消失"
+        },
+        {
+          "term": "early 比例",
+          "plain": "拷貝數增加區裡，在增加之前就已發生、因此被複製成兩份的突變佔多少"
+        },
+        {
+          "term": "單區域子樹",
+          "plain": "只看腫瘤其中一塊取樣看得到的 clone，模擬一次 bulk 定序的視角"
+        }
+      ],
+      "details": "session 91a5283a 10-25 10:31–14:57。subagent：T2T-Q100、GIAB HG008、SEQC2/COLO829、7 類事件文獻、TRACERx citation check（19 條 14✅5⚠️）、PCAWG/其他 citation check（50 條 38✅12⚠️）、TRACERx 421 資料統計、PCAWG 資料統計。TRACERx 下載 491 MB（Zenodo 7822002、7649257），PCAWG 1.2 GB（ICGC 25K open bucket、CliPP）。使用者中途質疑 switch error 與真值樹的關係，之後把目標記進 memory truth-tree-plausibility-goal。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 3945,
+          "session_id": "91a5283a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 11:25",
+          "ref": "91a5283a:3945"
+        },
+        {
+          "line": 5624,
+          "session_id": "91a5283a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 13:35",
+          "ref": "91a5283a:5624"
+        },
+        {
+          "line": 5647,
+          "session_id": "91a5283a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 13:40",
+          "ref": "91a5283a:5647"
+        }
+      ]
+    },
+    {
+      "title": "寫出 `longbulksim` v0.1，並讓它從 TRACERx 421 的真實樹抽隨機樹",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "`longbulksim` 能從 YAML 樹產生 PhyClone 輸入、HP 計數與 SNV pair 共現表；隨機樹生成器的直線樹比例 72.9%、purity 中位 0.41，都和 TRACERx 吻合",
+      "question": "要驗證 HP-aware PhyClone，需要能大量產生「帶 HP 與 read 共現真值」的 long read bulk 資料。前一天的調查確認沒有現成工具做到這件事。",
+      "approach": "- 用 pstack 流程寫 `longbulksim` v0.1：讀 HP-aware clone tree 的 YAML spec，在 molecule 層抽樣，輸出 PhyClone 輸入、HP 拆分計數、SNV pair 共現表，真值另放 `truth/`。read 跨度用 `tools/measure_read_span.py` 從真實 ONT 量。\n- 加 `longbulksim.random_tree`：每個 spec 取一棵 TRACERx 421 的單區域真實樹（拓樸、CCF、purity、各 clone 突變比例），CN 事件取自同一個 tumour。\n- 第二版 CN 改用 TRACERx 每個 segment 的 allele-specific 狀態重建，補上非 LOH 的 deletion 與 clonal gain。\n- 生成 1,000 個 spec，和 TRACERx／PCAWG 的 cohort 數字比對。",
+      "result": "- 直線樹 72.9%（TRACERx 73%）；purity 中位 0.41（0.41）。\n- 不 merge 時 subclone CCF 中位 0.59、clone 數中位 5，和 TRACERx 的 0.58、5 一致。CCF 和 parent 差 < 0.05 的 clone 併掉後，clone 數中位 3。\n- CN timing 沒有調參數就落在 PCAWG IQR 內：2:1 區 early 比例 0.24（PCAWG 中位 0.28）。\n- 突變遺失中位 0.5%、Q90 3.1%，介於 TRACERx 嚴格下限和論文估計之間。\n- 18 個 unittest 全過，三個 commit 直接進 main。",
+      "interpretation": "模擬器的樹不再是手寫的，而是從真實腫瘤抽出來，這回應了上一項「真值樹要合理」的要求。之後的方法比較（下面第 5 項）就用這批隨機樹。",
+      "tables": [
+        {
+          "caption": "1,000 個隨機 spec 與 cohort 實測的對照（lab_report/2026-10-25_random_tree_generator）",
+          "columns": [
+            "指標",
+            "cohort 來源",
+            "cohort",
+            "生成",
+            "判定"
+          ],
+          "rows": [
+            [
+              "直線樹比例",
+              "TRACERx 單區域",
+              "0.73",
+              "0.729",
+              "吻合"
+            ],
+            [
+              "purity 中位",
+              "TRACERx 區域",
+              "0.41",
+              "0.41",
+              "吻合"
+            ],
+            [
+              "clone 數中位",
+              "TRACERx 單區域",
+              "5",
+              "3（merge 前 5）",
+              "merge 刻意造成"
+            ],
+            [
+              "2:1 區 early 比例",
+              "PCAWG",
+              "0.28",
+              "0.24",
+              "在 IQR 內"
+            ],
+            [
+              "遺失比例 Q90",
+              "TRACERx 嚴格下限",
+              "0.014",
+              "0.031",
+              "高於下限"
+            ]
+          ]
+        }
+      ],
+      "gaps": "- 遺失機制偏 deletion 型（91%，TRACERx 是 75%）。\n- 沒有 phasing 錯誤、HP 錯標、定序錯誤；這三項到晚上 v0.2 才加，還沒 commit。\n- 只產生計數與 pair 表，沒有產生 BAM／read。",
+      "artifacts": {
+        "files": [
+          "longbulksim/longbulksim/model.py",
+          "longbulksim/longbulksim/sample.py",
+          "longbulksim/longbulksim/simulate.py",
+          "longbulksim/longbulksim/random_tree.py",
+          "longbulksim/README.md",
+          "longbulksim/DECISIONS.md",
+          "longbulksim/specs/stress.yaml",
+          "tools/measure_read_span.py",
+          "tools/tracerx_blueprints.py",
+          "tools/random_tree_validation.py"
+        ],
+        "commands": [
+          "python3 tools/random_tree_validation.py lab_report/2026-10-25_random_tree_generator --n 1000 --run 20"
+        ],
+        "outputs": [
+          "lab_report/2026-10-25_random_tree_generator/",
+          "commits 8e6fdca 2d47cf6 b9dd860"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "molecule 層",
+          "plain": "以一份份 DNA 分子為單位抽 read，再數 ref／alt，而不是直接從機率抽數字"
+        },
+        {
+          "term": "SNV pair 共現表",
+          "plain": "每兩個相鄰突變，有幾條 read 同時帶兩個、只帶一個、都不帶"
+        },
+        {
+          "term": "藍圖",
+          "plain": "從真實腫瘤取來的樹形、CCF、purity 與 CN 事件，當作模擬的骨架"
+        }
+      ],
+      "details": "session ff86f0e0 10-25 14:58–15:50。使用者問為何開 branch，決定直接 commit 到 main。藍圖 TSV 約 1 MB 放在 package 的 data/。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 7333,
+          "session_id": "ff86f0e0",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 14:58",
+          "ref": "ff86f0e0:7333"
+        },
+        {
+          "line": 8263,
+          "session_id": "ff86f0e0",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 15:17",
+          "ref": "ff86f0e0:8263"
+        },
+        {
+          "line": 8519,
+          "session_id": "ff86f0e0",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 15:20",
+          "ref": "ff86f0e0:8519"
+        }
+      ]
+    },
+    {
+      "title": "HP 拆分計數（A1／A2）能修好壓力樹上哪個失敗？",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "A2 把遺失的 s10 被併進 C3 的比例從 0.92–1.00 降到 0.00–0.01；A1 單獨用會產生假 clone；C1／C2 合併與拓樸都沒改善",
+      "question": "前一天 PhyClone 在壓力樹上有三個失敗：C1／C2 被合併（P1）、直線和分岔拓樸約 4:6 分不開（P2）、cnLOH 遺失的 s10 被併進 C3（P3）。老闆指示研究只針對單一 bulk 樣本，所以要看 HP 特徵能修好哪一個。",
+      "approach": "- 先寫設計說明 `HP_EXTENSION_DESIGN.md`：A1＝用 HP 拆分後的 ref／alt 計數；A2＝再加上 segment 的 subclonal CN 狀態與比例 φ。\n- 實作在 `tools/phyclone_hp.py`；模擬器多輸出 `data_hp.tsv` 與 `segments.tsv`。\n- 3 份資料 × 3 個 MCMC seed × 3 種方法，共 27 次 run，全部只有一個 sample。\n- 另把第二個 sample 加進去重跑一次，只當上限參考。",
+      "result": "- **A2 修好 P3：** s10 被併進 C3 從 0.92–1.00 降到 0.000–0.007；truncal clone 的 MAP CCF 從 0.87–0.90 回到 0.97–1.00。\n- **A1 單用變差：** s10 變成插在 C3 上面的假 clone（posterior 0.14–0.45），因為 cnLOH 讓 SNV 那一側 CN 變 0，只能硬設 1。\n- **P1、P2 沒改善：** C1／C2 合併三種方法都是 1.00；直線樹比例 0.38–0.47。\n- 兩個 sample 時 4 個 clone 和關係全對（posterior 99.8–100%），但 s10 變成假 clone。\n- 實作中修了兩個 bug：gain 後才出現的 SNV multiplicity 要固定為 1；不可能的 CCF 原本給 −inf 造成 NaN。",
+      "interpretation": "A1／A2 只改單一 SNV 的 likelihood，帶不出拓樸資訊，所以 P2 要靠 read 共現（第 4 項的 C4）。A2 和 C4 分工：A2 處理突變遺失，C4 處理拓樸。",
+      "tables": [
+        {
+          "caption": "壓力樹單一 sample，3 份資料 × 3 個 MCMC seed 的範圍（lab_report/2026-10-25_hp_a1a2_vs_base）",
+          "columns": [
+            "問題",
+            "base",
+            "A1",
+            "A2"
+          ],
+          "rows": [
+            [
+              "P3：s10 被併進 C3（真值 0）",
+              "0.92–1.00",
+              "0–0.67，有假 clone",
+              "0.00–0.01"
+            ],
+            [
+              "P3：s10 回到 truncal（真值 1）",
+              "0",
+              "0",
+              "0.80–0.86"
+            ],
+            [
+              "truncal clone CCF（真值 1.00）",
+              "0.87–0.90",
+              "0.91–0.94",
+              "0.97–1.00"
+            ],
+            [
+              "P1：C1／C2 合併（真值 0）",
+              "1.00",
+              "1.00",
+              "1.00"
+            ],
+            [
+              "P2：直線樹比例（真值 0）",
+              "0.38–0.44",
+              "0.34–0.45",
+              "0.43–0.47"
+            ]
+          ]
+        }
+      ],
+      "gaps": "- A2 用的是真值 φ，沒有加雜訊；φ 要從哪裡估還沒決定（列在待決問題）。\n- P1 沒改善的原因只是猜測（prior 對多一個 node 的懲罰），沒有驗證。\n- 遺失 SNV 在 A2 下有兩個一樣高的峰；若剛好有 CCF≈1−φ 的真 clone，可能被錯放。",
+      "artifacts": {
+        "files": [
+          "research/phyclone_research/HP_EXTENSION_DESIGN.md",
+          "tools/phyclone_hp.py",
+          "tools/hp_truth_tree_to_phyclone.py",
+          "lab_report/2026-10-24_hp_truth_tree_phyclone/README.md"
+        ],
+        "outputs": [
+          "lab_report/2026-10-25_hp_a1a2_vs_base/",
+          "lab_report/2026-10-24_hp_truth_tree_phyclone/two_sample/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "A1",
+          "plain": "把 read 依 HP1／HP2 分開數 ref／alt，只用突變那一條 HP 的 read 算機率"
+        },
+        {
+          "term": "A2",
+          "plain": "A1 再加上「這段 DNA 有多少比例的腫瘤細胞換了 CN 狀態」"
+        },
+        {
+          "term": "φ",
+          "plain": "腫瘤細胞中處於第二種 CN 狀態的比例"
+        },
+        {
+          "term": "posterior 比例",
+          "plain": "MCMC 抽到的樹裡，有多少比例符合某個條件"
+        }
+      ],
+      "details": "session e623fed9 10-25 08:26–09:31。待決的 4 個問題記在 memory hp-extension-open-questions。資料 seed 1 的 base 結果和 10-24 逐 byte 相同。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 2397,
+          "session_id": "e623fed9",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 08:55",
+          "ref": "e623fed9:2397"
+        },
+        {
+          "line": 2844,
+          "session_id": "e623fed9",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 09:31",
+          "ref": "e623fed9:2844"
+        }
+      ]
+    },
+    {
+      "title": "加入 read 共現的 C4 拓樸項，能分出直線與分岔樹嗎？",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "C4 讓錯誤直線樹的 posterior 從 0.39–0.48 降到 0.000–0.002，12 個 run 全部如此，連只有 16 個 pair 的真實密度也一樣",
+      "question": "A1／A2 修不了拓樸（P2）。同一條 long read 上兩個突變是否一起出現，直接說明它們是祖孫還是分支關係。加入這個 pairwise 項能不能分出直線與分岔？",
+      "approach": "- 寫 `tools/phyclone_pairs.py`：依樹上兩個 clone 的關係（same／祖孫／分支），對每條跨越兩個 SNV 的 read 給 likelihood，錯配機率 ε = 0.01。\n- 在壓力樹上測兩種 SNV 密度（×1 是實測密度，×10），3 個資料 seed，方法 base、base＋C4、A2、A2＋C4，共 24 個 run。\n- 寫下一步的穩健性測試計畫 `C4_ROBUSTNESS_PLAN.md`，交給新 session。",
+      "result": "- **P2 完全解決：** 錯誤直線樹 0.39–0.48 → 0.000–0.002，12 個 C4 run 全部如此。\n- ×1 下能分辨 P2 的 pair 合計給出 7.4–21.3 的 log 證據；base 兩種拓樸只差約 0.4。\n- **P1 只部分改善：** ×10 下 3 個 seed 有 2 個 C1／C2 不再合併，但改成 C2 與 C4 合併。只有 A2＋C4 seed 1 推出完整 4 clone 真值樹（posterior 0.996）。\n- **P3 要靠 A2：** s10 在 C3 的比例，base＋C4 約 1.0，A2＋C4 約 0.01–0.04。",
+      "interpretation": "少量 pair 就夠，是因為每條矛盾的 read 代價很高（log ε ≈ −4.6）。這也是風險：真實資料的 HP 錯標與定序錯誤會產生假矛盾，可能讓 C4 很有信心地選錯樹，所以接著做穩健性測試（記錄層第 9 項）。C2 和 C4 的 SNV 分在不同 HP，沒有 read 能跨越，這是設計樹本身的限制。",
+      "tables": [
+        {
+          "caption": "壓力樹，錯誤直線樹的 posterior 比例（lab_report/2026-10-25_c4_pair_term_stress）",
+          "columns": [
+            "方法",
+            "直線樹 posterior（真值 0）",
+            "s10 在 C3（真值 0）"
+          ],
+          "rows": [
+            [
+              "base",
+              "0.39–0.48",
+              "約 1.0"
+            ],
+            [
+              "base＋C4",
+              "0.000–0.002",
+              "約 1.0"
+            ],
+            [
+              "A2＋C4",
+              "0.000–0.002",
+              "0.01–0.04"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "svg",
+          "caption": "錯誤直線樹的 posterior 範圍：base 與加入 C4 後",
+          "content": "<svg viewBox=\"0 0 640 170\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"inherit\" font-size=\"12\"><line x1=\"130\" y1=\"20\" x2=\"130\" y2=\"130\" stroke=\"#eaeef2\"/><line x1=\"330\" y1=\"20\" x2=\"330\" y2=\"130\" stroke=\"#eaeef2\"/><line x1=\"530\" y1=\"20\" x2=\"530\" y2=\"130\" stroke=\"#eaeef2\"/><text x=\"130\" y=\"148\" text-anchor=\"middle\" fill=\"#57606a\">0</text><text x=\"330\" y=\"148\" text-anchor=\"middle\" fill=\"#57606a\">0.25</text><text x=\"530\" y=\"148\" text-anchor=\"middle\" fill=\"#57606a\">0.50</text><text x=\"330\" y=\"165\" text-anchor=\"middle\" fill=\"#57606a\">錯誤直線樹的 posterior 比例（真值 0）</text><text x=\"120\" y=\"55\" text-anchor=\"end\" fill=\"#24292f\">base</text><rect x=\"442\" y=\"42\" width=\"72\" height=\"20\" fill=\"#57606a\"/><text x=\"520\" y=\"57\" fill=\"#24292f\">0.39–0.48</text><text x=\"120\" y=\"105\" text-anchor=\"end\" fill=\"#24292f\">base＋C4</text><rect x=\"130\" y=\"92\" width=\"3\" height=\"20\" fill=\"#1f6feb\"/><text x=\"140\" y=\"107\" fill=\"#1f6feb\">0.000–0.002</text></svg>"
+        }
+      ],
+      "gaps": "- 模擬沒有 phasing 誤差與定序誤差，ε = 0.01 是假設值。\n- C2／C4 在設計上無法用 read 區分。\n- 只在壓力樹上測，沒在 40 個隨機樹與典型樹上測。",
+      "artifacts": {
+        "files": [
+          "tools/phyclone_pairs.py",
+          "tools/test_phyclone_pairs.py",
+          "tools/phyclone_hp.py",
+          "research/phyclone_research/HP_EXTENSION_DESIGN.md",
+          "research/phyclone_research/C4_ROBUSTNESS_PLAN.md"
+        ],
+        "outputs": [
+          "lab_report/2026-10-25_c4_pair_term_stress/",
+          "commits ed7a136 1ccbecb"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "C4",
+          "plain": "plan.md 裡第 4 種 long read 特徵：同一條 read 上兩個突變是否一起出現"
+        },
+        {
+          "term": "ε",
+          "plain": "模型允許「本來不該出現的 read 組合」出現的機率，越小懲罰越重"
+        },
+        {
+          "term": "直線樹 vs 分岔樹",
+          "plain": "C3 是 C4 的祖先（一條線），還是兩者各自從上游分出去"
+        }
+      ],
+      "details": "session ff86f0e0 10-25 19:36–20:39。第一輪 12 個 C4 run 因 worker 未安裝重跑。trace.h5 不進 git（.gitignore 新增 lab_report/**/trace.h5）。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 10720,
+          "session_id": "ff86f0e0",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 19:39",
+          "ref": "ff86f0e0:10720"
+        },
+        {
+          "line": 11578,
+          "session_id": "69486274",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 20:41",
+          "ref": "69486274:11578"
+        }
+      ]
+    },
+    {
+      "title": "原版 PhyClone 與 A1／A2 在 40 棵 TRACERx 隨機樹上表現如何？",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "原版 PhyClone 在 32 個 sim 中 27 個少推 clone，最多只推 3 個；A1／A2 的 ARI 平均 +0.053／+0.063，95% CI 不含 0",
+      "question": "壓力樹只有一棵。在「像真實腫瘤」的單一 bulk 樣本上，原版 PhyClone 表現如何？HP 拆分計數（A1、A2）在一般情況下有沒有用？",
+      "approach": "- 用 `longbulksim.random_tree` 產生 40 個 spec，各跑原版 PhyClone、A1、A2。\n- 寫 `tools/eval_random_tree_phyclone.py` 算 ARI、V-measure、relation accuracy、CCF 誤差、clone 數誤差；配對 bootstrap 10,000 次算 CI。",
+      "result": "- **原版低估 clone 數：** 有 ≥ 2 個可偵測 clone 的 32 個 sim 中，27 個推得比可偵測數少，最多只推出 3 個。\n- **原版拓樸差：** balanced relation accuracy 中位 0.44（隨機約 0.25）。\n- **A1、A2 小而確定的改善：** ARI +0.053 [+0.027, +0.085]／+0.063 [+0.033, +0.100]；V-measure、relation accuracy、CCF 誤差也一樣。\n- 改善不是來自 clone 數（CI 含 0），而是 SNV 分得比較對、CCF 比較準。\n- 增益和 purity 相關（Spearman 0.31），和 CN 複雜度無關（−0.08）。",
+      "interpretation": "HP 拆分計數在一般腫瘤上也有用，但幅度小。A2 − A1 約 +0.01 ARI，是「φ 已知」能帶來的上限。clone 合併與拓樸錯誤大多還在，要靠 C4。",
+      "tables": [
+        {
+          "caption": "40 個 sim 的配對比較，diff = 方法 − base（lab_report/2026-10-25_random_tree_phyclone_baseline）",
+          "columns": [
+            "指標",
+            "base 中位",
+            "A1 中位",
+            "A2 中位",
+            "A1 − base",
+            "A2 − base"
+          ],
+          "rows": [
+            [
+              "ARI",
+              "0.218",
+              "0.357",
+              "0.441",
+              "+0.053 [+0.027, +0.085]",
+              "+0.063 [+0.033, +0.100]"
+            ],
+            [
+              "V-measure",
+              "0.203",
+              "0.264",
+              "0.349",
+              "+0.047 [+0.026, +0.070]",
+              "+0.056 [+0.032, +0.084]"
+            ]
+          ]
+        }
+      ],
+      "gaps": "- A2 用真值 φ。\n- 每個 sim 只跑一個 MCMC seed。\n- 還沒加 C4 跑這 40 棵樹。",
+      "artifacts": {
+        "files": [
+          "tools/eval_random_tree_phyclone.py",
+          "tools/summarize_random_tree_methods.py",
+          ".gitignore"
+        ],
+        "commands": [
+          "bash lab_report/2026-10-25_random_tree_phyclone_baseline/run_all.sh 40 25",
+          "bash lab_report/2026-10-25_random_tree_phyclone_baseline/run_hp.sh 40"
+        ],
+        "outputs": [
+          "lab_report/2026-10-25_random_tree_phyclone_baseline/",
+          "commit a1be32c"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "ARI",
+          "plain": "推出的分群和真值分群有多一致，1 是完全一樣，0 是跟亂猜差不多"
+        },
+        {
+          "term": "relation accuracy",
+          "plain": "任兩個突變的關係（同 clone、祖先、後代、分支）猜對的比例"
+        },
+        {
+          "term": "可偵測 clone",
+          "plain": "在這個深度與 purity 下，理論上看得出來的 clone"
+        }
+      ],
+      "details": "session ff86f0e0 10-25 15:50–19:34。核對報告時把「全部都低估」改成「32 個中有 27 個」。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 9810,
+          "session_id": "ff86f0e0",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 16:06",
+          "ref": "ff86f0e0:9810"
+        },
+        {
+          "line": 10468,
+          "session_id": "ff86f0e0",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 18:47",
+          "ref": "ff86f0e0:10468"
+        }
+      ]
+    },
+    {
+      "title": "HCC1395 真實 ONT 資料上，somatic SNV 能分到單一 HP 嗎？",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "alt read 有 HP tag 的比例 85.9%，和模擬器假設 0.85 相符；但只有 19% 的相鄰 SNV pair 有共同 read，模擬器不能每對都給 80 條",
+      "question": "模擬器假設每個 SNV 屬於一條 HP、85% 的 read 有 phasing、每對 SNV 有固定數量跨越 read。這些假設在真實 ONT 資料上成立嗎？",
+      "approach": "- 用 SEQC2 的 HCC1395BL germline het SNP，以 longphase-s 做 phase 與 haplotag，處理 HCC1395 `t50_n00` CRAM（tagged CRAM 保留在 `/big8_disk/boyu114/hcc1395_hp_split/`）。\n- 對 SEQC2 的 37,327 個 somatic SNV 做 pileup，統計 alt read 的 HP 分布、HP 深度比例，以及相鄰 SNV 的共同 read 數。",
+      "result": "- 至少 3 條 alt read 的 30,965 個 SNV 中，92.2% 的 tagged alt read 有 ≥ 90% 在同一條 HP；只有 2.4% 分散在兩條。\n- 已指派 SNV 的 HP1:HP2 = 14,443:14,120。\n- minor HP 深度比例和 ASCAT 預期一致：3+1 區預期 0.333、實測 0.357。\n- 跨越 read 隨間距下降：< 5 kb 約 44–52 條，20–50 kb 中位 2 條。37,305 對相鄰 pair 只有 19% 有 read 同時帶兩個 ALT。",
+      "interpretation": "phasing 比例和 HP 深度的假設都符合真實資料，支持真值樹事件 ⑤ HP 拆分與 ② HP gain。但 read 共現要依 SNV 間距和 depth 抽樣，不能固定給 80 條。HCC1395 突變負荷偏高，一般腫瘤的近距離 pair 會更少。",
+      "gaps": "- 只做了一個 subsample（`t50_n00`）。\n- 分散在兩條 HP 的 2.4% 原因未分辨（switch error 或 SEQC2 位點問題）。\n- 用的是 longphase-s 的 phase 功能；是否改用 somatic haplotag 還沒決定。",
+      "artifacts": {
+        "files": [
+          "tools/hcc1395_hp_split_prepare.sh",
+          "tools/hcc1395_hp_split.py"
+        ],
+        "commands": [
+          "python3 -I tools/hcc1395_hp_split.py /big8_disk/boyu114/hcc1395_hp_split/tagged_t50_n00.cram lab_report/2026-10-25_hcc1395_hp_split"
+        ],
+        "outputs": [
+          "lab_report/2026-10-25_hcc1395_hp_split/",
+          "/big8_disk/boyu114/hcc1395_hp_split/tagged_t50_n00.cram",
+          "commit 42449d7"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "HP tag",
+          "plain": "longphase-s 標在 read 上的記號，表示這條 read 來自父系或母系那一份染色體"
+        },
+        {
+          "term": "minor HP 深度比例",
+          "plain": "拷貝較少的那條 HP 佔總 read 的比例，反映兩份染色體的拷貝數差"
+        },
+        {
+          "term": "跨越 read",
+          "plain": "同時蓋過兩個突變位置的 read"
+        }
+      ],
+      "details": "session 91a5283a 10-25 14:27–14:53。使用者確認目前只是先加入 HP1／HP2 特徵，germline 或 somatic haplotag 之後再決定（記進 memory hp-extension-open-questions）。",
+      "details_pre": false,
+      "evidence": [
+        {
+          "line": 6438,
+          "session_id": "91a5283a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 14:27",
+          "ref": "91a5283a:6438"
+        },
+        {
+          "line": 7054,
+          "session_id": "91a5283a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 14:50",
+          "ref": "91a5283a:7054"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "[翻案] 10-24 的 HP 真值樹不是典型腫瘤，下修為壓力測試樹；文獻數字修正 17 條",
+      "status": "done",
+      "what": "為什麼：10-24 手動設計的 hp_truth_tree.png 原本被當作要用來產生模擬資料的真值樹。今天的文獻 subagent 指出它把 7 類事件塞進 100 個 SNV，密度遠高於真實腫瘤，建議標為壓力測試。做了什麼：兩個 subagent 逐條核對 04 檔的文獻數字（TRACERx 19 條 14✅5⚠️；PCAWG 與其他 50 條 38✅12⚠️），13:40 把修正寫回 04 檔。主要修正：(1) C3 CCF 0.10 在 nrpcc≈40 時略高於 PCAWG 偵測下限（約 0.075），不是原本說的「低於」；(2) 突變遺失 13% 的分母是 subclonal 突變，20/100 的分母是全部 SNV，粗估典型值只約 4%，所以 20% 是壓力值；(3) 62% MSAI 是 mirrored 事件，不能支持單一 allele gain，改引 Watkins 18%；(4) CONIPHER「預設 coverage 400、purity 0.7–0.9」只是函式預設。結果：原樹定位改成「由真實事件組成的壓力測試樹」，另設計典型樹當對照（呈現層第 1 項）。狀態：已 commit（ac226c3、90eb060）。",
+      "why_demoted": "被 5 項上限擠掉（12 分）；它的結果已併入呈現層第 1 項的結論",
+      "artifacts": {
+        "files": [
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/04_event_evidence_real_tumors.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/05_tracerx_citation_check.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/06_pcawg_other_citation_check.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 3170,
+          "session_id": "91a5283a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 10:43",
+          "ref": "91a5283a:3170"
+        },
+        {
+          "line": 5432,
+          "session_id": "91a5283a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 13:14",
+          "ref": "91a5283a:5432"
+        }
+      ]
+    },
+    {
+      "title": "用 SEQC2 真值量 HCC1395 subsample 的實測 purity：nominal 是 DNA 比例，細胞 purity 較低",
+      "status": "done",
+      "what": "為什麼：真值樹事件 ① 設 purity 0.40，要知道本機實際資料的 purity 範圍；tX_nY 標籤是 design tumor fraction，不是實測值。做了什麼：tools/seqc2_hcc1395_purity.py 在 SEQC2 v1.2.1 的 CN=2 somatic SNV 位點（約 10,000 個）做 pileup，估計每個 subsample 的細胞 purity，再用 ploidy 2.85 換回 DNA 比例。結果：ONT 系列 t10_n40 0.153、t20_n30 0.321、t30_n20 0.513、t40_n10 0.737（nominal 0.2/0.4/0.6/0.8）；換回 DNA 比例後和 nominal 差 < 0.006，反推 ploidy 2.75–2.91，與 SEQC2 論文 2.85 一致。ONT 與 ONT_Dorado 兩個系列差 0.003–0.006。t00_n25 有 0.4–0.7% 背景訊號，原因未分辨。所以 0.40 介於 t20_n30 與 t30_n20 之間，在本機資料範圍內；給 PhyClone 的 tumour_content 要用細胞 purity。使用者也問了為何選 HCC1395 與 ONT／ONT_Dorado 差異，答案寫進 tumor_sample.md。狀態：已 commit（68b9b07）。",
+      "why_demoted": "被 5 項上限擠掉（11 分）",
+      "artifacts": {
+        "files": [
+          "tools/seqc2_hcc1395_purity.py",
+          "tumor_sample.md"
+        ],
+        "outputs": [
+          "lab_report/2026-10-25_seqc2_hcc1395_measured_purity/"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 4459,
+          "session_id": "91a5283a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 12:00",
+          "ref": "91a5283a:4459"
+        },
+        {
+          "line": 5043,
+          "session_id": "91a5283a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 12:49",
+          "ref": "91a5283a:5043"
+        }
+      ]
+    },
+    {
+      "title": "C4 穩健性測試：longbulksim v0.2 加三種錯誤；拓樸仍穩，但定序錯誤大於 ε 時 clone 被拆開",
+      "status": "ongoing",
+      "what": "為什麼：C4 每條矛盾 read 罰 log ε，真實資料的 HP 錯標、phasing switch、定序錯誤可能讓它選錯樹。照 C4_ROBUSTNESS_PLAN.md 在新 session 實作。做了什麼：longbulksim 升到 v0.2，加 mistag_rate、switch_rate_per_mb、base_error 三個參數（錯誤率 0 時輸出和 v0.1 逐位相同，有 sha256 測試；測試 18→27 個全過）。校正：base_error 在 HCC1395BL normal CRAM 的 37,321 個位點實測 0.40%（p99 5.3%）；switch 用 LongPhase 論文 0.13–0.16% × het SNP 約 620/Mb ≈ 1/Mb；mistag 用 HCC1395 split-HP 2.4–2.5% 代理。第 1 階段 ×10、base＋C4、ε=0.01 跑 24 個 run；第 2 階段跑 real 條件與 ε 掃描 24 個 run，再補 9 個。結果：錯誤直線樹在所有錯誤條件下都 ≤ 0.001；e0 的 3 個 run 和舊實驗逐位相同。新失效模式：base_error 3% 時 clone 被拆成 4–8 個（真值 4），因為同一 clone 的 10/01 read 在 same 假設下每條罰 log ε；ε 提到 0.1 時診斷量 same_vs_split 轉正。計畫中「整條 read 錯標會產生 n11」的預期不成立（錯標 read 移到另一條 HP 的表裡成為 n00，不建模）。狀態：補跑的 9 個 run 在掃描時仍在跑；未 commit，lab report README 未寫。",
+      "why_demoted": "被 5 項上限擠掉（10 分），且尚未完成",
+      "artifacts": {
+        "files": [
+          "longbulksim/longbulksim/model.py",
+          "longbulksim/longbulksim/sample.py",
+          "longbulksim/longbulksim/simulate.py",
+          "longbulksim/tests/test_errors.py",
+          "tools/measure_snv_base_error.py",
+          "tools/summarize_c4_robustness.py",
+          "tools/c4_pair_evidence.py"
+        ],
+        "outputs": [
+          "lab_report/2026-10-25_c4_robustness/"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 12733,
+          "session_id": "69486274",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 21:35",
+          "ref": "69486274:12733"
+        },
+        {
+          "line": 12732,
+          "session_id": "69486274",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-25 21:35",
+          "ref": "69486274:12732"
+        }
+      ]
+    },
+    {
+      "title": "寫完 10-24 日誌",
+      "status": "done",
+      "what": "為什麼：前一晚 23:00 的 daily-log 排程跑到午夜後才完成。做了什麼：掃描 10-23 23:00 到 10-24 23:00，寫 candidates.json，複製兩張圖到 daily/figures/2026-10-24/，用 build_log.py 產生 JSON 並渲染。結果：2026-10-24 日誌呈現 5 項、記錄 4 項。狀態：完成；日誌 repo 未 push。",
+      "why_demoted": "環境維護類，0 分",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-10-24.json"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1214,
+          "session_id": "5cd026f1",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-24 23:02",
+          "ref": "5cd026f1:1214"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "title": "collect_day.sh 在寫 traces.md 中途以 exit 141 結束",
+      "detail": "「當天新增或修改的檔案」那段是 find | sed | sort | head -100；檔案超過 100 個時 sort 收到 SIGPIPE，配上 pipefail 讓整支腳本停在 traces.md 中間，沒有產生 transcript.txt，也沒有設定游標 pending。",
+      "resolution": "沒有改腳本。手動照同樣參數補跑 extract_transcript.py 與 cursor.py pend；traces.md 缺少「commit 動過的檔案」之後的段落，改用 git log 與 signals.md 補。腳本那一行要加 `|| true`。"
+    }
+  ],
+  "advisor": [
+    {
+      "kind": "policy",
+      "text": "實務上拿不到病人的多樣本資料，研究要針對只有一個 bulk 定序樣本的精確重建；多樣本只當上限參考"
+    }
+  ],
+  "questions_for_advisor": [],
+  "next": [],
+  "scan": {
+    "last_scanned": "2026-10-25T23:00:30",
+    "sessions": [
+      "5cd026f1",
+      "e623fed9",
+      "ad82a9e8",
+      "91a5283a",
+      "133dde46",
+      "ff86f0e0",
+      "69486274",
+      "a6941cbe"
+    ],
+    "layers": {
+      "show": 6,
+      "record": 4,
+      "border": 0
+    }
+  }
+}
