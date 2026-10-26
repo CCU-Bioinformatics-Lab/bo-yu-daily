@@ -14,6 +14,10 @@ The tree term is the sum over eligible pairs whose SNVs are both in the tree. A 
 (plan.md §4.5.1, from observed inputs only) when both SNVs have the same observed snv_hp equal
 to the read HP, lie in the same segment (same PS, no CN breakpoint), and that HP has exactly one
 copy in both CN states of the segment (segments.tsv a_* and b_*; phi is not used).
+
+The scores can be scaled by a composite-likelihood weight w (C4_COMPOSITE_WEIGHT_PLAN.md). A read
+covering m SNVs enters m(m-1)/2 pairs, so the unweighted sum counts each read several times;
+w ~ 1 / (pairs per read) brings the total evidence back to about one count per read.
 """
 import numpy as np
 import pandas as pd
@@ -45,7 +49,7 @@ class PairTable:
         return len(self.mut_i)
 
     @classmethod
-    def from_files(cls, pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01):
+    def from_files(cls, pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01, weight=1.0):
         pairs = pd.read_csv(pairs_tsv, sep="\t")
         snv = pd.read_csv(data_hp_tsv, sep="\t").drop_duplicates("mutation_id").set_index(
             "mutation_id")
@@ -60,7 +64,7 @@ class PairTable:
             if h in ("HP1", "HP2") else False for s, h in zip(seg_i, pairs.hap)])
         ok = (hp_i == pairs.hap) & (hp_j == pairs.hap) & (seg_i == seg_j) & one_copy
         p = pairs[ok]
-        return cls(p.mutation_i, p.mutation_j, relation_scores(p.n11, p.n10, p.n01, eps))
+        return cls(p.mutation_i, p.mutation_j, weight * relation_scores(p.n11, p.n10, p.n01, eps))
 
     def term(self, node_of, ancestors):
         """Sum of pair scores. node_of: mutation -> node; ancestors: node -> set of ancestors."""
@@ -118,13 +122,14 @@ def install(pair_table):
         return p + e, one + e
 
     T.log_p, T.log_p_one, T.compute_log_p_and_log_p_one = log_p, log_p_one, both
+    T.c4_pair_table = pair_table
 
 
-def _init_worker(pairs_tsv, data_hp_tsv, segments_tsv, eps):
-    install(PairTable.from_files(pairs_tsv, data_hp_tsv, segments_tsv, eps))
+def _init_worker(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight):
+    install(PairTable.from_files(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight))
 
 
-def install_everywhere(pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01):
+def install_everywhere(pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01, weight=1.0):
     """Install the pair term here and in every chain worker.
 
     phyclone/run.py runs chains in ProcessPoolExecutor(mp_context=get_context("spawn")); spawned
@@ -135,9 +140,9 @@ def install_everywhere(pairs_tsv, data_hp_tsv, segments_tsv, eps=0.01):
 
     import phyclone.run
 
-    table = PairTable.from_files(pairs_tsv, data_hp_tsv, segments_tsv, eps)
+    table = PairTable.from_files(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight)
     install(table)
     phyclone.run.ProcessPoolExecutor = functools.partial(
         phyclone.run.ProcessPoolExecutor, initializer=_init_worker,
-        initargs=(pairs_tsv, data_hp_tsv, segments_tsv, eps))
+        initargs=(pairs_tsv, data_hp_tsv, segments_tsv, eps, weight))
     return table

@@ -36,6 +36,39 @@ class TreeTerm(unittest.TestCase):
         self.assertEqual(table.term({"a": "r"}, {"r": set()}), 0.0)
 
 
+def _write_inputs(n11=3):
+    import tempfile
+
+    d = tempfile.mkdtemp()
+    for name, text in {
+        "pairs.tsv": "mutation_i\tmutation_j\tsample_id\tchrom\tps_block\thap\tn11\tn10\tn01"
+                     f"\tn00\tcallable_pair_reads\tdistance\na\tb\tS1\tchr1\tA\tHP1\t{n11}\t2\t0\t1\t4\t10\n",
+        "data_hp.tsv": "mutation_id\tsnv_hp\tsegment_id\na\tHP1\tA\nb\tHP1\tA\n",
+        "segments.tsv": "segment_id\ta_hp1\ta_hp2\tb_hp1\tb_hp2\nA\t1\t1\t1\t1\n",
+    }.items():
+        with open(os.path.join(d, name), "w") as fh:
+            fh.write(text)
+    return [os.path.join(d, f) for f in ("pairs.tsv", "data_hp.tsv", "segments.tsv")]
+
+
+class CompositeWeight(unittest.TestCase):
+    def test_weight_one_matches_unweighted_scores(self):
+        files = _write_inputs()
+        default = PairTable.from_files(*files, eps=0.01)
+        one = PairTable.from_files(*files, eps=0.01, weight=1.0)
+        np.testing.assert_array_equal(default.scores, one.scores)
+        np.testing.assert_array_equal(default.scores, relation_scores([3], [2], [0], 0.01))
+
+    def test_term_scales_linearly_with_weight(self):
+        files = _write_inputs()
+        anc = {"r": set(), "x": {"r"}}
+        trees = [{"a": "r", "b": "r"}, {"a": "r", "b": "x"}, {"a": "x", "b": "r"}]
+        full = PairTable.from_files(*files, eps=0.01)
+        part = PairTable.from_files(*files, eps=0.01, weight=0.3)
+        for node_of in trees:
+            self.assertAlmostEqual(part.term(node_of, anc), 0.3 * full.term(node_of, anc))
+
+
 class OnPhyCloneTree(unittest.TestCase):
     def test_assignment_from_a_real_tree(self):
         from phyclone.data.base import DataPoint
@@ -56,35 +89,38 @@ def _worker_has_pair_term():
     return TreeJointDistribution.log_p.__qualname__
 
 
+def _worker_pair_scores():
+    from phyclone.tree.distributions import TreeJointDistribution
+    return TreeJointDistribution.c4_pair_table.scores
+
+
 class SpawnedChainWorkers(unittest.TestCase):
-    def test_pair_term_reaches_spawned_workers(self):
-        """PhyClone runs chains in spawned processes; the term must be installed there too."""
-        import tempfile
+    def spawn(self, fn, weight):
         from multiprocessing import get_context
 
         import phyclone.run
         from phyclone_pairs import install_everywhere
 
-        d = tempfile.mkdtemp()
-        for name, text in {
-            "pairs.tsv": "mutation_i\tmutation_j\tsample_id\tchrom\tps_block\thap\tn11\tn10\tn01"
-                         "\tn00\tcallable_pair_reads\tdistance\na\tb\tS1\tchr1\tA\tHP1\t3\t0\t0\t1\t4\t10\n",
-            "data_hp.tsv": "mutation_id\tsnv_hp\tsegment_id\na\tHP1\tA\nb\tHP1\tA\n",
-            "segments.tsv": "segment_id\ta_hp1\ta_hp2\tb_hp1\tb_hp2\nA\t1\t1\t1\t1\n",
-        }.items():
-            with open(os.path.join(d, name), "w") as fh:
-                fh.write(text)
         original = phyclone.run.ProcessPoolExecutor
         try:
-            table = install_everywhere(*(os.path.join(d, f) for f in
-                                         ("pairs.tsv", "data_hp.tsv", "segments.tsv")))
+            table = install_everywhere(*_write_inputs(), weight=weight)
             self.assertEqual(len(table), 1)
             with phyclone.run.ProcessPoolExecutor(max_workers=1,
                                                   mp_context=get_context("spawn")) as pool:
-                name = pool.submit(_worker_has_pair_term).result()
-            self.assertIn("install.<locals>", name)
+                return table, pool.submit(fn).result()
         finally:
             phyclone.run.ProcessPoolExecutor = original
+
+    def test_pair_term_reaches_spawned_workers(self):
+        """PhyClone runs chains in spawned processes; the term must be installed there too."""
+        _, name = self.spawn(_worker_has_pair_term, 1.0)
+        self.assertIn("install.<locals>", name)
+
+    def test_spawned_workers_use_the_weight(self):
+        """Without the weight in initargs, workers would rebuild the table with w = 1."""
+        table, scores = self.spawn(_worker_pair_scores, 0.3)
+        np.testing.assert_allclose(scores, table.scores)
+        np.testing.assert_allclose(scores, 0.3 * relation_scores([3], [2], [0], 0.01))
 
 
 if __name__ == "__main__":

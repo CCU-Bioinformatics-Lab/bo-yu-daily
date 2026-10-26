@@ -187,6 +187,8 @@ def main():
     ap.add_argument("--pairs", help="pairs.tsv: add the C4 read co-occurrence tree term")
     ap.add_argument("--hp-data", help="data_hp.tsv with observed snv_hp (needed with --pairs)")
     ap.add_argument("--pair-eps", type=float, default=0.01)
+    ap.add_argument("--pair-weight", type=float, default=1.0,
+                    help="composite-likelihood weight on the pair term (1 = unweighted)")
     opts, rest = ap.parse_known_args()
     if opts.hp_mode == "a2" and not opts.segments:
         raise SystemExit("--hp-mode a2 needs --segments")
@@ -202,8 +204,9 @@ def main():
         import phyclone_pairs
 
         table = phyclone_pairs.install_everywhere(opts.pairs, opts.hp_data, opts.segments,
-                                                  opts.pair_eps)
-        print(f"phyclone_hp: C4 pair term on, {len(table)} eligible pairs, eps = {opts.pair_eps}")
+                                                  opts.pair_eps, opts.pair_weight)
+        print(f"phyclone_hp: C4 pair term on, {len(table)} eligible pairs, eps = {opts.pair_eps}, "
+              f"weight = {opts.pair_weight}")
     cli_main(args=rest)
 
 
