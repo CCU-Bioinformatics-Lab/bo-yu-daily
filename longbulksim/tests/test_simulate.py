@@ -117,3 +117,18 @@ class Reproducible(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HomozygousDeletionInMajorClone(unittest.TestCase):
+    def test_major_minor_skip_zero_copy_state(self):
+        # C2 (80% of tumour cells) deletes both HPs of A; s1 stays in C1, so the input must use
+        # C1's 1:1 state, not 0:0 (PhyClone needs total CN > 0)
+        raw = {"name": "homdel", "purity": 1.0, "depth": 30,
+               "clones": {"C1": {"parent": None, "fraction": 0.2},
+                          "C2": {"parent": "C1", "fraction": 0.8}},
+               "segments": {"A": {"chrom": "chr1", "start": 1_000_000, "length": 2_000_000}},
+               "edges": {"C1": [{"snv": "s1", "hp": "HP1", "segment": "A", "count": 5}],
+                         "C2": [{"loss": "A", "hp": "HP1"}, {"loss": "A", "hp": "HP2"}]}}
+        _, out = simulate(raw)
+        for r in read_tsv(out / "input/data.tsv"):
+            self.assertEqual((r["major_cn"], r["minor_cn"]), ("1", "1"))

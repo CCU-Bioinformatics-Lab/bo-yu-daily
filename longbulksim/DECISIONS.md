@@ -37,4 +37,10 @@
 | 2026-10-26 | 曲線用 log(alt) 與 log(depth) 的 logistic | 表格顯示 alt 相同時 depth 越高越難 call，所以 caller 看的是 VAF；兩個變數就能描述 | 抽查與分層表吻合；位點特性（context、MAPQ）未納入 |
 | 2026-10-26 | `truth.tsv` 保留漏掉的 SNV，加 `detected` 欄；評分只用 `detected = 1` | 漏掉的 SNV 也是真值，例如可以看出整個 clone 都看不見 | 評分腳本：`tools/eval_hp_truth_phyclone.py`、`tools/eval_random_tree_phyclone.py` |
 | 2026-10-26 | 預設 caller 仍是 `none` | 曲線只在 purity 約 1 的樣本上校正，用在低 purity 時可能高估漏抓 | 要改成預設，先在低 purity subsample 上驗證曲線 |
+| 2026-10-26 | v0.6 加入 `--preset tracerx\|pcawg\|pcawg:<癌種>` | TRACERx 只有 NSCLC、WES；PCAWG 是 38 癌種、WGS、單一樣本 | 表：`data/pcawg_presets.tsv`，由 `longbulksim.presets build` 從本機 open 檔產生 |
+| 2026-10-26 | preset 只改基因組與樣本參數；樹參數一律用 TRACERx | 使用者選擇。PCAWG open 資料沒有拓樸，subclone 數受 48× 偵測力限制（中位只有 1 個 subclone） | 可用明確參數覆寫 |
+| 2026-10-26 | WGD 改成機率（`--wgd auto`，預設），每個模擬抽一次 | 使用者選擇。多數決會讓所有模擬都 WGD 或都不 WGD，不像 cohort | 預設參數的輸出和 v0.5 不同（多一次亂數）；`--wgd yes` 可回到舊行為的 WGD 設定 |
+| 2026-10-26 | PCAWG truncal 比例只用 ≥ 1 個 subclone 的樣本 | preset 一律保留 ≥ 2 個 clone；含 0 subclone 樣本時，肺腺癌中位會是 1.0 | 全癌種 0.66（不篩選時 0.74） |
+| 2026-10-26 | preset 的 n_snv 用 PCAWG 的 WGS 規模 | 使用者沒有指定；照 preset 的定義 | 一個模擬約 3.5 分鐘；可用 `--n-snv` 縮小 |
+| 2026-10-26 | 決定 major／minor 時跳過 0:0 狀態 | `pcawg:Lung-AdenoCA` 讓細胞最多的 clone 出現 homozygous deletion，total CN = 0 讓 `phyclone_ccf` 除以零 | 之前遇到一定當掉，所以不影響既有輸出；`HomozygousDeletionInMajorClone` 測試 |
 
