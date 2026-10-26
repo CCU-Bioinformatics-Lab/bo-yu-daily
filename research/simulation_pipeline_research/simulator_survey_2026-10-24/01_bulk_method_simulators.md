@@ -6,6 +6,8 @@
 
 ## 結論
 
+> **2026-10-24 範圍更正：clonesim 已移出 bulk 範圍。** 它的 read 層只有 single-cell（`generatesinglecells`），是給 Pharming 等 single-cell 建樹軟體的生成器，不會產生 bulk read count。下文保留原始調查內容，排名只作紀錄。見 [README「範圍更正」](README.md)。〔程式〕
+
 - **沒有一個生成器同時給出「somatic SNV + 樹上的 allele-specific CN + read 層級的 haplotype 資訊」。** 最接近的組合是 clonesim（SNV 在哪個 allele 的真值）加 MASCoTE（haplotype 分開的 clone 基因體與 BAM）。
 - **clonesim 最符合我們的模型需求。** 它在樹的邊上放 allele-specific CNA，並記錄每個 SNV 落在哪個 allele 上（`xbar`／`ybar`）。缺點：bulk 只輸出真值，不輸出 read count。
 - **MASCoTE 是唯一輸出真正 read（BAM）的工具。** 它給每個 clone 產生 maternal／paternal 兩份 FASTA，CNA 與 WGD 放在樹的邊上。缺點：沒有 somatic SNV，read 模擬器是 Illumina 的 ART。
@@ -30,7 +32,7 @@
 
 ## 每個工具
 
-### 1. clonesim（El-Kebir lab；Pharming 用）
+### 1. clonesim（El-Kebir lab；Pharming 用）（已移出 bulk 範圍，見上方更正）
 
 - Repo：https://github.com/elkebir-group/clonesim ，commit `f148511`（2025-06-12），沒有授權檔。〔程式〕
 - README 說明它是「Simulating clonal trees with segmental CNAs and SNVs」。流程是先 `generatecnatrees` 列出 allele-specific CN state tree，再用 `simulate -S cnatrees.txt` 產生 clone tree。〔程式〕README
@@ -41,6 +43,7 @@
 - bulk 部分沒有 binomial／read count 輸出。read count 只在 `generatesinglecells`（single-cell、稀疏）裡產生。〔程式〕README、`src/singlecellgeneration.cpp`
 - segment 是抽象 index，不是真實座標。〔推論〕
 - 用途：直接接 Pharming。要給 PhyClone，需要自己用 `proportions.tsv` 與 `node.tsv` 算 VAF 再抽 binomial read count。〔推論〕
+- 2026-10-24 核對：上列各點經讀碼與實跑確認。補充：`node.tsv` 的 `m` 是 SNV id，不是 multiplicity；`generatesinglecells` 沒有 seed 參數；`-r` 會把多個 cluster 併到同一 node。細節見 [`../notes/06_CLONESIM.md`](../notes/06_CLONESIM.md)。〔程式〕〔實測〕
 
 ### 2. MASCoTE（HATCHet 論文的模擬框架）
 

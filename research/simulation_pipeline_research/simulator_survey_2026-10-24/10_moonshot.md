@@ -11,9 +11,8 @@
 3. **SEQC2 有兩種「合成」資料，但都不符合需求。**
    - `SPP`：HCC1395 與 HCC1395BL 的**實體 DNA 混合**（100%、75%、50%、20%、10%、5%、0% tumor），Illumina 定序。這是真實 purity 梯度，不是模擬。
    - `DeepLearning_bams`：用 BAMSurgeon 在 normal BAM 裡 spike-in 的 `synthetic_tumor_*.bam` 加 `synthetic_truth_*.vcf.gz`。只有 SNV／indel 真值，沒有樹，沒有 CN。
-4. **搜尋時意外找到一個重要的新候選：SCOUT。** 它是 Caravagna lab 用 ProCESS 產生的合成 WGS cohort（bioRxiv 2026-06）。7 個 tumour model，216 個 tumour FASTQ 加 7 個 normal FASTQ，purity 0.3／0.6／0.9，有 multi-region、有 allele-specific CN 真值。它是**已生成的資料集**；生成程式在 `process_reproducibility`。它和 Moonshot 無關。〔論文〕〔程式〕
-5. **ClonalSim（Bioconductor）是 VAF 層的小型生成器。** 它沒有 CN，也沒有明確的樹檔，價值低。〔程式〕
-6. **SEQC2 有 HCC1395 的 ONT 與 PacBio 資料，但只用來做 SV call set。** 沒有 clone 或 haplotype 真值。〔論文〕
+4. **ClonalSim（Bioconductor）是 VAF 層的小型生成器。** 它沒有 CN，也沒有明確的樹檔，價值低。〔程式〕
+5. **SEQC2 有 HCC1395 的 ONT 與 PacBio 資料，但只用來做 SV call set。** 沒有 clone 或 haplotype 真值。〔論文〕
 
 | 候選 | 類型 | clone tree 真值 | 資料層級 | CN | purity<1 | long read | 符合需求？ |
 |---|---|---|---|---|---|---|---|
@@ -22,7 +21,6 @@
 | SEQC2 `SPP` 實體 titration | 真實 DNA 混合 | 否 | Illumina BAM／FASTQ | 真實 | **是**（7 個比例） | 否 | 否；但可當「真實 purity 梯度」對照 |
 | SEQC2 `DeepLearning_bams`（BAMSurgeon spike-in） | 合成 BAM（已生成） | 否 | BAM＋truth VCF | 無 | 部分（依 VAF 設定，未核對） | 否 | 否 |
 | SEQC2 long read（Talsania 2022） | 真實資料 | 否 | ONT／PacBio 真實 read | — | 否 | **是** | 否；只有 SV 真值 |
-| **SCOUT**（ProCESS cohort） | 合成資料集＋生成腳本 | 有 cell-level phylogeny（`.sff` forest）；是否公開待核對 | Illumina PE FASTQ；sarek BAM／VCF 結果 | allele-specific CN | **是**（0.3／0.6／0.9） | 否（NovaSeq 模型） | **部分**：bulk short read 有；HP／long read 沒有 |
 | ClonalSim | 生成器（R） | 否（只有 clone 群組） | VAF／read count | 無 | 是（clone 比例和 <1） | 否 | 否 |
 
 ## 1. 名為「Moonshot」的工具
@@ -68,24 +66,7 @@
 - **沒有 clone 或 haplotype 真值。** 這些 read 是真實資料。〔推論〕
 - 對本專案的意義：HCC1395 是我們的細胞株。SEQC2 SNV 真值集可以檢查我們 ONT 資料上的 SNV calling。但它不能提供樹的真值。〔推論〕
 
-## 3. SCOUT（ProCESS 合成 WGS cohort）— 新候選
-
-- **論文**：Valeriani … Casagrande, Caravagna，"SCOUT"，bioRxiv 2026-06-11，doi:10.64898/2026.06.09.731105（bioRxiv 頁面讀過；未經同行審查）。reproducibility repo 的 README 寫的論文標題是 "Ground-truth benchmarking of tumour evolution inference from whole-genome sequencing"。〔論文〕
-- **生成器是 ProCESS（v1.1.0）**。這也補上 [04](04_evolutionary_simulators.md) 裡 ProCESS「沒找到論文」的缺口。〔論文〕
-- **資料規模**：7 個 tumour model（SPN01–SPN07），30 個 clone，24 個 biopsy，216 個 tumour FASTQ 加 7 個 normal FASTQ，GRCh38。〔論文〕
-- **purity 與 depth**：論文寫 purity 0.3／0.6／0.9、coverage 50×／100×／150×。`build_cohort/README.md` 寫 coverage 有 50／100／150／200X，normal 30X。兩者不一致，以實際下載為準。〔論文〕〔程式〕
-- **seed**：200X 拆成 40 個 5X lot，第 i 個 lot 的 sequencing seed 是 i。〔程式〕`process_reproducibility/build_cohort/README.md`
-- **真值**：`SCOUT/R/getters_ground_truth.R` 提供 `get_mutations()`（每個 purity×coverage 的 mutation RDS），`read_sheets.R` 提供 `get_ground_truth_cna()`、`get_ground_truth_drivers()`、`get_ground_truth_exposures()`、`get_sampling_information()`。〔程式〕
-- **clone tree 真值**：生成時用的是 ProCESS 的 phylogenetic forest `.sff` 檔（cell-level）。SCOUT R 套件裡**沒有** tree getter。forest 檔有沒有公開，沒有核對。〔程式〕〔推論，未驗證〕
-- **read 平台**：Illumina NovaSeq 6000 PE 模型。沒有 long read。〔論文〕
-- **haplotype**：ProCESS 的 read 帶 phased germline SNP（見 04），所以 FASTQ 裡 somatic SNV 與 germline SNP 的共現是真的。但 SCOUT 沒有釋出 per-read HP 真值。〔推論〕
-- **資料位置**：ENA（論文寫 `PRJEB97253`，fetch 結果帶一個尾字元 `T`，未核對），Zenodo（DOI 在補充表 T10，未核對），網站 https://caravagnalab.github.io/SCOUT-website/。〔論文〕
-- **repo**：
-  - https://github.com/caravagnalab/SCOUT（資料存取 R 套件），`6fddbff`，2026-07-31，LICENSE 檔是 R 的 `YEAR/COPYRIGHT HOLDER` 格式（GitHub 判為 NOASSERTION）。
-  - https://github.com/caravagnalab/process_reproducibility（生成與分析腳本，需要 SLURM），`c0928a0`，2026-06-08，沒有 license。
-- **對本專案**：SCOUT 是現成的「真值＋bulk short read FASTQ＋多 purity＋多 region」資料。它可以直接當 PhyClone 的 short read baseline，不用自己跑生成器。它不能測 long read HP 特徵。〔推論〕
-
-## 4. ClonalSim（Bioconductor）
+## 3. ClonalSim（Bioconductor）
 
 - repo：https://github.com/gbucci/ClonalSim，`d27becd`，2026-04-23，MIT。Bioconductor 套件版本 0.99.8 到 1.1.0。〔程式〕
 - 生成器：`R/simulateTumor.R` 的 `simulateTumor()`。輸入是 clone 頻率、每個 clone 的 private 突變數、founder 突變數、shared 群組（例如 `"2 3 4"=15`）。〔程式〕
@@ -94,15 +75,15 @@
 - 單一樣本；purity 是 clone 頻率總和。seed 要使用者自己 `set.seed()`。有 `toPyClone()`、`toSciClone()`、`toVCF()`。〔程式〕
 - 沒有找到論文。〔推論〕
 
-## 5. 順帶找到的 meta 資源
+## 4. 順帶找到的 meta 資源
 
 - Lai, Liu, Scharpf, Karchin，"Evaluation of simulation methods for tumor subclonal reconstruction"，arXiv 2402.09599（2024）。網路摘要說它評估 51 個模擬方法，其中 9 個是通用工具。可用來補本調查的漏網工具。全文沒有讀。〔論文，未驗證〕
 
 ## 搜尋範圍（2026-10-24）
 
 - GitHub repo search（`gh api search/repositories`）：`moonshot tumor`、`moonshot cancer`、`moonshot genomics`、`moonshot somatic`、`moonshot phylogeny`、`moonshot sim`、`seqc2 somatic`。
-- `gh api repos/...`：caravagnalab/SCOUT、caravagnalab/process_reproducibility、caravagnalab/SCOUT-website、gbucci/ClonalSim。
+- `gh api repos/...`：gbucci/ClonalSim。
 - WebSearch：moonshot＋tumor simulation；SEQC2 titration／BAMSurgeon；HCC1395 ONT／PacBio；Cancer Moonshot synthetic tumor benchmark；Moonshot＋subclonal reconstruction。
-- WebFetch：SCOUT bioRxiv 全文（前 100k 字元）、Area Science Park 摘要頁、arXiv 2402.09599、SEQC2 FTP 目錄（`data/`、`data/SPP/`、`data/DeepLearning_bams/`、`release/latest/`、`assembly/`、`data/reads/SRA_run_accession_list`）。
+- WebFetch：arXiv 2402.09599、SEQC2 FTP 目錄（`data/`、`data/SPP/`、`data/DeepLearning_bams/`、`release/latest/`、`assembly/`、`data/reads/SRA_run_accession_list`）。
 - PubMed：Fang 2021、Xiao 2021、Talsania 2022、Salcedo 2020、Sahraeian 2022、HCC1395 相關 5 篇。
-- 沒有查：HTAN、CPTAC、ICGC-ARGO 的模擬資源（搜尋沒有出現相關結果，未深入）。SCOUT 的 Zenodo 檔案清單與 `.sff` 是否公開。
+- 沒有查：HTAN、CPTAC、ICGC-ARGO 的模擬資源（搜尋沒有出現相關結果，未深入）。

@@ -6,6 +6,8 @@
 
 ## 結論
 
+> **2026-10-24 範圍更正：PSiTE、VISOR 已移出。** 篩選標準是「輸出最終能當 PhyClone 這類 bulk 建樹軟體的輸入，而且真值能直接對應 clone tree」。PSiTE 有樹，但只輸出 FASTA／FASTQ（ART short read），要自己做 alignment、variant calling 與 CN calling 才能得到 PhyClone 輸入。VISOR 沒有樹，只能當 read 模擬的零件。 下文保留原始調查內容，排名只作紀錄。見 [README「範圍更正」](README.md)。〔程式〕
+
 - **最接近需求的是 PSiTE。** 它沿 tree 放 SNV 與 allele-specific CN，每個 SNV 指定在某一條 parental haplotype 上。它為每個 clone × haplotype 寫一個 FASTA，然後逐一呼叫 ART。read 名稱帶 `{tipnode}_prt{parental}` 前綴，所以每條 read 的 clone 與 haplotype 來源都可追。限制：只接 ART（short read）。
 - **唯一原生輸出 long read 且逐 read 標 haplotype 的是 VISOR（LASeR）。** 它用 Badread 產生 ONT／PacBio read，用 minimap2 比對，並可在 BAM 寫 `CL`（clone）與 `HP`（haplotype）tag。限制：它不建 tree，clone 基因體要自己用 HACk 做。
 - **建議組合（〔推論〕，未實測）：** 用 PSiTE（或 HeteroGenesis）產生 tree、allele-specific CN 與每個 clone 的 haplotype FASTA，再把 FASTA 交給 VISOR LASeR 或 Badread／PBSIM3 產生 long read。這樣可得到 HP1/HP2 與 SNV 共現的 read 層級真值。
@@ -28,7 +30,7 @@
 
 ## 各工具
 
-### PSiTE（Phylogeny guided Simulator for Tumor Evolution）
+### PSiTE（Phylogeny guided Simulator for Tumor Evolution）（已移出，見上方更正）
 
 - repo：<https://github.com/hchyang/PSiTE>，commit `b752cd1`（2021-04-25），GPL-3.0。論文：Yang et al. 2019, *Bioinformatics* 35(17):3148, doi:10.1093/bioinformatics/btz028。〔程式〕
 - 流程分六個 module：`vcf2fa`（phased germline VCF → 兩個 parental FASTA）、`phylovar`（沿 tree 放 SNV／CNV）、`chain2fa`（建每個 clone 的基因體）、`fa2wgs`／`fa2wes`（呼叫 ART）、`allinone`。〔程式〕`README.md` §2
@@ -41,7 +43,7 @@
 - read simulator 寫死是 `art_illumina`（`--art` 可改參數字串，但程式會再加 ART 專用參數 `--len --fcov --in --id --out --rndSeed`）。換 long read 要改程式或直接拿 FASTA 外接。〔程式〕`psite/fa2wgs.py` L81、L390；〔推論〕
 - 對我們：最接近理想。可產生 SNV 在 haplotype 上的真值，以及 allele-specific CN 在 branch 上。缺 long read，但 haplotype FASTA 已備好。〔推論〕
 
-### VISOR（HACk＋LASeR）
+### VISOR（HACk＋LASeR）（已移出，見上方更正）
 
 - repo：<https://github.com/davidebolo1993/VISOR>，commit `a889e59`（2024-10-21），LGPL-3.0，`setup.py` version 1.1.3。論文：Bolognini et al. 2019, *Bioinformatics*, doi:10.1093/bioinformatics/btz719。〔程式〕
 - HACk 把使用者 BED 指定的變異（SNV、indel、SV、CNV）放進各 haplotype FASTA。它不建 tree。〔程式〕`VISOR/VISOR/HACk/HACk.py`；〔論文〕README

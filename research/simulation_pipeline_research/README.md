@@ -22,6 +22,10 @@
 | [notes/02_CODE_PIPELINE.md](notes/02_CODE_PIPELINE.md) | 程式實作：`fscrp.py` → `sim_data_on_tree.py` → likelihood grid；參數、已驗證行為、論文與程式的差異 |
 | [notes/03_BENCHMARK_DATASET_FORMAT.md](notes/03_BENCHMARK_DATASET_FORMAT.md) | 本機 benchmark 資料集的真值格式，以及從資料反推的生成參數 |
 | [notes/04_GAPS_FOR_LONGREAD.md](notes/04_GAPS_FOR_LONGREAD.md) | 要產生 long read 特徵還缺什麼；對應 `plan.md` 的 L1-B／L2 |
+| [notes/05_OTHER_SIMULATORS.md](notes/05_OTHER_SIMULATORS.md) | Pairtree（`pearsim`）與 CONIPHER（`TRACERx_simulation_tool`）生成器：來源、重現性、輸入輸出 |
+| [notes/06_CLONESIM.md](notes/06_CLONESIM.md) | clonesim（Pharming）程式層級紀錄。**已移出 bulk 範圍**：它的 read 層只有 single-cell |
+| [notes/07_SISTEM.md](notes/07_SISTEM.md) | SISTEM 程式層級拆解與試跑：allele 0／1＝haplotype、bulk 計數沒有抽樣也沒有 CN 加權 |
+| [notes/08_SIMULATOR_COMPARISON.md](notes/08_SIMULATOR_COMPARISON.md) | bulk 生成器三方比較（Pairtree、CONIPHER、SISTEM）與選用建議 |
 | [simulator_survey_2026-10-24/](simulator_survey_2026-10-24/README.md) | 其他「真值樹＋模擬 SNV 資料」生成器總調查（約 90 個工具，6 個方向）與總表 `ALL_SIMULATORS.tsv` |
 | [phyclone_sim_code/](phyclone_sim_code/SOURCE.md) | PhyClone 模擬與驗證程式的快照（上游 commit `2738324`），來源對照見 `SOURCE.md` |
 | `references/` | 指向論文、補充文件、XLSX、benchmark 資料集 README 的 symlink |

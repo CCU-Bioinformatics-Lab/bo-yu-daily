@@ -6,6 +6,8 @@
 
 ## 結論
 
+> **2026-10-24 範圍更正：PSiTE 已移出。** 篩選標準是「輸出最終能當 PhyClone 這類 bulk 建樹軟體的輸入，而且真值能直接對應 clone tree」。PSiTE 有樹，但只輸出 FASTA／FASTQ（ART short read），要自己做 alignment、variant calling 與 CN calling 才能得到 PhyClone 輸入。 下文保留原始調查內容，排名只作紀錄。見 [README「範圍更正」](README.md)。〔程式〕
+
 一句話：**SISTEM 最接近我們的需求。** 它輸出真值樹、每個 SNV 所在的 haplotype（`Allele` 欄）、haplotype-specific CN，以及 bulk SNV 的 read 數。SimSCSnTree 與 PSiTE 也記錄 SNV 所在的 haplotype，但只產生 FASTQ。沒有任何工具產生 long read，也沒有工具輸出 read 層級的 SNV 共現。
 
 | 排名 | 工具 | 真值樹 | 資料層級 | CN | SNV 所在 haplotype | bulk／pseudo-bulk | 主要缺點 |
@@ -24,7 +26,7 @@
 
 對我們的意義〔推論〕：
 
-- 要測「haplotype 約束 multiplicity」，可用 SISTEM 的 `SNV_events.tsv`（allele）＋`observed_CNPs.tsv`（haplotype CN）當真值。bulk read 數可直接轉成 PhyClone 輸入。
+- 要測「haplotype 約束 multiplicity」，可用 SISTEM 的 `SNV_events.tsv`（allele）＋`observed_CNPs.tsv`（haplotype CN）當真值。bulk read 數可直接轉成 PhyClone 輸入。（2026-10-24 更正：格式上可以轉，但計數本身沒有 binomial 抽樣、VAF 沒有 CN 加權，要重抽；見 [`../notes/07_SISTEM.md`](../notes/07_SISTEM.md)）
 - 要測「同一 read 上 SNV 共現」，現有工具都不夠。SimSCSnTree、PSiTE、SISTEM、HCDSIM 都會寫出每個 haplotype 的 FASTA。可以把這些 FASTA 接到 long-read 模擬器（例如 PBSIM／Badread），自己產生帶 HP 標記的 read。這一步要自己寫。
 - CellCoal 有 per-allele ADO 與真 haplotype，但沒有 CN，不適合測 CN 相關的 multiplicity。
 
@@ -52,7 +54,7 @@
 - bulk 只取腫瘤節點，沒看到 normal 混合參數。〔程式〕
 - 沒有 seed 參數（`grep seed` 無結果）。沒有授權檔。最後 commit `08747dc`（2023-04-10）。可 `conda install simscsntree`。https://github.com/compbiofan/SimSCSnTree
 
-### PSiTE（hchyang/PSiTE）
+### PSiTE（hchyang/PSiTE）（已移出，見上方更正）
 
 - 模組：`vcf2fa`（germline）→ `phylovar`（沿輸入 Newick 樹加 somatic 變異）→ `chain2fa`（產生每個 cell／clone 的基因組）→ `fa2wgs`／`fa2wes`（用 ART 抽 read）。〔程式：README〕
 - 變異檔有 `hap` 欄：「The haplotype copy of the chromosome on which the somatic variant resides on」。〔程式：README〕

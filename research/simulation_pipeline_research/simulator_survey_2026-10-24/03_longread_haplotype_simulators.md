@@ -6,6 +6,8 @@
 
 ## 結論
 
+> **2026-10-24 範圍更正：VISOR 已移出。** 篩選標準是「輸出最終能當 PhyClone 這類 bulk 建樹軟體的輸入，而且真值能直接對應 clone tree」。VISOR 沒有樹，只能當 read 模擬的零件。 下文保留原始調查內容，排名只作紀錄。見 [README「範圍更正」](README.md)。〔程式〕
+
 1. **沒有任何公開工具能一次完成「clone tree → haplotype-specific SNV／CN → long read BAM → per-read 真值」。** 每個工具只做其中一段。〔推論〕
 2. **VISOR（HACk + LASeR）最接近需求。** 它能混合多個 clone，並在 BAM 寫入 `CL`（clone）與 `HP`（haplotype）tag。但它沒有樹、沒有 seed、purity 用 reference read 補，CN 只能用 haplotype 內的 tandem duplication／deletion 表示。〔程式〕
 3. **HeteroGenesis 是唯一能依 clone tree 產生 haplotype-specific SNV 與 CN FASTA 的現成程式。** 但它原本是給 short read（w-Wessim）用，而且沒有 seed。〔程式〕
@@ -29,7 +31,7 @@
 
 ## 各工具
 
-### VISOR（HACk、SHORtS、LASeR、XENIA）
+### VISOR（HACk、SHORtS、LASeR、XENIA）（已移出，見上方更正）
 
 - Repo：https://github.com/davidebolo1993/VISOR，HEAD `a889e59`（2024-10-21），LGPL-3.0。論文：Bolognini et al., *Bioinformatics* 2020。〔程式〕〔論文〕
 - HACk 把 BED 列出的變異寫進每條 haplotype FASTA。支援 `SNP`、`MNP`、`deletion`、`tandem duplication`、`inversion`、translocation 等 15 種。〔程式〕`VISOR/HACk/HACk.py:330`
