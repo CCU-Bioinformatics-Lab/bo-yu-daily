@@ -1,0 +1,52 @@
+{
+ "run": "b03_base_err003_hpu",
+ "argv": [
+  "/bip8_disk/boyu114/main_work/tools/phyclone_hp.py",
+  "--hp-mode",
+  "base",
+  "--segments",
+  "/bip8_disk/boyu114/main_work/phyclone_rs/golden/cases/stress_b03_s1/input/segments.tsv",
+  "--pairs",
+  "/bip8_disk/boyu114/main_work/phyclone_rs/golden/cases/stress_b03_s1/input/pairs.tsv",
+  "--hp-data",
+  "/bip8_disk/boyu114/main_work/phyclone_rs/golden/cases/stress_b03_s1/input/data_hp.tsv",
+  "--pair-error",
+  "0.03",
+  "--pair-hp-uncertain",
+  "run",
+  "-i",
+  "/bip8_disk/boyu114/main_work/phyclone_rs/golden/cases/stress_b03_s1/input/data.tsv",
+  "-d",
+  "binomial",
+  "-b",
+  "20",
+  "-n",
+  "200",
+  "--num-chains",
+  "1",
+  "--seed",
+  "1",
+  "-o",
+  "/bip8_disk/boyu114/main_work/phyclone_rs/profile/b03_base_err003_hpu.trace.h5"
+ ],
+ "exit_code": 0,
+ "profiled": true,
+ "numba_wrapped": [
+  "phyclone.tree.distributions.log_sum_exp_over_dims",
+  "phyclone.process_trace.process_trace.exp_normalize",
+  "phyclone.mcmc.gibbs_mh.exp_normalize",
+  "phyclone.smc.swarm.swarm.log_sum_exp",
+  "phyclone.smc.utils.log_factorial",
+  "phyclone.smc.utils.log_binomial_coefficient",
+  "phyclone.smc.kernels.base.log_normalize",
+  "phyclone.smc.kernels.bootstrap.log_binomial_coefficient"
+ ],
+ "wall_script_s": 444.677963365335,
+ "wall_profiled_region_s": 444.6743484749459,
+ "wall_main_s": 442.37022575037554,
+ "loadavg_end": [
+  1.865234375,
+  1.63134765625,
+  2.025390625
+ ]
+}
