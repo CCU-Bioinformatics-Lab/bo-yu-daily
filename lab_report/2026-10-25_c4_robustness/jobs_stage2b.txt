@@ -1,0 +1,9 @@
+x10_real_s1 base_c4 0.03
+x10_sw1_s1 base_c4 0.03
+x10_b01_s1 base_c4 0.03
+x10_real_s2 base_c4 0.03
+x10_sw1_s2 base_c4 0.03
+x10_b01_s2 base_c4 0.03
+x10_real_s3 base_c4 0.03
+x10_sw1_s3 base_c4 0.03
+x10_b01_s3 base_c4 0.03

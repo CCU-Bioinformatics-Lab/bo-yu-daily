@@ -59,6 +59,10 @@ class Spec:
     fraction: dict[str, float]     # clone -> share of tumour cells
     segments: dict[str, Segment]
     edges: dict[str, tuple[SNVRole | CNEvent, ...]]
+    # observation errors (v0.2); all 0 reproduces v0.1 byte for byte
+    mistag_rate: float = 0.0         # tagged read gets the other HP's tag (whole read)
+    switch_rate_per_mb: float = 0.0  # Poisson phase switch points per Mb of segment
+    base_error: float = 0.0          # per read and SNV site: allele read as the other allele
 
     @property
     def root(self):
@@ -130,7 +134,8 @@ def parse_spec(raw, base_dir=Path(".")):
     span_path = DATA_DIR / span if (DATA_DIR / span).exists() else base_dir / span
     return Spec(raw["name"], float(raw["purity"]), float(raw["depth"]),
                 float(raw.get("phased_fraction", 0.859)), span_path, parent, fraction,
-                segments, edges)
+                segments, edges, float(raw.get("mistag_rate", 0)),
+                float(raw.get("switch_rate_per_mb", 0)), float(raw.get("base_error", 0)))
 
 
 def load_spec(path):
