@@ -12,7 +12,7 @@
 - **本次新發現、前 6 份報告沒收錄的兩個近似工具：**
   - `cbg-ethz/WES_Cancer_Sim`（Hofmann 2017）：二元 subclone tree、真實 SNV 放到樹上、CNV 隨機放到樹節點並指定 zygosity、Wessim 產生 WES BAM、加 normal 稀釋。這是一次性的 benchmark 管線，不是通用工具。〔程式〕
   - GeRnika（CRAN）：clone tree（`B` 矩陣）＋多 sample 的真值與雜訊 VAF。沒有 CN，沒有 purity。〔論文：CRAN manual〕
-- **建議：** 不要用 MPI CancerSim。要 haplotype-resolved FASTA 時，cancerSimCraft 可和 PSiTE 並列當參考，把 ART 換成 Badread／PBSIM3。〔推論，未實測〕
+- **建議：** 不要用 MPI CancerSim。cancerSimCraft 只輸出 short read FASTQ，不符合「輸出能直接給 PhyClone」的標準（2026-10-24 範圍更正，見 [README](README.md)）；只能參考它寫 haplotype FASTA 的做法。〔推論，未實測〕
 
 | 候選 | repo | 真值樹 | 資料層 | CN | purity<1 | haplotype | 符合需求？ |
 |---|---|---|---|---|---|---|---|
