@@ -17,7 +17,6 @@
 |---|---|---|---|
 | **Liu, Goretsky, …, Sahinalp, Day, Kolmogorov 2026** | 期刊（Nat Commun，2026-07-16） | [10.1038/s41467-026-75172-9](https://doi.org/10.1038/s41467-026-75172-9)；PMC13493970 | 見下節。long-read、有樹、資料公開 |
 | EMulSI-Phy（Winata，UCLA） | 會議 poster abstract（Festival of Genomics Boston 2026） | [poster 頁](https://festivalofgenomics.com/boston/poster-abstract-benchmarking-subclonal-reconstruction-algorithms-scalable-multi-sample-cancer-phylogeny-inference) | 比較 DPClust、PyClone、PyClone-VI、CONIPHER、Pairtree、PhyClone；504 組模擬＋400 例 TRACERx NSCLC。只報 task completion（clustering 100%、phylogeny 98.4%）、compute cost、silhouette、sum rule 違反。摘要沒有 tree 正確率數字。頁面日期與頁尾（2027）不一致 |
-| SCOUT（Valeriani, …, Caravagna） | bioRxiv 2026-06 | [10.64898/2026.06.09.731105](https://doi.org/10.64898/2026.06.09.731105) | W7 已列。本次讀全文確認：只測 MOBSTER、VIBER、PyClone-VI 與 tumourevo；**沒有測 PhyClone／Pairtree／CONIPHER，沒有 topology 指標**。short-read Illumina；ProCESS 有 ground-truth phylogeny，Zenodo 有 truth 資料，但是否輸出 per-mutation clone label 與 multiplicity 未寫明 |
 | SRNJ／DLCA-NJ（Lagergren 組） | bioRxiv 2026-07 | [10.64898/2026.07.30.739152](https://doi.org/10.64898/2026.07.30.739152) | W1 已列為方法。附 sc CN tree 的模擬比較（triplet、root-split distance、clade-F1）。是方法論文自帶比較 |
 | SISTEM | Bioinformatics 2025 | [10.1093/bioinformatics/btaf634](https://doi.org/10.1093/bioinformatics/btaf634) | simulator：tumor 演化、轉移、DNA-seq reads，帶 lineage truth。不是 benchmark |
 | MOV&RSim | BMC Bioinf 2025 | [10.1186/s12859-025-06292-0](https://doi.org/10.1186/s12859-025-06292-0) | simulator：cancer variant 與 read 特性。不是 benchmark |
@@ -49,7 +48,7 @@
 
 1. 主指標維持不變：ADM 類 pairwise 祖先關係（SMC-Het）與 Pairtree relationship error。新文獻沒有提出取代方案。
 2. 新增一條驗證路線：Liu 2026 subline 混合 pseudo-bulk。它補上「long-read＋已知樹」的缺口。
-3. SCOUT 與 SISTEM 可作為 short-read 模擬對照，但要先確認 truth 是否含 per-mutation clone 與 multiplicity。
+3. SISTEM 可作為 short-read 模擬對照，但要先確認 truth 是否含 per-mutation clone 與 multiplicity。
 4. EMulSI-Phy 出 preprint 後再評估。它是唯一把 PhyClone 放進第三方比較的項目。
 
 ## 附：方法論文補查（2026-10-18）
