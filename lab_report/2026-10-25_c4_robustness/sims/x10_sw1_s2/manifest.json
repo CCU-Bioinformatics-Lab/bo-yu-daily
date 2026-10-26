@@ -1,0 +1,27 @@
+{
+ "longbulksim_version": "0.2.0",
+ "spec": "stress_density_x10",
+ "seed": 2,
+ "purity": 0.4,
+ "depth": 200.0,
+ "phased_fraction": 0.859,
+ "mistag_rate": 0.0,
+ "switch_rate_per_mb": 1.0,
+ "base_error": 0.0,
+ "read_span": "/bip8_disk/boyu114/main_work/longbulksim/longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv",
+ "n_mutations": 100,
+ "n_pairs_rows": 1148,
+ "n_reads": {
+  "A": 2895,
+  "B": 1319,
+  "C": 6229,
+  "D": 2520
+ },
+ "lineages": [
+  "N",
+  "C1",
+  "C2",
+  "C3",
+  "C4"
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "method": "hard",
+ "min_reads": 3,
+ "tol": 1,
+ "called_pairs": 22,
+ "called_by_relation": {
+  "ancestor": 19,
+  "descendant": 0,
+  "branch": 3
+ },
+ "min_violations": 0,
+ "kept_topologies": 1035,
+ "kept_fraction": 0.259,
+ "zero_violation_fraction": 0.259,
+ "map_topology": "t_518"
+}

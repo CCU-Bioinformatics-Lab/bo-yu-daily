@@ -1,0 +1,10 @@
+{
+ "method": "soft",
+ "eps": 0.01,
+ "eligible_pairs": 176,
+ "n_topologies": 3995,
+ "n_samples": 4000,
+ "ess": 3.101658607968343,
+ "max_weight": 0.5179085947931971,
+ "map_topology": "t_3856"
+}

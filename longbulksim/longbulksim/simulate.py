@@ -6,11 +6,14 @@ OUT/input/  what a method may read (plan.md §5.8.2 rule 7)
                  with more tagged alt reads ("." when there are none)
   segments.tsv   per segment: root-clone state A, other state B, true phi (cells in B)
   pairs.tsv      per SNV pair x HP: tagged reads that cover both SNVs, by allele pattern
-                 (plan.md §1.3 PAIRS.tsv; ps_block = segment, since v1 has no phase switches)
+                 (plan.md §1.3 PAIRS.tsv; ps_block = segment; phase switches stay inside it)
+Counts, snv_hp and pairs use the observed HP tag and observed alleles, so mistags, phase
+switches and base errors reach every input file the same way.
 OUT/truth/
   truth.tsv, truth_tree.tsv, clusters_truth.tsv  same columns as tools/hp_truth_tree_to_phyclone.py
   genome.json    replayed genome: lineage -> segment -> HP -> copies (sorted role lists)
-  reads.tsv.gz   every read: segment, start, end, lineage, HP, copy, tagged
+  reads.tsv.gz   every read: segment, start, end, lineage, HP, copy, tagged, observed HP
+  phase_switches.tsv  phase switch positions
 OUT/manifest.json  spec, seed, read-span source and counts
 """
 import gzip
@@ -84,14 +87,17 @@ def role_truth(spec, genomes, role):
             "phyclone_ccf_expected": f_exp, "vaf_expected": alt / tot}
 
 
-def observe(reads, pos, role):
+def observe(reads, pos, role, rng=None, base_error=0.0):
+    """Reads that cover pos and whether each one reads the alt allele."""
     idx = reads.covering(pos)
     alt = reads.carries(role)[reads.mol[idx]]
+    if base_error > 0:
+        alt = alt ^ (rng.random(len(idx)) < base_error)
     return idx, alt
 
 
 def counts(reads, idx, alt):
-    hp = np.array([m.hp for m in reads.molecules])[reads.mol[idx]]
+    hp = reads.obs_hp[idx]
     tag = reads.tagged[idx]
     c = {"ref": int((~alt).sum()), "alt": int(alt.sum())}
     for h in HPS:
@@ -106,7 +112,6 @@ def counts(reads, idx, alt):
 def pair_rows(spec, reads, muts, obs):
     """Tagged reads that cover both SNVs of a pair, per HP; pairs ordered by mutation id."""
     seg = spec.segments[muts[0].segment]
-    hp_of = np.array([m.hp for m in reads.molecules])
     muts = sorted(muts, key=lambda m: m.pos)
     rows = []
     for i, mi in enumerate(muts):
@@ -119,7 +124,7 @@ def pair_rows(spec, reads, muts, obs):
                 continue
             a, b = (mi, mj) if mi.id < mj.id else (mj, mi)
             xa, xb = (ai[ki], aj[kj]) if a is mi else (aj[kj], ai[ki])
-            tag, hp = reads.tagged[both], hp_of[reads.mol[both]]
+            tag, hp = reads.tagged[both], reads.obs_hp[both]
             for h in HPS:
                 sel = tag & (hp == h)
                 if not sel.any():
@@ -146,7 +151,7 @@ def run(spec, seed, out_dir):
     span_q = load_read_span(spec.read_span)
     muts = place_mutations(rng, spec)
     reads = {s: sample_segment(rng, spec, genomes, s, span_q) for s in spec.segments}
-    obs = {m.id: observe(reads[m.segment], m.pos, m.role) for m in muts}
+    obs = {m.id: observe(reads[m.segment], m.pos, m.role, rng, spec.base_error) for m in muts}
     truth = {r: role_truth(spec, genomes, r) for r in spec.roles}
 
     base = ["mutation_id", "sample_id", "ref_counts", "alt_counts", "major_cn", "minor_cn",
@@ -202,16 +207,20 @@ def run(spec, seed, out_dir):
                         for s, seg in g.items()} for c, g in genomes.items()},
          "lost": lost(spec, genomes)}, indent=1))
     with gzip.open(out / "truth/reads.tsv.gz", "wt") as fh:
-        fh.write("read_id\tsegment\tstart\tend\tlineage\thp\tcopy\ttagged\n")
+        fh.write("read_id\tsegment\tstart\tend\tlineage\thp\tcopy\ttagged\tobs_hp\n")
         for s, r in reads.items():
             for i in range(len(r.start)):
                 m = r.molecules[r.mol[i]]
                 fh.write(f"{s}_{i}\t{s}\t{r.start[i]}\t{r.end[i]}\t{m.lineage}\t{m.hp}\t"
-                         f"{m.copy}\t{int(r.tagged[i])}\n")
+                         f"{m.copy}\t{int(r.tagged[i])}\t{r.obs_hp[i]}\n")
+    write_tsv(out / "truth/phase_switches.tsv", ["segment", "pos"],
+              [[s, int(p)] for s, r in reads.items() for p in r.switches])
 
     manifest = {"longbulksim_version": __version__, "spec": spec.name, "seed": seed,
                 "purity": spec.purity, "depth": spec.depth,
-                "phased_fraction": spec.phased_fraction, "read_span": str(spec.read_span),
+                "phased_fraction": spec.phased_fraction, "mistag_rate": spec.mistag_rate,
+                "switch_rate_per_mb": spec.switch_rate_per_mb, "base_error": spec.base_error,
+                "read_span": str(spec.read_span),
                 "n_mutations": len(muts), "n_pairs_rows": len(pairs),
                 "n_reads": {s: int(len(r.start)) for s, r in reads.items()},
                 "lineages": [NORMAL, *spec.parent]}

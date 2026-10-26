@@ -38,7 +38,10 @@ class Reads:
     start: np.ndarray
     end: np.ndarray
     mol: np.ndarray     # index into molecules
-    tagged: np.ndarray  # read carries an HP tag (no phasing errors in v1)
+    tagged: np.ndarray  # read carries an HP tag
+    obs_hp: np.ndarray  # HP the tag says (str); differs from the molecule's HP after a mistag
+                        # or an odd number of phase switches before the read midpoint
+    switches: np.ndarray  # phase switch positions in the segment, ascending
     max_span: int
 
     def covering(self, pos):
@@ -97,5 +100,17 @@ def sample_segment(rng, spec, genomes, seg_id, span_q):
     end = start + np.interp(rng.random(n), q, span).astype(np.int64)
     mol = rng.choice(len(mols), size=n, p=w / w.sum())
     tagged = rng.random(n) < spec.phased_fraction
+    # errors draw no random numbers when their rate is 0, so v0.1 seeds give the same reads
+    flip = np.zeros(n, bool)
+    if spec.mistag_rate > 0:
+        flip ^= rng.random(n) < spec.mistag_rate
+    switches = np.zeros(0, np.int64)
+    if spec.switch_rate_per_mb > 0:
+        k = rng.poisson(spec.switch_rate_per_mb * seg.length / 1e6)
+        switches = np.sort(rng.integers(seg.start, seg.end, size=k))
+        flip ^= np.searchsorted(switches, (start + end) // 2, side="right") % 2 == 1
+    true_hp = np.array([HPS.index(m.hp) for m in mols], dtype=np.int64)[mol]
+    obs_hp = np.array(HPS)[true_hp ^ flip]
     keep = end > seg.start
-    return Reads(tuple(mols), start[keep], end[keep], mol[keep], tagged[keep], max_span)
+    return Reads(tuple(mols), start[keep], end[keep], mol[keep], tagged[keep], obs_hp[keep],
+                 switches, max_span)

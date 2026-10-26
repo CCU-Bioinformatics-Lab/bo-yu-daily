@@ -20,3 +20,6 @@
 | 2026-10-25 | trunk 方向：只有一個狀態是 ploidy-neutral 時取它，否則取多數狀態 | PCAWG Battenberg 看不出祖先狀態；TRACERx 有 ploidy 標記 | 65% 用多數規則；遺失率與 ploidy 規則相近（2.7% vs 3.2%） |
 | 2026-10-25 | gain／loss 選隨機 copy；SNV 在當下所有 copy 中均勻選一個 | 讓 multiplicity 與遺失由順序決定 | 2:1 early 0.24、2:0 0.42，都在 PCAWG IQR 內 |
 | 2026-10-25 | 遺失率高於 TRACERx 下限時不調參數 | TRACERx 是嚴格下限；論文估計更高 | 中位 0.5%、Q90 3.1%；照實記錄 |
+| 2026-10-25 | v0.2 加入 `mistag_rate`、`switch_rate_per_mb`、`base_error`，預設 0 | C4 穩健性測試需要（`research/phyclone_research/C4_ROBUSTNESS_PLAN.md`）。取代上面「不模擬 phasing 誤差」 | 錯誤率 0 時不抽亂數，`input/` 與 v0.1 逐位相同 |
+| 2026-10-25 | 錯標以整條 read 為單位；switch 依 read 中點決定 | haplotag 對整條 read 標記；同一 read 上的 SNV 必須同一個 tag | 推論：跨 switch 的 read 在 longphase 是依多數 het SNP 決定，中點是近似 |
+| 2026-10-25 | base error 是對稱的 ref↔alt 翻轉 | 計畫定義；只有 ref→alt 方向有實測（HCC1395BL 0.40%） | alt→ref 未量測 |
