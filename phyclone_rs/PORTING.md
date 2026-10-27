@@ -170,4 +170,9 @@ trace/
   - 不輸出原版 click 的進度訊息。
   - consensus 裡兩個 clade 重新標號後相同時，Rust 回傳錯誤；原版會建出不是樹的圖。
   - `-i` 吃 TSV trace 目錄，不吃 h5。
+- **M6 審查（sonnet）找到、尚未處理的風險**：
+  - consensus 樹在 MAP／CCF 步驟的 child 順序模擬錯了。原版 map.py 依 rustworkx 的 edge index 讀邊，而 `insert_node_on_in_edges_multiple` 會打亂 index；Rust 用 successor 順序。只有兄弟節點資料相同或捨入翻轉 argmax 時才會改變輸出；目前所有比對都相同。
+  - `topologies()` 用重算的 tree hash 分組，不讀 trace 存的 `tree_hash`（原版用存的）。golden 1400 列兩者相同；其他 h5 若不同會被靜默分錯組。
+  - consensus 權重逐位相同依賴 numpy 2.2 的 pairwise sum 與 glibc `exp`；`--consensus-threshold 1` 在 3 個 run 能通過就是靠這個捨入。
+  - 測試資料的缺口：golden 都是 1 chain、只有 1 個 run 有多樣本、沒有 int 型 id、沒有 log_p tie。
 - 誤差模型的 pair score 用 400 點的 midpoint grid 積分；HP 不確定性的門檻 Q_MIN = 0.05。
