@@ -30,7 +30,12 @@ def jobs(out, seed_list, binary):
         runs = list(csv.DictReader(fh, delimiter="\t"))
     for r in runs:
         argv = r["argv"].replace("{in}", os.path.join(GOLDEN, "cases", r["case"], "input")).split()
-        configs = [(r["run"], 1)]
+        if "--num-chains" in argv:  # an option in the golden argv wins (e0_chains4)
+            i = argv.index("--num-chains")
+            configs = [(r["run"], int(argv[i + 1]))]
+            del argv[i:i + 2]
+        else:
+            configs = [(r["run"], 1)]
         if r["run"] == "e0_base_bin":
             configs.append(("e0_base_bin.chains4", 4))
         for config, chains in configs:

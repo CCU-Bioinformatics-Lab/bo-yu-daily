@@ -12,6 +12,9 @@ Writes JSON fixtures under phyclone_rs/golden/fixtures/ for a reimplementation t
                                      log_p_one of TreeJointDistribution (no pair term, outliers
                                      off) at each alpha, and the MAP clone table (ccf, clonal_prev)
 
+freeze_m7.py adds the M7 fixtures (outlier model, loss prior options, --precision, grid >= 1000)
+through the same writer.
+
 Nothing here is random. Run it twice and the outputs must be byte-identical (`--check` compares
 against the files on disk instead of writing them).
 
@@ -297,6 +300,8 @@ def main():
 
     for case in CASES:
         freeze_case(case, write)
+    import freeze_m7  # outlier model, loss priors, precision, grid >= 1000 (M7)
+    freeze_m7.freeze_all(write)
     if a.check:
         print("identical" if not bad else f"DIFFERENT: {bad}")
         sys.exit(1 if bad else 0)

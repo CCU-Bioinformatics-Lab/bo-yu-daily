@@ -4,3 +4,4 @@ stress_real_s1	lab_report/2026-10-25_c4_robustness/sims/x10_real_s1	stress tree 
 stress_b03_s1	lab_report/2026-10-25_c4_robustness/sims/x10_b03_s1	stress tree x10, 3% base error (failure mode 1)
 random_spec_0000	lab_report/2026-10-25_random_tree_phyclone_baseline/sims/spec_0000	TRACERx random tree, 186 SNVs, many CN segments, depth 50
 upstream_mixing_small	research/phyclone_research/PhyClone/examples/data	upstream example: 4 samples, beta-binomial, cluster file
+fscrp_loss_0.2_run0	/big8_disk/boyu114/phyclone_dataset/FS-CRP_Loss/data_archive/loss_prop_0.2_run0	PhyClone paper FS-CRP_Loss trial (8 samples, 600 SNVs, 10 PyClone-VI clusters, gzipped cluster file); outlier model and loss priors; V4 seed case

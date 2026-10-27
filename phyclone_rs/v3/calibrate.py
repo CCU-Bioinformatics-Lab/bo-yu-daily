@@ -13,11 +13,16 @@ Power: Python ref seeds 1-10 vs 5 seeds of a broken sampler:
   permuted    Python ref seeds 11-15 with mutation labels shuffled in every tree (wrong
               assignment bookkeeping; num_nodes, alpha, log_p_one are untouched)
 
+  noout       outlier model off (-l 0) on the M7 outlier configs
+  noloss      loss prior ignored (global 1e-4) on the M7 loss prior configs
+
 Writes baseline/calibration/{false_fail.tsv,false_fail_by_config.tsv,
-false_fail_table_count.tsv,power.tsv}.
+false_fail_table_count.tsv,power.tsv}. --configs calibrates only those configs as one table
+(e.g. the M7 configs, which compare.py is run on separately) and --out writes elsewhere.
 Usage: env PYTHONPATH=research/phyclone_research/PhyClone ~/venvs/phyclone/bin/python \\
-         phyclone_rs/v3/calibrate.py
+         phyclone_rs/v3/calibrate.py [--configs C ...] [--out DIR]
 """
+import argparse
 import os
 import shutil
 import sys
@@ -37,6 +42,7 @@ RUNS = os.path.join(V3, "baseline", "runs")
 OUT = os.path.join(V3, "baseline", "calibration")
 REF_SEEDS = [f"seed{s:02d}" for s in range(1, 11)]
 HOLD_SEEDS = [f"seed{s:02d}" for s in range(11, 16)]
+BROKEN = ("np20", "alphafixed", "noc4", "noout", "noloss", "permuted")
 
 
 def permuted_one(args):
@@ -111,7 +117,7 @@ def power(configs):
             continue
         ref_seeds, _ = S.load(os.path.join(SUM, f"{c}.json.gz"))
         ref = [ref_seeds[s] for s in REF_SEEDS]
-        for variant in ("np20", "alphafixed", "noc4", "permuted"):
+        for variant in BROKEN:
             if variant == "permuted":
                 cand = list(perm[c].values())
             else:
@@ -127,9 +133,17 @@ def power(configs):
 
 
 def main():
+    global OUT
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--configs", nargs="*")
+    ap.add_argument("--out", default=OUT)
+    a = ap.parse_args()
+    OUT = a.out
     os.makedirs(OUT, exist_ok=True)
     names = sorted(f[:-8] for f in os.listdir(SUM) if f.endswith(".json.gz"))
     configs = [c for c in names if "." not in c or c.endswith(".chains4")]
+    if a.configs:
+        configs = [c for c in configs if c in a.configs]
     rows, by_config, (tf, ti), count = false_fail(configs)
     with open(os.path.join(OUT, "false_fail.tsv"), "w") as fh:
         fh.write("config\tsummary\tn_splits\tfail_rate\tinconclusive_rate\n")
@@ -151,7 +165,7 @@ def main():
             fh.write("\t".join([r[0], r[1], r[2], str(r[3]), str(r[4]), f"{r[5]:.3g}", f"{r[6]:.4g}",
                                 r[7], r[8], r[9]]) + "\n")
     print(open(os.path.join(OUT, "false_fail_by_config.tsv")).read())
-    for variant in ("np20", "alphafixed", "noc4", "permuted"):
+    for variant in BROKEN:
         v = [r for r in prow if r[1] == variant]
         print(variant, {k: sum(r[7] == k for r in v) for k in ("PASS", "INCONCLUSIVE", "FAIL")},
               "configs with >=1 FAIL:", len({r[0] for r in v if r[7] == "FAIL"}), "/", len({r[0] for r in v}))

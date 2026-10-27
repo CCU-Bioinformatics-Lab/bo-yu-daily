@@ -1,7 +1,11 @@
 variant	seeds	runs	extra_args	drop_args	purpose
-ref	1-15	all			Python baseline: the golden runs.tsv argv, only the seed changes
+ref	1-15	e0_base_bin,real_a2_err004,b03_base_eps001,b03_base_err003_hpu,random_a1_bin,random_base_betabin,upstream_clusters			Python baseline: the golden runs.tsv argv, only the seed changes
 chains4	1-15	e0_base_bin	--num-chains 4		one 4-chain config (4 chains pooled per seed)
-np20	101-105	all	--num-particles 20		power check: weaker sampler (fewer PG particles)
-alphafixed	101-105	all	--no-concentration-update		power check: alpha never updated (stays at 1.0)
-fresh	201-205	all			null check through compare.py: 5 new Python seeds as the candidate
+np20	101-105	e0_base_bin,real_a2_err004,b03_base_eps001,b03_base_err003_hpu,random_a1_bin,random_base_betabin,upstream_clusters	--num-particles 20		power check: weaker sampler (fewer PG particles)
+alphafixed	101-105	e0_base_bin,real_a2_err004,b03_base_eps001,b03_base_err003_hpu,random_a1_bin,random_base_betabin,upstream_clusters	--no-concentration-update		power check: alpha never updated (stays at 1.0)
+fresh	201-205	e0_base_bin,real_a2_err004,b03_base_eps001,b03_base_err003_hpu,random_a1_bin,random_base_betabin,upstream_clusters			null check through compare.py: 5 new Python seeds as the candidate
 noc4	101-105	real_a2_err004,b03_base_eps001,b03_base_err003_hpu		--pairs	power check: C4 pair term left out (a dropped model term)
+ref	1-15	e0_out001,e0_out001_boot,e0_boot,e0_out001_fully,real_a2_err004_out001,fscrp_out,fscrp_assign_loss,fscrp_user_loss,e0_subtree05,e0_np20_rt08,e0_moves,e0_alpha25_fixed,upstream_grid1000			M7 configs (golden runs.tsv rows 9-24 that are compared statistically): golden argv, only the seed changes
+noout	101-105	e0_out001,real_a2_err004_out001,fscrp_out	-l 0		power check: outlier model off (a port that never uses the outlier node)
+noloss	101-105	fscrp_assign_loss	--no-assign-loss-prob -l 1e-4		power check: loss prior ignored (every cluster gets the global 1e-4)
+noloss	101-105	fscrp_user_loss	--no-user-provided-loss-prob -l 1e-4		power check: user outlier_prob column ignored (every cluster gets the global 1e-4)

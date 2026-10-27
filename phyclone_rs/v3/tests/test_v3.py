@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 import shutil
@@ -82,19 +83,31 @@ class H5Reader(unittest.TestCase):
             self.assertEqual(tr.num_roots.tolist(), roots, run)
 
     def test_map_tree_matches_the_golden_fixture(self):
+        with open(os.path.join(S.GOLDEN, "runs.tsv")) as fh:
+            argv = {r["run"]: r["argv"] for r in csv.DictReader(fh, delimiter="\t")}
+        compared = 0
         for run, case in S.config_case().items():
-            tr = T.read_trace(os.path.join(GOLDEN_RUNS, run, "trace.h5"))
-            with open(os.path.join(S.GOLDEN, "fixtures", "trees", f"{case}.json")) as fh:
-                trees = json.load(fh)["trees"]
-            spec = next(t for t in trees if f"{run}:map" in [t["id"], *t.get("aliases", [])])["nodes"]
-            if run == "upstream_clusters":
+            if " -c " in argv[run]:
                 continue  # fixture lists cluster ids; the common form is per mutation
+            trees = []
+            for name in (case, f"{case}__m7"):  # M7 runs keep their trees in <case>__m7.json
+                path = os.path.join(S.GOLDEN, "fixtures", "trees", f"{name}.json")
+                if os.path.exists(path):
+                    with open(path) as fh:
+                        trees += json.load(fh)["trees"]
+            spec = next((t["nodes"] for t in trees
+                         if f"{run}:map" in [t["id"], *t.get("aliases", [])]), None)
+            if spec is None:
+                continue  # option-only M7 runs (thin, max-time, ...) have no frozen trees
+            compared += 1
+            tr = T.read_trace(os.path.join(GOLDEN_RUNS, run, "trace.h5"))
             node_of = {m: n for n, v in spec.items() for m in v["mutations"]}
             parent = {n: (T.ROOT if v["parent"] in (None, "root", "-1") else v["parent"])
                       for n, v in spec.items()}
             want = T.canonical_tree([node_of.get(m, T.OUTLIER) for m in tr.mutations], parent)
             got = tr.trees[tr.tree_idx[int(np.argmax(tr.log_p_one))]]
             self.assertEqual(got, want, run)
+        self.assertEqual(compared, 10)  # 6 original SNV-level runs + 4 M7 outlier runs
 
     def test_h5_and_tsv_give_the_same_summaries(self):
         tmp = tempfile.mkdtemp()

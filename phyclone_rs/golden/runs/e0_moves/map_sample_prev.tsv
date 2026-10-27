@@ -1,0 +1,5 @@
+sample_id	clone_id	ccf	clonal_prev
+S1	0	0.87	0.29
+S1	1	0.1	0.1
+S1	2	0.48	0.48
+S1	root	1.0	0.13

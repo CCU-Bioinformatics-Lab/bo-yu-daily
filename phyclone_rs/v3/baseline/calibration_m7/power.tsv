@@ -1,0 +1,200 @@
+config	broken	summary	n_python	n_broken	effect	p	verdict	python	broken_value
+e0_alpha25_fixed	permuted	num_nodes	10	5	0.371	0.8921	PASS	d=17	d=17
+e0_alpha25_fixed	permuted	num_roots	10	5	0.5	0.8119	PASS	d=17	d=17
+e0_alpha25_fixed	permuted	log_alpha_q	10	5	0	1	PASS	d=3	d=3
+e0_alpha25_fixed	permuted	log_p_one_q	10	5	0.721	0.7319	PASS	d=3	d=3
+e0_alpha25_fixed	permuted	map_log_p_one	10	5	1.52	0.295	PASS	-61.19 [-61.63,-60.94]	-61.34 [-61.72,-61.08]
+e0_alpha25_fixed	permuted	step_change	10	5	1.17	0.4436	PASS	0.0839 [0.07749,0.08976]	0.08539 [0.0817,0.08982]
+e0_alpha25_fixed	permuted	coclust	10	5	3.41	0.000333	FAIL	d=4950	d=4950
+e0_alpha25_fixed	permuted	ancestor	10	5	3.3	0.000333	FAIL	d=9900	d=9900
+e0_alpha25_fixed	permuted	post_ari	10	5	5.18	0.000333	FAIL	0.3561 [0.3495,0.3603]	0.006204 [-0.01703,0.02767]
+e0_alpha25_fixed	permuted	map_ari	10	5	5.23	0.000333	FAIL	0.3779 [0.3643,0.395]	0.009431 [-0.01967,0.02447]
+e0_alpha25_fixed	permuted	post_compat	10	5	5.6	0.000333	FAIL	0.5325 [0.41,0.615]	0.003 [0,0.015]
+e0_alpha25_fixed	permuted	map_compat	10	5	1	1	PASS	0.1 [0,1]	0 [0,0]
+e0_alpha25_fixed	permuted	post_c3_under_c4	10	5	5.24	0.000333	FAIL	0.3695 [0.265,0.51]	0.003 [0,0.005]
+e0_boot	permuted	num_nodes	10	5	2.23	0.09524	PASS	d=17	d=17
+e0_boot	permuted	num_roots	10	5	2.13	0.2524	PASS	d=17	d=17
+e0_boot	permuted	log_alpha_q	10	5	1.49	0.1798	PASS	d=3	d=3
+e0_boot	permuted	log_p_one_q	10	5	1.86	0.06394	PASS	d=3	d=3
+e0_boot	permuted	map_log_p_one	10	5	1.6	0.2704	PASS	-64.12 [-66.06,-62.45]	-63.52 [-64.31,-62.14]
+e0_boot	permuted	step_change	10	5	0.351	0.8149	PASS	0.08293 [0.07755,0.08956]	0.08336 [0.08098,0.08615]
+e0_boot	permuted	coclust	10	5	3.41	0.000333	FAIL	d=4950	d=4950
+e0_boot	permuted	ancestor	10	5	3.32	0.000333	FAIL	d=9900	d=9900
+e0_boot	permuted	post_ari	10	5	5.16	0.000333	FAIL	0.3557 [0.3508,0.3617]	0.005425 [-0.017,0.02516]
+e0_boot	permuted	map_ari	10	5	5.5	0.000333	FAIL	0.3904 [0.3576,0.4315]	0.008339 [-0.0195,0.02661]
+e0_boot	permuted	post_compat	10	5	5.41	0.000333	FAIL	0.501 [0.395,0.63]	0.001 [0,0.005]
+e0_boot	permuted	map_compat	10	5	2.5	0.1009	PASS	0.5 [0,1]	0 [0,0]
+e0_boot	permuted	post_c3_under_c4	10	5	5.29	0.000333	FAIL	0.422 [0.3,0.535]	0.004 [0,0.015]
+e0_moves	permuted	num_nodes	10	5	1.69	0.2274	PASS	d=17	d=17
+e0_moves	permuted	num_roots	10	5	2.08	0.1838	PASS	d=17	d=17
+e0_moves	permuted	log_alpha_q	10	5	0.477	0.8984	PASS	d=3	d=3
+e0_moves	permuted	log_p_one_q	10	5	1.7	0.2567	PASS	d=3	d=3
+e0_moves	permuted	map_log_p_one	10	5	1.73	0.2364	PASS	-66.58 [-71.42,-63.19]	-68.46 [-71.17,-64.79]
+e0_moves	permuted	step_change	10	5	0.359	0.8082	PASS	0.08574 [0.08124,0.09154]	0.08532 [0.08386,0.08787]
+e0_moves	permuted	coclust	10	5	3.39	0.000333	FAIL	d=4950	d=4950
+e0_moves	permuted	ancestor	10	5	2.41	0.000333	FAIL	d=9900	d=9900
+e0_moves	permuted	post_ari	10	5	5.18	0.000333	FAIL	0.3557 [0.3472,0.3598]	0.006404 [-0.01574,0.02734]
+e0_moves	permuted	map_ari	10	5	5.38	0.000333	FAIL	0.3726 [0.3465,0.3987]	0.007713 [-0.01734,0.02572]
+e0_moves	permuted	post_compat	10	5	2.11	0.03663	PASS	0.5165 [0,0.9]	0 [0,0]
+e0_moves	permuted	map_compat	10	5	2	0.08891	PASS	0.6 [0,1]	0 [0,0]
+e0_moves	permuted	post_c3_under_c4	10	5	2	0.09524	PASS	0 [0,0]	0.003 [0,0.01]
+e0_np20_rt08	permuted	num_nodes	10	5	0	1	PASS	d=17	d=17
+e0_np20_rt08	permuted	num_roots	10	5	0.5	1	PASS	d=17	d=17
+e0_np20_rt08	permuted	log_alpha_q	10	5	1.2	0.3377	PASS	d=3	d=3
+e0_np20_rt08	permuted	log_p_one_q	10	5	0.805	0.671	PASS	d=3	d=3
+e0_np20_rt08	permuted	map_log_p_one	10	5	1.44	0.3367	PASS	-63.95 [-64.97,-62.73]	-64.34 [-65.18,-63.85]
+e0_np20_rt08	permuted	step_change	10	5	1.17	0.4266	PASS	0.08262 [0.07687,0.08494]	0.08148 [0.0796,0.08339]
+e0_np20_rt08	permuted	coclust	10	5	3.39	0.000333	FAIL	d=4950	d=4950
+e0_np20_rt08	permuted	ancestor	10	5	3.35	0.000333	FAIL	d=9900	d=9900
+e0_np20_rt08	permuted	post_ari	10	5	5.21	0.000333	FAIL	0.3549 [0.3479,0.3605]	0.005217 [-0.01578,0.02521]
+e0_np20_rt08	permuted	map_ari	10	5	5.55	0.000333	FAIL	0.3815 [0.3465,0.4315]	0.009278 [-0.01699,0.02661]
+e0_np20_rt08	permuted	post_compat	10	5	5.45	0.000333	FAIL	0.425 [0.305,0.51]	0.003 [0,0.01]
+e0_np20_rt08	permuted	map_compat	10	5	1	0.5238	PASS	0.2 [0,1]	0 [0,0]
+e0_np20_rt08	permuted	post_c3_under_c4	10	5	5.57	0.000333	FAIL	0.515 [0.42,0.645]	0.005 [0,0.015]
+e0_out001	noout	num_nodes	10	5	1.33	0.3766	PASS	d=17	d=17
+e0_out001	noout	num_roots	10	5	1	0.7619	PASS	d=17	d=17
+e0_out001	noout	log_alpha_q	10	5	1.76	0.05495	PASS	d=3	d=3
+e0_out001	noout	log_p_one_q	10	5	2.53	0.02098	PASS	d=3	d=3
+e0_out001	noout	map_log_p_one	10	5	2.81	0.03397	PASS	-65.67 [-67.83,-64.76]	-64.22 [-65.93,-61.98]
+e0_out001	noout	step_change	10	5	3.24	0.01865	PASS	0.08329 [0.07966,0.08712]	0.08637 [0.08325,0.08852]
+e0_out001	noout	coclust	10	5	1.22	0.05428	PASS	d=4950	d=4950
+e0_out001	noout	ancestor	10	5	1.23	0.2318	PASS	d=9900	d=9900
+e0_out001	noout	post_ari	10	5	0.535	0.7203	PASS	0.3559 [0.3484,0.3605]	0.3551 [0.3532,0.3594]
+e0_out001	noout	map_ari	10	5	0.766	0.6557	PASS	0.3794 [0.3606,0.4115]	0.3746 [0.3438,0.3948]
+e0_out001	noout	post_compat	10	5	0.651	0.6693	PASS	0.542 [0.48,0.665]	0.528 [0.46,0.56]
+e0_out001	noout	map_compat	10	5	1	0.6004	PASS	0.4 [0,1]	0.2 [0,1]
+e0_out001	noout	post_c3_under_c4	10	5	1.47	0.339	PASS	0.372 [0.27,0.46]	0.405 [0.35,0.475]
+e0_out001	permuted	num_nodes	10	5	1.1	0.4982	PASS	d=17	d=17
+e0_out001	permuted	num_roots	10	5	1	0.7619	PASS	d=17	d=17
+e0_out001	permuted	log_alpha_q	10	5	0.598	0.8458	PASS	d=3	d=3
+e0_out001	permuted	log_p_one_q	10	5	0.712	0.7489	PASS	d=3	d=3
+e0_out001	permuted	map_log_p_one	10	5	1.12	0.4406	PASS	-65.67 [-67.83,-64.76]	-65.26 [-66.29,-63.96]
+e0_out001	permuted	step_change	10	5	1.83	0.2118	PASS	0.08329 [0.07966,0.08712]	0.08482 [0.08151,0.08756]
+e0_out001	permuted	coclust	10	5	3.4	0.000333	FAIL	d=4950	d=4950
+e0_out001	permuted	ancestor	10	5	3.29	0.000333	FAIL	d=9900	d=9900
+e0_out001	permuted	post_ari	10	5	5.2	0.000333	FAIL	0.3559 [0.3484,0.3605]	0.00581 [-0.01665,0.02544]
+e0_out001	permuted	map_ari	10	5	5.4	0.000333	FAIL	0.3794 [0.3606,0.4115]	0.01069 [-0.019,0.03331]
+e0_out001	permuted	post_compat	10	5	5.67	0.000333	FAIL	0.542 [0.48,0.665]	0.003 [0,0.01]
+e0_out001	permuted	map_compat	10	5	2	0.2308	PASS	0.4 [0,1]	0 [0,0]
+e0_out001	permuted	post_c3_under_c4	10	5	5.35	0.000333	FAIL	0.372 [0.27,0.46]	0.003 [0,0.01]
+e0_out001_boot	permuted	num_nodes	10	5	0.0943	0.5604	PASS	d=17	d=17
+e0_out001_boot	permuted	num_roots	10	5	1	0.7619	PASS	d=17	d=17
+e0_out001_boot	permuted	log_alpha_q	10	5	1.18	0.3333	PASS	d=3	d=3
+e0_out001_boot	permuted	log_p_one_q	10	5	0.706	0.6737	PASS	d=3	d=3
+e0_out001_boot	permuted	map_log_p_one	10	5	0.345	0.8145	PASS	-65.81 [-66.86,-64.45]	-65.66 [-67.24,-63.87]
+e0_out001_boot	permuted	step_change	10	5	1.2	0.4166	PASS	0.08239 [0.07887,0.08817]	0.08361 [0.08035,0.08607]
+e0_out001_boot	permuted	coclust	10	5	3.41	0.000333	FAIL	d=4950	d=4950
+e0_out001_boot	permuted	ancestor	10	5	3.32	0.000333	FAIL	d=9900	d=9900
+e0_out001_boot	permuted	post_ari	10	5	5.19	0.000333	FAIL	0.3565 [0.3519,0.3633]	0.006091 [-0.0159,0.02677]
+e0_out001_boot	permuted	map_ari	10	5	5.51	0.000333	FAIL	0.382 [0.343,0.4141]	0.006885 [-0.02093,0.02726]
+e0_out001_boot	permuted	post_compat	10	5	6.09	0.000333	FAIL	0.483 [0.435,0.625]	0.002 [0,0.005]
+e0_out001_boot	permuted	map_compat	10	5	3.5	0.02564	PASS	0.7 [0,1]	0 [0,0]
+e0_out001_boot	permuted	post_c3_under_c4	10	5	5.13	0.000333	FAIL	0.452 [0.28,0.52]	0.003 [0,0.01]
+e0_out001_fully	permuted	num_nodes	10	5	2.9	0.0383	PASS	d=17	d=17
+e0_out001_fully	permuted	num_roots	10	5	1.82	0.2614	PASS	d=17	d=17
+e0_out001_fully	permuted	log_alpha_q	10	5	0.806	0.6673	PASS	d=3	d=3
+e0_out001_fully	permuted	log_p_one_q	10	5	0.427	0.9151	PASS	d=3	d=3
+e0_out001_fully	permuted	map_log_p_one	10	5	0.137	0.9274	PASS	-65.38 [-66.88,-61.96]	-65.3 [-66.35,-64.78]
+e0_out001_fully	permuted	step_change	10	5	0.734	0.625	PASS	0.08332 [0.07404,0.08801]	0.08229 [0.08082,0.08336]
+e0_out001_fully	permuted	coclust	10	5	3.4	0.000333	FAIL	d=4950	d=4950
+e0_out001_fully	permuted	ancestor	10	5	3.26	0.000333	FAIL	d=9900	d=9900
+e0_out001_fully	permuted	post_ari	10	5	5.18	0.000333	FAIL	0.3579 [0.3536,0.3632]	0.006298 [-0.01639,0.02646]
+e0_out001_fully	permuted	map_ari	10	5	5.36	0.000333	FAIL	0.379 [0.3643,0.4141]	0.006078 [-0.01647,0.02661]
+e0_out001_fully	permuted	post_compat	10	5	5.28	0.000333	FAIL	0.649 [0.6,0.675]	0.002 [0,0.01]
+e0_out001_fully	permuted	map_compat	10	5	2	0.08891	PASS	0.6 [0,1]	0 [0,0]
+e0_out001_fully	permuted	post_c3_under_c4	10	5	5.38	0.000333	FAIL	0.235 [0.18,0.315]	0.001 [0,0.005]
+e0_subtree05	permuted	num_nodes	10	5	0.71	0.6866	PASS	d=17	d=17
+e0_subtree05	permuted	num_roots	10	5	1.5	0.4322	PASS	d=17	d=17
+e0_subtree05	permuted	log_alpha_q	10	5	0.536	0.8841	PASS	d=3	d=3
+e0_subtree05	permuted	log_p_one_q	10	5	0.501	0.8894	PASS	d=3	d=3
+e0_subtree05	permuted	map_log_p_one	10	5	0.0793	0.9574	PASS	-64.56 [-67.36,-63.15]	-64.59 [-65.86,-63.16]
+e0_subtree05	permuted	step_change	10	5	0.519	0.7306	PASS	0.08377 [0.0796,0.08842]	0.08318 [0.07883,0.08641]
+e0_subtree05	permuted	coclust	10	5	3.4	0.000333	FAIL	d=4950	d=4950
+e0_subtree05	permuted	ancestor	10	5	3.29	0.000333	FAIL	d=9900	d=9900
+e0_subtree05	permuted	post_ari	10	5	5.16	0.000333	FAIL	0.3561 [0.3522,0.3601]	0.006399 [-0.01476,0.02544]
+e0_subtree05	permuted	map_ari	10	5	5.35	0.000333	FAIL	0.3725 [0.3606,0.3948]	0.01431 [-0.01403,0.04551]
+e0_subtree05	permuted	post_compat	10	5	5.48	0.000333	FAIL	0.5525 [0.425,0.615]	0.002 [0,0.01]
+e0_subtree05	permuted	map_compat	10	5	2	0.2308	PASS	0.4 [0,1]	0 [0,0]
+e0_subtree05	permuted	post_c3_under_c4	10	5	5.09	0.000333	FAIL	0.367 [0.28,0.52]	0.003 [0,0.01]
+fscrp_assign_loss	noloss	num_nodes	10	5	0	1	PASS	d=17	d=17
+fscrp_assign_loss	noloss	num_roots	10	5	0	1	PASS	d=17	d=17
+fscrp_assign_loss	noloss	log_alpha_q	10	5	1.1	0.4322	PASS	d=3	d=3
+fscrp_assign_loss	noloss	log_p_one_q	10	5	5.42	0.000333	FAIL	d=3	d=3
+fscrp_assign_loss	noloss	map_log_p_one	10	5	5.39	0.000333	FAIL	-2.331e+04 [-2.332e+04,-2.331e+04]	-2.328e+04 [-2.329e+04,-2.328e+04]
+fscrp_assign_loss	noloss	step_change	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+fscrp_assign_loss	noloss	coclust	10	5	0	1	PASS	d=179700	d=179700
+fscrp_assign_loss	noloss	ancestor	10	5	0.577	0.7739	PASS	d=359400	d=359400
+fscrp_assign_loss	permuted	num_nodes	10	5	0	1	PASS	d=17	d=17
+fscrp_assign_loss	permuted	num_roots	10	5	0	1	PASS	d=17	d=17
+fscrp_assign_loss	permuted	log_alpha_q	10	5	1.41	0.2481	PASS	d=3	d=3
+fscrp_assign_loss	permuted	log_p_one_q	10	5	1.38	0.2567	PASS	d=3	d=3
+fscrp_assign_loss	permuted	map_log_p_one	10	5	1.32	0.3683	PASS	-2.331e+04 [-2.332e+04,-2.331e+04]	-2.331e+04 [-2.331e+04,-2.331e+04]
+fscrp_assign_loss	permuted	step_change	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+fscrp_assign_loss	permuted	coclust	10	5	3.15	0.000333	FAIL	d=179700	d=179700
+fscrp_assign_loss	permuted	ancestor	10	5	3.29	0.000333	FAIL	d=359400	d=359400
+fscrp_out	noout	num_nodes	10	5	0	1	PASS	d=17	d=17
+fscrp_out	noout	num_roots	10	5	0	1	PASS	d=17	d=17
+fscrp_out	noout	log_alpha_q	10	5	0.385	0.9381	PASS	d=3	d=3
+fscrp_out	noout	log_p_one_q	10	5	4.55	0.000333	FAIL	d=3	d=3
+fscrp_out	noout	map_log_p_one	10	5	3.11	0.01732	PASS	-2.329e+04 [-2.33e+04,-2.329e+04]	-2.328e+04 [-2.329e+04,-2.328e+04]
+fscrp_out	noout	step_change	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+fscrp_out	noout	coclust	10	5	0	1	PASS	d=179700	d=179700
+fscrp_out	noout	ancestor	10	5	0.418	0.9167	PASS	d=359400	d=359400
+fscrp_out	permuted	num_nodes	10	5	0	1	PASS	d=17	d=17
+fscrp_out	permuted	num_roots	10	5	0	1	PASS	d=17	d=17
+fscrp_out	permuted	log_alpha_q	10	5	1.94	0.08558	PASS	d=3	d=3
+fscrp_out	permuted	log_p_one_q	10	5	1.85	0.1066	PASS	d=3	d=3
+fscrp_out	permuted	map_log_p_one	10	5	0.139	0.9284	PASS	-2.329e+04 [-2.33e+04,-2.329e+04]	-2.329e+04 [-2.33e+04,-2.328e+04]
+fscrp_out	permuted	step_change	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+fscrp_out	permuted	coclust	10	5	3.15	0.000333	FAIL	d=179700	d=179700
+fscrp_out	permuted	ancestor	10	5	3.29	0.000333	FAIL	d=359400	d=359400
+fscrp_user_loss	noloss	num_nodes	10	5	0	1	PASS	d=17	d=17
+fscrp_user_loss	noloss	num_roots	10	5	0	1	PASS	d=17	d=17
+fscrp_user_loss	noloss	log_alpha_q	10	5	1.35	0.2501	PASS	d=3	d=3
+fscrp_user_loss	noloss	log_p_one_q	10	5	5.28	0.000333	FAIL	d=3	d=3
+fscrp_user_loss	noloss	map_log_p_one	10	5	5.5	0.000333	FAIL	-2.332e+04 [-2.332e+04,-2.331e+04]	-2.328e+04 [-2.329e+04,-2.328e+04]
+fscrp_user_loss	noloss	step_change	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+fscrp_user_loss	noloss	coclust	10	5	0	1	PASS	d=179700	d=179700
+fscrp_user_loss	noloss	ancestor	10	5	0.758	0.6567	PASS	d=359400	d=359400
+fscrp_user_loss	permuted	num_nodes	10	5	0	1	PASS	d=17	d=17
+fscrp_user_loss	permuted	num_roots	10	5	0	1	PASS	d=17	d=17
+fscrp_user_loss	permuted	log_alpha_q	10	5	0.75	0.7143	PASS	d=3	d=3
+fscrp_user_loss	permuted	log_p_one_q	10	5	0.936	0.5551	PASS	d=3	d=3
+fscrp_user_loss	permuted	map_log_p_one	10	5	1.61	0.2684	PASS	-2.332e+04 [-2.332e+04,-2.331e+04]	-2.331e+04 [-2.332e+04,-2.331e+04]
+fscrp_user_loss	permuted	step_change	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+fscrp_user_loss	permuted	coclust	10	5	3.15	0.000333	FAIL	d=179700	d=179700
+fscrp_user_loss	permuted	ancestor	10	5	3.29	0.000333	FAIL	d=359400	d=359400
+real_a2_err004_out001	noout	num_nodes	10	5	3.25	0.001998	INCONCLUSIVE	d=17	d=17
+real_a2_err004_out001	noout	num_roots	10	5	2.01	0.09524	PASS	d=17	d=17
+real_a2_err004_out001	noout	log_alpha_q	10	5	4.45	0.000999	FAIL	d=3	d=3
+real_a2_err004_out001	noout	log_p_one_q	10	5	5.02	0.000333	FAIL	d=3	d=3
+real_a2_err004_out001	noout	map_log_p_one	10	5	5.02	0.000333	FAIL	-599 [-606.2,-590.8]	-3033 [-3037,-3026]
+real_a2_err004_out001	noout	step_change	10	5	5.12	0.000333	FAIL	0.05192 [0.0382,0.06871]	0.1514 [0.1273,0.1869]
+real_a2_err004_out001	noout	coclust	10	5	3.14	0.000333	FAIL	d=4950	d=4950
+real_a2_err004_out001	noout	ancestor	10	5	3.48	0.000333	FAIL	d=9900	d=9900
+real_a2_err004_out001	noout	post_ari	10	5	2.76	0.03097	PASS	0.4678 [0.4228,0.5237]	0.5251 [0.4721,0.6173]
+real_a2_err004_out001	noout	map_ari	10	5	3.7	0.002997	INCONCLUSIVE	0.5127 [0.4681,0.5524]	0.6189 [0.5292,0.729]
+real_a2_err004_out001	noout	post_compat	10	5	3.97	0.003663	INCONCLUSIVE	0 [0,0]	0.29 [0,0.49]
+real_a2_err004_out001	noout	map_compat	10	5	2	0.09524	PASS	0 [0,0]	0.4 [0,1]
+real_a2_err004_out001	noout	post_c3_under_c4	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+real_a2_err004_out001	permuted	num_nodes	10	5	0.419	1	PASS	d=17	d=17
+real_a2_err004_out001	permuted	num_roots	10	5	1	1	PASS	d=17	d=17
+real_a2_err004_out001	permuted	log_alpha_q	10	5	0.581	0.7742	PASS	d=3	d=3
+real_a2_err004_out001	permuted	log_p_one_q	10	5	0.929	0.5275	PASS	d=3	d=3
+real_a2_err004_out001	permuted	map_log_p_one	10	5	0.64	0.6673	PASS	-599 [-606.2,-590.8]	-597.9 [-600.2,-591.6]
+real_a2_err004_out001	permuted	step_change	10	5	0.144	0.9234	PASS	0.05192 [0.0382,0.06871]	0.05148 [0.04512,0.06181]
+real_a2_err004_out001	permuted	coclust	10	5	2.67	0.000333	FAIL	d=4950	d=4950
+real_a2_err004_out001	permuted	ancestor	10	5	2.37	0.000333	FAIL	d=9900	d=9900
+real_a2_err004_out001	permuted	post_ari	10	5	5.58	0.000333	FAIL	0.4678 [0.4228,0.5237]	-0.003975 [-0.01936,0.01533]
+real_a2_err004_out001	permuted	map_ari	10	5	5.42	0.000333	FAIL	0.5127 [0.4681,0.5524]	-0.0004728 [-0.02458,0.01855]
+real_a2_err004_out001	permuted	post_compat	10	5	2	0.3333	PASS	0 [0,0]	0.034 [0,0.17]
+real_a2_err004_out001	permuted	map_compat	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+real_a2_err004_out001	permuted	post_c3_under_c4	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+upstream_grid1000	permuted	num_nodes	10	5	0	1	PASS	d=17	d=17
+upstream_grid1000	permuted	num_roots	10	5	0	1	PASS	d=17	d=17
+upstream_grid1000	permuted	log_alpha_q	10	5	0.665	0.7446	PASS	d=3	d=3
+upstream_grid1000	permuted	log_p_one_q	10	5	0.665	0.7446	PASS	d=3	d=3
+upstream_grid1000	permuted	map_log_p_one	10	5	0.853	0.5654	PASS	-353.1 [-358.1,-348.9]	-353.9 [-357.7,-351]
+upstream_grid1000	permuted	step_change	10	5	0	1	PASS	0 [0,0]	0 [0,0]
+upstream_grid1000	permuted	coclust	10	5	2.71	0.000333	FAIL	d=66	d=66
+upstream_grid1000	permuted	ancestor	10	5	2.48	0.000333	FAIL	d=132	d=132

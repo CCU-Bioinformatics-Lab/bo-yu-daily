@@ -1,0 +1,69 @@
+
+####################################################################################################
+PhyClone: Write MAP Tree Results
+####################################################################################################
+
+Loading MAP tree from trace.
+
+Finished.
+####################################################################################################
+
+####################################################################################################
+PhyClone: Write Consensus Tree Results
+####################################################################################################
+
+Weight type: joint-likelihood
+
+Building consensus tree from trace.
+Traceback (most recent call last):
+  File "/home/boyu114/venvs/phyclone/lib/python3.10/site-packages/networkx/classes/digraph.py", line 926, in successors
+    return iter(self._succ[n])
+KeyError: 'root'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/home/boyu114/venvs/phyclone/lib/python3.10/site-packages/click/core.py", line 1631, in __call__
+    return self.main(*args, **kwargs)
+  File "/home/boyu114/venvs/phyclone/lib/python3.10/site-packages/click/core.py", line 1552, in main
+    rv = self.invoke(ctx)
+  File "/home/boyu114/venvs/phyclone/lib/python3.10/site-packages/click/core.py", line 2032, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/boyu114/venvs/phyclone/lib/python3.10/site-packages/click/core.py", line 1415, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/boyu114/venvs/phyclone/lib/python3.10/site-packages/click/core.py", line 910, in invoke
+    return callback(*args, **kwargs)
+  File "/bip8_disk/boyu114/main_work/research/phyclone_research/PhyClone/phyclone/cli.py", line 74, in consensus
+    write_consensus_results(**kwargs)
+  File "/bip8_disk/boyu114/main_work/research/phyclone_research/PhyClone/phyclone/process_trace/process_trace.py", line 111, in write_consensus_results
+    tree = get_tree_from_consensus_graph(datapoints, graph)
+  File "/bip8_disk/boyu114/main_work/research/phyclone_research/PhyClone/phyclone/process_trace/process_trace.py", line 231, in get_tree_from_consensus_graph
+    tree = build_phyclone_tree_from_nx(graph2, data, root_node_name)
+  File "/bip8_disk/boyu114/main_work/research/phyclone_research/PhyClone/phyclone/process_trace/process_trace.py", line 253, in build_phyclone_tree_from_nx
+    for node in post_order_nodes:
+  File "/home/boyu114/venvs/phyclone/lib/python3.10/site-packages/networkx/algorithms/traversal/depth_first_search.py", line 351, in <genexpr>
+    return (v for u, v, d in edges if d == "reverse")
+  File "/home/boyu114/venvs/phyclone/lib/python3.10/site-packages/networkx/algorithms/traversal/depth_first_search.py", line 508, in dfs_labeled_edges
+    stack = [(start, get_children(start))]
+  File "/home/boyu114/venvs/phyclone/lib/python3.10/site-packages/networkx/classes/digraph.py", line 928, in successors
+    raise NetworkXError(f"The node {n} is not in the digraph.") from err
+networkx.exception.NetworkXError: The node root is not in the digraph.
+
+####################################################################################################
+PhyClone: Topology Report
+####################################################################################################
+
+Extracting unique topologies from sample trace.
+Topology report created, saved as:
+/bip8_disk/boyu114/main_work/phyclone_rs/golden/runs/real_a2_err004_out001/topology_report.tsv
+
+##################################################
+
+Building PhyClone topologies archive for all 200 uniquely sampled topologies.
+Building Trees
+Topologies archive created, saved as:
+/bip8_disk/boyu114/main_work/phyclone_rs/golden/runs/real_a2_err004_out001/topologies.tar.gz
+
+Finished.
+####################################################################################################

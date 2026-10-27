@@ -6,3 +6,19 @@ b03_base_err003_hpu	stress_b03_s1	--hp-mode base --segments {in}/segments.tsv --
 random_a1_bin	random_spec_0000	--hp-mode a1 run -i {in}/data_hp.tsv -d binomial
 random_base_betabin	random_spec_0000	--hp-mode base run -i {in}/data.tsv -d beta-binomial
 upstream_clusters	upstream_mixing_small	--hp-mode base run -i {in}/mixing_small.tsv -c {in}/mixing_small_clusters.tsv
+e0_out001	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial -l 0.01
+e0_out001_boot	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial -l 0.01 -p bootstrap
+e0_boot	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial -p bootstrap
+e0_out001_fully	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial -l 0.01 -p fully-adapted
+real_a2_err004_out001	stress_real_s1	--hp-mode a2 --segments {in}/segments.tsv --pairs {in}/pairs.tsv --hp-data {in}/data_hp.tsv --pair-error 0.004 run -i {in}/data_hp.tsv -d binomial -l 0.01
+fscrp_out	fscrp_loss_0.2_run0	--hp-mode base run -i {in}/data.tsv -c {in}/results.tsv.gz -l 0.01
+fscrp_assign_loss	fscrp_loss_0.2_run0	--hp-mode base run -i {in}/data.tsv -c {in}/results.tsv.gz --assign-loss-prob
+fscrp_user_loss	fscrp_loss_0.2_run0	--hp-mode base run -i {in}/data.tsv -c {in}/results_user_loss.tsv --user-provided-loss-prob
+e0_chains4	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial --num-chains 4
+e0_subtree05	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial -s 0.5
+e0_np20_rt08	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial --num-particles 20 --resample-threshold 0.8
+e0_moves	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial --num-samples-data-point 3 --num-samples-prune-regraph 0
+e0_alpha25_fixed	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial --concentration-value 2.5 --no-concentration-update
+e0_thin5	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial --thin 5
+e0_maxtime0	stress_e0_s1	--hp-mode base run -i {in}/data.tsv -d binomial --max-time 0
+upstream_grid1000	upstream_mixing_small	--hp-mode base run -i {in}/mixing_small.tsv -c {in}/mixing_small_clusters.tsv --grid-size 1000

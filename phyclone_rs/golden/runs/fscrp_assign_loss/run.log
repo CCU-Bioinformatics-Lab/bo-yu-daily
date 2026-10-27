@@ -1,0 +1,58 @@
+
+As outlier modelling is active, changing '--outlier-prob' from 0.0 to 0.0001.
+
+####################################################################################################
+PhyClone: Analysis Run
+####################################################################################################
+
+Running with the following parameters:
+
+Number of independent chains: 1
+Number of PG particles: 100
+Density: beta-binomial
+Proposal distribution: semi-adapted
+Number of burn-in iterations: 20
+Number of MCMC iterations: 200
+Random seed: 1 (user-provided)
+Outlier modelling allowed: True
+
+####################################################################################################
+
+Parsing Input Data...
+
+Num Mutations: 600
+Num Samples: 8
+Samples: s0, s1, s2, s3, s4...
+
+Assigning outlier probability from data.
+Cluster 1 identified as likely truncal.
+1 potentially lost/outlier cluster identified, setting its prior loss prob to 0.4.
+Remaining cluster(s) will use a prior loss prob of 0.0001.
+Cluster identified as potentially lost/outlier: ['9']
+
+Using input clustering with 10 clusters
+
+####################################################################################################
+
+####################################################################################################
+Burnin - Chain 0
+####################################################################################################
+chain: 0 || iter: 0, alpha: 1.0, log_p: -106457.597, num_nodes: 1, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 20, alpha: 1.0, log_p: -23366.955, num_nodes: 9, num_outliers: 0, num_roots: 1
+
+####################################################################################################
+Post-burnin - Chain 0
+####################################################################################################
+
+chain: 0 || iter: 0, alpha: 1.0, log_p: -23362.592, num_nodes: 9, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 100, alpha: 12.926, log_p: -23339.559, num_nodes: 9, num_outliers: 0, num_roots: 1
+Finished chain 0
+
+####################
+
+Writing sample trace to disk.
+Saving chain 0 trace
+
+Unique trees sampled: 1
+
+Finished.

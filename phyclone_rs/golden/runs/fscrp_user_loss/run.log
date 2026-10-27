@@ -1,0 +1,62 @@
+
+As outlier modelling is active, changing '--outlier-prob' from 0.0 to 0.0001.
+
+####################################################################################################
+PhyClone: Analysis Run
+####################################################################################################
+
+Running with the following parameters:
+
+Number of independent chains: 1
+Number of PG particles: 100
+Density: beta-binomial
+Proposal distribution: semi-adapted
+Number of burn-in iterations: 20
+Number of MCMC iterations: 200
+Random seed: 1 (user-provided)
+Outlier modelling allowed: True
+
+####################################################################################################
+
+Parsing Input Data...
+
+Num Mutations: 600
+Num Samples: 8
+Samples: s0, s1, s2, s3, s4...
+
+Cluster level outlier probability column is present.
+Using user-supplied outlier probability prior values.
+/bip8_disk/boyu114/main_work/research/phyclone_research/PhyClone/phyclone/data/pyclone.py:140: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
+The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.
+
+For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
+
+
+  cluster_df["outlier_prob"].fillna(outlier_prob, inplace=True)
+
+Using input clustering with 10 clusters
+
+####################################################################################################
+
+####################################################################################################
+Burnin - Chain 0
+####################################################################################################
+chain: 0 || iter: 0, alpha: 1.0, log_p: -106458.994, num_nodes: 1, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 20, alpha: 1.0, log_p: -23380.148, num_nodes: 9, num_outliers: 0, num_roots: 1
+
+####################################################################################################
+Post-burnin - Chain 0
+####################################################################################################
+
+chain: 0 || iter: 0, alpha: 1.0, log_p: -23363.989, num_nodes: 9, num_outliers: 0, num_roots: 1
+chain: 0 || iter: 100, alpha: 16.718, log_p: -23338.641, num_nodes: 9, num_outliers: 0, num_roots: 1
+Finished chain 0
+
+####################
+
+Writing sample trace to disk.
+Saving chain 0 trace
+
+Unique trees sampled: 2
+
+Finished.

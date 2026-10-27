@@ -1,0 +1,1 @@
+tools/phyclone_hp.py --hp-mode base run -i phyclone_rs/golden/cases/fscrp_loss_0.2_run0/input/data.tsv -c phyclone_rs/golden/cases/fscrp_loss_0.2_run0/input/results.tsv.gz --assign-loss-prob -b 20 -n 200 --num-chains 1 --seed 1 -o phyclone_rs/golden/runs/fscrp_assign_loss/trace.h5
