@@ -196,4 +196,6 @@ trace/
   - PY 的保留項 = 完整 PY EPPF − PhyClone 丟掉的 lnΓ(α) − lnΓ(α+N)；α 用 Teh (2006) 的 auxiliary Gibbs，按完整 EPPF 更新。τ、uniform、min-node 沿用 Escobar–West（近似，沒有 α 的正規化常數）。
   - 對照 `tests/reference/priors.py`（scipy，rising factorial 形式）10,680 列，最大誤差 3.4e-13；小 n 的 EPPF 列舉總和為 1（誤差 < 1e-12）。
   - 除了預設以外都是本研究的修改，不是論文或 PhyClone 的模型。
+  - **PY 的 α 放在 (−d, ∞)**（haploclone `9254ad5`，使用者 2026-10-27 選定）：s = α + d ~ Gamma(shape, rate)，預設 Gamma(0.01, 0.01)，d → 0 時回到 PhyClone 的 prior；`--prior-alpha-shape`／`--prior-alpha-rate` 只限 pitman-yor。PY 保留項改成 Σ_{k<K} ln(α+kd) + τ Σ ln(1−d)_{n_k−1}（丟掉 −ln(α+1)_{N−1}），在整個 support 上有限；N ≥ 1 時對 N 的依賴與 PhyClone 相同。α 更新改成在 ln s 上做 slice sampling，截斷在 s ≥ 1e-10。
+  - K ≥ 2 時 α 不再塌陷（smoke d=0.3：α 中位數 −0.10、65% < 0，我重跑確認）。K = 1 時 likelihood 在 α = −d 仍有限，α 仍堆在 −d 附近，和 CRP 在 K = 1 時一樣；`--prior-alpha-shape` 設 1–2 可以避免，這是待決的研究選擇。
 - 誤差模型的 pair score 用 400 點的 midpoint grid 積分；HP 不確定性的門檻 Q_MIN = 0.05。
