@@ -1,6 +1,6 @@
 # PhyClone → Rust 移植計畫（haploclone）
 
-狀態（2026-10-27）：M0–M8 完成並驗證（V1 數值層、V2 後處理、V3 統計層、V4 論文 dataset）；M9a（prior 可替換）完成，下一步 M9b（V5 速度）。V4 結果在 `v4/README.md`。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
+狀態（2026-10-27）：M0–M8 完成並驗證（V1 數值層、V2 後處理、V3 統計層、V4 論文 dataset）；M9（prior 可替換、V5 速度）完成。移植計畫的 M0–M9 全部完成；V5 結果在 `v5/README.md`。V4 結果在 `v4/README.md`。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
 
 ## 1. 目標
 
@@ -198,4 +198,10 @@ trace/
   - 除了預設以外都是本研究的修改，不是論文或 PhyClone 的模型。
   - **PY 的 α 放在 (−d, ∞)**（haploclone `9254ad5`，使用者 2026-10-27 選定）：s = α + d ~ Gamma(shape, rate)，預設 Gamma(0.01, 0.01)，d → 0 時回到 PhyClone 的 prior；`--prior-alpha-shape`／`--prior-alpha-rate` 只限 pitman-yor。PY 保留項改成 Σ_{k<K} ln(α+kd) + τ Σ ln(1−d)_{n_k−1}（丟掉 −ln(α+1)_{N−1}），在整個 support 上有限；N ≥ 1 時對 N 的依賴與 PhyClone 相同。α 更新改成在 ln s 上做 slice sampling，截斷在 s ≥ 1e-10。
   - K ≥ 2 時 α 不再塌陷（smoke d=0.3：α 中位數 −0.10、65% < 0，我重跑確認）。K = 1 時 likelihood 在 α = −d 仍有限，α 仍堆在 −d 附近，和 CRP 在 K = 1 時一樣；`--prior-alpha-shape` 設 1–2 可以避免，這是待決的研究選擇。
+- **M9b／V5 速度**（haploclone `e14e417`…`a08fb40`，合併為 `7e1daeb`）：10 個設定 × 3 次，Python／Rust 中位數約 28 倍（5.2–48 倍）。
+  - FS-CRP 與 grid 1000 原本只快 1.6–3.4 倍，原因是 PhyClone 快取 `compute_log_S` 與 `_convolve_two_children`（`tree/utils.py:7,60`），cluster 輸入幾乎都命中；Rust 每次重算。Rust 加了 per-thread 的 `log_s` memo（key = children 依序的精確 bits），grid1000 變 8.2 倍、Pairtree 21 倍、CONIPHER 41 倍、FS-CRP 5.2–5.7 倍。FS-CRP 剩下的差距是「Python 本來就快」（Python 每 iteration 52–62 ms，Rust 9–17 ms）。
+  - assign-loss 的 `unique()` 改成 hash set（線性）。
+  - 所有修正都逐位相同（7 個 golden 設定的 seed-1 trace，合併後我重跑確認）。
+  - 沒採用（會改變浮點數）：不看順序的 memo key（FS-CRP 快 7–21%，其他慢 10–15%）、SIMD libm（估 20–25%）。
+  - memo 在 cluster 輸入時每個 chain thread 最多約 128 MiB。
 - 誤差模型的 pair score 用 400 點的 midpoint grid 積分；HP 不確定性的門檻 Q_MIN = 0.05。
