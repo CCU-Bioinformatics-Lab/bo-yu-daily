@@ -38,8 +38,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 PhyClone 的程式碼位於 `research/phyclone_research/PhyClone/phyclone/`。`smc/` 是 SMC kernels／samplers，`mcmc/` 是 Particle Gibbs、Gibbs-MH 與 concentration，`tree/` 是 tree 結構與分布，`process_trace/` 負責 MAP、consensus 與 topology report。
 
+**本機執行方式**：沒有 conda env，也沒有 `phyclone` 指令；PhyClone 宣告要 Python ≥3.12，但 `~/venvs/phyclone`（3.10）直接跑原始碼可用。下方的 `phyclone <子指令>` 在本機一律寫成：
+
 ```bash
-# 推理與摘要（需先建立 conda 環境：conda create -n phyclone -c bioconda phyclone，或在 submodule 內 pip install -e .）
+env PYTHONPATH=research/phyclone_research/PhyClone ~/venvs/phyclone/bin/python -c "from phyclone.cli import main; main()" <子指令> ...
+```
+
+unittest 也用 `~/venvs/phyclone/bin/python`。venv 沒有 pip：裝套件用 `python3 -m pip --python <venv>/bin/python install <pkg>`；建新 venv 要加 `--without-pip`（本機沒有 ensurepip）。
+
+```bash
+# 推理與摘要
 phyclone run -i INPUT.tsv -c CLUSTERS.tsv -o TRACE.h5 --num-chains 4
 phyclone map -i TRACE.h5 -t TREE.nwk -o TABLE.tsv -s SAMPLE_PREVALENCE_TABLE.tsv
 phyclone consensus -i TRACE.h5 -t TREE.nwk -o TABLE.tsv -s SAMPLE_PREVALENCE_TABLE.tsv
@@ -54,9 +62,11 @@ python -m unittest phyclone.tests.unit_tests.test_tree.<Class>.<method>
 
 ## 工作慣例
 
-- **【強制】所有回答一律使用繁體中文**，包括對話回覆、摘要與說明；技術名詞依下一條保留英文。不論前文或工具輸出是什麼語言，都不可改用英文回答。
+- **【強制】所有使用者看得到的文字一律使用繁體中文**，包括對話回覆、摘要與說明，也包括工具呼叫之間的進度句、task-notification 的回覆、compaction 後的第一句，以及讀完英文 skill 或 subagent 報告後的回覆；技術名詞依下一條保留英文。不論前文或工具輸出是什麼語言，都不可改用英文。
 - 文件以**繁體中文**撰寫，技術名詞（SNV、CCF、multiplicity、topology、purity、ESS 等）保留英文。
 - 製作 PPT／投影片時，原始檔一律輸出到 `report/<簡報名稱>/`（例如 `report/sc_groundtruth_slides/`），不要放在 `research/` 或暫存目錄。
 - 收到任何製作或修改 PPT／投影片報告的指令時，先把該指令併入 `report/report_rule.md` 的「個人風格」對應區塊，再動手。製作前先讀這份規則檔並遵守。
 - 做研究 claim 時，要區分 nominal purity 與實測 purity，也要區分論文主張與程式實際行為，並標明證據來源。
 - 回答時採用 **ASD-STE100（Simplified Technical English）** 風格：一句只說一件事、句子短（說明句約 25 字詞內、指令句約 20 字詞內）、用主動語態、一個詞只用一個意思、指令用祈使句、先寫結論或動作再寫原因。中文回答也套用相同原則；技術名詞照上方規則保留英文。這些原則約做到 80% 即可，不用過度嚴格：說明因果、比較或限制時，可以用較長或合併的句子，以讀起來自然、清楚為優先。
+- 使用者問「是不是／是什麼」或說「簡單說」時，先用 2–4 句不含專案代號的白話結論回答，不用標題與表格；細節等使用者追問再給。專案代號（例如 A1/A2、C4、PPC、spec）在每次回答第一次出現時，附一句白話定義。
+- 開始耗時運算（PhyClone 批次、下載、新量測）前，先用一兩句寫出：回答哪個問題、對應哪個目前目標、用哪份資料與版本、預估時間與 CPU 用量（並行 runs × chains 不超過空閒核心，先看 `uptime`），以及查進度的指令。不在目前目標上的工作，先提議，等使用者同意再做。
