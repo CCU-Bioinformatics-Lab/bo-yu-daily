@@ -96,6 +96,8 @@ trace/
   - `assignments.tsv` 的 node −1 是 outlier node。
   - node id 等於它的入邊在儲存的 edge list 裡的位置，所以同一 parent 的 children 依 id 遞增就是儲存順序。node 內 `assignments.tsv` 的列順序就是 log_p 加總資料點的順序。
   - iteration 依 h5 的 chain 名稱順序讀（`chain_10` 在 `chain_2` 前）。
+  - `iterations.tsv` 可以有 `tree_hash` 欄（`h5-to-trace` 寫入原版存的 `trace_data/tree_hash`）。後處理照原版 `create_topology_dataframe` 用它分組；沒有這欄時（Rust 寫的 trace）用樹本身的 hash，`trace-to-h5` 也寫入同一個值。存的值和樹的 hash 不同時，`map`、`consensus`、`topology-report` 會警告。
+  - `trees.tsv` 的 node：同一 parent 的 children 依 id 遞增就是儲存的 edge 順序，也就是 `Tree.from_dict` 之後的 rustworkx edge index，也是 map.py 的 networkx 列出 children 的順序。
 
 ## 6. 里程碑（暫定）
 
@@ -171,8 +173,9 @@ trace/
   - consensus 裡兩個 clade 重新標號後相同時，Rust 回傳錯誤；原版會建出不是樹的圖。
   - `-i` 吃 TSV trace 目錄，不吃 h5。
 - **M6 審查（sonnet）找到、尚未處理的風險**：
-  - consensus 樹在 MAP／CCF 步驟的 child 順序模擬錯了。原版 map.py 依 rustworkx 的 edge index 讀邊，而 `insert_node_on_in_edges_multiple` 會打亂 index；Rust 用 successor 順序。只有兄弟節點資料相同或捨入翻轉 argmax 時才會改變輸出；目前所有比對都相同。
-  - `topologies()` 用重算的 tree hash 分組，不讀 trace 存的 `tree_hash`（原版用存的）。golden 1400 列兩者相同；其他 h5 若不同會被靜默分錯組。
+  - ~~consensus 樹的 child 順序~~：已修（haploclone `5c887a1`）。見下面「consensus 的 child 順序」。
+  - ~~用重算的 hash 分組~~：已修（haploclone `2c5cdc8`），改用存的 `tree_hash`。
   - consensus 權重逐位相同依賴 numpy 2.2 的 pairwise sum 與 glibc `exp`；`--consensus-threshold 1` 在 3 個 run 能通過就是靠這個捨入。
   - 測試資料的缺口：golden 都是 1 chain、只有 1 個 run 有多樣本、沒有 int 型 id、沒有 log_p tie。
+- **consensus 的 child 順序（map.py）**：`build_phyclone_tree_from_nx` 先把每個 node 接在 dummy root 下，再用 `insert_node_on_in_edges_multiple` 搬 children。這個呼叫先加新邊再刪舊邊，rustworkx 會重用最後釋放的 edge slot。networkx 依 edge index 列 children，所以 CCF convolution 看到的是加邊順序的一個 rotation；兄弟節點資料相同時，它決定誰拿哪個 CCF。Rust 重播 slot 配置（`phyclone_edge_indices`）。rustworkx 自己的 child 順序（label、newick、clade）仍是 newest edge first。測試：`child_order.json`（45 棵 consensus 樹，舊順序有 14 棵不同）、`tied_siblings.py`（舊 binary 的 `consensus_table`／`sample_prev` 和原版不同，我自己重跑確認）。
 - 誤差模型的 pair score 用 400 點的 midpoint grid 積分；HP 不確定性的門檻 Q_MIN = 0.05。
