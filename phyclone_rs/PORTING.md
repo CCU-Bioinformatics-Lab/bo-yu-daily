@@ -1,6 +1,6 @@
 # PhyClone → Rust 移植計畫（haploclone）
 
-狀態（2026-10-26）：M0–M5 完成並驗證（V1 數值層、V3 統計層）；下一步 M6。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
+狀態（2026-10-26）：M0–M5 完成並驗證（V1 數值層、V3 統計層）；M6 進行中。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
 
 ## 1. 目標
 
@@ -148,6 +148,6 @@ trace/
 - PhyClone 在 `ProcessPoolExecutor(mp_context=spawn)` 裡跑 chain；C4 的 monkeypatch 必須在子 process 重裝（`tools/phyclone_pairs.py` `install_everywhere`）。Rust 版沒有這個問題，但要確認 pair term 在 SMC、PG、Gibbs-MH 都有算到。
 - C4 pair term 只加在 `log_p`、`log_p_one`、`compute_log_p_and_log_p_one`。**更正（M5 實測）**：semi-adapted proposal 的 existing-node q 用 `x.log_p`（`smc/kernels/base.py:176-177`），它來自被 patch 的 `compute_log_p_and_log_p_one`（`smc/swarm/tree_holder.py:74`），所以這部分**有**看到 pair term（eps0.01 時 log_q 最多變 157 nat）。只有 new-node 的子節點選法不看 pair term。Rust 版照原版。
 - 隨機樹的短 run 可能卡在 1 個 node（`golden/README.md` 第 6 節）。**更正（M5）**：alpha 只有 iter 0 是 1.0，之後塌到約 1e-10；Python 與 Rust 中位數都是 1e-10。這是原版行為，Rust 版重現它不算 bug。
-- **M5 刻意的偏差（待決定）**：PG 子樹的 `_correct_weights`（`mcmc/particle_gibbs.py:89-105`）在同一個 particle 被 resample 成多份時，第二份會把其餘部分再 graft 一次，資料點重複。Rust 每份各自重新加權（`rust/src/mcmc.rs:37,71`）。只在 `--subtree-update-prob` > 0 時有影響（預設 0）。
+- **M5 刻意的偏差（2026-10-27 決定保留修正）**：PG 子樹的 `_correct_weights`（`mcmc/particle_gibbs.py:89-105`）在同一個 particle 被 resample 成多份時，第二份會把其餘部分再 graft 一次，資料點重複。Rust 每份各自重新加權（`rust/src/mcmc.rs:37,71`）。只在 `--subtree-update-prob` > 0 時有影響（預設 0）。這是目前唯一和 0.8.0 語意不同的地方；`--subtree-update-prob` > 0 時，Rust 和 Python 的結果不能直接比。
 - **M5 其他小差異**：`--max-time` 的檢查包含本 iteration（原版不含）；單一 chain 也用 stream 1（原版用 rng_main）；TSV trace 相對第 5 節的偏差寫在每個 trace 的 `meta.json`（沒有 time 欄、`log_p` = `log_p_one`、node 依最小資料點 index 編號、tree_id 跨 chain 去重複）。
 - 誤差模型的 pair score 用 400 點的 midpoint grid 積分；HP 不確定性的門檻 Q_MIN = 0.05。
