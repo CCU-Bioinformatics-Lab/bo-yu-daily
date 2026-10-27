@@ -1,6 +1,6 @@
 # PhyClone → Rust 移植計畫（haploclone）
 
-狀態（2026-10-27）：M0–M8 完成並驗證（V1 數值層、V2 後處理、V3 統計層、V4 論文 dataset）；下一步 M9。V4 結果在 `v4/README.md`。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
+狀態（2026-10-27）：M0–M8 完成並驗證（V1 數值層、V2 後處理、V3 統計層、V4 論文 dataset）；M9a（prior 可替換）完成，下一步 M9b（V5 速度）。V4 結果在 `v4/README.md`。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
 
 ## 1. 目標
 
@@ -191,4 +191,9 @@ trace/
   - 刻意偏離：`--concentration-value 0` 接受（alpha 用最小正 float）；原版 0.8.0 因初始化順序 AttributeError。整數值 float 的 id（`1.0`）Rust 輸出 `1.0`，原版輸出 `1`。
   - 測試 gate 遇到 NaN 或「沒比到任何值」會 FAIL（之前 7 種注入都會漏過）。
   - move 層級參考值新增：8 樣本、3–4 root 的 forest、ConditionalSMC 保留路徑、subtree reweight、不可移動點的 Gibbs、抽樣頻率。4 root forest 的 SMC shell 撞到 child 順序的 1e-100 clip（log_p 差 5e-3，上面「convolution 的逐位對齊條件」那一項）；這些候選的 log_p 改用「原版 Tree 依 Rust 順序從頭建」的值當標準，log_q 的容許誤差放寬到差距的 2 倍。
+- **M9a：tree prior 可替換**（haploclone `403eee0`、`f05b615`）。`PriorSpec`（`Partition::{Crp, PitmanYor{d}, Uniform}`、τ、`MinNodePenalty`）由 `--prior`、`--prior-tau`、`--prior-discount`、`--prior-min-node-size`、`--prior-min-node-penalty` 設定，記在 meta.json 的 `settings.prior`。
+  - 預設與 `--prior pitman-yor --prior-discount 0` 和 PhyClone 0.8.0 逐位一致（5 個 golden 設定的 seed-1 trace byte-identical；我自己重跑 e0_out001 確認）。
+  - PY 的保留項 = 完整 PY EPPF − PhyClone 丟掉的 lnΓ(α) − lnΓ(α+N)；α 用 Teh (2006) 的 auxiliary Gibbs，按完整 EPPF 更新。τ、uniform、min-node 沿用 Escobar–West（近似，沒有 α 的正規化常數）。
+  - 對照 `tests/reference/priors.py`（scipy，rising factorial 形式）10,680 列，最大誤差 3.4e-13；小 n 的 EPPF 列舉總和為 1（誤差 < 1e-12）。
+  - 除了預設以外都是本研究的修改，不是論文或 PhyClone 的模型。
 - 誤差模型的 pair score 用 400 點的 midpoint grid 積分；HP 不確定性的門檻 Q_MIN = 0.05。
