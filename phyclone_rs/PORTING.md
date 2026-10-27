@@ -1,6 +1,6 @@
 # PhyClone → Rust 移植計畫（haploclone）
 
-狀態（2026-10-27）：M0–M7 完成並驗證（V1 數值層、V2 後處理、V3 統計層）；下一步 M8。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
+狀態（2026-10-27）：M0–M8 完成並驗證（V1 數值層、V2 後處理、V3 統計層、V4 論文 dataset）；下一步 M9。V4 結果在 `v4/README.md`。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
 
 ## 1. 目標
 
@@ -132,7 +132,7 @@ trace/
 
 仍未決定：
 
-- **dataset 評估程式**：論文的指標（AD F-score 等）用哪一支程式算，是否已經在 `tools/` 或 `lab_report/2026-10-22_pairtree_conipher_sim_rerun/` 裡。
+- ~~dataset 評估程式~~：已決定（M8a）。`tools/eval_phyclone_dataset.py` 重現論文 xlsx 2,830／2,832 列（HGSOC p3 的真值和公開檔不同）。RRE／LPR 用現有檔案算不出來。
 
 ## 8. 已知注意事項
 
