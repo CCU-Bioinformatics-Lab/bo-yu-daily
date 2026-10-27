@@ -1,6 +1,6 @@
 # PhyClone → Rust 移植計畫（haploclone）
 
-狀態（2026-10-26）：M0–M6 完成並驗證（V1 數值層、V2 後處理、V3 統計層）；下一步 M7。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
+狀態（2026-10-27）：M0–M7 完成並驗證（V1 數值層、V2 後處理、V3 統計層）；下一步 M8。進度與決策紀錄在 `decisions.tsv`（一列一個決策）。V3 harness 在 `v3/`（`v3/README.md`）。
 
 ## 1. 目標
 
@@ -82,7 +82,7 @@ trace/
   meta.json             版本、指令、全部設定、seed、樣本名、grid size
   iterations.tsv[.zst]  chain  iter  alpha  log_p  log_p_one  num_nodes  num_outliers  num_roots  tree_id
   trees.tsv[.zst]       tree_id  node  parent   log_prior      （相同的樹只存一次；parent = -1 表示 root）
-  assignments.tsv[.zst] tree_id  mutation  node                （outlier 用固定的 node 編號，要定義）
+  assignments.tsv[.zst] tree_id  mutation  node                （node −1 = outlier；meta.json 有 `"outlier_node": -1`）
   datapoints.tsv[.zst]  mutation  sample  outlier_prob  outlier_prob_not  g0 … g{grid-1}
   clusters.tsv[.zst]    cluster_id  mutation_id                （有 cluster 檔時）
 ```
@@ -141,10 +141,10 @@ trace/
   - grid < 1000 時原版走 `np.convolve` → OpenBLAS `cblas_ddot`（Haswell／Zen kernel）。Rust 版照它的加總順序（16 個 FMA accumulator）實作，fixture 上 0 差。換成 AVX-512 機器，OpenBLAS 會換 kernel，Python 自己的結果也會變〔推論〕。
   - crate 設 `target-cpu=x86-64-v3`（`rust/.cargo/config.toml`）。沒有硬體 FMA 時 `mul_add` 變成軟體呼叫，kernel 慢 9 倍；結果不受影響。
   - child 的走訪順序會改變 1e-100 clip 的位置，進而改變 tail 與 `log_p_one`（實例差 0.0124）。Rust 版用 newest-first（同 rustworkx successors）。Python 的 `compute_log_S` cache 不看 child 順序，所以一般樹的順序取決於歷史，無法完全重現；這只影響 V3 以後的統計比較，不影響 V1。
-  - grid ≥ 1000 的 FFT 路徑還沒移植。
+  - grid ≥ 1000 走 FFT（M7）：用 `realfft`（純 Rust），長度照 scipy 的 `next_fast_len`。和 pocketfft 不逐位相同。V1 只比 row 峰值以下 25 log 單位以內的 grid 格（`tests/trees.rs` `FFT_FLOOR`）；不是 `fft_noise_dominated` 的樹，log_p／log_p_one 全部比，誤差 ≤1.4e-13。
 - **M4 找到的 pair term 怪癖**（Rust 照原版）：`pairs.tsv` 的 `sample_id` 沒有用到，eligibility 與 HP posterior 只看 `data_hp.tsv`／`segments.tsv` 每個 mutation／segment 的第一列；HP 不確定性模式只用 q ≥ Q_MIN 判斷，不看 `snv_hp`；用 cluster 檔時 pair 會對到 cluster id（`dp.name`），base mode 不會拒絕這種輸入。
 - **平台綁定（審查補記）**：V1 的逐位相同依賴 glibc `lgamma_r`（musl／macOS 會失去逐位一致）、OpenBLAS ddot 的加總順序，以及 `x86-64-v3`。沒有 AVX2／FMA 的 CPU 會直接 SIGILL，目前沒有 runtime 偵測。軟體 `fma` 與硬體 FMA 都是正確捨入，所以數值相同；慢 9 倍的只是速度。
-- **M8 前要加壓縮輸入。** dataset 的 cluster 檔是 `results.tsv.gz`，M2 的 loader 遇到壓縮檔會回傳 `Error::Unported`。
+- **壓縮輸入**：gzip 已支援（M7）。bz2、xz、zip 仍回傳 `Error::Unported`。
 - **M2 找到的原版怪癖**（Rust 版照原版行為實作）：
   - base loader 先把 `sample_id` 轉成字串再排序（"20" 在 "3" 前）；A1/A2 loader 保留整數排序。整數 mutation id 兩者都用數值排序。
   - major_cn = 0 的過濾在建立 sample 清單之前，所以全為 0 的 sample 會消失。
@@ -157,7 +157,7 @@ trace/
 - C4 pair term 只加在 `log_p`、`log_p_one`、`compute_log_p_and_log_p_one`。**更正（M5 實測）**：semi-adapted proposal 的 existing-node q 用 `x.log_p`（`smc/kernels/base.py:176-177`），它來自被 patch 的 `compute_log_p_and_log_p_one`（`smc/swarm/tree_holder.py:74`），所以這部分**有**看到 pair term（eps0.01 時 log_q 最多變 157 nat）。只有 new-node 的子節點選法不看 pair term。Rust 版照原版。
 - 隨機樹的短 run 可能卡在 1 個 node（`golden/README.md` 第 6 節）。**更正（M5）**：alpha 只有 iter 0 是 1.0，之後塌到約 1e-10；Python 與 Rust 中位數都是 1e-10。這是原版行為，Rust 版重現它不算 bug。
 - **M5 刻意的偏差（2026-10-27 決定保留修正）**：PG 子樹的 `_correct_weights`（`mcmc/particle_gibbs.py:89-105`）在同一個 particle 被 resample 成多份時，第二份會把其餘部分再 graft 一次，資料點重複。Rust 每份各自重新加權（`rust/src/mcmc.rs:37,71`）。只在 `--subtree-update-prob` > 0 時有影響（預設 0）。這是目前唯一和 0.8.0 語意不同的地方；`--subtree-update-prob` > 0 時，Rust 和 Python 的結果不能直接比。
-- **M5 其他小差異**：`--max-time` 的檢查包含本 iteration（原版不含）；單一 chain 也用 stream 1（原版用 rng_main）；TSV trace 相對第 5 節的偏差寫在每個 trace 的 `meta.json`（沒有 time 欄、`log_p` = `log_p_one`、node 依最小資料點 index 編號、tree_id 跨 chain 去重複）。
+- **M5 其他小差異**：`--max-time` 在 M7 改回原版語意（共用一個 timer；burn-in 用 `>`，存 trace 後用 `>=`；`--max-time 0` 跑 2 個 burn-in iteration，golden README 6.1 第 10 項寫 1 個，原版程式實際是 2 個）；單一 chain 也用 stream 1（原版用 rng_main）；TSV trace 相對第 5 節的偏差寫在每個 trace 的 `meta.json`（沒有 time 欄、`log_p` = `log_p_one`、node 依最小資料點 index 編號、tree_id 跨 chain 去重複）。
 - **M6 找到的後處理怪癖**（Rust 照原版，全部沒改）：
   1. map.py 的 `compute_log_D` 第一個 child 從 0 向量開始，不是從 0 的點質量開始；`>=`／`>` 的 tie 規則照原樣。
   2. consensus 的輸出依賴 Python set 的走訪順序（改用排序會讓 7 個 golden run 中 4 個不同）。Rust 在 `rust/src/python.rs` 重現 CPython 3.10 的 int／frozenset／tuple hash 與 setobject.c 的順序。
@@ -178,4 +178,9 @@ trace/
   - consensus 權重逐位相同依賴 numpy 2.2 的 pairwise sum 與 glibc `exp`；`--consensus-threshold 1` 在 3 個 run 能通過就是靠這個捨入。
   - 測試資料的缺口：golden 都是 1 chain、只有 1 個 run 有多樣本、沒有 int 型 id、沒有 log_p tie。
 - **consensus 的 child 順序（map.py）**：`build_phyclone_tree_from_nx` 先把每個 node 接在 dummy root 下，再用 `insert_node_on_in_edges_multiple` 搬 children。這個呼叫先加新邊再刪舊邊，rustworkx 會重用最後釋放的 edge slot。networkx 依 edge index 列 children，所以 CCF convolution 看到的是加邊順序的一個 rotation；兄弟節點資料相同時，它決定誰拿哪個 CCF。Rust 重播 slot 配置（`phyclone_edge_indices`）。rustworkx 自己的 child 順序（label、newick、clade）仍是 newest edge first。測試：`child_order.json`（45 棵 consensus 樹，舊順序有 14 棵不同）、`tied_siblings.py`（舊 binary 的 `consensus_table`／`sample_prev` 和原版不同，我自己重跑確認）。
+- **M7 的決定與偏差**：
+  - outlier、loss prior、fully-adapted、bootstrap、outlier Gibbs、subtree＋outlier 都照原版移植，golden README 6.1 的 14 項怪癖都重現。bootstrap 的兩個 proposal 質量不一致也照抄（第 7 節決定 5）。
+  - assign-loss 的 Monte Carlo 用 ChaCha8 stream 0，只能和原版在 Monte Carlo 誤差內一致（lost 集合相同，p 值差 ≤1.9 SE）；resize 分支不抽樣，直接算，和原版逐位相同。Rust 的 chain 一律用 stream i+1，所以 loss 檢定不會像原版那樣移動 chain 的 RNG。
+  - V3 看不到 bootstrap 的回歸和 subtree 的修正（M7a 量過）；這兩項靠 `tests/moves_m7.rs` 對照原版的 move 層級值（1212 個 log q／log p，相對差 ≤7e-15）。
+  - V3 的 M7 表：13 個設定、各 15 個 seed，149/149 PASS（`v3/rust_m7/compare.txt`）。
 - 誤差模型的 pair score 用 400 點的 midpoint grid 積分；HP 不確定性的門檻 Q_MIN = 0.05。

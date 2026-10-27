@@ -1,3 +1,6 @@
 baseline/runs/
 __pycache__/
 *.h5
+rust_m*/traces/
+rust_m*/runs/
+rust_m*/*/seed*/
