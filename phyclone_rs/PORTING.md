@@ -183,4 +183,12 @@ trace/
   - assign-loss 的 Monte Carlo 用 ChaCha8 stream 0，只能和原版在 Monte Carlo 誤差內一致（lost 集合相同，p 值差 ≤1.9 SE）；resize 分支不抽樣，直接算，和原版逐位相同。Rust 的 chain 一律用 stream i+1，所以 loss 檢定不會像原版那樣移動 chain 的 RNG。
   - V3 看不到 bootstrap 的回歸和 subtree 的修正（M7a 量過）；這兩項靠 `tests/moves_m7.rs` 對照原版的 move 層級值（1212 個 log q／log p，相對差 ≤7e-15）。
   - V3 的 M7 表：13 個設定、各 15 個 seed，149/149 PASS（`v3/rust_m7/compare.txt`）。
+- **M7 審查修正（2026-10-27，haploclone `a05fe2f`…`8326226`）**：
+  - 輸入驗證照 `data/validator/*.json` 的 pandas dtype 規則：`number` 欄必須是 float64（全整數的 `outlier_prob`、`cellular_prevalence` 等會被拒絕），`integer` 欄接受整數值的 float，id 欄拒絕非整數 float；每個 schema 欄都檢查，不論模式。
+  - `--user-provided-loss-prob` 下 `outlier_prob > 1` 在 load 時拒絕（原版是 AssertionError）；其他模式不讀這欄，照原版接受。
+  - run 選項照 click：IntRange／FloatRange 會 clamp（含負數），重複選項取最後一個，`--high-loss-prob` clamp 到 [0.0002, 1]，loss 選項下 NaN 的 `-l` 也改成 1e-4。
+  - 負的 max-time、concentration、precision 拒絕；原版接受但之後 crash 的值（NaN／inf concentration、beta-binomial 下 NaN／0／inf precision、assign 下 NaN high-loss、空 dataset）回報錯誤，exit 1，不 panic。
+  - 刻意偏離：`--concentration-value 0` 接受（alpha 用最小正 float）；原版 0.8.0 因初始化順序 AttributeError。整數值 float 的 id（`1.0`）Rust 輸出 `1.0`，原版輸出 `1`。
+  - 測試 gate 遇到 NaN 或「沒比到任何值」會 FAIL（之前 7 種注入都會漏過）。
+  - move 層級參考值新增：8 樣本、3–4 root 的 forest、ConditionalSMC 保留路徑、subtree reweight、不可移動點的 Gibbs、抽樣頻率。4 root forest 的 SMC shell 撞到 child 順序的 1e-100 clip（log_p 差 5e-3，上面「convolution 的逐位對齊條件」那一項）；這些候選的 log_p 改用「原版 Tree 依 Rust 順序從頭建」的值當標準，log_q 的容許誤差放寬到差距的 2 倍。
 - 誤差模型的 pair score 用 400 點的 midpoint grid 積分；HP 不確定性的門檻 Q_MIN = 0.05。
