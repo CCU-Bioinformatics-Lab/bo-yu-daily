@@ -1,5 +1,5 @@
 """Usage: python3 -m longbulksim SPEC.yaml OUT_DIR [--seed 1] [--depth D] [--phased F]
-       [--mistag R] [--switch-rate R_PER_MB] [--base-error R] [--het-map NPZ] [--depth-map NPZ]
+       [--mistag R] [--switch-rate R_PER_MB] [--base-error R] [--allelic-precision S] [--het-map NPZ] [--depth-map NPZ]
        [--caller none|clairs|deepsomatic]"""
 import argparse
 import dataclasses
@@ -20,6 +20,8 @@ def main():
     ap.add_argument("--mistag", type=float, help="override the spec's mistag_rate")
     ap.add_argument("--switch-rate", type=float, help="override the spec's switch_rate_per_mb")
     ap.add_argument("--base-error", type=float, help="override the spec's base_error")
+    ap.add_argument("--allelic-precision", type=float,
+                    help="override the spec's allelic_precision (beta-binomial s; 0 = binomial)")
     ap.add_argument("--het-map", help="phased het SNP map (.npz); tags reads by the longphase-s rule")
     ap.add_argument("--depth-map", help="read start density map (.npz) from a real normal")
     ap.add_argument("--caller", help="drop SNVs this caller would miss: none, clairs, deepsomatic")
@@ -30,7 +32,7 @@ def main():
     if a.phased is not None:
         spec = dataclasses.replace(spec, phased_fraction=a.phased)
     for arg, field in (("mistag", "mistag_rate"), ("switch_rate", "switch_rate_per_mb"),
-                       ("base_error", "base_error")):
+                       ("base_error", "base_error"), ("allelic_precision", "allelic_precision")):
         if getattr(a, arg) is not None:
             spec = dataclasses.replace(spec, **{field: getattr(a, arg)})
     if a.caller is not None:

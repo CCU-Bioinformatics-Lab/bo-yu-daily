@@ -1,4 +1,4 @@
-"""Observation errors (v0.2): HP mistag, phase switches, base errors."""
+"""Observation errors (v0.2): HP mistag, phase switches, base errors; allelic dispersion (v0.8)."""
 import csv
 import gzip
 import hashlib
@@ -61,6 +61,27 @@ class BaseErrorRate(unittest.TestCase):
              for k in ("ref_hp1", "alt_hp1", "ref_hp2", "alt_hp2")}
         within(self, c["ref_hp1"], c["ref_hp1"] + c["alt_hp1"], 0.03, "HP1 alt read as ref")
         within(self, c["alt_hp2"], c["ref_hp2"] + c["alt_hp2"], 0.03, "HP2 ref read as alt")
+
+
+class AllelicDispersion(unittest.TestCase):
+    """alt ~ BetaBinomial(n, vaf * s, (1 - vaf) * s): Var(alt / n) is binomial times 1 + (n - 1) / (s + 1)."""
+
+    def ratio(self, **errors):
+        _, out = simulate(flat(n_snv=400, **errors))
+        rows = read_tsv(out / "input/data.tsv")
+        n = np.array([int(r["ref_counts"]) + int(r["alt_counts"]) for r in rows])
+        af = np.array([int(r["alt_counts"]) for r in rows]) / n
+        within(self, af.mean() * len(af), len(af), 0.5, "mean VAF")  # loose: SE of the mean is smaller
+        return af.var() / np.mean(0.25 / n), n.mean()
+
+    def test_binomial_without_precision(self):
+        r, _ = self.ratio()
+        self.assertTrue(0.7 < r < 1.4, r)
+
+    def test_inflation_matches_precision(self):
+        r, n = self.ratio(allelic_precision=20)
+        want = 1 + (n - 1) / 21
+        self.assertTrue(0.7 * want < r < 1.3 * want, (r, want))
 
 
 class PhaseSwitches(unittest.TestCase):

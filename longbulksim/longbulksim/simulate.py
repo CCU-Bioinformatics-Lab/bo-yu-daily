@@ -110,10 +110,26 @@ def role_truth(spec, genomes, role):
             "phyclone_ccf_expected": f_exp, "vaf_expected": alt / tot}
 
 
-def observe(reads, pos, role, rng=None, base_error=0.0):
+def disperse(rng, alt, vaf, precision):
+    """Per-SNV allelic bias: draw q ~ Beta(vaf * s, (1 - vaf) * s), then drop alt reads to ref
+    (q < vaf) or turn ref reads to alt (q > vaf) so each read is alt with probability q. Since
+    reads carry the true allele with probability vaf, alt ~ BetaBinomial(n, vaf * s, (1 - vaf) * s),
+    PhyClone's density with precision s."""
+    if not 0 < vaf < 1:
+        return alt
+    q = rng.beta(vaf * precision, (1 - vaf) * precision)
+    u = rng.random(len(alt))
+    if q < vaf:
+        return alt & (u < q / vaf)
+    return alt | (u < (q - vaf) / (1 - vaf))
+
+
+def observe(reads, pos, role, rng=None, base_error=0.0, vaf=0.0, precision=0.0):
     """Reads that cover pos and whether each one reads the alt allele."""
     idx = reads.covering(pos)
     alt = reads.carries(role)[reads.mol[idx]]
+    if precision > 0:
+        alt = disperse(rng, alt, vaf, precision)
     if base_error > 0:
         alt = alt ^ (rng.random(len(idx)) < base_error)
     return idx, alt
@@ -176,8 +192,9 @@ def run(spec, seed, out_dir):
     muts = place_mutations(rng, spec)
     dmap = depth_map.load(spec.depth_map) if spec.depth_map else None
     reads = {s: sample_segment(rng, spec, genomes, s, span_q, het, dmap) for s in spec.segments}
-    obs = {m.id: observe(reads[m.segment], m.pos, m.role, rng, spec.base_error) for m in muts}
-    truth = {r: role_truth(spec, genomes, r) for r in spec.roles}
+    truth = {r: role_truth(spec, genomes, r) for r in spec.roles}  # draws no random numbers
+    obs = {m.id: observe(reads[m.segment], m.pos, m.role, rng, spec.base_error,
+                         truth[m.role]["vaf_expected"], spec.allelic_precision) for m in muts}
     cnt = {m.id: counts(reads[m.segment], *obs[m.id]) for m in muts}
     if spec.caller == "none":  # draws no random numbers, so earlier seeds are unchanged
         detected = {m.id: True for m in muts}
@@ -255,6 +272,7 @@ def run(spec, seed, out_dir):
                 "purity": spec.purity, "depth": spec.depth,
                 "phased_fraction": spec.phased_fraction, "mistag_rate": spec.mistag_rate,
                 "switch_rate_per_mb": spec.switch_rate_per_mb, "base_error": spec.base_error,
+                "allelic_precision": spec.allelic_precision,
                 "read_span": str(spec.read_span),
                 "het_map": str(spec.het_map) if spec.het_map else None,
                 "depth_map": str(spec.depth_map) if spec.depth_map else None,

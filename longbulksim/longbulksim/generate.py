@@ -79,6 +79,8 @@ def main():
     g.add_argument("--mistag", type=float, default=0.0)
     g.add_argument("--switch-rate", type=float, default=0.0, help="per Mb")
     g.add_argument("--base-error", type=float, default=0.0)
+    g.add_argument("--allelic-precision", type=float, default=0.0,
+                   help="beta-binomial s per SNV; 0 = binomial (HCC1395BL normal: 140)")
     g.add_argument("--caller", choices=("none", "clairs", "deepsomatic"), default="none",
                    help="drop SNVs this ONT somatic caller would miss")
     a = ap.parse_args()
@@ -101,7 +103,7 @@ def main():
         raw = draw_spec(rng, pools, p, name)
         raw["source"]["preset"] = a.preset
         raw.update(mistag_rate=a.mistag, switch_rate_per_mb=a.switch_rate, base_error=a.base_error,
-                   caller=a.caller)
+                   allelic_precision=a.allelic_precision, caller=a.caller)
         if a.het_map:
             raw["het_map"] = str(Path(a.het_map).resolve())
         if a.depth_map:

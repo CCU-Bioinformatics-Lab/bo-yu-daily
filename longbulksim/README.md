@@ -2,7 +2,7 @@
 
 輸入一組摘要參數（clone 數、SNV 數、CN 比例、purity、depth 等，像 CONIPHER 的 `tx_simulation`），或一棵手寫的 HP-aware clone tree spec。輸出一個 bulk ONT 樣本的 PhyClone 輸入、HP 計數、SNV pair 共現表，以及獨立的真值目錄。
 
-範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個 lineage、一條 HP、一個 copy。不產生 FASTQ／BAM（`plan.md` §5.8.4 L2-R 留到之後）。v0.2 加入觀測誤差：HP 錯標、phase switch、鹼基錯誤（見「觀測誤差」）。v0.3 加入選填的 het map tagging（見「HP tag」）。v0.4 加入參數模式（見「參數模式」），這是主要入口。v0.5 加入 somatic caller 的漏抓（見「Caller 漏抓」）。v0.6 加入 cohort preset（見「Preset」），WGD 改成依機率抽。v0.7 加入選填的 depth map（見「Depth map」）。
+範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個 lineage、一條 HP、一個 copy。不產生 FASTQ／BAM（`plan.md` §5.8.4 L2-R 留到之後）。v0.2 加入觀測誤差：HP 錯標、phase switch、鹼基錯誤（見「觀測誤差」）。v0.3 加入選填的 het map tagging（見「HP tag」）。v0.4 加入參數模式（見「參數模式」），這是主要入口。v0.5 加入 somatic caller 的漏抓（見「Caller 漏抓」）。v0.6 加入 cohort preset（見「Preset」），WGD 改成依機率抽。v0.7 加入選填的 depth map（見「Depth map」）。v0.8 加入選填的 allele 計數過度離散（見「觀測誤差」）。
 
 ## 預設值與來源（先讀）
 
@@ -13,6 +13,7 @@
 | 位置相關的 HP tag | `--het-map` | 不用 | HCC1395BL ONT |
 | depth 過度離散 | `--depth-map` | 不用 | HCC1395BL ONT |
 | caller 漏抓 | `--caller` | none | HCC1395（CASTLE、HKU） |
+| allele 計數過度離散（beta-binomial） | `--allelic-precision` | 0（binomial） | HCC1395BL ONT：s ≈ 140 |
 | HP 錯標、phase switch、鹼基錯誤 | `--mistag`、`--switch-rate`、`--base-error` | 0 | HCC1395BL、LongPhase 論文 |
 
 這些都只在 HCC1395 一株細胞株、一到兩個定序批次上校正過，不保證能推廣到其他 long read 資料或其他癌種。
@@ -57,7 +58,7 @@ python3 -m longbulksim.generate --help
 | `--prop-subclonal-cn` | 有 subclonal CN 改變的 segment 比例 | 0.096 | TRACERx 區域內 bp 比例中位 |
 | `--purity`、`--depth` | purity、depth | 0.41、50 | TRACERx 區域 purity 中位；PCAWG depth 中位 |
 | `--snv-density` | 每 Mb SNV 數（決定 read 共現） | 12.9 | HCC1395 |
-| `--het-map`、`--phased`、`--mistag`、`--switch-rate`、`--base-error` | 觀測參數 | 不用 map、0.859、0、0、0 | 見「HP tag」「觀測誤差」 |
+| `--het-map`、`--phased`、`--mistag`、`--switch-rate`、`--base-error`、`--allelic-precision` | 觀測參數 | 不用 map、0.859、0、0、0、0 | 見「HP tag」「觀測誤差」 |
 | `--caller` | none／clairs／deepsomatic：移除這個 caller 會漏掉的 SNV | none | 見「Caller 漏抓」 |
 | `--depth-map` | read 起點密度地圖（.npz），讓 depth 隨位置變化 | 不用 | 見「Depth map」 |
 
@@ -77,7 +78,7 @@ python3 -m longbulksim.presets list                             # 27 個 preset 
 
 - **樹相關參數**（`--n-clones`、`--p-linear`、`--ccf-alpha`、`--min-ccf`、`--min-gap`）一律用 TRACERx，preset 不改。PCAWG open 資料沒有樹的拓樸，subclone 數也受 48× 偵測力限制。
 - **preset 設定的參數：** `n_snv`、SNV 密度、truncal 比例、purity、depth、WGD 機率、segment 數、subclonal CN 比例、兩個 WGD 組的 gain／loss／LOH 比例。
-- **preset 不設定的參數：** 觀測層（`--het-map`、`--mistag`、`--switch-rate`、`--base-error`、`--caller`）。
+- **preset 不設定的參數：** 觀測層（`--het-map`、`--mistag`、`--switch-rate`、`--base-error`、`--allelic-precision`、`--caller`）。
 - PCAWG 數值來自本機 open 檔（`/big8_disk/boyu114/benchmark_data/PCAWG/`，2,658 個 preferred 樣本），表在 `longbulksim/data/pcawg_presets.tsv`。重建：`python3 -m longbulksim.presets build /big8_disk/boyu114/benchmark_data/PCAWG`。癌種只收 ≥ 20 個樣本的 26 種。
 - truncal 比例只用「至少 1 個 subclone」的樣本計算，因為 preset 一律保留 ≥ 2 個 clone。
 - 具體的 CN 狀態與 subclonal 改變仍從 TRACERx 重抽。
@@ -122,6 +123,7 @@ het_map: hcc1395bl_phased_het.npz  # 選填（v0.3），見「HP tag」
 mistag_rate: 0        # 選填，預設 0（見「觀測誤差」）
 switch_rate_per_mb: 0
 base_error: 0
+allelic_precision: 0  # 選填（v0.8），0 = binomial
 clones:               # fraction = 佔 tumour 細胞的比例，總和為 1
   C1: {parent: N, fraction: 0.10}
   C2: {parent: C1, fraction: 0.35}
@@ -187,11 +189,14 @@ edges:                # 進入該 clone 的邊上的事件，依序套用
 | `mistag_rate`（`--mistag`） | tagged read 被標成另一條 HP。以整條 read 為單位 | `sample.py`：`Reads.obs_hp` |
 | `switch_rate_per_mb`（`--switch-rate`） | 每個 segment 內的 phase switch 點（Poisson、位置均勻）。read 中點之前有奇數個 switch 時，`obs_hp` 反轉 | `sample.py` |
 | `base_error`（`--base-error`） | 每條 read 在每個 SNV 位點，allele 被讀反（ref↔alt，對稱） | `simulate.py:observe()` |
+| `allelic_precision`（`--allelic-precision`，v0.8） | 每個 SNV 抽一個偏差 q ~ Beta(vaf·s, (1−vaf)·s)，再把部分 alt read 改成 ref（q < vaf）或部分 ref read 改成 alt（q > vaf）。結果 alt ~ BetaBinomial，和 PhyClone `--precision` 同一個 s。0 = 關閉 | `simulate.py:disperse()` |
 
 - `counts()`、`snv_hp`、`pairs.tsv` 都用 `obs_hp` 和觀測 allele。三個輸入檔看到同一份錯誤。
 - 錯誤率為 0 時不抽亂數。所以舊 seed 的 `input/` 與 v0.1 逐位相同（`ZeroErrorsMatchV01`）。
 - 整條 read 錯標不會讓分支 pair 出現 n11。錯標的 read 移到另一條 HP 的 pair 表，在那裡兩個位點都是 ref（n00）。會產生假矛盾的是 base error 和 phase switch。
 - 校正值與 C4 的敏感度見 `lab_report/2026-10-25_c4_robustness/`。
+- `allelic_precision` 的校正值 140 來自 HCC1395BL normal 的 203 萬個 phased het SNV（depth 約 26），見 `lab_report/2026-10-28_normal_allelic_dispersion/`。PhyClone 預設 400，所以 s = 140 的資料比 PhyClone 的假設更分散。
+- 偏差在 base error 之前套用。被改的 read 不管來自哪條 molecule，所以 q > vaf 時，非攜帶 molecule 的 read 也可能變成 alt（和 base error 一樣，會進入 `pairs.tsv` 與 HP 計數）。
 
 ## 輸出
 
@@ -238,6 +243,7 @@ read span 分布：`longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv`，由 `t
 - 位點相關的錯誤。v0.2 的 base error 在位點與 read 之間獨立，但實測有長尾（HCC1395BL：1.2% 位點 > 5%）。
 - switch 只影響 HP tag，不影響 PS block 切分（`ps_block` = segment）。
 - mapping 誤差、read 跨越 segment 邊界。
+- allele 過度離散的來源。v0.8 只用 beta-binomial 重現總量，不分 mapping bias、重複區等機制；s 只在 depth 約 26 的 normal 上量過，而且實測 s 隨 depth 上升（97–164）。
 - 多 sample。研究主軸是單一 bulk 樣本。
 - 參數模式的 WGD 是 trunk 上單一時間點的事件（`{wgd: true}`）。`random_tree` 模式仍以兩條 HP 各自 gain 表示，不是同一時間發生。
 - 一個 segment 有三種以上 tumour CN 狀態時，`segments.tsv` 無法表示，會報錯。
