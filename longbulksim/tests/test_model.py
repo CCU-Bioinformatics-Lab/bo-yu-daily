@@ -41,7 +41,7 @@ class ReplayMatchesHandTrees(unittest.TestCase):
 
 class SpecValidation(unittest.TestCase):
     BASE = {"name": "x", "purity": 0.5, "depth": 50,
-            "clones": {"C1": {"parent": None, "fraction": 1.0}},
+            "clones": {"C1": {"parent": "N", "fraction": 1.0}},
             "segments": {"A": {"chrom": "chr1", "start": 0, "length": 1000}}}
 
     def spec(self, **edges):
@@ -59,7 +59,26 @@ class SpecValidation(unittest.TestCase):
 
     def test_fractions_must_sum_to_one(self):
         with self.assertRaisesRegex(ValueError, "sum to"):
-            parse_spec({**self.BASE, "clones": {"C1": {"parent": None, "fraction": 0.7}}})
+            parse_spec({**self.BASE, "clones": {"C1": {"parent": "N", "fraction": 0.7}}})
+
+    def test_root_parent_must_be_normal(self):
+        with self.assertRaisesRegex(ValueError, "not null"):
+            parse_spec({**self.BASE, "clones": {"C1": {"parent": None, "fraction": 1.0}}})
+
+    def test_wgd_doubles_every_copy(self):
+        base = {**self.BASE, "segments": {"A": {"chrom": "chr1", "start": 0, "length": 1000},
+                                          "B": {"chrom": "chr2", "start": 0, "length": 1000}}}
+        g = replay(parse_spec({**base, "edges": {"C1": [
+            {"snv": "s1", "hp": "HP1", "segment": "A"}, {"wgd": True},
+            {"snv": "s2", "hp": "HP2", "segment": "B"}]}}))["C1"]
+        self.assertEqual({s: [len(g[s][h]) for h in ("HP1", "HP2")] for s in g},
+                         {"A": [2, 2], "B": [2, 2]})
+        self.assertEqual(sum("s1" in cp for cp in g["A"]["HP1"]), 2)
+        self.assertEqual(sum("s2" in cp for cp in g["B"]["HP2"]), 1)
+
+    def test_read_span_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "read_span"):
+            parse_spec({**self.BASE, "read_span": "other.tsv"})
 
 
 if __name__ == "__main__":

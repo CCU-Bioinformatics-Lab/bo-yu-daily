@@ -21,7 +21,7 @@
 
 | 預設值 | 數值 | 來源 | 調整方式 |
 |---|---|---|---|
-| read 長度分布 | mean 13.1 kb、N50 21.4 kb | HCC1395 ONT `t50_n00` 實測 | 手寫 spec 的 `read_span` 欄位指向自己的分位數表（格式同 `longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv`，用 `tools/measure_read_span.py` 量測） |
+| read 長度分布 | mean 13.1 kb、N50 21.4 kb | HCC1395 ONT `t50_n00` 實測 | 固定，不能輸入；spec 寫 `read_span` 會報錯 |
 | HP tag 機率 | 0.859 | HCC1395 alt read 實測 | `--phased` |
 | SNV 密度 | 12.9／Mb | HCC1395 全基因組 | `--snv-density`，或用 `--preset pcawg:<癌種>` |
 
@@ -123,7 +123,7 @@ mistag_rate: 0        # 選填，預設 0（見「觀測誤差」）
 switch_rate_per_mb: 0
 base_error: 0
 clones:               # fraction = 佔 tumour 細胞的比例，總和為 1
-  C1: {parent: null, fraction: 0.10}
+  C1: {parent: N, fraction: 0.10}
   C2: {parent: C1, fraction: 0.35}
 segments:
   A: {chrom: chr1, start: 10000000, length: 1550000}
@@ -135,6 +135,7 @@ edges:                # 進入該 clone 的邊上的事件，依序套用
     - {snv: s4, hp: HP1, segment: A, copy: 0}     # gain 之後，只在 copy 0 → multiplicity 1
     - {loss: B, hp: HP2}
     - {cnloh: D, keep: HP1}                       # 移除 HP2，HP1 複製一份
+    - {wgd: true}                                 # 全基因體同一時間加倍：每段、每條 HP 的每個 copy 各複製一份
 ```
 
 模擬器從 root 依序重播事件，得到每個 clone 的 genome（segment → HP → copies，每個 copy 是它帶的 SNV role 集合）。突變遺失、multiplicity、CN timing 都由重播決定，不手寫。
@@ -224,7 +225,7 @@ edges:                # 進入該 clone 的邊上的事件，依序套用
 | depth map | 起點依權重分布；權重 0 的格子沒有 read；segment 平均權重；depth 隨 map 變化且平均維持目標值；整段權重 0 時不當掉 | `test_depth_map.py` |
 | caller 漏抓 | alt = 0 不會被 call；VAF 固定時 depth 高較易被 call；DeepSomatic 比 ClairS 敏感；漏掉的 SNV 不在任何輸入檔；偵測數符合曲線期望值；`none` 保留全部 | `test_caller.py` |
 | preset | tracerx = 內建預設；PCAWG 數值；未知名稱報錯；WGD 機率；明確參數 > preset > TRACERx 樹參數；preset + caller 端到端 | `test_param_tree.py`、`test_caller.py` |
-| 參數模式 | clone 數與樹形照設定；CCF 規則；truncal 比例；gain 比例；無 WGD 時沒有 loss 類；比例總和 > 1 時報錯；CLI 端到端 | `test_param_tree.py` |
+| 參數模式 | clone 數與樹形照設定；CCF 規則；truncal 比例；gain 比例；無 WGD 時沒有 loss 類；比例總和 > 1 時報錯；WGD 只有一個、在 trunk；2:2 段 WGD 前的 SNV 2 份、之後 1 份；CLI 端到端 | `test_param_tree.py` |
 | het map 規則 | 不覆蓋 het → 不標；跨 PS block → 不標；end 不含；只收 phased 位點；`phased_fraction` 不影響輸出 | `test_het_map.py` |
 
 read span 分布：`longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv`，由 `tools/measure_read_span.py` 從 HCC1395 ONT `t50_n00` 三個 40 Mb 區域量測（394,298 條 primary read；mean 13.1 kb，N50 21.4 kb）。
@@ -238,7 +239,7 @@ read span 分布：`longbulksim/data/hcc1395_ont_t50_n00_read_span.tsv`，由 `t
 - switch 只影響 HP tag，不影響 PS block 切分（`ps_block` = segment）。
 - mapping 誤差、read 跨越 segment 邊界。
 - 多 sample。研究主軸是單一 bulk 樣本。
-- WGD 以兩條 HP 各自 gain 表示，不是同一時間發生。
+- 參數模式的 WGD 是 trunk 上單一時間點的事件（`{wgd: true}`）。`random_tree` 模式仍以兩條 HP 各自 gain 表示，不是同一時間發生。
 - 一個 segment 有三種以上 tumour CN 狀態時，`segments.tsv` 無法表示，會報錯。
 
 決策紀錄見 [`DECISIONS.md`](DECISIONS.md)。

@@ -27,7 +27,7 @@ def ancestors(parent):
     out = {}
     for c in parent:
         a, x = set(), c
-        while parent.get(x) not in (None, "root"):
+        while parent.get(x) not in (None, "root", "N"):
             x = parent[x]
             a.add(x)
         out[c] = a

@@ -42,7 +42,7 @@ class SNVRole:
 
 @dataclass(frozen=True)
 class CNEvent:
-    kind: str  # gain | loss | cnloh
+    kind: str  # gain | loss | cnloh | wgd (wgd: every segment and HP, so segment and hp are "")
     segment: str
     hp: str    # for cnloh: the HP that is kept
     copy: int = 0
@@ -93,9 +93,11 @@ def _event(clone, raw):
     if "snv" in raw:
         return SNVRole(raw["snv"], clone, raw["hp"], raw["segment"], int(raw.get("count", 1)),
                        int(raw.get("copy", 0)))
-    kinds = [k for k in ("gain", "loss", "cnloh") if k in raw]
+    kinds = [k for k in ("gain", "loss", "cnloh", "wgd") if k in raw]
     if len(kinds) != 1:
-        raise ValueError(f"edge {clone}: event needs exactly one of snv/gain/loss/cnloh: {raw}")
+        raise ValueError(f"edge {clone}: event needs exactly one of snv/gain/loss/cnloh/wgd: {raw}")
+    if kinds == ["wgd"]:
+        return CNEvent("wgd", "", "")
     k = kinds[0]
     return CNEvent(k, raw[k], raw["keep"] if k == "cnloh" else raw["hp"], int(raw.get("copy", 0)))
 
@@ -114,10 +116,16 @@ def _topological(parent):
 
 def parse_spec(raw, base_dir=Path(".")):
     clones = raw["clones"]
-    order = _topological({c: v.get("parent") for c, v in clones.items()})
-    parent = {c: clones[c].get("parent") for c in order}
-    if sum(p is None for p in parent.values()) != 1:
-        raise ValueError("clone tree needs exactly one root")
+    # the tree's root is the normal: the trunk clone's parent is NORMAL, stored as None
+    if NORMAL in clones:
+        raise ValueError(f"{NORMAL!r} is the normal, not a clone name")
+    if any(v.get("parent") is None for v in clones.values()):
+        raise ValueError(f"the trunk clone's parent is the normal {NORMAL!r}, not null")
+    if sum(v["parent"] == NORMAL for v in clones.values()) != 1:
+        raise ValueError(f"clone tree needs exactly one clone under the normal {NORMAL!r}")
+    order = _topological({c: (None if v["parent"] == NORMAL else v["parent"])
+                          for c, v in clones.items()})
+    parent = {c: (None if clones[c]["parent"] == NORMAL else clones[c]["parent"]) for c in order}
     fraction = {c: float(clones[c]["fraction"]) for c in order}
     if abs(sum(fraction.values()) - 1) > 1e-6:
         raise ValueError(f"clone fractions sum to {sum(fraction.values())}, not 1")
@@ -132,12 +140,15 @@ def parse_spec(raw, base_dir=Path(".")):
         raise ValueError("SNV role ids must be unique")
     for ev in edges.values():
         for e in ev:
+            if isinstance(e, CNEvent) and e.kind == "wgd":
+                continue
             if e.segment not in segments:
                 raise ValueError(f"unknown segment {e.segment!r} in {e}")
             if e.hp not in HPS:
                 raise ValueError(f"HP must be one of {HPS}: {e}")
-    span = raw.get("read_span", "hcc1395_ont_t50_n00_read_span.tsv")
-    span_path = DATA_DIR / span if (DATA_DIR / span).exists() else base_dir / span
+    if "read_span" in raw:
+        raise ValueError("read_span is not a spec input; read lengths always use the HCC1395 table")
+    span_path = DATA_DIR / "hcc1395_ont_t50_n00_read_span.tsv"
     dm = raw.get("depth_map")
     dm_path = None if dm is None else (DATA_DIR / dm if (DATA_DIR / dm).exists() else base_dir / dm)
     het = raw.get("het_map")
@@ -156,6 +167,11 @@ def load_spec(path):
 
 
 def _apply(genome, e):
+    if isinstance(e, CNEvent) and e.kind == "wgd":
+        # one moment for the whole genome: every copy present now, with its SNVs, is duplicated
+        for s, seg in genome.items():
+            genome[s] = {h: cps * 2 for h, cps in seg.items()}
+        return
     seg = dict(genome[e.segment])
     copies = list(seg[e.hp])
     if isinstance(e, CNEvent) and e.kind == "cnloh":

@@ -16,6 +16,9 @@ the tree is drawn from them:
             (e.g. 3:1) is resampled from TRACERx segments of that category and ploidy group,
             HP orientation random. With probability prop_subclonal_cn a segment also gets one
             subclonal change (resampled from TRACERx (dA, dB)) on a uniform subclone.
+  WGD       one {wgd: true} event at a uniform time on the trunk edge doubles every copy of
+            the genome at once; each trunk state is split into steps before and after it
+            with the fewest events (wgd_split), e.g. 2:0 = LOH before the WGD.
 Event order on each edge, multiplicity, CN timing and mutation loss then follow
 random_tree.build_edges, so they are not set directly.
 
@@ -31,7 +34,7 @@ from dataclasses import asdict, dataclass
 import numpy as np
 import pandas as pd
 
-from .model import HPS
+from .model import HPS, NORMAL
 from .random_tree import CN_SEGMENTS, add_cn_items, allocate, build_edges, cn_steps, drop_unobservable
 
 CATEGORIES = ("gain", "loss", "loh")
@@ -138,6 +141,30 @@ def draw_fractions(rng, parent, p):
                      f"min_gap {p.min_gap}")
 
 
+def wgd_split(t):
+    """Copies before the WGD (pre) and the CN steps after it for a trunk state of t copies,
+    with the fewest events: 0 = loss before WGD, even = doubled as is, odd = one step after."""
+    if t == 0:
+        pre = 0
+    elif t % 2 == 0:
+        pre = t // 2
+    else:
+        pre = max(1, (t - 1) // 2)
+    before = ["loss"] if pre == 0 else ["gain"] * (pre - 1)
+    after = t - 2 * pre
+    return before, ["gain"] * after if after > 0 else ["loss"] * -after
+
+
+def add_wgd_trunk(rng, trunk_items, state, wgd_time, seg):
+    """Queue one segment's trunk CN steps around the WGD: before it in [0, wgd_time), after it
+    in (wgd_time, 1]; on one HP gains come before losses."""
+    for h, t in zip(HPS, state):
+        before, after = wgd_split(t)
+        for ops, lo, hi in ((before, 0, wgd_time), (after, wgd_time, 1)):
+            keys = np.sort(rng.uniform(lo, hi, len(ops)))
+            trunk_items += [(key, (op, h, seg)) for key, op in zip(keys, sorted(ops))]
+
+
 def draw_spec(rng, pools, p=Params(), name="param"):
     states, deltas, seg_bp = pools
     wgd = p.wgd if p.wgd is not None else bool(rng.random() < p.wgd_prob)
@@ -164,6 +191,9 @@ def draw_spec(rng, pools, p=Params(), name="param"):
     probs = [1 - sum(shares.values())] + [shares[c] for c in CATEGORIES]
     base = 2 if wgd else 1
     used = sorted({seg for its in items.values() for _, (_, _, seg) in its}, key=lambda x: int(x[1:]))
+    if wgd:
+        wgd_time = rng.random()  # one moment on the trunk edge for the whole genome
+        items[order[0]].append((wgd_time, ("wgd",)))
     n_sub_cn = 0
     for s in used:
         cat = cats[rng.choice(len(cats), p=probs)]
@@ -174,9 +204,13 @@ def draw_spec(rng, pools, p=Params(), name="param"):
             a, b = (int(x) for x in pool[rng.integers(len(pool))])
         if rng.random() < 0.5:
             a, b = b, a
-        trunk = [(h, "loss") for h, t in zip(HPS, (a, b)) if t == 0]
-        trunk += [(h, "gain") for h, t in zip(HPS, (a, b)) for _ in range(t - 1)]
-        steps = {order[0]: trunk}
+        steps = {}
+        if wgd:
+            add_wgd_trunk(rng, items[order[0]], (a, b), wgd_time, s)
+        else:
+            trunk = [(h, "loss") for h, t in zip(HPS, (a, b)) if t == 0]
+            trunk += [(h, "gain") for h, t in zip(HPS, (a, b)) for _ in range(t - 1)]
+            steps[order[0]] = trunk
         if subs and rng.random() < p.prop_subclonal_cn:
             da, db = (int(x) for x in deltas[wgd][rng.integers(len(deltas[wgd]))])
             if rng.random() < 0.5:
@@ -193,7 +227,7 @@ def draw_spec(rng, pools, p=Params(), name="param"):
                    "ccf": {c: round(float(v), 4) for c, v in ccf.items()},
                    "subclonal_cn_segments": n_sub_cn, "cn_steps_invalid": invalid},
         "purity": p.purity, "depth": p.depth, "phased_fraction": p.phased_fraction,
-        "clones": {c: {"parent": parent[c], "fraction": float(fraction[c])} for c in order},
+        "clones": {c: {"parent": parent[c] or NORMAL, "fraction": float(fraction[c])} for c in order},
         "segments": {s: {"chrom": "chr1", "start": 0, "length": 1} for s in used},
         "edges": edges,
     }

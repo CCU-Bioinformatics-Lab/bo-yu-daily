@@ -31,7 +31,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-from .model import DATA_DIR, HPS, parse_spec, replay, roles_in
+from .model import DATA_DIR, HPS, NORMAL, parse_spec, replay, roles_in
 
 TREES = DATA_DIR / "tracerx421_region_trees.tsv"
 CN_SEGMENTS = DATA_DIR / "tracerx421_cn_segments.tsv"
@@ -152,7 +152,7 @@ def draw_spec(rng, regions, cn_profiles, n_snv=200, depth=50, merge_gap=0.05,
                    "subclonal_cn_kept": n_sub_kept, "subclonal_cn_not_in_region": n_sub_absent,
                    "cn_steps_invalid": invalid},
         "purity": float(g.purity.iloc[0]), "depth": depth, "phased_fraction": phased_fraction,
-        "clones": {names[c]: {"parent": names[parent[c]] if parent[c] else None,
+        "clones": {names[c]: {"parent": names[parent[c]] if parent[c] else NORMAL,
                               "fraction": fraction[c] / sum(fraction.values())} for c in order},
         "segments": {s: {"chrom": "chr1", "start": 0, "length": 1} for s in used},
         "edges": edges,
@@ -174,15 +174,19 @@ def build_edges(rng, parent, order, names, items):
     """Replay queued items {clone: [(time, item)]} root first: each SNV takes a uniform copy
     of those present at that moment, each gain or loss a uniform copy of its HP. Returns the
     spec edges and the number of losses skipped because the HP had no copy left."""
-    copies = {}  # clone -> {(segment, HP): copy count}
+    copies = {}  # clone -> ({(segment, HP): copy count}, count of segment/HP pairs not listed)
     edges, invalid = {}, 0
     for c in order:
-        cps = dict(copies[parent[c]]) if parent[c] else {}
+        cps, base = (dict(copies[parent[c]][0]), copies[parent[c]][1]) if parent[c] else ({}, 1)
         out = []
         for _, it in sorted(items[c]):
-            if it[0] == "snv":
+            if it[0] == "wgd":
+                cps = {k: 2 * v for k, v in cps.items()}
+                base *= 2
+                out.append({"wgd": True})
+            elif it[0] == "snv":
                 _, sid, seg = it
-                n = [cps.get((seg, h), 1) for h in HPS]
+                n = [cps.get((seg, h), base) for h in HPS]
                 if sum(n) == 0:
                     continue
                 j = int(rng.integers(sum(n)))
@@ -191,13 +195,13 @@ def build_edges(rng, parent, order, names, items):
                             "copy": j if j < n[0] else j - n[0]})
             else:
                 op, h, seg = it
-                n = cps.get((seg, h), 1)
+                n = cps.get((seg, h), base)
                 if n == 0:
                     invalid += 1
                     continue
                 out.append({op: seg, "hp": h, "copy": int(rng.integers(n))})
                 cps[(seg, h)] = n + (1 if op == "gain" else -1)
-        copies[c] = cps
+        copies[c] = (cps, base)
         if out:
             edges[names[c]] = out
     return edges, invalid
@@ -214,7 +218,7 @@ def drop_unobservable(raw, density_per_mb):
     for e in snvs:
         if e["snv"] in present:
             n_seg[e["segment"]] = n_seg.get(e["segment"], 0) + 1
-    keep = lambda e: (e["snv"] in present if "snv" in e else
+    keep = lambda e: (e["snv"] in present if "snv" in e else "wgd" in e or
                       next(e[k] for k in ("gain", "loss", "cnloh") if k in e) in n_seg)
     raw["edges"] = {c: [e for e in ev if keep(e)] for c, ev in raw["edges"].items()}
     raw["edges"] = {c: ev for c, ev in raw["edges"].items() if ev}

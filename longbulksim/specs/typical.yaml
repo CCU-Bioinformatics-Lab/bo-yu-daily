@@ -6,7 +6,7 @@ purity: 0.40
 depth: 50
 phased_fraction: 0.859
 clones:
-  C1: {parent: null, fraction: 0.42}
+  C1: {parent: N, fraction: 0.42}
   C2: {parent: C1, fraction: 0.29}
   C3: {parent: C2, fraction: 0.29}
 segments:

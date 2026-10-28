@@ -82,7 +82,7 @@ def score(sim, run):
     truth = {r["mutation_id"]: r for r in read_tsv(os.path.join(sim, "truth/truth.tsv"))
              if r.get("detected", "1") == "1"}
     tree = read_tsv(os.path.join(sim, "truth/truth_tree.tsv"))
-    t_parent = {r["clone"]: r["parent"] for r in tree if r["parent"] != "root"}
+    t_parent = {r["clone"]: r["parent"] for r in tree if r["parent"] not in ("root", "N")}
     table = {r["mutation_id"]: r for r in read_tsv(os.path.join(sim, run, "map_table.tsv"))}
     with open(os.path.join(sim, run, "map_tree.nwk")) as fh:
         p_parent = {k: v for k, v in newick_parents(fh.read()).items() if v != "root"}

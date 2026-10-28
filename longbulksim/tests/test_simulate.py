@@ -38,7 +38,7 @@ class SpanningReadsMatchHCC1395(unittest.TestCase):
 
     def test_spanning_by_distance(self):
         raw = {"name": "flat", "purity": 1.0, "depth": 52,
-               "clones": {"C1": {"parent": None, "fraction": 1.0}},
+               "clones": {"C1": {"parent": "N", "fraction": 1.0}},
                "segments": {"A": {"chrom": "chr1", "start": 1_000_000, "length": 20_000_000}}}
         spec = parse_spec(raw)
         rng = np.random.default_rng(0)
@@ -124,7 +124,7 @@ class HomozygousDeletionInMajorClone(unittest.TestCase):
         # C2 (80% of tumour cells) deletes both HPs of A; s1 stays in C1, so the input must use
         # C1's 1:1 state, not 0:0 (PhyClone needs total CN > 0)
         raw = {"name": "homdel", "purity": 1.0, "depth": 30,
-               "clones": {"C1": {"parent": None, "fraction": 0.2},
+               "clones": {"C1": {"parent": "N", "fraction": 0.2},
                           "C2": {"parent": "C1", "fraction": 0.8}},
                "segments": {"A": {"chrom": "chr1", "start": 1_000_000, "length": 2_000_000}},
                "edges": {"C1": [{"snv": "s1", "hp": "HP1", "segment": "A", "count": 5}],

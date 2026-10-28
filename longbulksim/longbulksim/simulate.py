@@ -235,7 +235,7 @@ def run(spec, seed, out_dir):
               [[m.id, roles[m.role].clone] for m in muts])
     write_tsv(out / "truth/truth_tree.tsv",
               ["clone", "parent", "sample_id", "purity", "clone_fraction", "ccf"],
-              [[c, p or "root", SAMPLE, spec.purity, f"{spec.fraction[c]:.2f}",
+              [[c, p or NORMAL, SAMPLE, spec.purity, f"{spec.fraction[c]:.2f}",
                 f"{spec.ccf(c):.2f}"] for c, p in spec.parent.items()])
     (out / "truth/genome.json").write_text(json.dumps(
         {"genome": {c: {s: {h: [sorted(cp) for cp in cps] for h, cps in seg.items()}

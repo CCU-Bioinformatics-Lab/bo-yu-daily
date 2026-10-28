@@ -10,7 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
-from longbulksim.model import HPS, load_spec, parse_spec, replay
+from longbulksim.model import HPS, NORMAL, load_spec, parse_spec, replay
 from longbulksim import presets
 from longbulksim.param_tree import Params, categorize, draw_spec, load_pools
 
@@ -44,7 +44,7 @@ class Tree(unittest.TestCase):
             ccf = raw["source"]["ccf"]
             self.assertAlmostEqual(sum(v["fraction"] for v in raw["clones"].values()), 1, 6)
             for c, v in raw["clones"].items():
-                if v["parent"]:
+                if v["parent"] != NORMAL:
                     self.assertGreaterEqual(ccf[c], 0.1 - 1e-4)
                     self.assertGreaterEqual(ccf[v["parent"]] - ccf[c], 0.08 - 1e-4)
 
@@ -76,6 +76,33 @@ class Mutations(unittest.TestCase):
     def test_shares_over_one(self):
         with self.assertRaises(ValueError):
             specs(Params(prop_gain=0.5, prop_loss=0.4, prop_loh=0.3), 1)
+
+    def test_single_wgd(self):
+        # one WGD on the trunk; on a 2:2 segment, trunk SNVs before it have 2 copies, after it 1
+        for raw in specs(replace(Params(), wgd=True, n_snv=150, n_segments=40), 20):
+            trunk = raw["edges"]["C1"]
+            self.assertEqual(sum("wgd" in e for e in trunk), 1)
+            for c, ev in raw["edges"].items():
+                if c != "C1":
+                    self.assertFalse(any("wgd" in e for e in ev))
+            g = replay(parse_spec(raw))["C1"]
+            at = next(i for i, e in enumerate(trunk) if "wgd" in e)
+            touched = {e[k] for e in trunk for k in ("gain", "loss") if k in e}
+            for i, e in enumerate(trunk):
+                if "snv" in e and e["segment"] not in touched:
+                    self.assertEqual([len(g[e["segment"]][h]) for h in HPS], [2, 2])
+                    n = sum(e["snv"] in cp for cp in g[e["segment"]][e["hp"]])
+                    self.assertEqual(n, 2 if i < at else 1)
+
+    def test_wgd_split(self):
+        from longbulksim.param_tree import wgd_split
+        for t in range(7):
+            before, after = wgd_split(t)
+            pre = 0 if before == ["loss"] else 1 + len(before)
+            self.assertEqual(2 * pre + after.count("gain") - after.count("loss"), t)
+        self.assertEqual(wgd_split(0), (["loss"], []))    # LOH before the WGD
+        self.assertEqual(wgd_split(4), (["gain"], []))    # gain before, then doubled
+        self.assertEqual(wgd_split(1), ([], ["loss"]))
 
     def test_specs_replay(self):
         for raw in specs(replace(Params(), n_clones=4), 30):

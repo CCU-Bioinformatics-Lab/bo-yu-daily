@@ -7,7 +7,7 @@ purity: 0.40
 depth: 200
 phased_fraction: 0.859  # HCC1395 ONT alt reads with an HP tag
 clones:
-  C1: {parent: null, fraction: 0.10}
+  C1: {parent: N, fraction: 0.10}
   C2: {parent: C1, fraction: 0.35}
   C3: {parent: C1, fraction: 0.10}
   C4: {parent: C2, fraction: 0.45}

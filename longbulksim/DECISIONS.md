@@ -47,4 +47,6 @@
 | 2026-10-26 | map 用 read 起點數（MAPQ ≥ 20、primary），不用逐鹼基 coverage | 模擬器抽的是 read 起點；起點密度直接對應，也包含 mappability | 10 kb 以下的變化會被長 read 平滑 |
 | 2026-10-26 | 不模擬 tumor 特有的 depth 變異 | 它延伸到 Mb 等級，符合 CN 估計誤差，不是定序雜訊；模擬器的 CN 是精確的 | 剩下的 VMR 差距照實記錄 |
 | 2026-10-26 | `depth_map` 不設成預設 | 人工座標配上 map，12–26% 的 SNV depth 為 0 | 和 `het_map` 同一個問題：要先讓 segment 座標落在可定序區域 |
-
+| 2026-10-27 | 禁止 spec 的 `read_span` 欄位，read 長度固定用 HCC1395 `t50_n00` 分位數表 | 使用者選擇：不需要這個輸入 | 沒有既有 spec 或產生器用到；出現時 `parse_spec` 報錯 |
+| 2026-10-27 | 樹的 root 是 normal（`N`）：spec 的 trunk clone 寫 `parent: N`，`truth_tree.tsv` 的 trunk clone parent 寫 `N`；`parent: null` 會報錯 | 使用者選擇。和 CONIPHER 一致（它的 root 節點是 diploid normal，底下接 truncal clone）；`replay` 本來就從 normal 的 genome 開始 | clone 數仍只算腫瘤 clone；模擬數值不變。讀 `truth_tree.tsv` 的 tools 同時接受 `root`（手寫樹舊流程）與 `N`。舊輸出的 `spec.yaml` 寫 `null`，不能再用 `parse_spec` 讀 |
+| 2026-10-27 | 參數模式的 WGD 改成 trunk 上單一時間點的 `{wgd: true}` 事件，全基因體一起加倍；各段 trunk 狀態拆成 WGD 前、後兩段，取事件數最少的拆法（例如 2:0 = WGD 前先 LOH） | 使用者選擇。真實 WGD 是一次性事件：WGD 前的 truncal SNV 都是 2 份、之後都是 1 份，比例全基因體一致。舊版每段各自加倍、時間不同；CONIPHER 則是每個 SNV 各自隨機排先後 | 無 WGD 的模擬與舊版逐位相同（15/15）；有 WGD 的輸出改變。`random_tree` 模式未改 |

@@ -20,7 +20,7 @@ V01_STRESS_SEED7 = {
 def flat(n_snv=1, length=20_000_000, depth=50, **errors):
     """One clonal HP1 SNV role in one diploid segment, purity 1."""
     return {"name": "flat", "purity": 1.0, "depth": depth, **errors,
-            "clones": {"C1": {"parent": None, "fraction": 1.0}},
+            "clones": {"C1": {"parent": "N", "fraction": 1.0}},
             "segments": {"A": {"chrom": "chr1", "start": 1_000_000, "length": length}},
             "edges": {"C1": [{"snv": "s1", "hp": "HP1", "segment": "A", "count": n_snv}]}}
 

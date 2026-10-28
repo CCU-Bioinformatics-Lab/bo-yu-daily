@@ -45,7 +45,8 @@ def load_truth(truth, keep=None):
     with open(os.path.join(truth, "truth.tsv")) as fh:
         rows = list(csv.DictReader(fh, delimiter="\t"))
     with open(os.path.join(truth, "truth_tree.tsv")) as fh:
-        parent = {r["clone"]: r["parent"] for r in csv.DictReader(fh, delimiter="\t")}
+        parent = {r["clone"]: "root" if r["parent"] == "N" else r["parent"]
+                  for r in csv.DictReader(fh, delimiter="\t")}
     with open(os.path.join(truth, "genome.json")) as fh:
         lost = {r for rs in json.load(fh)["lost"].values() for r in rs}
     role = {r["mutation_id"]: r["role"] for r in rows}
