@@ -10,7 +10,7 @@
 - `research/simulation_pipeline_research/`：模擬生成流程研究。`upstream/` 是 Pairtree、CONIPHER 模擬器的 submodule。
 - `research/hcc1395_golden_tree_research/`：HCC1395 參考樹文獻，可作驗證參考。
 - `longbulksim/`：long read bulk 模擬器，輸出 PhyClone 輸入、HP 計數、SNV pair 共現與獨立的 `truth/`。說明見 `README.md`、`DECISIONS.md`。測試：`cd longbulksim && python3 -m unittest discover -s tests`。
-- `phyclone_rs/`：PhyClone 的 Rust 移植（haploclone）計畫、golden 與 V1–V5 驗證。程式在 `/bip8_disk/boyu114/haploclone/rust/`（branch `rust-port`）。現況與決策見 `PORTING.md`、`decisions.tsv`。改 haploclone 時，預設路徑的輸出要和原版保持 bit-identical。
+- haploclone（PhyClone 的 Rust 移植）：程式、golden、移植文件都在 `/bip8_disk/boyu114/haploclone/rust/`（branch `rust-port`）。現況與決策見 `rust/docs/PORTING.md`、`rust/docs/decisions.tsv`。改 haploclone 時，預設路徑的輸出要和原版保持 bit-identical。
 - `tools/`：分析與繪圖腳本。`lab_report/`：一個實驗一個目錄（`YYYY-MM-DD_<主題>/README.md`：結論、資料、做法、結果、限制），腳本放 `tools/`。
 - `report/`：投影片輸出。`daily/`：工作日誌，只作導覽，不能當事實來源。
 - `meeting_record/`：每週會議紀錄（`YYYY_MM_DD_meeting_record.md` 原始紀錄、`_summary.md` 整理）。

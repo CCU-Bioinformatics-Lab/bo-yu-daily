@@ -1,1 +1,0 @@
-{"case":"random_spec_0000","options":{"err":0.004,"hp_uncertain":true},"pair_model":"err0.004_hpu","pairs":[{"i":"s112_00","j":"s154_00","scores":[-3.02769447370968,-3.7140879504814017,-3.7140879504814017,-8.521338817554925]}],"relations":["same","ancestor","descendant","branch"]}

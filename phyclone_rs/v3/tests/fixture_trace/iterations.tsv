@@ -1,5 +1,0 @@
-chain	iter	alpha	log_p	lp_one	num_nodes	num_outliers	num_roots	tree_id	phase	extra
-0	-1	9.0	-1	-1	1	0	1	8	burnin	x
-0	0	0.5	-10.5	-10.25	3	1	2	7	sample	x
-0	1	2.0	-9.5	-9.75	3	1	2	7	sample	x
-1	0	1.0	-12	-12.5	1	0	1	8	sample	x

@@ -1,1 +1,0 @@
-tools/phyclone_hp.py --hp-mode base run -i phyclone_rs/golden/cases/stress_e0_s1/input/data.tsv -d binomial --max-time 0 -b 20 -n 200 --num-chains 1 --seed 1 -o phyclone_rs/golden/runs/e0_maxtime0/trace.h5
