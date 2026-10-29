@@ -14,6 +14,6 @@
 | PhyClone 模擬資料生成流程 | [模擬流程研究](simulation_pipeline_research/README.md) | 論文的 generative model 與 benchmark 生成方式、`fscrp.py`／`sim_data_on_tree.py` 實際行為（樹形偏向、CN 逐 sample 獨立抽）、benchmark 真值格式、加入 HP 特徵的缺口；其他真值樹＋SNV 模擬器總調查（`simulator_survey_2026-10-24/`） |
 | HCC1395 參考演化樹 | [既有文獻分析](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/README.md) | bulk 推理與 single-cell CNV 驗證的證據邊界；不能視為病人 lineage ground truth |
 
-| 會議紀錄 | [2026-10-21 會議整理](meeting_record/2026_10_21_meeting_summary.md) | 會議原始紀錄（語音辨識整理）與會後整理、未決事項 |
+| 會議紀錄 | [2026-10-21 會議整理](../meeting_record/2026_10_21_meeting_summary.md) | 會議原始紀錄（語音辨識整理）與會後整理、未決事項 |
 
 文獻目錄結構見 [literature/README.md](literature/README.md)。新增調查保留既有研究內容；實際輸入與開發設計仍分別以 repo 的 `data_input.md`、`plan.md` 為準。

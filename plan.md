@@ -1,6 +1,6 @@
 # 計畫：將 longphase-s HP 特徵加入 PhyClone
 
-更新日期：2026-10-21（刪除 L0 與 L1-B：原 §5.7、§5.9、I12、I15、AC16、AC20、AC21。依 2026-10-21 會議決議，只用 long read 模擬資料集，short read 資料集都不用；見 `research/meeting_record/2026_10_21_meeting_summary.md`）。
+更新日期：2026-10-21（刪除 L0 與 L1-B：原 §5.7、§5.9、I12、I15、AC16、AC20、AC21。依 2026-10-21 會議決議，只用 long read 模擬資料集，short read 資料集都不用；見 `meeting_record/2026_10_21_meeting_summary.md`）。
 前一版：2026-10-17（新增 §5.8.8 T-sc scDNA 樹藍圖、I16、AC22）。
 狀態：設計文件。尚未完成 C0–C6 實作或效果驗證。
 
