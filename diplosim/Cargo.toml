@@ -1,0 +1,14 @@
+[package]
+name = "diplosim"
+version = "0.1.0"
+edition = "2021"
+description = "Rust port of the CONIPHER/TRACERx bulk simulator (facd2d7) with HP1/HP2 extensions"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+rand = "0.8"
+rand_chacha = "0.3"
+rand_distr = "0.4"
+
+[profile.test]
+opt-level = 3
