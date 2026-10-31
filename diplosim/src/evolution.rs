@@ -3,6 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use clap::ValueEnum;
 use rand::seq::SliceRandom;
+use rand::Rng as _;
 
 use crate::params::Params;
 use crate::topology::{NodeId, Tree};
@@ -100,6 +101,19 @@ impl Event {
         }
     }
 
+    /// diplosim: whether a second CNA can follow on a position with these allele copies. A lost
+    /// allele cannot be gained or copied back, and the last copy is never lost.
+    fn possible_on(self, g: Genotype) -> bool {
+        match self {
+            Event::GainA => g.a > 0,
+            Event::GainB => g.b > 0,
+            Event::GainBoth | Event::CnlohA | Event::CnlohB => g.a > 0 && g.b > 0,
+            Event::LossA => g.a > 0 && g.a + g.b > 1,
+            Event::LossB => g.b > 0 && g.a + g.b > 1,
+            Event::Wgd | Event::Snv => false,
+        }
+    }
+
     /// evolution.py:164-181 generate_events, one arm per lambda.
     pub fn apply(self, g: Genotype, mode: Mode) -> Genotype {
         let cn_mut = i32::from(g.mutated > 0);
@@ -167,7 +181,20 @@ fn without(xs: &[Pos], drop: &[Pos]) -> Vec<Pos> {
 pub fn tree_profiles(tree: &Tree, n_positions: usize, p: &Params, rng: &mut Rng) -> Result<Evolution, String> {
     let mut warnings = Vec::new();
     let snv_edges = snv_assignment(tree, n_positions, p.prop_truncal_snvs, p.minimum_branch_length, rng);
-    let cna = cna_assignment(tree, n_positions, p, &snv_edges, rng, &mut warnings)?;
+    let mut cna = cna_assignment(tree, n_positions, p, &snv_edges, rng, &mut warnings)?;
+    let extra = if p.prop_pos_second_cna > 0.0 {
+        extra_truncal_cnas(&cna.overall[&tree.initial_cc], p, rng)
+    } else {
+        BTreeMap::new()
+    };
+    let (gains, losses) = cna.labels.entry(tree.initial_cc).or_default();
+    for ev in extra.values().flatten() {
+        if p.gain_events.contains(ev) {
+            *gains += 1;
+        } else {
+            *losses += 1;
+        }
+    }
     let wgd_nodes = wgd_assignment(tree, &cna.subclone_nodes, p.clonal_wgd, p.subclonal_wgd, p.n_subclonal_wgd, rng);
 
     let edge_labels = tree
@@ -180,7 +207,7 @@ pub fn tree_profiles(tree: &Tree, n_positions: usize, p: &Params, rng: &mut Rng)
         })
         .collect();
 
-    let events = concat_all_events(tree, n_positions, &cna.overall, &snv_edges, &wgd_nodes, rng);
+    let events = concat_all_events(tree, n_positions, &cna.overall, &extra, &snv_edges, &wgd_nodes, rng);
     let total = mutation_node_assignment(tree, n_positions, &events, Mode::Total);
     let dcf = mutation_node_assignment(tree, n_positions, &events, Mode::Dcf);
     Ok(Evolution {
@@ -280,11 +307,42 @@ fn wgd_assignment(tree: &Tree, subclone_nodes: &[NodeId], clonal: bool, subclona
     wgd
 }
 
+/// Upper bound on the CNAs `prop_pos_second_cna` adds after a position's first truncal CNA.
+const MAX_EXTRA_CNAS: usize = 3;
+
+/// diplosim (not in CONIPHER, which allows one CNA per position): after each truncal CNA, add
+/// another one with probability `prop_pos_second_cna`. Gain or loss follows the
+/// prop_pos_gained : prop_pos_lost ratio; the event is drawn from gain_events / loss_events
+/// among those `possible_on` the copies so far. This gives LOH followed by gains, e.g.
+/// cnloh_B then gain_A = (3, 0), which one CNA per position cannot reach.
+fn extra_truncal_cnas(truncal: &BTreeMap<Pos, Event>, p: &Params, rng: &mut Rng) -> BTreeMap<Pos, Vec<Event>> {
+    let p_gain = p.prop_pos_gained / (p.prop_pos_gained + p.prop_pos_lost);
+    let mut extra = BTreeMap::new();
+    for (&pos, &first) in truncal {
+        let mut g = first.apply(NORMAL, Mode::Total);
+        let mut added = Vec::new();
+        while added.len() < MAX_EXTRA_CNAS && rng.gen::<f64>() < p.prop_pos_second_cna {
+            let pool = if rng.gen::<f64>() < p_gain { &p.gain_events } else { &p.loss_events };
+            let possible: Vec<Event> = pool.iter().copied().filter(|e| e.possible_on(g)).collect();
+            let Some(&ev) = possible.choose(rng) else { break };
+            g = ev.apply(g, Mode::Total);
+            added.push(ev);
+        }
+        if !added.is_empty() {
+            extra.insert(pos, added);
+        }
+    }
+    extra
+}
+
 /// evolution.py:91 concat_all_events: gather each (node, position)'s events and shuffle them.
+/// `extra` CNAs of initial_cc go right after that position's first CNA, in order, so the
+/// shuffle only moves the SNV and WGD around the whole CNA run.
 fn concat_all_events(
     tree: &Tree,
     n_positions: usize,
     cnas: &CnaMap,
+    extra: &BTreeMap<Pos, Vec<Event>>,
     snv_edges: &[Vec<Pos>],
     wgd_nodes: &BTreeSet<NodeId>,
     rng: &mut Rng,
@@ -308,6 +366,13 @@ fn concat_all_events(
     for by_pos in events.values_mut() {
         for list in by_pos.values_mut() {
             list.shuffle(rng);
+        }
+    }
+    if let Some(by_pos) = events.get_mut(&tree.initial_cc) {
+        for (pos, evs) in extra {
+            let list = by_pos.get_mut(pos).expect("extra CNAs follow a truncal CNA");
+            let first = list.iter().position(|e| e.is_gain() || e.is_loss()).unwrap();
+            list.splice(first + 1..first + 1, evs.iter().copied());
         }
     }
     events

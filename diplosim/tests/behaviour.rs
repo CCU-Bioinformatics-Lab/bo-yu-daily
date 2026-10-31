@@ -139,6 +139,30 @@ fn hp_counts_add_up_to_conipher_counts() {
 }
 
 #[test]
+fn read_errors_keep_counts_consistent_and_put_reads_on_the_other_side() {
+    let mut p = Params::new(5, 3000);
+    p.prop_tagged = 1.0;
+    p.min_tumour_purity = 1.0;
+    p.max_tumour_purity = 1.0;
+    let clean = written_rows(&simulate(&p, 71).unwrap(), "clean");
+    p.mistag_rate = 0.02;
+    p.base_error = 0.02;
+    let noisy = written_rows(&simulate(&p, 71).unwrap(), "noisy");
+    let wrong_hp_alt = |r: &HashMap<String, String>| n(r, if r["ALLELE"] == "A" { "HP2_ALT" } else { "HP1_ALT" });
+    for (c, r) in clean.iter().zip(&noisy) {
+        assert_eq!(n(r, "DEPTH"), n(c, "DEPTH"), "errors move reads, they do not add or drop them");
+        assert_eq!(n(r, "HP1_REF") + n(r, "HP2_REF") + n(r, "HP0_REF"), n(r, "REF_COUNT"));
+        assert_eq!(n(r, "HP1_ALT") + n(r, "HP2_ALT") + n(r, "HP0_ALT"), n(r, "VAR_COUNT"));
+    }
+    assert!(noisy.iter().any(|r| wrong_hp_alt(r) > 0), "mistagged alt reads land on the other haplotype");
+    // A clonal LOH SNV on every copy has no ref read without errors.
+    let full = |r: &&HashMap<String, String>| r["REF_COUNT"] == "0" && n(r, "DEPTH") > 20;
+    let full_clean: Vec<usize> = clean.iter().enumerate().filter(|(_, r)| full(r)).map(|(i, _)| i).collect();
+    assert!(!full_clean.is_empty());
+    assert!(full_clean.iter().any(|&i| n(&noisy[i], "REF_COUNT") > 0), "base errors show ref reads at VAF-1 sites");
+}
+
+#[test]
 fn without_cn_events_both_haplotypes_get_equal_depth() {
     let mut p = no_cn(4, 3000);
     p.prop_tagged = 1.0;
@@ -204,6 +228,32 @@ fn mutation_loss_removes_the_snv_in_some_descendant() {
     assert_eq!(sim.evolution.prop_mutation_loss, 0.2);
     let lost = sim.rows.iter().filter(|r| r.dcf > r.ccf + 1e-9).count();
     assert!(lost > 0, "a lost SNV is still counted by DCF but not by CCF");
+}
+
+fn trunk_states(sim: &Simulation) -> BTreeSet<(i32, i32)> {
+    let trunk = &sim.evolution.total[&sim.tree.initial_cc];
+    trunk.iter().map(|g| (g.a + g.b, g.a.min(g.b))).collect()
+}
+
+#[test]
+fn one_cna_per_position_cannot_reach_loh_after_gain() {
+    let states = trunk_states(&simulate(&Params::new(5, 2000), 61).unwrap());
+    assert!(states.iter().all(|&(total, minor)| total <= 4 && !(minor == 0 && total >= 3)), "{states:?}");
+}
+
+#[test]
+fn second_cnas_give_loh_with_gains_and_never_lose_the_last_copy() {
+    let mut p = Params::new(5, 2000);
+    p.prop_pos_lost = 0.45;
+    p.prop_pos_second_cna = 0.5;
+    let sim = simulate(&p, 61).unwrap();
+    let states = trunk_states(&sim);
+    assert!(states.contains(&(3, 0)) && states.contains(&(4, 0)), "{states:?}");
+    for profile in sim.evolution.total.values() {
+        assert!(profile.iter().all(|g| g.a >= 0 && g.b >= 0 && g.mutated >= 0 && g.mutated <= g.a.max(g.b)));
+    }
+    let trunk = &sim.evolution.total[&sim.tree.initial_cc];
+    assert!(trunk.iter().all(|g| g.a + g.b >= 1), "the last copy is never lost");
 }
 
 #[test]

@@ -5,6 +5,7 @@ use std::collections::BTreeMap;
 use rand::Rng as _;
 
 use crate::evolution::{Evolution, Genotype};
+use crate::params::Params;
 use crate::sequencing::{binomial, Sample, VariantRow};
 use crate::topology::NodeId;
 use crate::Rng;
@@ -53,8 +54,8 @@ pub fn relabel(evo: &mut Evolution, alleles: &[Allele]) {
     }
 }
 
-/// Read counts per haplotag. Each `*_REF + *_ALT` summed over HP1, HP2 and HP0 gives CONIPHER's
-/// REF_COUNT and VAR_COUNT.
+/// Read counts per haplotag. Each `*_REF + *_ALT` summed over HP1, HP2 and HP0 gives REF_COUNT
+/// and VAR_COUNT (CONIPHER's, after `base_error`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct HpCounts {
     pub hp1_ref: u64,
@@ -65,15 +66,23 @@ pub struct HpCounts {
     pub hp0_alt: u64,
 }
 
+impl HpCounts {
+    pub fn alt(&self) -> u64 {
+        self.hp1_alt + self.hp2_alt + self.hp0_alt
+    }
+}
+
 /// Option ②: all alt reads go to the SNV's haplotype X. Ref reads split by the expected ref
 /// molecules on each allele over the mixture: X carries F_X - M of them, the other allele O
-/// carries F_O. Then every count loses Binomial(count, 1 - prop_tagged) reads to HP0.
+/// carries F_O. Then (DECISIONS 2026-10-31) each read shows the other allele with probability
+/// `base_error` and carries the other haplotype's tag with probability `mistag_rate`. Last,
+/// every count loses Binomial(count, 1 - prop_tagged) reads to HP0.
 pub fn split_counts(
     rows: &[VariantRow],
     total: &BTreeMap<NodeId, Vec<Genotype>>,
     sample: &Sample,
     alleles: &[Allele],
-    prop_tagged: f64,
+    p: &Params,
     rng: &mut Rng,
 ) -> Vec<HpCounts> {
     rows.iter()
@@ -97,12 +106,21 @@ pub fn split_counts(
             let p_other = if denom > 0.0 { f_o / denom } else { 0.5 };
             let ref_o = binomial(rng, ref_reads, p_other);
             let ref_x = ref_reads - ref_o;
-            let (hp1_ref, hp1_alt, hp2_ref, hp2_alt) = match x {
+            let (mut hp1_ref, mut hp1_alt, mut hp2_ref, mut hp2_alt) = match x {
                 Allele::A => (ref_x, alt, ref_o, 0),
                 Allele::B => (ref_o, 0, ref_x, alt),
             };
+            // Both moves are drawn from the counts before the move, so a read flips at most once.
+            if p.base_error > 0.0 {
+                (hp1_ref, hp1_alt) = swap_some(rng, hp1_ref, hp1_alt, p.base_error);
+                (hp2_ref, hp2_alt) = swap_some(rng, hp2_ref, hp2_alt, p.base_error);
+            }
+            if p.mistag_rate > 0.0 {
+                (hp1_ref, hp2_ref) = swap_some(rng, hp1_ref, hp2_ref, p.mistag_rate);
+                (hp1_alt, hp2_alt) = swap_some(rng, hp1_alt, hp2_alt, p.mistag_rate);
+            }
             let mut untag = |tagged: u64| {
-                let moved = binomial(rng, tagged, 1.0 - prop_tagged);
+                let moved = binomial(rng, tagged, 1.0 - p.prop_tagged);
                 (tagged - moved, moved)
             };
             let (hp1_ref, r1) = untag(hp1_ref);
@@ -112,4 +130,11 @@ pub fn split_counts(
             HpCounts { hp1_ref, hp1_alt, hp2_ref, hp2_alt, hp0_ref: r1 + r2, hp0_alt: a1 + a2 }
         })
         .collect()
+}
+
+/// Moves Binomial(x, rate) reads from x to y and Binomial(y, rate) from y to x.
+fn swap_some(rng: &mut Rng, x: u64, y: u64, rate: f64) -> (u64, u64) {
+    let to_y = binomial(rng, x, rate);
+    let to_x = binomial(rng, y, rate);
+    (x - to_y + to_x, y - to_x + to_y)
 }

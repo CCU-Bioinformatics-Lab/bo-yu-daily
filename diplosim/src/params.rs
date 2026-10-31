@@ -1,4 +1,4 @@
-//! Simulation parameters (CONIPHER `tx_simulation`, simulate.py:13-46, plus two diplosim ones).
+//! Simulation parameters (CONIPHER `tx_simulation`, simulate.py:13-46, plus five diplosim ones).
 //! Defaults are CONIPHER's; `validate` is the one boundary check every entry point passes.
 use clap::{ArgAction, Args};
 
@@ -22,6 +22,10 @@ pub struct Params {
     pub prop_gained_truncal: f64,
     #[arg(long, default_value_t = 1.0)]
     pub prop_lost_truncal: f64,
+    /// diplosim: probability that a truncal CNA position gets one more truncal CNA after it,
+    /// asked again after each added event (at most MAX_EXTRA_CNAS). 0 = CONIPHER.
+    #[arg(long, default_value_t = 0.0)]
+    pub prop_pos_second_cna: f64,
     #[arg(long, value_enum, value_delimiter = ',', default_values_t = [Event::GainA, Event::GainB, Event::GainBoth])]
     pub gain_events: Vec<Event>,
     #[arg(long, value_enum, value_delimiter = ',', default_values_t = [Event::LossB, Event::CnlohB])]
@@ -56,6 +60,12 @@ pub struct Params {
     /// diplosim: probability that a read keeps its HP tag; the rest become HP0.
     #[arg(long, default_value_t = 0.8)]
     pub prop_tagged: f64,
+    /// diplosim: probability that a read carries the other haplotype's tag (phasing error).
+    #[arg(long, default_value_t = 0.0)]
+    pub mistag_rate: f64,
+    /// diplosim: probability that a read shows the other allele at the SNV (ref <-> alt).
+    #[arg(long, default_value_t = 0.0)]
+    pub base_error: f64,
 }
 
 impl Params {
@@ -69,6 +79,7 @@ impl Params {
             prop_pos_lost: 0.3,
             prop_gained_truncal: 1.0,
             prop_lost_truncal: 1.0,
+            prop_pos_second_cna: 0.0,
             gain_events: vec![Event::GainA, Event::GainB, Event::GainBoth],
             loss_events: vec![Event::LossB, Event::CnlohB],
             prop_mutloss_positions: 0.0,
@@ -85,6 +96,8 @@ impl Params {
             n_noise_clones: 0,
             prop_snv_on_b: 0.5,
             prop_tagged: 0.8,
+            mistag_rate: 0.0,
+            base_error: 0.0,
         }
     }
 
@@ -103,9 +116,12 @@ impl Params {
             ("prop_pos_lost", self.prop_pos_lost),
             ("prop_gained_truncal", self.prop_gained_truncal),
             ("prop_lost_truncal", self.prop_lost_truncal),
+            ("prop_pos_second_cna", self.prop_pos_second_cna),
             ("prop_mutloss_positions", self.prop_mutloss_positions),
             ("prop_snv_on_b", self.prop_snv_on_b),
             ("prop_tagged", self.prop_tagged),
+            ("mistag_rate", self.mistag_rate),
+            ("base_error", self.base_error),
         ];
         for (name, p) in probs {
             if !(0.0..=1.0).contains(&p) {

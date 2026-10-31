@@ -97,7 +97,11 @@ pub fn simulate(params: &Params, seed: u64) -> Result<Simulation, String> {
     } else {
         Vec::new()
     };
-    let hp = hp::split_counts(&rows, &evolution.total, &sample, &alleles, p.prop_tagged, &mut rng);
+    let hp = hp::split_counts(&rows, &evolution.total, &sample, &alleles, p, &mut rng);
+    // base_error changes which allele a read shows; the observed alt count follows it.
+    for (row, h) in rows.iter_mut().zip(&hp) {
+        row.variant_reads = h.alt();
+    }
     let loci = output::assign_loci(n_pos, &mut rng)?;
 
     let mut warnings = evolution.warnings.clone();
