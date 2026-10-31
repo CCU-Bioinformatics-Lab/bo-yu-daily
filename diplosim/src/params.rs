@@ -1,4 +1,4 @@
-//! Simulation parameters (CONIPHER `tx_simulation`, simulate.py:13-46, plus six diplosim ones).
+//! Simulation parameters (CONIPHER `tx_simulation`, simulate.py:13-46, plus seven diplosim ones).
 //! Defaults are CONIPHER's; `validate` is the one boundary check every entry point passes.
 use clap::{ArgAction, Args};
 
@@ -46,6 +46,10 @@ pub struct Params {
     pub minimum_branch_length: usize,
     #[arg(long, default_value_t = 400.0)]
     pub coverage: f64,
+    /// diplosim: depth overdispersion phi. Each site's expected depth is scaled by a
+    /// Gamma(1/phi, phi) factor, so depth variance = mean + phi * mean^2. Unset = Poisson.
+    #[arg(long)]
+    pub depth_dispersion: Option<f64>,
     #[arg(long, default_value_t = 0.7)]
     pub min_tumour_purity: f64,
     #[arg(long, default_value_t = 0.9)]
@@ -95,6 +99,7 @@ impl Params {
             n_subclonal_wgd: 1,
             minimum_branch_length: 1,
             coverage: 400.0,
+            depth_dispersion: None,
             min_tumour_purity: 0.7,
             max_tumour_purity: 0.9,
             fract_noise: 0.0,
@@ -134,9 +139,11 @@ impl Params {
                 return Err(format!("{name} must be in [0, 1], got {p}"));
             }
         }
-        if let Some(k) = self.tag_concentration {
-            if !(k > 0.0 && k.is_finite()) {
-                return Err(format!("tag_concentration must be > 0, got {k}"));
+        for (name, k) in [("tag_concentration", self.tag_concentration), ("depth_dispersion", self.depth_dispersion)] {
+            if let Some(k) = k {
+                if !(k > 0.0 && k.is_finite()) {
+                    return Err(format!("{name} must be > 0, got {k}"));
+                }
             }
         }
         // CCF and Fract_a divide by purity (sequencing.py:71, 112), so 0 is excluded.

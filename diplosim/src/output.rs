@@ -224,6 +224,7 @@ fn info_rows(sim: &Simulation, name: &str) -> Vec<Vec<String>> {
         ("n_subclonal_wgd", p.n_subclonal_wgd.to_string()),
         ("minimum_branch_length", p.minimum_branch_length.to_string()),
         ("coverage", py_float(p.coverage)),
+        ("depth_dispersion", p.depth_dispersion.map_or("None".to_string(), py_float)),
         ("min_tumour_purity", py_float(p.min_tumour_purity)),
         ("max_tumour_purity", py_float(p.max_tumour_purity)),
         ("fract_noise", py_float(p.fract_noise)),

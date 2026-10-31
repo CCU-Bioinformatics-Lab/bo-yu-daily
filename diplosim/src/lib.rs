@@ -90,6 +90,7 @@ pub fn simulate(params: &Params, seed: u64) -> Result<Simulation, String> {
         tree.root,
         &snv_edge,
         p.coverage,
+        p.depth_dispersion,
         &mut rng,
     );
     let noise_clones = if p.fract_noise > 0.0 {

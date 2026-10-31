@@ -283,6 +283,21 @@ fn second_cnas_give_loh_with_gains_and_never_lose_the_last_copy() {
 }
 
 #[test]
+fn depth_dispersion_adds_phi_mean_squared_to_the_depth_variance() {
+    let vmr = |p: &Params| {
+        let d: Vec<f64> = simulate(p, 92).unwrap().rows.iter().map(|r| r.total_reads as f64).collect();
+        let m = d.iter().sum::<f64>() / d.len() as f64;
+        (d.iter().map(|x| (x - m).powi(2)).sum::<f64>() / d.len() as f64) / m
+    };
+    let mut p = no_cn(4, 5000);
+    p.coverage = 50.0;
+    assert!((vmr(&p) - 1.0).abs() < 0.1, "Poisson without CN");
+    p.depth_dispersion = Some(0.02);
+    let v = vmr(&p);
+    assert!((v - 2.0).abs() < 0.2, "VMR {v}, expected 1 + 0.02 * 50 = 2");
+}
+
+#[test]
 fn noise_snvs_go_to_new_clusters_off_the_tree() {
     let mut p = Params::new(4, 300);
     p.fract_noise = 0.1;

@@ -2,7 +2,7 @@
 use std::collections::BTreeMap;
 
 use rand::Rng as _;
-use rand_distr::{Binomial, Dirichlet, Distribution, Poisson};
+use rand_distr::{Binomial, Dirichlet, Distribution, Gamma, Poisson};
 
 use crate::evolution::{Genotype, Pos};
 use crate::topology::{NodeId, Tree};
@@ -138,16 +138,23 @@ pub fn make_sequencing_data(
     root: NodeId,
     snv_edge: &[(NodeId, NodeId)],
     coverage: f64,
+    depth_dispersion: Option<f64>,
     rng: &mut Rng,
 ) -> Vec<VariantRow> {
     let exp: Vec<Expected> =
         (0..snv_edge.len()).map(|pos| expected(pos, total, dcf_profiles, sample, root)).collect();
-    // get_total_reads (sequencing.py:95): depth ~ Poisson(coverage * cn / mean cn).
+    // get_total_reads (sequencing.py:95): depth ~ Poisson(coverage * cn / mean cn). diplosim
+    // (DECISIONS 2026-10-31): with depth_dispersion phi the Poisson mean is first scaled by a
+    // per-site Gamma(1/phi, phi) factor (mean 1, variance phi), so depth ~ negative binomial.
     let fbar = exp.iter().map(|e| e.fract_copy_num).sum::<f64>() / exp.len() as f64;
     exp.into_iter()
         .enumerate()
         .map(|(pos, e)| {
-            let total_reads = poisson(rng, e.fract_copy_num * (coverage / fbar));
+            let mut lambda = e.fract_copy_num * (coverage / fbar);
+            if let Some(phi) = depth_dispersion {
+                lambda *= Gamma::new(1.0 / phi, phi).unwrap().sample(rng);
+            }
+            let total_reads = poisson(rng, lambda);
             let variant_reads = binomial(rng, total_reads, e.vaf);
             VariantRow {
                 pos,
