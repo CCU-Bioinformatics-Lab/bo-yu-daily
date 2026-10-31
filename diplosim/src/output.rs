@@ -230,6 +230,7 @@ fn info_rows(sim: &Simulation, name: &str) -> Vec<Vec<String>> {
         ("n_noise_clones", p.n_noise_clones.to_string()),
         ("prop_snv_on_b", py_float(p.prop_snv_on_b)),
         ("prop_tagged", py_float(p.prop_tagged)),
+        ("tag_concentration", p.tag_concentration.map_or("None".to_string(), py_float)),
         ("mistag_rate", py_float(p.mistag_rate)),
         ("base_error", py_float(p.base_error)),
         ("random_seed", sim.seed.to_string()),

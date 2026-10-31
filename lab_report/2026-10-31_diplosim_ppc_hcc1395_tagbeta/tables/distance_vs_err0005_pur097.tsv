@@ -1,0 +1,18 @@
+statistic	before_z	before_rel	tagbeta_z	tagbeta_rel
+depth_VMR	-2.1	+0.024	-2.3	+0.024
+VAF_q10	1.3	-0.310	1.2	-0.310
+VAF_q50	1.2	-0.136	1.2	-0.141
+VAF_q90	2.1	-0.014	2.0	-0.015
+VAF_frac_gt_0.6	0.4	-0.065	0.4	-0.066
+HP0_frac_pooled	-173.7	+0.444	0.4	-0.004
+tag_frac_SD_sites	338.1	-0.766	4.7	-0.034
+tag_frac_lt_0.5_sites	999.3	-0.999	-3.3	+0.062
+split_alt_frac	0.1	-0.044	0.3	-0.085
+inHP_VAF_q50	1.1	-0.246	1.0	-0.228
+minorHP_depth_q50	-3.0	+0.847	-4.0	+0.922
+minorHP_depth_lt_0.1	2.2	-0.076	2.4	-0.088
+alt_on_minorHP	-4.0	+0.173	-3.4	+0.166
+median|z| CN6	1.7		1.7	
+mean|rel| CN6		0.131		0.132
+median|z| all13	2.1		2.0	
+mean|rel| all13		0.319		0.165

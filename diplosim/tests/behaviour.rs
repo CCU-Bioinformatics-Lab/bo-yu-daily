@@ -114,6 +114,30 @@ fn prop_tagged_one_leaves_no_untagged_reads() {
 }
 
 #[test]
+fn tag_concentration_spreads_the_tag_fraction_across_sites_around_prop_tagged() {
+    let tag_fracs = |p: &Params, tag: &str| -> Vec<f64> {
+        written_rows(&simulate(p, 13).unwrap(), tag)
+            .iter()
+            .filter(|r| n(r, "DEPTH") >= 100)
+            .map(|r| 1.0 - (n(r, "HP0_REF") + n(r, "HP0_ALT")) as f64 / n(r, "DEPTH") as f64)
+            .collect()
+    };
+    let sd = |x: &[f64]| {
+        let m = x.iter().sum::<f64>() / x.len() as f64;
+        ((x.iter().map(|v| (v - m).powi(2)).sum::<f64>() / x.len() as f64).sqrt(), m)
+    };
+    let mut p = Params::new(4, 2000);
+    p.prop_tagged = 0.86;
+    let (sd_fixed, _) = sd(&tag_fracs(&p, "fixed"));
+    p.tag_concentration = Some(1.0);
+    let (sd_beta, mean_beta) = sd(&tag_fracs(&p, "beta"));
+    assert!(sd_fixed < 0.06 && sd_beta > 0.2, "SD fixed {sd_fixed}, Beta {sd_beta}");
+    assert!((mean_beta - 0.86).abs() < 0.03, "mean tag fraction {mean_beta}");
+    p.tag_concentration = Some(0.0);
+    assert!(p.validate().is_err());
+}
+
+#[test]
 fn hp_counts_add_up_to_conipher_counts() {
     let mut cases = vec![Params::new(5, 400), no_cn(3, 300)];
     let mut wgd = Params::new(6, 400);

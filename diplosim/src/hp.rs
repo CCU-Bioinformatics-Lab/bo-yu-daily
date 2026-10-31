@@ -3,6 +3,7 @@
 use std::collections::BTreeMap;
 
 use rand::Rng as _;
+use rand_distr::{Beta, Distribution};
 
 use crate::evolution::{Evolution, Genotype};
 use crate::params::Params;
@@ -76,7 +77,8 @@ impl HpCounts {
 /// molecules on each allele over the mixture: X carries F_X - M of them, the other allele O
 /// carries F_O. Then (DECISIONS 2026-10-31) each read shows the other allele with probability
 /// `base_error` and carries the other haplotype's tag with probability `mistag_rate`. Last,
-/// every count loses Binomial(count, 1 - prop_tagged) reads to HP0.
+/// every count loses Binomial(count, 1 - t) reads to HP0, where t is `prop_tagged`, or with
+/// `tag_concentration` k a per-site draw from Beta(k * prop_tagged, k * (1 - prop_tagged)).
 pub fn split_counts(
     rows: &[VariantRow],
     total: &BTreeMap<NodeId, Vec<Genotype>>,
@@ -119,8 +121,14 @@ pub fn split_counts(
                 (hp1_ref, hp2_ref) = swap_some(rng, hp1_ref, hp2_ref, p.mistag_rate);
                 (hp1_alt, hp2_alt) = swap_some(rng, hp1_alt, hp2_alt, p.mistag_rate);
             }
+            let tag_rate = match p.tag_concentration {
+                Some(k) if p.prop_tagged > 0.0 && p.prop_tagged < 1.0 => {
+                    Beta::new(k * p.prop_tagged, k * (1.0 - p.prop_tagged)).unwrap().sample(rng)
+                }
+                _ => p.prop_tagged,
+            };
             let mut untag = |tagged: u64| {
-                let moved = binomial(rng, tagged, 1.0 - p.prop_tagged);
+                let moved = binomial(rng, tagged, 1.0 - tag_rate);
                 (tagged - moved, moved)
             };
             let (hp1_ref, r1) = untag(hp1_ref);

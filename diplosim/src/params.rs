@@ -1,4 +1,4 @@
-//! Simulation parameters (CONIPHER `tx_simulation`, simulate.py:13-46, plus five diplosim ones).
+//! Simulation parameters (CONIPHER `tx_simulation`, simulate.py:13-46, plus six diplosim ones).
 //! Defaults are CONIPHER's; `validate` is the one boundary check every entry point passes.
 use clap::{ArgAction, Args};
 
@@ -60,6 +60,11 @@ pub struct Params {
     /// diplosim: probability that a read keeps its HP tag; the rest become HP0.
     #[arg(long, default_value_t = 0.8)]
     pub prop_tagged: f64,
+    /// diplosim: each site draws its own tag probability from Beta(k * prop_tagged,
+    /// k * (1 - prop_tagged)) with k = this value; smaller k spreads sites more. Unset = every
+    /// site uses prop_tagged.
+    #[arg(long)]
+    pub tag_concentration: Option<f64>,
     /// diplosim: probability that a read carries the other haplotype's tag (phasing error).
     #[arg(long, default_value_t = 0.0)]
     pub mistag_rate: f64,
@@ -96,6 +101,7 @@ impl Params {
             n_noise_clones: 0,
             prop_snv_on_b: 0.5,
             prop_tagged: 0.8,
+            tag_concentration: None,
             mistag_rate: 0.0,
             base_error: 0.0,
         }
@@ -126,6 +132,11 @@ impl Params {
         for (name, p) in probs {
             if !(0.0..=1.0).contains(&p) {
                 return Err(format!("{name} must be in [0, 1], got {p}"));
+            }
+        }
+        if let Some(k) = self.tag_concentration {
+            if !(k > 0.0 && k.is_finite()) {
+                return Err(format!("tag_concentration must be > 0, got {k}"));
             }
         }
         // CCF and Fract_a divide by purity (sequencing.py:71, 112), so 0 is excluded.
