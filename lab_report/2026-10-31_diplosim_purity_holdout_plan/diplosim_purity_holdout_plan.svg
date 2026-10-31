@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1010" viewBox="0 0 1500 1010">
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5B6864"/></marker></defs>
+<rect x="0" y="0" width="1500" height="1010" rx="0" fill="#F2F4F3" stroke="none" stroke-width="1.5"/>
+<text x="40" y="50" font-size="22" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">diplosim purity holdout：同一台機器、鎖住旋鈕，只轉 purity，能不能吐出各 purity 的 HCC1395 bulk 資料？</text>
+<text x="40" y="80" font-size="14" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">旋鈕值都是在 t50_n00 上校正的（commit 8bf1f4d）。其餘 4 個 subsample 從沒用來調參數，所以是 holdout。</text>
+<rect x="40" y="110" width="610" height="650" rx="22" fill="#2C3E3A" stroke="none" stroke-width="1.5"/>
+<text x="64" y="152" font-size="22" fill="white" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">diplosim 機器</text>
+<text x="64" y="176" font-size="12.5" fill="#C9D3D0" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">CONIPHER 骨架：樹 → SNV／CNA 事件 → clone 比例 → read 計數 → HP 拆分</text>
+<rect x="58" y="200" width="574" height="186" rx="12" fill="#3D524D" stroke="none" stroke-width="1.5"/>
+<text x="72" y="224" font-size="14" fill="#E4E8E6" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">CN 事件（鎖住）</text>
+<circle cx="130" cy="262" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="130" y1="262" x2="139.0" y2="246.4" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="144" y="240" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M146 240 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="166" y="258" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">prop_pos_lost</text>
+<text x="166" y="278" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">0.45</text>
+<circle cx="320" cy="262" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="320" y1="262" x2="336.6" y2="255.0" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="334" y="240" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M336 240 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="356" y="258" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">loss_events</text>
+<text x="356" y="278" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">cnloh_B</text>
+<circle cx="510" cy="262" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="510" y1="262" x2="527.5" y2="266.4" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="524" y="240" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M526 240 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="546" y="258" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">second CNA</text>
+<text x="546" y="278" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">0.5</text>
+<circle cx="130" cy="340" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="130" y1="340" x2="141.3" y2="354.0" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="144" y="318" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M146 318 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="166" y="336" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">gain_B 比重</text>
+<text x="166" y="356" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">×2</text>
+<circle cx="320" cy="340" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="320" y1="340" x2="320.6" y2="358.0" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="334" y="318" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M336 318 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="356" y="336" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">truncal SNV</text>
+<text x="356" y="356" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">0.8</text>
+<rect x="58" y="398" width="574" height="108" rx="12" fill="#3D524D" stroke="none" stroke-width="1.5"/>
+<text x="72" y="422" font-size="14" fill="#E4E8E6" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">定序雜訊（鎖住）</text>
+<circle cx="130" cy="460" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="130" y1="460" x2="139.0" y2="444.4" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="144" y="438" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M146 438 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="166" y="456" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">depth φ</text>
+<text x="166" y="476" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">0.03</text>
+<circle cx="320" cy="460" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="320" y1="460" x2="336.6" y2="453.0" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="334" y="438" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M336 438 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="356" y="456" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">base_error</text>
+<text x="356" y="476" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">0.01</text>
+<circle cx="510" cy="460" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="510" y1="460" x2="527.5" y2="464.4" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="524" y="438" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M526 438 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="546" y="456" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">mistag</text>
+<text x="546" y="476" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">0.005</text>
+<rect x="58" y="518" width="574" height="108" rx="12" fill="#3D524D" stroke="none" stroke-width="1.5"/>
+<text x="72" y="542" font-size="14" fill="#E4E8E6" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">HP tag（鎖住）</text>
+<circle cx="130" cy="580" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="130" y1="580" x2="139.0" y2="564.4" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="144" y="558" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M146 558 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="166" y="576" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">prop_tagged</text>
+<text x="166" y="596" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">0.862</text>
+<circle cx="320" cy="580" r="24" fill="#E4E8E6" stroke="#8A9692" stroke-width="3"/>
+<line x1="320" y1="580" x2="336.6" y2="573.0" stroke="#8A9692" stroke-width="4" stroke-linecap="round"/>
+<rect x="334" y="558" width="12" height="9" rx="2" fill="#8A9692"/>
+<path d="M336 558 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#8A9692" stroke-width="2"/>
+<text x="356" y="576" font-size="13" fill="white" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">tag κ</text>
+<text x="356" y="596" font-size="15" fill="#F7E3D8" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">1</text>
+<rect x="58" y="638" width="574" height="104" rx="12" fill="#F7E3D8" stroke="#C2541F" stroke-width="2.5"/>
+<text x="72" y="662" font-size="14" fill="#C2541F" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">樣本旋鈕（每個 subsample 只轉這裡）</text>
+<circle cx="130" cy="708" r="28" fill="white" stroke="#C2541F" stroke-width="3"/>
+<line x1="130" y1="708" x2="149.7" y2="715.2" stroke="#C2541F" stroke-width="4" stroke-linecap="round"/>
+<text x="168" y="702" font-size="15" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity</text>
+<text x="168" y="724" font-size="14" fill="#C2541F" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">0.97 → 0.14</text>
+<circle cx="370" cy="708" r="28" fill="white" stroke="#C2541F" stroke-width="3"/>
+<line x1="370" y1="708" x2="386.1" y2="694.5" stroke="#C2541F" stroke-width="4" stroke-linecap="round"/>
+<text x="408" y="702" font-size="15" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">coverage、SNV 數</text>
+<text x="408" y="724" font-size="13" fill="#C2541F" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">照各 subsample 實際值</text>
+<circle cx="620" cy="140" r="15" fill="#17201D"/>
+<text x="620" y="145" font-size="15" fill="white" font-weight="bold" text-anchor="middle" font-family="Noto Sans CJK TC">1</text>
+<line x1="650" y1="410" x2="760" y2="410" stroke="#2C7A4C" stroke-width="4" marker-end="url(#ah)"/>
+<text x="668" y="398" font-size="13" fill="#2C7A4C" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">吐出</text>
+<text x="770" y="128" font-size="15" fill="#2C7A4C" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">模擬 bulk 資料（每個 purity 200 次）</text>
+<rect x="778" y="148" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="774" y="144" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="770" y="140" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<text x="784" y="168" font-size="14" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity 0.97</text>
+<text x="784" y="190" font-size="11.5" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">depth、alt、HP1／HP2／HP0</text>
+<rect x="778" y="230" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="774" y="226" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="770" y="222" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<text x="784" y="250" font-size="14" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity ≈ 0.70</text>
+<text x="784" y="272" font-size="11.5" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">depth、alt、HP1／HP2／HP0</text>
+<rect x="778" y="312" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="774" y="308" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="770" y="304" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<text x="784" y="332" font-size="14" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity ≈ 0.48</text>
+<text x="784" y="354" font-size="11.5" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">depth、alt、HP1／HP2／HP0</text>
+<rect x="778" y="394" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="774" y="390" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="770" y="386" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<text x="784" y="414" font-size="14" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity ≈ 0.29</text>
+<text x="784" y="436" font-size="11.5" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">depth、alt、HP1／HP2／HP0</text>
+<rect x="778" y="476" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="774" y="472" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<rect x="770" y="468" width="190" height="62" rx="6" fill="white" stroke="#2C7A4C" stroke-width="1.2"/>
+<text x="784" y="496" font-size="14" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity ≈ 0.14</text>
+<text x="784" y="518" font-size="11.5" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">depth、alt、HP1／HP2／HP0</text>
+<circle cx="748" cy="123" r="15" fill="#17201D"/>
+<text x="748" y="128" font-size="15" fill="white" font-weight="bold" text-anchor="middle" font-family="Noto Sans CJK TC">3</text>
+<text x="1110" y="128" font-size="15" fill="#2D5EA6" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">真實 HCC1395 ONT subsample</text>
+<rect x="1110" y="140" width="350" height="66" rx="8" fill="white" stroke="#2D5EA6" stroke-width="1.5"/>
+<text x="1122" y="164" font-size="15" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">t50_n00</text>
+<rect x="1122" y="174" width="150.0" height="14" rx="3" fill="#BF522E" stroke="none" stroke-width="1.5"/>
+<rect x="1272.0" y="174" width="0.0" height="14" rx="3" fill="#A3ADA9" stroke="none" stroke-width="1.5"/>
+<text x="1285" y="164" font-size="13" fill="#2D5EA6" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity 0.97</text>
+<text x="1285" y="186" font-size="12" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">ClairS 31,595 SNV</text>
+<text x="1400" y="186" font-size="11" fill="#C2541F" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">已用來校正</text>
+<rect x="1110" y="222" width="350" height="66" rx="8" fill="white" stroke="#2D5EA6" stroke-width="1.5"/>
+<text x="1122" y="246" font-size="15" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">t40_n10</text>
+<rect x="1122" y="256" width="120.0" height="14" rx="3" fill="#BF522E" stroke="none" stroke-width="1.5"/>
+<rect x="1242.0" y="256" width="30.0" height="14" rx="3" fill="#A3ADA9" stroke="none" stroke-width="1.5"/>
+<text x="1285" y="246" font-size="13" fill="#2D5EA6" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity ≈ 0.70</text>
+<text x="1285" y="268" font-size="12" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">ClairS 29,508 SNV</text>
+<rect x="1110" y="304" width="350" height="66" rx="8" fill="white" stroke="#2D5EA6" stroke-width="1.5"/>
+<text x="1122" y="328" font-size="15" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">t30_n20</text>
+<rect x="1122" y="338" width="90.0" height="14" rx="3" fill="#BF522E" stroke="none" stroke-width="1.5"/>
+<rect x="1212.0" y="338" width="60.0" height="14" rx="3" fill="#A3ADA9" stroke="none" stroke-width="1.5"/>
+<text x="1285" y="328" font-size="13" fill="#2D5EA6" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity ≈ 0.48</text>
+<text x="1285" y="350" font-size="12" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">ClairS 26,058 SNV</text>
+<rect x="1110" y="386" width="350" height="66" rx="8" fill="white" stroke="#2D5EA6" stroke-width="1.5"/>
+<text x="1122" y="410" font-size="15" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">t20_n30</text>
+<rect x="1122" y="420" width="60.0" height="14" rx="3" fill="#BF522E" stroke="none" stroke-width="1.5"/>
+<rect x="1182.0" y="420" width="90.0" height="14" rx="3" fill="#A3ADA9" stroke="none" stroke-width="1.5"/>
+<text x="1285" y="410" font-size="13" fill="#2D5EA6" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity ≈ 0.29</text>
+<text x="1285" y="432" font-size="12" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">ClairS 19,277 SNV</text>
+<rect x="1110" y="468" width="350" height="66" rx="8" fill="white" stroke="#2D5EA6" stroke-width="1.5"/>
+<text x="1122" y="492" font-size="15" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">t10_n40</text>
+<rect x="1122" y="502" width="30.0" height="14" rx="3" fill="#BF522E" stroke="none" stroke-width="1.5"/>
+<rect x="1152.0" y="502" width="120.0" height="14" rx="3" fill="#A3ADA9" stroke="none" stroke-width="1.5"/>
+<text x="1285" y="492" font-size="13" fill="#2D5EA6" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">purity ≈ 0.14</text>
+<text x="1285" y="514" font-size="12" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">ClairS 7,452 SNV</text>
+<text x="1110" y="556" font-size="11.5" fill="#5B6864" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">條形：紅＝tumor reads，灰＝normal reads（各 0–50×）</text>
+<circle cx="1088" cy="123" r="15" fill="#17201D"/>
+<text x="1088" y="128" font-size="15" fill="white" font-weight="bold" text-anchor="middle" font-family="Noto Sans CJK TC">2</text>
+<rect x="770" y="590" width="690" height="150" rx="14" fill="white" stroke="#17201D" stroke-width="2"/>
+<text x="790" y="620" font-size="16" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">比較：每個 purity 各自做 PPC</text>
+<text x="790" y="646" font-size="13" fill="#17201D" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">・13 項統計量的相對差距（同一個 stats() 函式）</text>
+<text x="790" y="668" font-size="13" fill="#17201D" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">・holdout 分布：VAF、depth、alt 的 KS 距離；LOH 區 minor HP 的形狀</text>
+<text x="790" y="690" font-size="13" fill="#17201D" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">・趨勢：哪一項隨 purity 下降而系統性變差</text>
+<text x="790" y="716" font-size="13" fill="#2C7A4C" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">通過：每個 purity 平均 |rel| ≲ 0.1，且沒有統計量隨 purity 一路變差</text>
+<line x1="970" y1="540" x2="970" y2="586" stroke="#2C7A4C" stroke-width="3" marker-end="url(#ah)"/>
+<line x1="1285" y1="566" x2="1285" y2="586" stroke="#2D5EA6" stroke-width="3" marker-end="url(#ah)"/>
+<circle cx="1440" cy="612" r="15" fill="#17201D"/>
+<text x="1440" y="617" font-size="15" fill="white" font-weight="bold" text-anchor="middle" font-family="Noto Sans CJK TC">4</text>
+<rect x="40" y="790" width="1420" height="190" rx="14" fill="white" stroke="#CDD5D2" stroke-width="1.5"/>
+<text x="60" y="822" font-size="16" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">判讀：差距隨 purity 怎麼變，指向哪個零件要改</text>
+<circle cx="1440" cy="812" r="15" fill="#17201D"/>
+<text x="1440" y="817" font-size="15" fill="white" font-weight="bold" text-anchor="middle" font-family="Noto Sans CJK TC">5</text>
+<circle cx="68" cy="849" r="6" fill="#2C7A4C"/>
+<text x="84" y="854" font-size="14" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">各 purity 都接近</text>
+<text x="470" y="854" font-size="14" fill="#17201D" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">→ 機制可以推廣到不同 purity；旋鈕值仍只代表 HCC1395</text>
+<circle cx="68" cy="881" r="6" fill="#C2541F"/>
+<text x="84" y="886" font-size="14" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">低 purity 時 VAF 低端、SNV 數不對</text>
+<text x="470" y="886" font-size="14" fill="#17201D" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">→ 模擬的 caller 門檻太簡化（ClairS 對低 VAF 的漏抓沒模擬）</text>
+<circle cx="68" cy="913" r="6" fill="#C2541F"/>
+<text x="84" y="918" font-size="14" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">低 purity 時 HP、minor HP 不對</text>
+<text x="470" y="918" font-size="14" fill="#17201D" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">→ normal 細胞的 read 在 HP 拆分中的處理有問題</text>
+<circle cx="68" cy="945" r="6" fill="#C2541F"/>
+<text x="84" y="950" font-size="14" fill="#17201D" font-weight="bold" text-anchor="start" font-family="Noto Sans CJK TC">所有 purity 都偏同一方向</text>
+<text x="470" y="950" font-size="14" fill="#17201D" font-weight="normal" text-anchor="start" font-family="Noto Sans CJK TC">→ t50_n00 上的校正值本身有偏差，或少了某個機制</text>
+</svg>

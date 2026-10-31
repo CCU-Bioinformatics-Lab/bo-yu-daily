@@ -8,7 +8,7 @@ every other parameter at its default. Both sides go through the same caller-like
 (alt >= 3, VAF >= 0.08, the ClairS call minimum on this sample) and the same statistics.
 
 Usage:
-  python3 -I tools/diplosim_ppc_hcc1395.py real    OUT_DIR SITES_TSV   # pileup -> OUT/tables/real_per_snv.tsv
+  python3 -I tools/diplosim_ppc_hcc1395.py real    OUT_DIR SITES_TSV [CRAM]   # pileup -> OUT/tables/real_per_snv.tsv
   python3 -I tools/diplosim_ppc_hcc1395.py sim     OUT_DIR [N_SEEDS] [DIPLOSIM_ARGS...]   # diplosim runs -> OUT/sim/
   python3 -I tools/diplosim_ppc_hcc1395.py compare OUT_DIR             # stats + figure
 """
@@ -37,9 +37,9 @@ N_CLONES = (2, 8)             # drawn per seed; HCC1395 has no known tree
 COLS = ["ref1", "alt1", "ref2", "alt2", "ref0", "alt0"]
 
 
-def run_real(out, sites_tsv):
+def run_real(out, sites_tsv, cram=CRAM):
     import hcc1395_hp_split as hs
-    hs.CRAM = CRAM
+    hs.CRAM = cram
     alt_of = {}
     with open(sites_tsv) as f:
         for line in f:
@@ -66,10 +66,12 @@ def run_real(out, sites_tsv):
 def run_one(args):
     seed, n_snv, outdir, extra = args
     n_clones = random.Random(seed).randint(*N_CLONES)
-    # extra args may set their own purity; diplosim rejects a flag given twice
+    # extra args may set their own purity, coverage or SNV count; diplosim rejects a flag given twice
     purity = [] if "--min-tumour-purity" in extra else ["--min-tumour-purity", str(PURITY), "--max-tumour-purity", str(PURITY)]
-    subprocess.run([DIPLOSIM, "--n-clones", str(n_clones), "--n-snv", str(n_snv), "--seed", str(seed),
-                    "--coverage", str(COVERAGE), *purity, "--out", outdir, *extra],
+    coverage = [] if "--coverage" in extra else ["--coverage", str(COVERAGE)]
+    n = [] if "--n-snv" in extra else ["--n-snv", str(n_snv)]
+    subprocess.run([DIPLOSIM, "--n-clones", str(n_clones), *n, "--seed", str(seed),
+                    *coverage, *purity, "--out", outdir, *extra],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     # CONIPHER aborts on a duplicate CHR/POS label (~16% of seeds at 31,595 SNVs); skip those seeds
     ok = (Path(outdir) / "diplosim.tsv").exists()
@@ -179,7 +181,7 @@ if __name__ == "__main__":
     mode, out = sys.argv[1], Path(sys.argv[2])
     (out / "tables").mkdir(parents=True, exist_ok=True)
     if mode == "real":
-        run_real(out, sys.argv[3])
+        run_real(out, sys.argv[3], *sys.argv[4:5])
     elif mode == "sim":
         run_sim(out, int(sys.argv[3]) if len(sys.argv) > 3 else 200, sys.argv[4:])
     else:
