@@ -336,8 +336,9 @@ fn extra_truncal_cnas(truncal: &BTreeMap<Pos, Event>, p: &Params, rng: &mut Rng)
 }
 
 /// evolution.py:91 concat_all_events: gather each (node, position)'s events and shuffle them.
-/// `extra` CNAs of initial_cc go right after that position's first CNA, in order, so the
-/// shuffle only moves the SNV and WGD around the whole CNA run.
+/// `extra` CNAs of initial_cc go right after that position's first CNA, in order. The SNV
+/// then takes a uniform slot in that CNA run (before, between or after the CNAs), so it can be
+/// copied by a later gain; WGD stays where the shuffle put it.
 fn concat_all_events(
     tree: &Tree,
     n_positions: usize,
@@ -371,8 +372,12 @@ fn concat_all_events(
     if let Some(by_pos) = events.get_mut(&tree.initial_cc) {
         for (pos, evs) in extra {
             let list = by_pos.get_mut(pos).expect("extra CNAs follow a truncal CNA");
+            let snv = list.iter().position(|&e| e == Event::Snv).map(|i| list.remove(i));
             let first = list.iter().position(|e| e.is_gain() || e.is_loss()).unwrap();
             list.splice(first + 1..first + 1, evs.iter().copied());
+            if let Some(snv) = snv {
+                list.insert(first + rng.gen_range(0..=evs.len() + 1), snv);
+            }
         }
     }
     events

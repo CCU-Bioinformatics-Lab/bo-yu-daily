@@ -278,6 +278,8 @@ fn second_cnas_give_loh_with_gains_and_never_lose_the_last_copy() {
     }
     let trunk = &sim.evolution.total[&sim.tree.initial_cc];
     assert!(trunk.iter().all(|g| g.a + g.b >= 1), "the last copy is never lost");
+    // (3, 0) with 2 mutated copies needs the SNV between cnloh and the gain that follows it.
+    assert!(trunk.iter().any(|g| g.a.max(g.b) == 3 && g.a.min(g.b) == 0 && g.mutated == 2));
 }
 
 #[test]
