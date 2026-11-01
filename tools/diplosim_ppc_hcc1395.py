@@ -14,9 +14,16 @@ Usage:
 
 DIPLOSIM_PPC_RANGES=RANGES_TSV makes each seed draw the listed knobs from ranges (flag, lo, hi, lin|log)
 instead of the fixed values in DIPLOSIM_ARGS; the drawn values go to OUT/tables/sim_knobs.tsv.
+
+A range row named normal_tumour_fraction (no leading --) is not passed to diplosim. With it, each seed
+also gets a matched normal sample: same tree and clones at purity c, NORMAL_COVERAGE depth. The sim side
+then drops SNVs the way ClairS v0.4.1 does before the caller-like filter: normal AF >= 0.05 and tumour
+AF < 6 x normal AF, when normal depth > 4 (src/extract_pair_candidates.py:439-450, shared/param.py:38,120).
+The real side already went through ClairS, so the rule is not applied there.
 """
 import csv
 import json
+import math
 import os
 import random
 import statistics
@@ -42,6 +49,9 @@ PURITY = 1.0                  # t50_n00 is pure tumour by definition
 N_CLONES = (2, 8)             # drawn per seed; HCC1395 has no known tree
 
 RANGES = os.environ.get("DIPLOSIM_PPC_RANGES")
+NORMAL_KNOB = "normal_tumour_fraction"
+NORMAL_COVERAGE = 25.1            # mean depth of t00_n25 at the t50 SNV sites (= ClairS's normal_25x)
+CLAIRS_NORMAL_MAX_AF, CLAIRS_UPPER_BETA, CLAIRS_MIN_COVERAGE = 0.05, 6, 4
 
 
 def load_ranges(path):
@@ -104,7 +114,8 @@ def run_one(args):
     seed, n_snv, outdir, extra = args
     n_clones = random.Random(seed).randint(*N_CLONES)
     knobs = draw_knobs(seed, load_ranges(RANGES)) if RANGES else {}
-    extra = strip_flags(extra, knobs) + [x for f, v in knobs.items() for x in (f, f"{v:.6g}")]
+    flags = {f: v for f, v in knobs.items() if f.startswith("--")}
+    extra = strip_flags(extra, flags) + [x for f, v in flags.items() for x in (f, f"{v:.6g}")]
     # extra args may set their own purity, coverage or SNV count; diplosim rejects a flag given twice
     purity = [] if "--min-tumour-purity" in extra else ["--min-tumour-purity", str(PURITY), "--max-tumour-purity", str(PURITY)]
     coverage = [] if "--coverage" in extra else ["--coverage", str(COVERAGE)]
@@ -118,7 +129,74 @@ def run_one(args):
         subprocess.run(["rm", "-rf", outdir])
     elif knobs:
         (Path(outdir) / "knobs.json").write_text(json.dumps({"n_clones": n_clones, **knobs}))
+        if NORMAL_KNOB in knobs:
+            write_normal(Path(outdir), seed, knobs[NORMAL_KNOB], extra)
     return ok
+
+
+def flag_value(extra, flag, default):
+    return float(extra[extra.index(flag) + 1]) if flag in extra else default
+
+
+def normal_vaf(run_dir, c):
+    """Expected VAF per VAR_POS in a sample of the same clones at purity c (diplosim/src/sequencing.rs:83
+    expected(): mutated copies over all copies, tumour clone proportions rescaled to sum to c).
+    Returns {VAR_POS: (vaf, mean copy number)}."""
+    prop, normal = {}, None
+    with open(run_dir / "diplosim_cloneprops.tsv") as f:
+        for r in csv.DictReader(f, delimiter="\t"):
+            prop[r["Clone"]] = float(r["Proportion"])
+            if r["Is_Normal"] == "Yes":
+                normal = r["Clone"]
+    purity = 1 - prop[normal]
+    w = {k: (1 - c if k == normal else v * c / purity) for k, v in prop.items()}
+    num, den = {}, {}
+    with open(run_dir / "truth" / "genotypes.tsv") as f:
+        for r in csv.DictReader(f, delimiter="\t"):
+            k, cl = r["VAR_POS"], r["CLONE"]
+            den[k] = den.get(k, 0.0) + (int(r["A"]) + int(r["B"])) * w[cl]
+            if cl != normal:
+                num[k] = num.get(k, 0.0) + int(r["MUT"]) * w[cl]
+    return {k: (num.get(k, 0.0) / den[k], den[k]) for k in den}
+
+
+def write_normal(run_dir, seed, c, extra):
+    """Matched normal counts: depth ~ Poisson(cov * cn / mean cn * Gamma(1/phi, phi)), alt ~ Binomial with
+    the seed's base error applied both ways (as diplosim/src/hp.rs swap_some)."""
+    rng = random.Random(f"normal{seed}")
+    phi = flag_value(extra, "--depth-dispersion", 0.0)
+    err = flag_value(extra, "--base-error", 0.0)
+    exp = normal_vaf(run_dir, c)
+    fbar = statistics.fmean(cn for _, cn in exp.values())
+    with open(run_dir / "normal.tsv", "w") as f:
+        f.write("VAR_POS\tNORMAL_REF\tNORMAL_ALT\n")
+        for k, (vaf, cn) in exp.items():
+            lam = cn * NORMAL_COVERAGE / fbar
+            if phi > 0:
+                lam *= rng.gammavariate(1 / phi, phi)
+            depth = poisson(rng, lam)
+            pa = vaf * (1 - err) + (1 - vaf) * err
+            alt = sum(rng.random() < pa for _ in range(depth))
+            f.write(f"{k}\t{depth - alt}\t{alt}\n")
+
+
+def poisson(rng, lam):
+    """Poisson draw by inversion (lam is about 25 here; stdlib random has no Poisson in Python 3.10)."""
+    u, k, p = rng.random(), 0, math.exp(-lam)
+    s = p
+    while u > s:
+        k += 1
+        p *= lam / k
+        s += p
+    return k
+
+
+def clairs_normal_drop(tumour_alt, tumour_depth, normal_alt, normal_depth):
+    """True when ClairS v0.4.1 removes the candidate because of alt reads in the normal."""
+    if normal_depth <= CLAIRS_MIN_COVERAGE or normal_alt == 0 or tumour_alt == 0:
+        return False
+    naf = normal_alt / normal_depth
+    return naf >= CLAIRS_NORMAL_MAX_AF and tumour_alt / tumour_depth < naf * CLAIRS_UPPER_BETA
 
 
 def run_sim(out, n_seeds, extra=()):
@@ -144,8 +222,21 @@ def load_real(out):
 
 def load_sim(run_dir):
     with open(run_dir / "diplosim.tsv") as f:
-        return [tuple(int(r[k]) for k in ("HP1_REF", "HP1_ALT", "HP2_REF", "HP2_ALT", "HP0_REF", "HP0_ALT"))
+        rows = [(r["VAR_POS"], tuple(int(r[k]) for k in ("HP1_REF", "HP1_ALT", "HP2_REF", "HP2_ALT", "HP0_REF", "HP0_ALT")))
                 for r in csv.DictReader(f, delimiter="\t")]
+    if not (run_dir / "normal.tsv").exists():
+        return [x for _, x in rows]
+    with open(run_dir / "normal.tsv") as f:
+        nm = {r["VAR_POS"]: (int(r["NORMAL_REF"]), int(r["NORMAL_ALT"])) for r in csv.DictReader(f, delimiter="\t")}
+    # a dropped SNV keeps its row with alt set to 0, so it fails the caller filter and frac_called keeps
+    # the same denominator
+    out = []
+    for k, x in rows:
+        nref, nalt = nm[k]
+        if clairs_normal_drop(x[1] + x[3] + x[5], sum(x), nalt, nref + nalt):
+            x = (x[0] + x[1], 0, x[2] + x[3], 0, x[4] + x[5], 0)
+        out.append(x)
+    return out
 
 
 def q(v, p):

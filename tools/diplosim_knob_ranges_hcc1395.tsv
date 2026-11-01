@@ -2,6 +2,8 @@
 # Each seed draws every knob independently; scale log = log-uniform (ranges spanning >= 3x), lin = uniform.
 # Sources: depth_dispersion = normal-only t00_n25 measurement (lab_report/2026-11-01_diplosim_phi_from_normal);
 # the rest = spans already tried on HCC1395 (10-31 and 11-01 sweeps; t50 tag fraction about 0.86).
+# normal_tumour_fraction (script-only, 2026-11-01): tumour DNA in the matched normal; normal alt per depth
+# rises from 0.003 to 0.021 with tumour VAF in t00_n25 (lab_report/2026-11-01_clairs_detection_curve).
 flag	lo	hi	scale
 --depth-dispersion	0.006	0.025	log
 --base-error	0.001	0.01	log
@@ -9,3 +11,4 @@ flag	lo	hi	scale
 --prop-tagged	0.80	0.90	lin
 --prop-pos-lost	0.40	0.50	lin
 --prop-truncal-snvs	0.6	0.9	lin
+normal_tumour_fraction	0	0.04	lin
