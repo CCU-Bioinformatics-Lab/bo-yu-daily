@@ -72,6 +72,11 @@ pub struct Params {
     /// diplosim: probability that a read carries the other haplotype's tag (phasing error).
     #[arg(long, default_value_t = 0.0)]
     pub mistag_rate: f64,
+    /// diplosim: each site draws its own mistag probability from Beta(k * mistag_rate,
+    /// k * (1 - mistag_rate)) with k = this value (local phasing errors). Unset = every site
+    /// uses mistag_rate.
+    #[arg(long)]
+    pub mistag_concentration: Option<f64>,
     /// diplosim: probability that a read shows the other allele at the SNV (ref <-> alt).
     #[arg(long, default_value_t = 0.0)]
     pub base_error: f64,
@@ -108,6 +113,7 @@ impl Params {
             prop_tagged: 0.8,
             tag_concentration: None,
             mistag_rate: 0.0,
+            mistag_concentration: None,
             base_error: 0.0,
         }
     }
@@ -139,7 +145,11 @@ impl Params {
                 return Err(format!("{name} must be in [0, 1], got {p}"));
             }
         }
-        for (name, k) in [("tag_concentration", self.tag_concentration), ("depth_dispersion", self.depth_dispersion)] {
+        for (name, k) in [
+            ("tag_concentration", self.tag_concentration),
+            ("mistag_concentration", self.mistag_concentration),
+            ("depth_dispersion", self.depth_dispersion),
+        ] {
             if let Some(k) = k {
                 if !(k > 0.0 && k.is_finite()) {
                     return Err(format!("{name} must be > 0, got {k}"));

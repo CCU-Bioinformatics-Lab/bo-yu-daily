@@ -187,6 +187,31 @@ fn read_errors_keep_counts_consistent_and_put_reads_on_the_other_side() {
 }
 
 #[test]
+fn mistag_concentration_keeps_the_mean_and_concentrates_errors_on_few_sites() {
+    let mut p = Params::new(5, 3000);
+    p.prop_tagged = 1.0;
+    p.mistag_rate = 0.02;
+    // Alt reads on the haplotype without the SNV: zero without mistag, so every one is an error.
+    let wrong_alt = |rows: &[HashMap<String, String>]| -> (f64, f64) {
+        let (mut wrong, mut alt, mut hit) = (0u64, 0u64, 0usize);
+        for r in rows {
+            let w = n(r, if r["ALLELE"] == "A" { "HP2_ALT" } else { "HP1_ALT" });
+            wrong += w;
+            alt += n(r, "HP1_ALT") + n(r, "HP2_ALT");
+            hit += usize::from(w > 0);
+        }
+        (wrong as f64 / alt as f64, hit as f64 / rows.len() as f64)
+    };
+    let (rate_fixed, sites_fixed) = wrong_alt(&written_rows(&simulate(&p, 31).unwrap(), "mfixed"));
+    p.mistag_concentration = Some(1.0);
+    let (rate_beta, sites_beta) = wrong_alt(&written_rows(&simulate(&p, 31).unwrap(), "mbeta"));
+    assert!((rate_fixed - 0.02).abs() < 0.004 && (rate_beta - 0.02).abs() < 0.006, "rates {rate_fixed} {rate_beta}");
+    assert!(sites_beta < 0.6 * sites_fixed, "sites with a mistagged alt: fixed {sites_fixed}, Beta {sites_beta}");
+    p.mistag_concentration = Some(-1.0);
+    assert!(p.validate().is_err());
+}
+
+#[test]
 fn without_cn_events_both_haplotypes_get_equal_depth() {
     let mut p = no_cn(4, 3000);
     p.prop_tagged = 1.0;

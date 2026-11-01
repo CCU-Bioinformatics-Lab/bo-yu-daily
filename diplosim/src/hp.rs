@@ -76,7 +76,8 @@ impl HpCounts {
 /// Option ②: all alt reads go to the SNV's haplotype X. Ref reads split by the expected ref
 /// molecules on each allele over the mixture: X carries F_X - M of them, the other allele O
 /// carries F_O. Then (DECISIONS 2026-10-31) each read shows the other allele with probability
-/// `base_error` and carries the other haplotype's tag with probability `mistag_rate`. Last,
+/// `base_error` and carries the other haplotype's tag with probability `mistag_rate`, or with
+/// `mistag_concentration` k a per-site draw from Beta(k * mistag_rate, k * (1 - mistag_rate)). Last,
 /// every count loses Binomial(count, 1 - t) reads to HP0, where t is `prop_tagged`, or with
 /// `tag_concentration` k a per-site draw from Beta(k * prop_tagged, k * (1 - prop_tagged)).
 pub fn split_counts(
@@ -118,15 +119,11 @@ pub fn split_counts(
                 (hp2_ref, hp2_alt) = swap_some(rng, hp2_ref, hp2_alt, p.base_error);
             }
             if p.mistag_rate > 0.0 {
-                (hp1_ref, hp2_ref) = swap_some(rng, hp1_ref, hp2_ref, p.mistag_rate);
-                (hp1_alt, hp2_alt) = swap_some(rng, hp1_alt, hp2_alt, p.mistag_rate);
+                let mistag = site_rate(rng, p.mistag_rate, p.mistag_concentration);
+                (hp1_ref, hp2_ref) = swap_some(rng, hp1_ref, hp2_ref, mistag);
+                (hp1_alt, hp2_alt) = swap_some(rng, hp1_alt, hp2_alt, mistag);
             }
-            let tag_rate = match p.tag_concentration {
-                Some(k) if p.prop_tagged > 0.0 && p.prop_tagged < 1.0 => {
-                    Beta::new(k * p.prop_tagged, k * (1.0 - p.prop_tagged)).unwrap().sample(rng)
-                }
-                _ => p.prop_tagged,
-            };
+            let tag_rate = site_rate(rng, p.prop_tagged, p.tag_concentration);
             let mut untag = |tagged: u64| {
                 let moved = binomial(rng, tagged, 1.0 - tag_rate);
                 (tagged - moved, moved)
@@ -138,6 +135,16 @@ pub fn split_counts(
             HpCounts { hp1_ref, hp1_alt, hp2_ref, hp2_alt, hp0_ref: r1 + r2, hp0_alt: a1 + a2 }
         })
         .collect()
+}
+
+/// A site's own rate: Beta(k * mean, k * (1 - mean)) with concentration k, or `mean` itself
+/// when k is unset or mean is 0 or 1. Draws nothing in the fixed case, so unset k keeps the
+/// random stream of the fixed-rate model.
+fn site_rate(rng: &mut Rng, mean: f64, k: Option<f64>) -> f64 {
+    match k {
+        Some(k) if mean > 0.0 && mean < 1.0 => Beta::new(k * mean, k * (1.0 - mean)).unwrap().sample(rng),
+        _ => mean,
+    }
 }
 
 /// Moves Binomial(x, rate) reads from x to y and Binomial(y, rate) from y to x.

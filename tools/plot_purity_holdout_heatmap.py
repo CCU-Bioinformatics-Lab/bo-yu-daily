@@ -51,9 +51,8 @@ def main():
     ax.xaxis.tick_top()
     ax.set_yticks(range(len(order)))
     ax.set_yticklabels([NAMES[k] for k in order], fontsize=11)
-    ax.axhline(5.5, color="#17201D", lw=1.5, ls="--")
     fig.text(0.03, 0.965, "purity holdout：哪幾項統計有差？（相對差距＝（模擬 − 真實）÷ 真實）", fontsize=16, weight="bold")
-    fig.text(0.03, 0.935, "紅＝模擬偏高，藍＝模擬偏低（色階在 ±1 截斷）；粗框＝|差距| > 0.1。虛線以上 6 項會隨 purity 下降而偏離。",
+    fig.text(0.03, 0.935, "紅＝模擬偏高，藍＝模擬偏低（色階在 ±1 截斷）；粗框＝|差距| > 0.1。列依 t40–t10 中最大的 |差距| 排序。",
              fontsize=10.5, color="#5B6864")
     fig.text(0.03, 0.02, "＊minor HP 比例中位數在 t50_n00 跳動（LOH 超過一半時中位數會從約 0.2 跳到 0），不當判定依據。",
              fontsize=9.5, color="#5B6864")

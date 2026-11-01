@@ -28,7 +28,11 @@ DIPLOSIM = os.path.join(HERE, "..", "diplosim", "target", "release", "diplosim")
 CRAM = "/big8_disk/boyu114/hcc1395_hp_split/tagged_t50_n00.cram"
 CHROMS = [f"chr{i}" for i in range(1, 23)] + ["chrX"]
 
-MIN_ALT, MIN_VAF = 3, 0.08    # ClairS minimum on this sample (min AD alt 3, min AF 0.0806)
+# Caller-like filter. Default: ClairS minimum on t50_n00 (min AD alt 3, min AF 0.0806). The env vars
+# DIPLOSIM_PPC_MIN_ALT / DIPLOSIM_PPC_MIN_VAF override it (purity holdout v2: 5 / 0.10, the ClairS
+# 1% quantiles, which stay about the same at every purity).
+MIN_ALT = int(os.environ.get("DIPLOSIM_PPC_MIN_ALT", 3))
+MIN_VAF = float(os.environ.get("DIPLOSIM_PPC_MIN_VAF", 0.08))
 MIN_TAGGED_ALT, ASSIGN_FRAC = 3, 0.9
 COVERAGE = 53                 # median depth of t50_n00 (lab_report/2026-10-25_seqc2_hcc1395_measured_purity)
 PURITY = 1.0                  # t50_n00 is pure tumour by definition
@@ -91,6 +95,8 @@ def run_sim(out, n_seeds, extra=()):
             res = list(ex.map(run_one, batch))
             done += sum(res)
             skipped += len(res) - sum(res)
+    if "--n-snv" in extra:
+        n_snv = extra[list(extra).index("--n-snv") + 1]
     print(f"sim: {done} seeds x {n_snv} SNV ({skipped} seeds skipped on duplicate CHR/POS)")
 
 

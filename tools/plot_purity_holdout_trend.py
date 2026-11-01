@@ -45,7 +45,7 @@ def main():
     fig, axes = plt.subplots(3, 3, figsize=(16, 12), dpi=110)
     fig.patch.set_facecolor(BG)
     fig.suptitle("diplosim purity holdout：旋鈕在 t50_n00 校正後鎖住，只轉 purity", fontsize=18, weight="bold", x=0.03, ha="left", y=0.985)
-    fig.text(0.03, 0.948, "藍點＝真實 HCC1395 subsample；綠帶＝200 次模擬的 95% 區間，綠線＝中位數。alt 分在兩條 HP、depth 變異、VAF 低端隨 purity 下降而偏離；minor HP < 0.1、HP0 比例的趨勢都跟得上。",
+    fig.text(0.03, 0.948, "藍點＝真實 HCC1395 subsample；綠帶＝200 次模擬的 95% 區間，綠線＝中位數。",
              fontsize=11.5, color=MUTED)
     xs = [r[1] for r in runs]
     for ax, (key, title, knob) in zip(axes.flat, PANELS):
