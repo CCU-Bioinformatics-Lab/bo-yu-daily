@@ -11,6 +11,9 @@ Usage:
   python3 -I tools/diplosim_ppc_hcc1395.py real    OUT_DIR SITES_TSV [CRAM]   # pileup -> OUT/tables/real_per_snv.tsv
   python3 -I tools/diplosim_ppc_hcc1395.py sim     OUT_DIR [N_SEEDS] [DIPLOSIM_ARGS...]   # diplosim runs -> OUT/sim/
   python3 -I tools/diplosim_ppc_hcc1395.py compare OUT_DIR             # stats + figure
+
+DIPLOSIM_PPC_RANGES=RANGES_TSV makes each seed draw the listed knobs from ranges (flag, lo, hi, lin|log)
+instead of the fixed values in DIPLOSIM_ARGS; the drawn values go to OUT/tables/sim_knobs.tsv.
 """
 import csv
 import json
@@ -37,6 +40,36 @@ MIN_TAGGED_ALT, ASSIGN_FRAC = 3, 0.9
 COVERAGE = 53                 # median depth of t50_n00 (lab_report/2026-10-25_seqc2_hcc1395_measured_purity)
 PURITY = 1.0                  # t50_n00 is pure tumour by definition
 N_CLONES = (2, 8)             # drawn per seed; HCC1395 has no known tree
+
+RANGES = os.environ.get("DIPLOSIM_PPC_RANGES")
+
+
+def load_ranges(path):
+    with open(path) as f:
+        rows = [l.split() for l in f if l.strip() and not l.startswith(("#", "flag"))]
+    return [(flag, float(lo), float(hi), scale) for flag, lo, hi, scale in rows]
+
+
+def draw_knobs(seed, ranges):
+    rng = random.Random(f"knobs{seed}")   # own stream: n_clones per seed stays the same as without ranges
+    out = {}
+    for flag, lo, hi, scale in ranges:
+        u = rng.random()
+        out[flag] = lo * (hi / lo) ** u if scale == "log" else lo + (hi - lo) * u
+    return out
+
+
+def strip_flags(extra, flags):
+    res, skip = [], False
+    for a in extra:
+        if skip:
+            skip = False
+        elif a in flags:
+            skip = True
+        else:
+            res.append(a)
+    return res
+
 
 COLS = ["ref1", "alt1", "ref2", "alt2", "ref0", "alt0"]
 
@@ -70,6 +103,8 @@ def run_real(out, sites_tsv, cram=CRAM):
 def run_one(args):
     seed, n_snv, outdir, extra = args
     n_clones = random.Random(seed).randint(*N_CLONES)
+    knobs = draw_knobs(seed, load_ranges(RANGES)) if RANGES else {}
+    extra = strip_flags(extra, knobs) + [x for f, v in knobs.items() for x in (f, f"{v:.6g}")]
     # extra args may set their own purity, coverage or SNV count; diplosim rejects a flag given twice
     purity = [] if "--min-tumour-purity" in extra else ["--min-tumour-purity", str(PURITY), "--max-tumour-purity", str(PURITY)]
     coverage = [] if "--coverage" in extra else ["--coverage", str(COVERAGE)]
@@ -81,6 +116,8 @@ def run_one(args):
     ok = (Path(outdir) / "diplosim.tsv").exists()
     if not ok:
         subprocess.run(["rm", "-rf", outdir])
+    elif knobs:
+        (Path(outdir) / "knobs.json").write_text(json.dumps({"n_clones": n_clones, **knobs}))
     return ok
 
 
@@ -165,9 +202,15 @@ def stats(rows):
 
 def run_compare(out):
     real = stats(load_real(out))
-    sims = []
+    sims, knobs = [], []
     for d in sorted((out / "sim").iterdir()):
         sims.append(stats(load_sim(d)))
+        if (d / "knobs.json").exists():
+            knobs.append({"run": d.name, **json.loads((d / "knobs.json").read_text())})
+    if knobs:
+        with open(out / "tables" / "sim_knobs.tsv", "w") as f:
+            f.write("\t".join(knobs[0]) + "\n")
+            f.writelines("\t".join(str(r[k]) for k in knobs[0]) + "\n" for r in knobs)
     rows = []
     for k, v in real.items():
         sv = [s[k] for s in sims]

@@ -1,0 +1,11 @@
+# diplosim knob ranges for the HCC1395 PPC (user choice 2026-11-01: sample knobs, no single value).
+# Each seed draws every knob independently; scale log = log-uniform (ranges spanning >= 3x), lin = uniform.
+# Sources: depth_dispersion = normal-only t00_n25 measurement (lab_report/2026-11-01_diplosim_phi_from_normal);
+# the rest = spans already tried on HCC1395 (10-31 and 11-01 sweeps; t50 tag fraction about 0.86).
+flag	lo	hi	scale
+--depth-dispersion	0.006	0.025	log
+--base-error	0.001	0.01	log
+--mistag-rate	0.005	0.015	log
+--prop-tagged	0.80	0.90	lin
+--prop-pos-lost	0.40	0.50	lin
+--prop-truncal-snvs	0.6	0.9	lin

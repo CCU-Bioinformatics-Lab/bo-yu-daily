@@ -2,8 +2,10 @@
 """Purity vs PPC statistic for the diplosim purity holdout: real value (dot) vs sim 95% band.
 
 Usage: python3 tools/plot_purity_holdout_trend.py OUT_PNG LABEL=PURITY=DIR ...
+TREND_TITLE overrides the figure title.
 """
 import csv
+import os
 import sys
 
 import matplotlib
@@ -44,7 +46,7 @@ def main():
     runs.sort(key=lambda r: r[1])
     fig, axes = plt.subplots(3, 3, figsize=(16, 12), dpi=110)
     fig.patch.set_facecolor(BG)
-    fig.suptitle("diplosim purity holdout：旋鈕在 t50_n00 校正後鎖住，只轉 purity", fontsize=18, weight="bold", x=0.03, ha="left", y=0.985)
+    fig.suptitle(os.environ.get("TREND_TITLE", "diplosim purity holdout：旋鈕在 t50_n00 校正後鎖住，只轉 purity"), fontsize=18, weight="bold", x=0.03, ha="left", y=0.985)
     fig.text(0.03, 0.948, "藍點＝真實 HCC1395 subsample；綠帶＝200 次模擬的 95% 區間，綠線＝中位數。",
              fontsize=11.5, color=MUTED)
     xs = [r[1] for r in runs]

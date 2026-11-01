@@ -1,0 +1,9 @@
+statistic	n_clones	--depth-dispersion	--base-error	--mistag-rate	--prop-tagged	--prop-pos-lost	--prop-truncal-snvs
+depth_VMR	+0.05	+0.74	+0.04	+0.10	-0.02	-0.40	+0.18
+VAF_q50	+0.13	-0.10	-0.11	-0.06	+0.03	+0.06	+0.57
+HP0_frac_pooled	+0.02	+0.02	+0.13	-0.08	-1.00	-0.05	-0.06
+tag_frac_lt_0.5_sites	+0.01	+0.02	+0.13	-0.08	-1.00	-0.05	-0.06
+split_alt_frac	+0.08	+0.04	+0.63	+0.69	-0.03	-0.25	-0.10
+minorHP_depth_lt_0.1	-0.16	+0.01	-0.13	-0.28	+0.07	+0.98	-0.11
+alt_on_minorHP	+0.16	-0.01	-0.05	+0.19	+0.02	-0.96	+0.16
+n_called	-0.33	+0.06	+0.08	+0.06	+0.03	-0.02	+0.56
