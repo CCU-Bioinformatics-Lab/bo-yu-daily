@@ -4,6 +4,7 @@
 # the rest = spans already tried on HCC1395 (10-31 and 11-01 sweeps; t50 tag fraction about 0.86).
 # normal_tumour_fraction (script-only, 2026-11-01): tumour DNA in the matched normal; normal alt per depth
 # rises from 0.003 to 0.021 with tumour VAF in t00_n25 (lab_report/2026-11-01_clairs_detection_curve).
+# Range 0.005-0.025 (user 2026-11-01): the high- and low-VAF ends give c about 0.016 and 0.012.
 # normal_base_error (script-only, 2026-11-01): base error of the matched normal only. Real normal alt per
 # depth at low-VAF SNVs is 0.003 including the c share, so the normal's own error is about 0.0005 (0-0.001).
 flag	lo	hi	scale
@@ -13,5 +14,5 @@ flag	lo	hi	scale
 --prop-tagged	0.80	0.90	lin
 --prop-pos-lost	0.40	0.50	lin
 --prop-truncal-snvs	0.6	0.9	lin
-normal_tumour_fraction	0	0.04	lin
+normal_tumour_fraction	0.005	0.025	lin
 normal_base_error	0	0.001	lin
