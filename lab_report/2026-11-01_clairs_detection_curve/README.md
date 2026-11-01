@@ -55,4 +55,5 @@ python3 tools/plot_clairs_detection_curve.py $D lab_report/2026-10-31_diplosim_p
 - **這些位點在 normal（t00_n25）中幾乎都有 alt**〔實測〕：normal AF ≥ 0.05 的比例是 0.99，符合上面刪除規則的比例是 0.98；在 t50 的 VAF 中位數是 0.96，也就是 LOH 後全帶突變的位點。被叫出的低 VAF 位點只有 0.02 符合。
 - **normal 的 alt 比例隨 tumor VAF 增加**〔實測〕：t50 VAF 0.1 時是 0.003，0.5 時是 0.006，0.9 以上時是 0.021。這符合 normal 樣本混到約 2% tumor DNA〔推論〕。
 - **初步解讀**〔推論〕：低 purity 時 tumor AF 小，「tumor AF ≥ 6 × normal AF」比較難達到。所以 normal 裡有幾條 alt read 的高 VAF 位點，會被當成 germline 而刪除。這是 ClairS 的規則加上 normal 混到 tumor 造成的，和 diplosim 的生成機制無關。
-- **還沒做**：確認 ClairS 用的 `normal_25x.bam` 和 `t00_n25` 是不是同一批 read；如果要在模擬中重現，要讓模擬也產生 normal 樣本的 alt 數，並套用同一條規則。
+- **ClairS 用的 normal 和 `t00_n25` 是同一批 read**〔實測〕。`normal_25x.bam` 已經不在原路徑，只剩它的 mosdepth 結果（`/big8_disk/mingen112/test_data/HCC1395/ONT/subsample_bam/normal_25x/mosdepth/`）。在相同的過濾條件下（排除 flag 1796、MAPQ ≥ 0、含 deletion），對 `t00_n25` 算每條染色體的總鹼基數：chr21 兩者都是 1,206,595,697，chr1 兩者都是 7,163,965,232，完全相同。如果是兩次獨立的 subsample，總鹼基數會差到數十萬以上〔推論〕。`t00_n25` 的 header 記錄它來自 `HCC1395BL.cram`（SRR25005625）的 `--subsample 0.5556 --subsample-seed 0`。所以上面用 `t00_n25` 分析 normal alt 的結果，可以直接代表 ClairS 看到的 normal。
+- **還沒做**：如果要在模擬中重現，要讓模擬也產生 normal 樣本的 alt 數，並套用同一條規則。
