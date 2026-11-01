@@ -1,121 +1,126 @@
 <section id="t2-purity" style="display:flex; flex-direction:column; gap:32px; padding:128px 128px 160px; background:#f7f6f2">
   <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5">2 · 怎麼檢查接近真實</p>
   <h2 style="font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">HCC1395 tumor 與 normal 的 long read 依 5 種比例混合，看各項數值怎麼隨 purity 改變</h2>
-  <div style="display:flex; flex-direction:column; gap:24px; flex:1">
-    <div style="display:flex; flex-direction:row; gap:24px">
-      <div style="display:flex; flex-direction:column; gap:8px; flex:1">
-        <div style="display:flex; flex-direction:row; gap:16px">
-          <p style="flex:1; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#6b7480">read 來源比例（nominal）</p>
-          <p style="width:250px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; text-align:center; color:#6b7480">tumor 細胞比例</p>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center">
-          <div style="height:40px; display:flex; flex-direction:row; flex:1; border-radius:6px; overflow:hidden">
-            <div style="width:100%; display:flex; flex-direction:row; align-items:center; padding:0 12px; background:#3B5B7A"><p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">tumor 100%</p></div>
-          </div>
-          <p style="width:250px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; text-align:center; color:#1f2a37"><b style="font-size:32px; color:#2f6db5">0.97</b>（換算）</p>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center">
-          <div style="height:40px; display:flex; flex-direction:row; flex:1; border-radius:6px; overflow:hidden">
-            <div style="width:80%; display:flex; flex-direction:row; align-items:center; padding:0 12px; background:#3B5B7A"><p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">tumor 80%</p></div>
-            <div style="width:20%; display:flex; flex-direction:row; align-items:center; padding:0 12px; background:#D5DAE0"><p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#1f2a37">normal 20%</p></div>
-          </div>
-          <p style="width:250px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; text-align:center; color:#1f2a37"><b style="font-size:32px; color:#2f6db5">0.70</b>（換算）</p>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center">
-          <div style="height:40px; display:flex; flex-direction:row; flex:1; border-radius:6px; overflow:hidden">
-            <div style="width:60%; display:flex; flex-direction:row; align-items:center; padding:0 12px; background:#3B5B7A"><p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">tumor 60%</p></div>
-            <div style="width:40%; display:flex; flex-direction:row; align-items:center; padding:0 12px; background:#D5DAE0"><p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#1f2a37">normal 40%</p></div>
-          </div>
-          <p style="width:250px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; text-align:center; color:#1f2a37"><b style="font-size:32px; color:#2f6db5">0.48</b>（換算）</p>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center">
-          <div style="height:40px; display:flex; flex-direction:row; flex:1; border-radius:6px; overflow:hidden">
-            <div style="width:40%; display:flex; flex-direction:row; align-items:center; padding:0 12px; background:#3B5B7A"><p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">tumor 40%</p></div>
-            <div style="width:60%; display:flex; flex-direction:row; align-items:center; padding:0 12px; background:#D5DAE0"><p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#1f2a37">normal 60%</p></div>
-          </div>
-          <p style="width:250px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; text-align:center; color:#1f2a37"><b style="font-size:32px; color:#2f6db5">0.29</b>（換算）</p>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center">
-          <div style="height:40px; display:flex; flex-direction:row; flex:1; border-radius:6px; overflow:hidden">
-            <div style="width:20%; display:flex; flex-direction:row; align-items:center; padding:0 12px; background:#3B5B7A"><p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">tumor 20%</p></div>
-            <div style="width:80%; display:flex; flex-direction:row; align-items:center; padding:0 12px; background:#D5DAE0"><p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#1f2a37">normal 80%</p></div>
-          </div>
-          <p style="width:250px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; text-align:center; color:#1f2a37"><b style="font-size:32px; color:#2f6db5">0.14</b>（換算）</p>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:32px; align-items:center">
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37"><b style="color:#3B5B7A">■</b> tumor read：HCC1395</p>
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37"><b style="color:#B8C0CA">■</b> normal read：配對的 HCC1395BL</p>
-        </div>
-      </div>
-      <div style="width:440px; display:flex; flex-direction:column; gap:10px; padding:18px 22px; background:#ffffff; border:1px solid #e3e1da; border-radius:12px">
-        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#1f2a37">read 80% → 細胞 0.70</p>
-        <svg xmlns="http://www.w3.org/2000/svg" aria-label="tumor 細胞約 3 份 DNA，normal 細胞 2 份" viewBox="0 0 396 120" style="width:396px; height:120px"><circle cx="90" cy="60" r="54" fill="#E6EBF1" stroke="#3B5B7A" stroke-width="4"/><rect x="58" y="34" width="64" height="10" rx="5" fill="#3B5B7A"/><rect x="58" y="55" width="64" height="10" rx="5" fill="#3B5B7A"/><rect x="58" y="76" width="64" height="10" rx="5" fill="#3B5B7A"/><circle cx="296" cy="60" r="54" fill="#F2F3F5" stroke="#9AA3AE" stroke-width="4"/><rect x="264" y="44" width="64" height="10" rx="5" fill="#9AA3AE"/><rect x="264" y="66" width="64" height="10" rx="5" fill="#9AA3AE"/></svg>
-        <div style="display:flex; flex-direction:row; justify-content:space-between">
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#3B5B7A">tumor 3.06 份</p>
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#6b7480">normal 2 份</p>
-        </div>
-        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">tumor DNA 多 → 細胞較少</p>
-        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">再 × 100% 樣本的 purity 0.97</p>
-        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#6b7480">ploidy、purity 來自 ASCAT</p>
-      </div>
-    </div>
-    <div style="display:flex; flex-direction:row; gap:12px; align-items:center">
-      <div style="display:flex; flex-direction:column; gap:10px; flex:1">
-        <div style="display:flex; flex-direction:row; gap:8px; align-items:center">
-          <p style="width:72px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#1f2a37">真實</p>
-          <div style="display:flex; flex-direction:row; gap:10px; align-items:center; flex:1; padding:8px 12px; background:#ffffff; border:1px solid #e3e1da; border-radius:10px">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-label="混合樣本的 read" viewBox="0 0 60 56" style="width:60px; height:56px"><rect x="2" y="4" width="48" height="8" rx="4" fill="#3B5B7A"/><rect x="10" y="17" width="48" height="8" rx="4" fill="#3B5B7A"/><rect x="4" y="30" width="48" height="8" rx="4" fill="#3B5B7A"/><rect x="10" y="43" width="48" height="8" rx="4" fill="#B8C0CA"/></svg>
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.25; color:#1f2a37">混合樣本的 read</p>
-          </div>
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">→</p>
-          <div style="display:flex; flex-direction:row; gap:10px; align-items:center; flex:1; padding:8px 12px; background:#ffffff; border:1px solid #e3e1da; border-radius:10px">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-label="read 上的 somatic SNV" viewBox="0 0 60 56" style="width:60px; height:56px"><rect x="2" y="10" width="56" height="8" rx="4" fill="#C3CAD3"/><rect x="2" y="24" width="56" height="8" rx="4" fill="#C3CAD3"/><rect x="2" y="38" width="56" height="8" rx="4" fill="#C3CAD3"/><circle cx="30" cy="14" r="6" fill="#D23A2E"/><circle cx="30" cy="28" r="6" fill="#ffffff" stroke="#1f2a37" stroke-width="2"/><circle cx="30" cy="42" r="6" fill="#D23A2E"/></svg>
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.25; color:#1f2a37">ClairS 找 somatic SNV</p>
-          </div>
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">→</p>
-          <div style="display:flex; flex-direction:row; gap:10px; align-items:center; flex:1; padding:8px 12px; background:#ffffff; border:1px solid #e3e1da; border-radius:10px">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-label="read 依 HP tag 分成 HP1、HP2、unphased" viewBox="0 0 60 56" style="width:60px; height:56px"><rect x="2" y="6" width="56" height="10" rx="5" fill="#2C5F9E"/><rect x="2" y="23" width="56" height="10" rx="5" fill="#D9772B"/><rect x="2" y="40" width="56" height="10" rx="5" fill="#9AA3AE"/></svg>
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.25; color:#1f2a37">HP tag 分成 HP1／HP2／unphased</p>
-          </div>
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">→</p>
-          <div style="display:flex; flex-direction:row; gap:10px; align-items:center; flex:1; padding:8px 12px; background:#ffffff; border:1px solid #e3e1da; border-radius:10px">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-label="數值長條" viewBox="0 0 60 56" style="width:60px; height:56px"><rect x="4" y="30" width="10" height="24" fill="#2f6db5"/><rect x="18" y="14" width="10" height="40" fill="#2f6db5"/><rect x="32" y="22" width="10" height="32" fill="#2f6db5"/><rect x="46" y="6" width="10" height="48" fill="#2f6db5"/></svg>
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.25; color:#1f2a37">算 13 項數值</p>
-          </div>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:8px; align-items:center">
-          <p style="width:72px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#c96a1b">模擬</p>
-          <div style="display:flex; flex-direction:row; gap:10px; align-items:center; flex:1; padding:8px 12px; background:#ffffff; border:1px solid #e3e1da; border-radius:10px">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-label="purity 與 coverage 設定" viewBox="0 0 60 56" style="width:60px; height:56px"><line x1="4" y1="16" x2="56" y2="16" stroke="#C3CAD3" stroke-width="6" stroke-linecap="round"/><circle cx="38" cy="16" r="8" fill="#c96a1b"/><line x1="4" y1="40" x2="56" y2="40" stroke="#C3CAD3" stroke-width="6" stroke-linecap="round"/><circle cx="22" cy="40" r="8" fill="#c96a1b"/></svg>
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.25; color:#1f2a37">同樣的 purity、coverage</p>
-          </div>
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">→</p>
-          <div style="display:flex; flex-direction:row; gap:10px; align-items:center; flex:1; padding:8px 12px; background:#ffffff; border:1px solid #e3e1da; border-radius:10px">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-label="diplosim 機器" viewBox="0 0 60 56" style="width:60px; height:56px"><rect x="6" y="8" width="48" height="40" rx="6" fill="#c96a1b"/><circle cx="22" cy="24" r="6" fill="#ffffff"/><circle cx="38" cy="24" r="6" fill="#ffffff"/><rect x="16" y="36" width="28" height="6" rx="3" fill="#ffffff"/></svg>
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.25; color:#1f2a37">diplosim</p>
-          </div>
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">→</p>
-          <div style="display:flex; flex-direction:row; gap:10px; align-items:center; flex:1; padding:8px 12px; background:#ffffff; border:1px solid #e3e1da; border-radius:10px">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-label="每個 SNV 的 HP1、HP2、unphased 計數" viewBox="0 0 60 56" style="width:60px; height:56px"><rect x="2" y="6" width="34" height="10" rx="3" fill="#2C5F9E"/><rect x="2" y="23" width="24" height="10" rx="3" fill="#D9772B"/><rect x="2" y="40" width="12" height="10" rx="3" fill="#9AA3AE"/></svg>
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.25; color:#1f2a37">HP1／HP2／unphased 計數</p>
-          </div>
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">→</p>
-          <div style="display:flex; flex-direction:row; gap:10px; align-items:center; flex:1; padding:8px 12px; background:#ffffff; border:1px solid #e3e1da; border-radius:10px">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-label="數值長條" viewBox="0 0 60 56" style="width:60px; height:56px"><rect x="4" y="30" width="10" height="24" fill="#c96a1b"/><rect x="18" y="14" width="10" height="40" fill="#c96a1b"/><rect x="32" y="22" width="10" height="32" fill="#c96a1b"/><rect x="46" y="6" width="10" height="48" fill="#c96a1b"/></svg>
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.25; color:#1f2a37">算同樣的數值</p>
-          </div>
-        </div>
-      </div>
-      <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:32px; color:#6b7480">→</p>
-      <div style="width:230px; align-self:stretch; display:flex; flex-direction:column; gap:8px; align-items:center; justify-content:center; padding:12px; border:3px dashed #6b7480; border-radius:12px">
-        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; text-align:center; color:#1f2a37">比較兩邊數值</p>
-        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; text-align:center; color:#6b7480">結果下次報告</p>
-      </div>
-    </div>
-  </div>
+  <svg xmlns="http://www.w3.org/2000/svg" aria-label="上半：5 條 read 比例條，tumor read 100%、80%、60%、40%、20%，其餘是 normal read；每條用箭頭接到右邊 0 到 1 數線上換算的 tumor 細胞比例 0.97、0.70、0.48、0.29、0.14。最右邊：tumor 細胞約 3 份 DNA，normal 細胞 2 份；ASCAT purity 0.97、ploidy 3.06。下半：真實端是混合 read、ClairS 找 somatic SNV、依 HP 分 read、算數值；模擬端是同樣 purity 與 coverage、diplosim、HP 計數、算數值；兩端匯到虛線框：比較，下次報告。" viewBox="0 0 1664 540" style="width:1664px; height:540px" font-family="'Noto Sans TC', Arial, sans-serif">
+    <defs>
+      <marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b7480"/></marker>
+    </defs>
+    <text x="0" y="28" font-size="24" font-weight="700" fill="#6b7480">read 比例（nominal）</text>
+    <text x="852" y="28" font-size="24" font-weight="700" fill="#c96a1b">換算：tumor 細胞比例</text>
+
+    <rect x="0" y="54" width="720" height="44" rx="6" fill="#1f2a37"/>
+    <text x="14" y="85" font-size="24" font-weight="700" fill="#ffffff">tumor 100%</text>
+
+    <rect x="0" y="114" width="720" height="44" rx="6" fill="#e3e1da"/>
+    <rect x="0" y="114" width="576" height="44" rx="6" fill="#1f2a37"/>
+    <text x="14" y="145" font-size="24" font-weight="700" fill="#ffffff">tumor 80%</text>
+    <text x="588" y="145" font-size="24" fill="#1f2a37">normal 20%</text>
+
+    <rect x="0" y="174" width="720" height="44" rx="6" fill="#e3e1da"/>
+    <rect x="0" y="174" width="432" height="44" rx="6" fill="#1f2a37"/>
+    <text x="14" y="205" font-size="24" font-weight="700" fill="#ffffff">tumor 60%</text>
+    <text x="444" y="205" font-size="24" fill="#1f2a37">normal 40%</text>
+
+    <rect x="0" y="234" width="720" height="44" rx="6" fill="#e3e1da"/>
+    <rect x="0" y="234" width="288" height="44" rx="6" fill="#1f2a37"/>
+    <text x="14" y="265" font-size="24" font-weight="700" fill="#ffffff">tumor 40%</text>
+    <text x="300" y="265" font-size="24" fill="#1f2a37">normal 60%</text>
+
+    <rect x="0" y="294" width="720" height="44" rx="6" fill="#e3e1da"/>
+    <rect x="0" y="294" width="144" height="44" rx="6" fill="#1f2a37"/>
+    <text x="10" y="325" font-size="24" font-weight="700" fill="#ffffff">tumor 20%</text>
+    <text x="156" y="325" font-size="24" fill="#1f2a37">normal 80%</text>
+
+    <line x1="900" y1="70" x2="900" y2="330" stroke="#1f2a37" stroke-width="3"/>
+    <line x1="890" y1="70" x2="910" y2="70" stroke="#1f2a37" stroke-width="3"/>
+    <line x1="892" y1="200" x2="908" y2="200" stroke="#1f2a37" stroke-width="2"/>
+    <line x1="890" y1="330" x2="910" y2="330" stroke="#1f2a37" stroke-width="3"/>
+    <text x="870" y="62" font-size="24" fill="#6b7480" text-anchor="end">1</text>
+    <text x="870" y="352" font-size="24" fill="#6b7480" text-anchor="end">0</text>
+
+    <line x1="732" y1="76" x2="884" y2="78" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <line x1="732" y1="136" x2="884" y2="147" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <line x1="732" y1="196" x2="884" y2="205" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <line x1="732" y1="256" x2="884" y2="255" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <line x1="732" y1="316" x2="884" y2="295" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+
+    <circle cx="900" cy="78" r="10" fill="#c96a1b"/>
+    <circle cx="900" cy="148" r="10" fill="#c96a1b"/>
+    <circle cx="900" cy="205" r="10" fill="#c96a1b"/>
+    <circle cx="900" cy="255" r="10" fill="#c96a1b"/>
+    <circle cx="900" cy="294" r="10" fill="#c96a1b"/>
+    <text x="924" y="89" font-size="30" font-weight="700" fill="#c96a1b">0.97</text>
+    <text x="924" y="159" font-size="30" font-weight="700" fill="#c96a1b">0.70</text>
+    <text x="924" y="216" font-size="30" font-weight="700" fill="#c96a1b">0.48</text>
+    <text x="924" y="266" font-size="30" font-weight="700" fill="#c96a1b">0.29</text>
+    <text x="924" y="305" font-size="30" font-weight="700" fill="#c96a1b">0.14</text>
+
+    <rect x="1140" y="44" width="522" height="306" rx="12" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+    <text x="1162" y="80" font-size="24" font-weight="700" fill="#1f2a37">為什麼換算後較低</text>
+    <circle cx="1270" cy="160" r="58" fill="#ffffff" stroke="#1f2a37" stroke-width="4"/>
+    <rect x="1236" y="128" width="68" height="12" rx="6" fill="#1f2a37"/>
+    <rect x="1236" y="154" width="68" height="12" rx="6" fill="#1f2a37"/>
+    <rect x="1236" y="180" width="68" height="12" rx="6" fill="#1f2a37"/>
+    <circle cx="1530" cy="160" r="58" fill="#e3e1da" stroke="#6b7480" stroke-width="4"/>
+    <rect x="1496" y="140" width="68" height="12" rx="6" fill="#6b7480"/>
+    <rect x="1496" y="168" width="68" height="12" rx="6" fill="#6b7480"/>
+    <text x="1270" y="250" font-size="24" font-weight="700" fill="#1f2a37" text-anchor="middle">tumor 細胞</text>
+    <text x="1270" y="280" font-size="24" fill="#1f2a37" text-anchor="middle">約 3 份 DNA</text>
+    <text x="1530" y="250" font-size="24" font-weight="700" fill="#6b7480" text-anchor="middle">normal 細胞</text>
+    <text x="1530" y="280" font-size="24" fill="#6b7480" text-anchor="middle">2 份 DNA</text>
+    <rect x="1162" y="298" width="238" height="40" rx="8" fill="#f7f6f2" stroke="#6b7480" stroke-width="2"/>
+    <text x="1281" y="326" font-size="24" fill="#1f2a37" text-anchor="middle">ASCAT purity 0.97</text>
+    <rect x="1414" y="298" width="170" height="40" rx="8" fill="#f7f6f2" stroke="#6b7480" stroke-width="2"/>
+    <text x="1499" y="326" font-size="24" fill="#1f2a37" text-anchor="middle">ploidy 3.06</text>
+
+    <rect x="0" y="368" width="28" height="28" rx="4" fill="#1f2a37"/>
+    <text x="40" y="391" font-size="24" fill="#1f2a37">tumor read：HCC1395</text>
+    <rect x="340" y="368" width="28" height="28" rx="4" fill="#e3e1da" stroke="#6b7480" stroke-width="1"/>
+    <text x="380" y="391" font-size="24" fill="#1f2a37">normal read：HCC1395BL</text>
+
+    <text x="0" y="452" font-size="28" font-weight="700" fill="#1f2a37">真實</text>
+    <rect x="76" y="414" width="320" height="56" rx="10" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+    <g transform="translate(88,422)"><rect x="0" y="2" width="34" height="7" rx="3" fill="#1f2a37"/><rect x="6" y="12" width="34" height="7" rx="3" fill="#1f2a37"/><rect x="2" y="22" width="34" height="7" rx="3" fill="#1f2a37"/><rect x="6" y="32" width="34" height="7" rx="3" fill="#e3e1da" stroke="#6b7480" stroke-width="1"/></g>
+    <text x="140" y="451" font-size="24" fill="#1f2a37">混合 read</text>
+    <line x1="400" y1="442" x2="434" y2="442" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <rect x="438" y="414" width="326" height="56" rx="10" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+    <g transform="translate(448,422)"><rect x="0" y="4" width="40" height="7" rx="3" fill="#e3e1da"/><rect x="0" y="16" width="40" height="7" rx="3" fill="#e3e1da"/><rect x="0" y="28" width="40" height="7" rx="3" fill="#e3e1da"/><circle cx="20" cy="7.5" r="5" fill="#D23A2E"/><circle cx="20" cy="19.5" r="5" fill="#ffffff" stroke="#1f2a37" stroke-width="1.5"/><circle cx="20" cy="31.5" r="5" fill="#D23A2E"/></g>
+    <text x="498" y="451" font-size="24" fill="#1f2a37">ClairS 找 somatic SNV</text>
+    <line x1="768" y1="442" x2="802" y2="442" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <rect x="806" y="414" width="222" height="56" rx="10" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+    <g transform="translate(816,422)"><rect x="0" y="2" width="40" height="9" rx="4" fill="#2C5F9E"/><rect x="0" y="16" width="40" height="9" rx="4" fill="#D9772B"/><rect x="0" y="30" width="40" height="9" rx="4" fill="#9AA3AE"/></g>
+    <text x="868" y="451" font-size="24" fill="#1f2a37">依 HP 分 read</text>
+    <line x1="1032" y1="442" x2="1062" y2="442" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <rect x="1062" y="414" width="170" height="56" rx="10" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+    <g transform="translate(1072,422)"><rect x="0" y="22" width="8" height="18" fill="#2f6db5"/><rect x="11" y="8" width="8" height="32" fill="#2f6db5"/><rect x="22" y="16" width="8" height="24" fill="#2f6db5"/><rect x="33" y="2" width="8" height="38" fill="#2f6db5"/></g>
+    <text x="1124" y="451" font-size="24" fill="#1f2a37">算數值</text>
+
+    <text x="0" y="524" font-size="28" font-weight="700" fill="#1f2a37">模擬</text>
+    <rect x="76" y="484" width="320" height="56" rx="10" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+    <g transform="translate(88,492)"><line x1="2" y1="10" x2="40" y2="10" stroke="#e3e1da" stroke-width="5" stroke-linecap="round"/><circle cx="28" cy="10" r="6" fill="#2f6db5"/><line x1="2" y1="30" x2="40" y2="30" stroke="#e3e1da" stroke-width="5" stroke-linecap="round"/><circle cx="14" cy="30" r="6" fill="#2f6db5"/></g>
+    <text x="140" y="521" font-size="24" fill="#1f2a37">同樣 purity、coverage</text>
+    <line x1="400" y1="512" x2="434" y2="512" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <rect x="438" y="484" width="326" height="56" rx="10" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+    <g transform="translate(448,489) scale(0.65)"><polygon points="20,2 52,2 44,14 28,14" fill="#2F6DB5"/><rect x="6" y="14" width="60" height="34" rx="6" fill="#2F6DB5"/><rect x="14" y="24" width="14" height="6" rx="3" fill="#2C5F9E"/><rect x="30" y="24" width="14" height="6" rx="3" fill="#D9772B"/><rect x="46" y="24" width="12" height="6" rx="3" fill="#9AA3AE"/><rect x="24" y="48" width="24" height="6" fill="#e3e1da"/></g>
+    <text x="498" y="521" font-size="24" fill="#1f2a37">diplosim</text>
+    <line x1="768" y1="512" x2="802" y2="512" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <rect x="806" y="484" width="222" height="56" rx="10" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+    <g transform="translate(816,492)"><rect x="0" y="2" width="36" height="9" rx="3" fill="#2C5F9E"/><rect x="0" y="16" width="24" height="9" rx="3" fill="#D9772B"/><rect x="0" y="30" width="12" height="9" rx="3" fill="#9AA3AE"/></g>
+    <text x="868" y="521" font-size="24" fill="#1f2a37">HP 計數</text>
+    <line x1="1032" y1="512" x2="1062" y2="512" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <rect x="1062" y="484" width="170" height="56" rx="10" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+    <g transform="translate(1072,492)"><rect x="0" y="22" width="8" height="18" fill="#2f6db5"/><rect x="11" y="8" width="8" height="32" fill="#2f6db5"/><rect x="22" y="16" width="8" height="24" fill="#2f6db5"/><rect x="33" y="2" width="8" height="38" fill="#2f6db5"/></g>
+    <text x="1124" y="521" font-size="24" fill="#1f2a37">算數值</text>
+
+    <line x1="1236" y1="442" x2="1296" y2="468" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <line x1="1236" y1="512" x2="1296" y2="488" stroke="#6b7480" stroke-width="3" marker-end="url(#pa)"/>
+    <rect x="1302" y="414" width="360" height="124" rx="12" fill="none" stroke="#6b7480" stroke-width="3" stroke-dasharray="12 8"/>
+    <text x="1482" y="468" font-size="32" font-weight="700" fill="#1f2a37" text-anchor="middle">比較</text>
+    <text x="1482" y="508" font-size="24" fill="#6b7480" text-anchor="middle">下次報告</text>
+  </svg>
   <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
     <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-11-04 diplosim：兩台機器與真實 long read</p>
     <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">6 / 9</p>
   </div>
-  <aside>這頁要看的是，我們把 HCC1395 的 tumor 和 normal read 照 5 種比例混合，得到 5 個 purity 不同的真實樣本。左上深色是 tumor read，來自 HCC1395；淺色是 normal read，來自配對的 HCC1395BL。tumor read 從 100% 降到 20%，這是 nominal 比例。右邊是換算的 tumor 細胞比例，0.97 到 0.14。右上這張卡說明原因：tumor 細胞平均 3.06 份 DNA，normal 只有 2 份，所以細胞比例比 read 比例低；再乘上 100% 樣本的 purity 0.97。這兩個值來自 ASCAT 這個估 purity 和 ploidy 的軟體。下面真實這列：ClairS 找 somatic SNV，HP tag 分 read，算 13 項數值。模擬這列：同樣的 purity、coverage 給 diplosim，算同樣的數值。右邊虛線框的比較結果，下次報告。</aside>
+  <aside>這頁要看的是，我們把 HCC1395 的 tumor 和 normal read 照 5 種比例混合，做出 purity 不同的真實樣本。左邊深色是 tumor read，來自 HCC1395；淺色是 normal read，來自 HCC1395BL。這是 nominal 的 read 比例。箭頭接到數線上換算的 tumor 細胞比例，0.97 到 0.14，都比 read 比例低。原因看右邊：tumor 細胞約 3 份 DNA，normal 細胞 2 份，所以同樣的 read 對應較少的 tumor 細胞。purity 0.97、ploidy 3.06 來自 ASCAT，一個估 purity 和 ploidy 的軟體。下面是流程：真實端用 ClairS 這個軟體找 somatic SNV，依 HP 分 read，算數值；模擬端給 diplosim 同樣的 purity、coverage，得到 HP 計數，算同樣的數值。比較結果下次報告。下一頁看要算的是哪些數值。</aside>
 </section>

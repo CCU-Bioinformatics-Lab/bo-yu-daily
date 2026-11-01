@@ -1,0 +1,36 @@
+<section id="outline" style="display:flex; flex-direction:column; gap:32px; padding:128px 128px 160px; background:#f7f6f2; font-family:'Noto Sans TC', Arial, sans-serif; color:#1f2a37">
+  <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5">本週大綱</p>
+  <h2 style="font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">diplosim 比 CONIPHER 多輸出哪些 long read 資訊？怎麼檢查它接近真實資料？</h2>
+  <div style="display:flex; flex-direction:row; gap:32px; flex:1">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#ffffff; border:1px solid #e3e1da; border-radius:16px; padding:36px">
+      <h3 style="font-size:32px; font-weight:700; color:#1f2a37">上次（10-28）的方向，現在到哪裡</h3>
+      <p style="font-size:26px; line-height:1.5; color:#6b7480">目的：模擬帶 HP1／HP2 的 long read bulk 資料，測 PhyClone 的 HP 擴充</p>
+      <div style="display:flex; flex-direction:column; gap:14px">
+        <p style="font-size:26px; line-height:1.4"><span style="color:#2f6db5; font-weight:700">可行</span>　說清楚改了哪裡 → 第 1 段</p>
+        <p style="font-size:26px; line-height:1.4"><span style="color:#2f6db5; font-weight:700">先做一個</span>　驗證方法：和真實 HCC1395 long read 比數值 → 第 2 段</p>
+        <p style="font-size:26px; line-height:1.4"><span style="color:#c96a1b; font-weight:700">排除</span>　TRACERx 統計（short read）</p>
+        <p style="font-size:26px; line-height:1.4"><span style="color:#2f6db5; font-weight:700">照做</span>　每段都用流程圖呈現</p>
+        <p style="font-size:26px; line-height:1.4"><span style="color:#6b7480; font-weight:700">延後</span>　同一條 read 上的 SNV 共現</p>
+      </div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:20px">
+      <div style="display:flex; flex-direction:column; gap:10px; background:#ffffff; border:1px solid #e3e1da; border-left:8px solid #2f6db5; border-radius:16px; padding:32px">
+        <h3 style="font-size:32px; font-weight:700">1 · 兩台機器</h3>
+        <p style="font-size:26px; line-height:1.45">把 CONIPHER 與 diplosim 想成兩台機器，比較輸入的旋鈕與輸出的資訊</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; background:#ffffff; border:1px solid #e3e1da; border-left:8px solid #2f6db5; border-radius:16px; padding:32px">
+        <h3 style="font-size:32px; font-weight:700">2 · 怎麼檢查接近真實</h3>
+        <p style="font-size:26px; line-height:1.45">用 HCC1395 不同 purity 的真實 long read，定出要檢查的數值</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; background:#ffffff; border:1px solid #e3e1da; border-left:8px solid #2f6db5; border-radius:16px; padding:32px">
+        <h3 style="font-size:32px; font-weight:700">3 · 結果　4 · 懂／不懂</h3>
+        <p style="font-size:26px; line-height:1.45">真實資料的目標值，以及已確認和還不確定的事</p>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-11-04 diplosim：兩台機器與真實 long read</p>
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">1 / 9</p>
+  </div>
+  <aside>這週要回答兩個問題：我們改寫的模擬器 diplosim，比原本的 CONIPHER 多輸出了哪些 long read 資訊？以及要怎麼檢查這些資訊接近真實資料？先看左邊，接回上次會議定的方向。研究目的是模擬帶 HP1、HP2 的 long read bulk 資料，用來測 PhyClone 的 HP 擴充。上次第一個方向是說清楚改了哪裡，現在可行，就是今天第 1 段。第二個方向是驗證方法，我們先做一個：拿真實 HCC1395 的 long read 來比數值，這是第 2 段；TRACERx 的統計因為是 short read，排除。流程圖照做。同一條 read 上的 SNV 共現先延後。右邊是今天的順序：第 1 段把兩個模擬器想成兩台機器來比；第 2 段講怎麼用不同 purity 的真實資料檢查；最後是真實資料的目標值，以及懂和不懂的部分。</aside>
+</section>

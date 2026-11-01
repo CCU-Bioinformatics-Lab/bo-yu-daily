@@ -2,66 +2,72 @@
   <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5">2 · 怎麼檢查接近真實</p>
   <h2 style="font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">要驗兩件事；「資料像不像」先用真實 HCC1395 long read，「樹能否重建」要另外的資料</h2>
   <div style="display:flex; flex-direction:column; gap:24px; flex:1">
-    <div style="display:flex; flex-direction:row; flex-wrap:wrap; gap:12px; align-items:center; padding:14px 20px; background:#ffffff; border:1px solid #e3e1da; border-radius:12px">
+    <div style="display:flex; flex-direction:row; gap:16px; align-items:center">
       <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#1f2a37">HCC1395 資料</p>
-      <p style="padding:4px 14px; background:#eef2f7; border-radius:8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">真值：沒有 clone 樹，只比數值</p>
-      <p style="padding:4px 14px; background:#eef2f7; border-radius:8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">讀長：ONT long read</p>
-      <p style="padding:4px 14px; background:#eef2f7; border-radius:8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">輸入：ClairS 找的 somatic SNV、各 HP 的 read 數</p>
-      <p style="padding:4px 14px; background:#eef2f7; border-radius:8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">公開真實資料，無生成程式</p>
-    </div>
-    <div style="display:flex; flex-direction:row; gap:24px; flex:1">
-      <div style="display:flex; flex-direction:column; gap:14px; flex:1; padding:20px 24px; background:#ffffff; border:1px solid #e3e1da; border-top:8px solid #2f6db5; border-radius:12px">
-        <div style="display:flex; flex-direction:row; gap:20px; align-items:center">
-          <svg xmlns="http://www.w3.org/2000/svg" aria-label="long read 依 HP1、HP2、unphased 分色" viewBox="0 0 140 84" style="width:140px; height:84px"><rect x="6" y="4" width="96" height="10" rx="5" fill="#2C5F9E"/><rect x="30" y="22" width="104" height="10" rx="5" fill="#2C5F9E"/><rect x="12" y="40" width="100" height="10" rx="5" fill="#D9772B"/><rect x="36" y="58" width="98" height="10" rx="5" fill="#D9772B"/><rect x="20" y="74" width="80" height="8" rx="4" fill="#9AA3AE"/></svg>
-          <div style="display:flex; flex-direction:column; gap:8px">
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:32px; font-weight:700; line-height:1.2; color:#1f2a37">驗資料像不像</p>
-            <div style="display:flex; flex-direction:row; flex-wrap:wrap; gap:10px; align-items:center">
-              <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#6b7480">需求</p>
-              <p style="padding:2px 12px; border:2px solid #2f6db5; border-radius:8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#2f6db5">只用 long read</p>
-              <p style="padding:2px 12px; border:2px solid #2f6db5; border-radius:8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#2f6db5">能讀出 HP1／HP2</p>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center; padding:14px 18px; background:#f3f7fc; border:2px solid #2f6db5; border-radius:10px">
-          <p style="width:300px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#1f2a37">HCC1395 ONT long read</p>
-          <p style="flex:1; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37"><b style="color:#2E7D4F">✓</b> long read　<b style="color:#2E7D4F">✓</b> HP1／HP2</p>
-          <p style="padding:4px 12px; background:#2f6db5; border-radius:8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#ffffff">先用這個</p>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center; padding:14px 18px; background:#fdfdfb; border:1px solid #e3e1da; border-radius:10px">
-          <p style="width:300px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#6b7480">TRACERx cohort 統計</p>
-          <p style="flex:1; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#6b7480"><b style="color:#B3362B">✗</b> short read</p>
-          <p style="padding:4px 12px; background:#e3e1da; border-radius:8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#1f2a37">排除</p>
-        </div>
+      <div style="display:flex; flex-direction:row; gap:8px; align-items:center; padding:6px 14px; background:#ffffff; border:1px solid #e3e1da; border-radius:8px">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="小樹圖示：真值" viewBox="0 0 32 32" style="width:32px; height:32px"><line x1="16" y1="5" x2="16" y2="14" stroke="#6b7480" stroke-width="2"/><line x1="16" y1="14" x2="6" y2="26" stroke="#6b7480" stroke-width="2"/><line x1="16" y1="14" x2="26" y2="26" stroke="#6b7480" stroke-width="2"/><circle cx="16" cy="5" r="4" fill="#6b7480"/><circle cx="16" cy="14" r="4" fill="#6b7480"/><circle cx="6" cy="26" r="4" fill="#6b7480"/><circle cx="26" cy="26" r="4" fill="#6b7480"/></svg>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">真值：無 clone 樹</p>
       </div>
-      <div style="display:flex; flex-direction:column; gap:14px; flex:1; padding:20px 24px; background:#ffffff; border:1px solid #e3e1da; border-top:8px solid #c96a1b; border-radius:12px">
-        <div style="display:flex; flex-direction:row; gap:20px; align-items:center">
-          <svg xmlns="http://www.w3.org/2000/svg" aria-label="真值 clone 樹" viewBox="0 0 140 84" style="width:140px; height:84px"><line x1="70" y1="12" x2="70" y2="36" stroke="#4A5568" stroke-width="3"/><line x1="70" y1="36" x2="34" y2="70" stroke="#4A5568" stroke-width="3"/><line x1="70" y1="36" x2="106" y2="70" stroke="#4A5568" stroke-width="3"/><circle cx="70" cy="12" r="9" fill="#9AA3AE"/><circle cx="70" cy="36" r="9" fill="#3B5B7A"/><circle cx="34" cy="70" r="9" fill="#3B5B7A"/><circle cx="106" cy="70" r="9" fill="#3B5B7A"/></svg>
-          <div style="display:flex; flex-direction:column; gap:8px">
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:32px; font-weight:700; line-height:1.2; color:#1f2a37">驗樹能否重建</p>
-            <div style="display:flex; flex-direction:row; flex-wrap:wrap; gap:10px; align-items:center">
-              <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#6b7480">需求</p>
-              <p style="padding:2px 12px; border:2px solid #c96a1b; border-radius:8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#c96a1b">要有真值 clone 樹</p>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center; padding:14px 18px; background:#fdfdfb; border:1px solid #e3e1da; border-radius:10px">
-          <p style="width:300px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#6b7480">HCC1395</p>
-          <p style="flex:1; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#6b7480"><b style="color:#B3362B">✗</b> 沒有已知 clone 樹</p>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center; padding:14px 18px; background:#fdfdfb; border:1px solid #e3e1da; border-radius:10px">
-          <p style="width:300px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#1f2a37">diplosim 自己的真值樹</p>
-          <p style="flex:1; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37"><b style="color:#2E7D4F">✓</b> 測 PhyClone 重建<br><b style="color:#B3362B">✗</b> 不證明模擬像真實</p>
-        </div>
-        <div style="display:flex; flex-direction:row; gap:16px; align-items:center; padding:14px 18px; border:2px dashed #c96a1b; border-radius:10px">
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:32px; font-weight:700; line-height:1.2; color:#c96a1b">?</p>
-          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#c96a1b">驗樹用的真實資料：還沒決定</p>
-        </div>
+      <div style="display:flex; flex-direction:row; gap:8px; align-items:center; padding:6px 14px; background:#ffffff; border:1px solid #e3e1da; border-radius:8px">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="一條長 read：讀長" viewBox="0 0 32 32" style="width:32px; height:32px"><rect x="1" y="12" width="30" height="8" rx="4" fill="#6b7480"/></svg>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">讀長：ONT long read</p>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:8px; align-items:center; padding:6px 14px; background:#ffffff; border:1px solid #e3e1da; border-radius:8px">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="read 上一個 somatic SNV：輸入" viewBox="0 0 32 32" style="width:32px; height:32px"><rect x="1" y="12" width="30" height="8" rx="4" fill="#e3e1da"/><circle cx="16" cy="16" r="6" fill="#D23A2E"/></svg>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">輸入：somatic SNV＋HP read 數</p>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:8px; align-items:center; padding:6px 14px; background:#ffffff; border:1px solid #e3e1da; border-radius:8px">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="資料庫圖示：公開真實資料" viewBox="0 0 32 32" style="width:32px; height:32px"><ellipse cx="16" cy="7" rx="11" ry="4" fill="#6b7480"/><rect x="5" y="7" width="22" height="18" fill="#6b7480"/><ellipse cx="16" cy="25" rx="11" ry="4" fill="#6b7480"/><ellipse cx="16" cy="7" rx="9" ry="2.5" fill="#e3e1da"/></svg>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#1f2a37">公開真實資料，無生成程式</p>
       </div>
     </div>
+    <svg xmlns="http://www.w3.org/2000/svg" aria-label="打勾矩陣：欄是驗資料像不像與驗樹能否重建，列是 4 個候選。HCC1395 ONT：驗資料打勾、先用這個；驗樹打叉、沒有 clone 樹。TRACERx 統計：驗資料打叉、short read。diplosim 自己的真值樹：驗樹打勾、只測 PhyClone。驗樹用的真實資料：問號、還沒決定。" viewBox="0 0 1664 456" style="width:1664px; height:456px" font-family="'Noto Sans TC', Arial, sans-serif">
+      <text x="20" y="104" font-size="24" fill="#6b7480">候選</text>
+      <rect x="576" y="1" width="520" height="118" rx="12" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+      <rect x="576" y="1" width="520" height="10" rx="5" fill="#2f6db5"/>
+      <g transform="translate(600,24)"><rect x="6" y="4" width="96" height="10" rx="5" fill="#2C5F9E"/><rect x="30" y="22" width="104" height="10" rx="5" fill="#2C5F9E"/><rect x="12" y="40" width="100" height="10" rx="5" fill="#D9772B"/><rect x="36" y="58" width="98" height="10" rx="5" fill="#D9772B"/><rect x="20" y="74" width="80" height="8" rx="4" fill="#9AA3AE"/></g>
+      <text x="760" y="60" font-size="32" font-weight="700" fill="#1f2a37">驗資料像不像</text>
+      <text x="760" y="100" font-size="24" fill="#2f6db5">只用 long read・HP1／HP2</text>
+      <rect x="1124" y="1" width="539" height="118" rx="12" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+      <rect x="1124" y="1" width="539" height="10" rx="5" fill="#c96a1b"/>
+      <g transform="translate(1150,24)"><line x1="70" y1="12" x2="70" y2="36" stroke="#4A5568" stroke-width="3"/><line x1="70" y1="36" x2="34" y2="70" stroke="#4A5568" stroke-width="3"/><line x1="70" y1="36" x2="106" y2="70" stroke="#4A5568" stroke-width="3"/><circle cx="70" cy="12" r="9" fill="#9AA3AE"/><circle cx="70" cy="36" r="9" fill="#4A5568"/><circle cx="34" cy="70" r="9" fill="#4A5568"/><circle cx="106" cy="70" r="9" fill="#4A5568"/></g>
+      <text x="1310" y="60" font-size="32" font-weight="700" fill="#1f2a37">驗樹能否重建</text>
+      <text x="1310" y="100" font-size="24" fill="#c96a1b">要有真值 clone 樹</text>
+
+      <rect x="2" y="138" width="1660" height="70" rx="12" fill="#ffffff" stroke="#2f6db5" stroke-width="3"/>
+      <rect x="20" y="158" width="56" height="10" rx="5" fill="#2C5F9E"/><rect x="20" y="176" width="56" height="10" rx="5" fill="#D9772B"/>
+      <text x="96" y="184" font-size="28" font-weight="700" fill="#1f2a37">HCC1395 ONT</text>
+      <text x="640" y="192" font-size="48" font-weight="700" fill="#2f6db5">✓</text>
+      <rect x="708" y="152" width="132" height="42" rx="8" fill="#2f6db5"/>
+      <text x="774" y="182" font-size="24" font-weight="700" fill="#ffffff" text-anchor="middle">先用這個</text>
+      <text x="1190" y="192" font-size="48" font-weight="700" fill="#B3362B">✗</text>
+      <text x="1258" y="184" font-size="24" fill="#1f2a37">沒有 clone 樹</text>
+
+      <rect x="1" y="218" width="1662" height="70" rx="12" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+      <rect x="20" y="238" width="14" height="10" rx="5" fill="#6b7480"/><rect x="40" y="238" width="14" height="10" rx="5" fill="#6b7480"/><rect x="62" y="238" width="14" height="10" rx="5" fill="#6b7480"/><rect x="28" y="256" width="14" height="10" rx="5" fill="#6b7480"/><rect x="50" y="256" width="14" height="10" rx="5" fill="#6b7480"/>
+      <text x="96" y="264" font-size="28" font-weight="700" fill="#1f2a37">TRACERx 統計</text>
+      <text x="640" y="272" font-size="48" font-weight="700" fill="#B3362B">✗</text>
+      <text x="708" y="264" font-size="24" fill="#1f2a37">short read</text>
+      <text x="1190" y="270" font-size="40" font-weight="700" fill="#6b7480">—</text>
+
+      <rect x="1" y="298" width="1662" height="70" rx="12" fill="#ffffff" stroke="#e3e1da" stroke-width="2"/>
+      <g transform="translate(18,310) scale(0.8)"><polygon points="20,2 52,2 44,14 28,14" fill="#2F6DB5"/><rect x="6" y="14" width="60" height="34" rx="6" fill="#2F6DB5"/><rect x="14" y="24" width="14" height="6" rx="3" fill="#2C5F9E"/><rect x="30" y="24" width="14" height="6" rx="3" fill="#D9772B"/><rect x="46" y="24" width="12" height="6" rx="3" fill="#9AA3AE"/><rect x="24" y="48" width="24" height="6" fill="#e3e1da"/></g>
+      <text x="96" y="344" font-size="28" font-weight="700" fill="#1f2a37">diplosim 自己的真值樹</text>
+      <text x="640" y="350" font-size="40" font-weight="700" fill="#6b7480">—</text>
+      <text x="1190" y="352" font-size="48" font-weight="700" fill="#2f6db5">✓</text>
+      <text x="1258" y="344" font-size="24" fill="#1f2a37">只測 PhyClone</text>
+
+      <rect x="2" y="378" width="1660" height="70" rx="12" fill="#f7f6f2" stroke="#6b7480" stroke-width="2" stroke-dasharray="10 8"/>
+      <g transform="translate(20,390)"><line x1="20" y1="6" x2="20" y2="20" stroke="#6b7480" stroke-width="3"/><line x1="20" y1="20" x2="6" y2="40" stroke="#6b7480" stroke-width="3"/><line x1="20" y1="20" x2="34" y2="40" stroke="#6b7480" stroke-width="3"/><circle cx="20" cy="6" r="5" fill="#6b7480"/><circle cx="6" cy="40" r="5" fill="#6b7480"/><circle cx="34" cy="40" r="5" fill="#6b7480"/><text x="40" y="30" font-size="28" font-weight="700" fill="#c96a1b">?</text></g>
+      <text x="96" y="424" font-size="28" font-weight="700" fill="#1f2a37">驗樹用的真實資料</text>
+      <text x="640" y="430" font-size="40" font-weight="700" fill="#6b7480">—</text>
+      <text x="1190" y="432" font-size="48" font-weight="700" fill="#c96a1b">？</text>
+      <text x="1258" y="424" font-size="24" font-weight="700" fill="#c96a1b">還沒決定</text>
+    </svg>
   </div>
   <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
     <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-11-04 diplosim：兩台機器與真實 long read</p>
     <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">5 / 9</p>
   </div>
-  <aside>這頁要講的是，要驗的有兩件事，HCC1395 只能回答其中一件。最上面這條先交代資料：沒有 clone 樹當真值，只比數值；ONT long read；輸入是 ClairS 這個軟體找出的 somatic SNV，和各條 HP 的 read 數；公開真實資料，沒有生成程式。左邊藍色是驗資料像不像，要只用 long read、能讀出 HP1 和 HP2。HCC1395 兩項都打勾，先用它；TRACERx 的 cohort 統計是 short read，排除。右邊橘色是驗樹能否重建，要有真值 clone 樹。HCC1395 沒有，不能用；diplosim 自己的真值樹只能測 PhyClone，不證明模擬像真實。所以驗樹的真實資料還沒決定。</aside>
+  <aside>這頁要看的是，要驗的兩件事，HCC1395 只能回答其中一件。上面這排標籤交代資料：沒有 clone 樹當真值；讀長是 ONT long read；輸入是 somatic SNV 和各條 HP 的 read 數；公開真實資料，沒有生成程式。下面這張表，藍色欄驗資料像不像，要只用 long read、能讀出 HP1 和 HP2；橘色欄驗樹能否重建，要有真值 clone 樹。HCC1395 ONT 左邊打勾，先用這個；右邊打叉，沒有 clone 樹。TRACERx 統計是 short read，打叉。diplosim 自己的真值樹在右欄打勾，但只測 PhyClone。最後一列是問號：驗樹用的真實資料還沒決定。</aside>
 </section>
