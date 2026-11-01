@@ -1,0 +1,4 @@
+estimate	n_sites	mean_depth	VMR	phi	phi_q2.5	phi_q97.5
+all_sites	31595	25.14	1.639	0.02542	0.02028	0.03143
+trim_0.005	31281	25.06	1.231	0.00922	NA	NA
+trim_0.01	30965	25.05	1.155	0.00621	NA	NA
