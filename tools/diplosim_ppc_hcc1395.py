@@ -15,7 +15,8 @@ Usage:
 DIPLOSIM_PPC_RANGES=RANGES_TSV makes each seed draw the listed knobs from ranges (flag, lo, hi, lin|log)
 instead of the fixed values in DIPLOSIM_ARGS; the drawn values go to OUT/tables/sim_knobs.tsv.
 
-A range row named normal_tumour_fraction (no leading --) is not passed to diplosim. With it, each seed
+A range row named normal_tumour_fraction (no leading --) is not passed to diplosim (nor is
+normal_base_error, the normal's own base error). With it, each seed
 also gets a matched normal sample: same tree and clones at purity c, NORMAL_COVERAGE depth. The sim side
 then drops SNVs the way ClairS v0.4.1 does before the caller-like filter: normal AF >= 0.05 and tumour
 AF < 6 x normal AF, when normal depth > 4 (src/extract_pair_candidates.py:439-450, shared/param.py:38,120).
@@ -50,6 +51,7 @@ N_CLONES = (2, 8)             # drawn per seed; HCC1395 has no known tree
 
 RANGES = os.environ.get("DIPLOSIM_PPC_RANGES")
 NORMAL_KNOB = "normal_tumour_fraction"
+NORMAL_ERR_KNOB = "normal_base_error"   # script-only; unset = the seed's tumour --base-error
 NORMAL_COVERAGE = 25.1            # mean depth of t00_n25 at the t50 SNV sites (= ClairS's normal_25x)
 CLAIRS_NORMAL_MAX_AF, CLAIRS_UPPER_BETA, CLAIRS_MIN_COVERAGE = 0.05, 6, 4
 
@@ -130,7 +132,7 @@ def run_one(args):
     elif knobs:
         (Path(outdir) / "knobs.json").write_text(json.dumps({"n_clones": n_clones, **knobs}))
         if NORMAL_KNOB in knobs:
-            write_normal(Path(outdir), seed, knobs[NORMAL_KNOB], extra)
+            write_normal(Path(outdir), seed, knobs[NORMAL_KNOB], extra, knobs.get(NORMAL_ERR_KNOB))
     return ok
 
 
@@ -160,12 +162,13 @@ def normal_vaf(run_dir, c):
     return {k: (num.get(k, 0.0) / den[k], den[k]) for k in den}
 
 
-def write_normal(run_dir, seed, c, extra):
+def write_normal(run_dir, seed, c, extra, err=None):
     """Matched normal counts: depth ~ Poisson(cov * cn / mean cn * Gamma(1/phi, phi)), alt ~ Binomial with
-    the seed's base error applied both ways (as diplosim/src/hp.rs swap_some)."""
+    base error err applied both ways (as diplosim/src/hp.rs swap_some); err None = the tumour --base-error."""
     rng = random.Random(f"normal{seed}")
     phi = flag_value(extra, "--depth-dispersion", 0.0)
-    err = flag_value(extra, "--base-error", 0.0)
+    if err is None:
+        err = flag_value(extra, "--base-error", 0.0)
     exp = normal_vaf(run_dir, c)
     fbar = statistics.fmean(cn for _, cn in exp.values())
     with open(run_dir / "normal.tsv", "w") as f:
