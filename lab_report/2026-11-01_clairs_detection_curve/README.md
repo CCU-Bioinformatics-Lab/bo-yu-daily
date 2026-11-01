@@ -57,3 +57,27 @@ python3 tools/plot_clairs_detection_curve.py $D lab_report/2026-10-31_diplosim_p
 - **初步解讀**〔推論〕：低 purity 時 tumor AF 小，「tumor AF ≥ 6 × normal AF」比較難達到。所以 normal 裡有幾條 alt read 的高 VAF 位點，會被當成 germline 而刪除。這是 ClairS 的規則加上 normal 混到 tumor 造成的，和 diplosim 的生成機制無關。
 - **ClairS 用的 normal 和 `t00_n25` 是同一批 read**〔實測〕。`normal_25x.bam` 已經不在原路徑，只剩它的 mosdepth 結果（`/big8_disk/mingen112/test_data/HCC1395/ONT/subsample_bam/normal_25x/mosdepth/`）。在相同的過濾條件下（排除 flag 1796、MAPQ ≥ 0、含 deletion），對 `t00_n25` 算每條染色體的總鹼基數：chr21 兩者都是 1,206,595,697，chr1 兩者都是 7,163,965,232，完全相同。如果是兩次獨立的 subsample，總鹼基數會差到數十萬以上〔推論〕。`t00_n25` 的 header 記錄它來自 `HCC1395BL.cram`（SRR25005625）的 `--subsample 0.5556 --subsample-seed 0`。所以上面用 `t00_n25` 分析 normal alt 的結果，可以直接代表 ClairS 看到的 normal。
 - **還沒做**：如果要在模擬中重現，要讓模擬也產生 normal 樣本的 alt 數，並套用同一條規則。
+
+## 5. 模擬的 normal 和真實 normal 的差距：不是分組方式，而是 alt 的分布形狀（2026-11-01）
+
+模擬端已經加上配對的 normal 樣本（purity = c，範圍 0.5–2.5%）和 ClairS 規則（`tools/diplosim_ppc_hcc1395.py`）。t10 試跑 16 個 seed 時，低 VAF 位點的 normal alt 比例仍是真實的約 1.8 倍。
+
+- **分組方式不是原因**〔實測〕：模擬也改用「模擬的 t50 觀察 VAF」（purity 0.97、53×、同樣的 alt ≥ 5、VAF ≥ 0.10）分組，結果和用期望 VAF 分組差不多。
+
+  | t50 VAF 區段 | 0.1 | 0.3 | 0.5 | 0.7 | 0.9 |
+  |---|---:|---:|---:|---:|---:|
+  | 真實 normal alt 比例 | 0.0031 | 0.0042 | 0.0064 | 0.0149 | 0.0212 |
+  | 模擬（依觀察 VAF 分組） | 0.0062 | 0.0095 | 0.0127 | 0.0210 | 0.0200 |
+
+  真實值在 VAF 0.5 以下幾乎持平，之後才陡升；模擬從低 VAF 就一路上升。
+- **真實 normal 的 alt 集中在少數位點，不是平均分散**〔實測〕。以 t50 VAF ≥ 0.9 的 5,999 個位點為例，比較實際分布和「每個位點 alt 比例都相同」的二項分布期望值：
+
+  | normal alt 數 | 0 | 1 | 2 | 3 | 4 | 5 | ≥ 6 |
+  |---|---:|---:|---:|---:|---:|---:|---:|
+  | 實際位點數 | 4,665 | 494 | 283 | 261 | 152 | 79 | 65 |
+  | 均勻時的期望 | 3,485 | 1,883 | 519 | 97 | 14 | 2 | 0 |
+
+  約 9%（557 個）位點的 normal alt ≥ 3，normal AF 約 0.1–0.3；但 78% 的位點完全沒有 alt。VAF 0.1–0.3、0.4–0.6 的位點也有同樣的集中現象，只是程度較輕。
+- 這 557 個位點分布在各條染色體（每條約 4–13%），normal depth 中位數是 20，比 alt = 0 的位點（25）低；68% 在 1 Mb 內有另一個同類位點〔實測〕。
+- **解讀**〔推論〕：如果 normal 只是均勻混入 tumor 細胞，每個位點的 normal alt 比例應該都相近，分布會接近二項分布。實際上是少數位點帶有大量 alt，其他位點幾乎沒有。所以「均勻的 c」這個模型不對：它在低 VAF 位點產生太多零星 alt（讓 SNV 被多刪），在高 VAF 位點又產生不了 AF 0.1–0.3 的集中訊號（讓 SNV 被少刪：模擬刪掉 0.18，真實沒叫出 0.76）。
+- **原因還不知道。** 可能是 normal 細胞株自己在某些區域帶有這些變異（例如 mosaic），也可能是比對問題（normal depth 較低）。還沒做 read 層級的檢查。
