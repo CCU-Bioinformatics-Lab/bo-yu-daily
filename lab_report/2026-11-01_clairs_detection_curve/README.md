@@ -47,3 +47,12 @@ python3 tools/plot_clairs_detection_curve.py $D lab_report/2026-10-31_diplosim_p
 - t50 的 call 集合不是真值：ClairS recall 約 0.74，漏掉的多半是低 VAF 的 subclonal SNV；也含少數假陽性。
 - 曲線只代表 ClairS v0.4.1 在 ONT HCC1395 上的表現。
 - 這裡的 alt 數是我們自己的 pileup（MAPQ ≥ 20、BQ ≥ 7），不是 ClairS 內部看到的數字。
+
+## 4. 方案 A 調查：高 VAF 位點為什麼叫不出來（進行中，2026-11-01）
+
+- **ClairS 的候選篩選規則**〔程式，ClairS v0.4.1 `src/extract_pair_candidates.py:443-450`，`shared/param.py:38,120`〕：normal AF ≥ 0.05，而且 tumor AF < 6 × normal AF，就把這個位點從候選中刪掉。
+- **t10 的 970 個缺席位點中，952 個不在 ClairS 的候選檔裡**〔實測，`tmp/candidates/`〕。
+- **這些位點在 normal（t00_n25）中幾乎都有 alt**〔實測〕：normal AF ≥ 0.05 的比例是 0.99，符合上面刪除規則的比例是 0.98；在 t50 的 VAF 中位數是 0.96，也就是 LOH 後全帶突變的位點。被叫出的低 VAF 位點只有 0.02 符合。
+- **normal 的 alt 比例隨 tumor VAF 增加**〔實測〕：t50 VAF 0.1 時是 0.003，0.5 時是 0.006，0.9 以上時是 0.021。這符合 normal 樣本混到約 2% tumor DNA〔推論〕。
+- **初步解讀**〔推論〕：低 purity 時 tumor AF 小，「tumor AF ≥ 6 × normal AF」比較難達到。所以 normal 裡有幾條 alt read 的高 VAF 位點，會被當成 germline 而刪除。這是 ClairS 的規則加上 normal 混到 tumor 造成的，和 diplosim 的生成機制無關。
+- **還沒做**：確認 ClairS 用的 `normal_25x.bam` 和 `t00_n25` 是不是同一批 read；如果要在模擬中重現，要讓模擬也產生 normal 樣本的 alt 數，並套用同一條規則。
