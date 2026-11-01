@@ -21,6 +21,11 @@ also gets a matched normal sample: same tree and clones at purity c, NORMAL_COVE
 then drops SNVs the way ClairS v0.4.1 does before the caller-like filter: normal AF >= 0.05 and tumour
 AF < 6 x normal AF, when normal depth > 4 (src/extract_pair_candidates.py:439-450, shared/param.py:38,120).
 The real side already went through ClairS, so the rule is not applied there.
+
+A range row named detection_curve_position u (script-only) then keeps each remaining SNV with probability
+P(called | alt reads) = (1 - u) * t10 curve + u * t40 curve, the ClairS detection curves measured on HCC1395
+over sites its normal filter keeps (tools/clairs_detection_curve_hcc1395.tsv). The caller-like filter
+still runs on both sides afterwards.
 """
 import csv
 import json
@@ -54,6 +59,19 @@ NORMAL_KNOB = "normal_tumour_fraction"
 NORMAL_ERR_KNOB = "normal_base_error"   # script-only; unset = the seed's tumour --base-error
 NORMAL_COVERAGE = 25.1            # mean depth of t00_n25 at the t50 SNV sites (= ClairS's normal_25x)
 CLAIRS_NORMAL_MAX_AF, CLAIRS_UPPER_BETA, CLAIRS_MIN_COVERAGE = 0.05, 6, 4
+DETECT_KNOB = "detection_curve_position"
+DETECT_CURVE = os.path.join(HERE, "clairs_detection_curve_hcc1395.tsv")
+
+
+def load_detect_curve(path=DETECT_CURVE):
+    """{alt (capped at the table's last row): (p at t10, p at t40)}; an empty bin (NA) counts as 0."""
+    lo, hi = {}, {}
+    with open(path) as f:
+        for r in csv.DictReader(f, delimiter="\t"):
+            a = int(r["alt"])
+            lo[a] = 0.0 if r["t10_n40_p"] == "NA" else float(r["t10_n40_p"])
+            hi[a] = 0.0 if r["t40_n10_p"] == "NA" else float(r["t40_n10_p"])
+    return lo, hi
 
 
 def load_ranges(path):
@@ -227,16 +245,31 @@ def load_sim(run_dir):
     with open(run_dir / "diplosim.tsv") as f:
         rows = [(r["VAR_POS"], tuple(int(r[k]) for k in ("HP1_REF", "HP1_ALT", "HP2_REF", "HP2_ALT", "HP0_REF", "HP0_ALT")))
                 for r in csv.DictReader(f, delimiter="\t")]
-    if not (run_dir / "normal.tsv").exists():
+    nm = {}
+    if (run_dir / "normal.tsv").exists():
+        with open(run_dir / "normal.tsv") as f:
+            nm = {r["VAR_POS"]: (int(r["NORMAL_REF"]), int(r["NORMAL_ALT"])) for r in csv.DictReader(f, delimiter="\t")}
+    knobs = json.loads((run_dir / "knobs.json").read_text()) if (run_dir / "knobs.json").exists() else {}
+    curve = None
+    if DETECT_KNOB in knobs:
+        u, (lo, hi) = knobs[DETECT_KNOB], load_detect_curve()
+        cap = max(lo)
+        curve = lambda a: (1 - u) * lo[min(a, cap)] + u * hi[min(a, cap)]
+        rng = random.Random(f"detect{run_dir.name}")
+    if not nm and curve is None:
         return [x for _, x in rows]
-    with open(run_dir / "normal.tsv") as f:
-        nm = {r["VAR_POS"]: (int(r["NORMAL_REF"]), int(r["NORMAL_ALT"])) for r in csv.DictReader(f, delimiter="\t")}
     # a dropped SNV keeps its row with alt set to 0, so it fails the caller filter and frac_called keeps
     # the same denominator
     out = []
     for k, x in rows:
-        nref, nalt = nm[k]
-        if clairs_normal_drop(x[1] + x[3] + x[5], sum(x), nalt, nref + nalt):
+        alt = x[1] + x[3] + x[5]
+        drop = False
+        if nm:
+            nref, nalt = nm[k]
+            drop = clairs_normal_drop(alt, sum(x), nalt, nref + nalt)
+        if not drop and curve is not None:
+            drop = rng.random() >= curve(alt)
+        if drop:
             x = (x[0] + x[1], 0, x[2] + x[3], 0, x[4] + x[5], 0)
         out.append(x)
     return out

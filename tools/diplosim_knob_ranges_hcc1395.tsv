@@ -7,6 +7,8 @@
 # Range 0.005-0.025 (user 2026-11-01): the high- and low-VAF ends give c about 0.016 and 0.012.
 # normal_base_error (script-only, 2026-11-01): base error of the matched normal only. Real normal alt per
 # depth at low-VAF SNVs is 0.003 including the c share, so the normal's own error is about 0.0005 (0-0.001).
+# detection_curve_position (script-only, 2026-11-01): 0 = ClairS curve measured at t10, 1 = at t40
+# (tools/clairs_detection_curve_hcc1395.tsv); each seed draws one curve between them.
 flag	lo	hi	scale
 --depth-dispersion	0.006	0.025	log
 --base-error	0.001	0.01	log
@@ -16,3 +18,4 @@ flag	lo	hi	scale
 --prop-truncal-snvs	0.6	0.9	lin
 normal_tumour_fraction	0.005	0.025	lin
 normal_base_error	0	0.001	lin
+detection_curve_position	0	1	lin
