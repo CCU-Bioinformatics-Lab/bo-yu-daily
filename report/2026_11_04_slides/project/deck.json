@@ -1,0 +1,20 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-11-01T22:00:00+08:00"},
+  "lists": "css",
+  "title": "2026-11-04 diplosim 報告",
+  "order": ["outline", "t1-machines", "t1-knobs", "t1-hpsplit", "t2-validation", "t2-purity", "t2-stats", "r-targets", "u-known"],
+  "cover": "outline",
+  "sections": {
+    "s0": {"description": "接回上次會議：研究目的、上次方向的現況、本週兩段", "start": "outline"},
+    "s1": {"description": "兩台機器：CONIPHER 與 diplosim 的參數與輸出資訊", "start": "t1-machines"},
+    "s2": {"description": "怎麼檢查 diplosim 接近真實 long read：HCC1395 不同 purity", "start": "t2-validation"},
+    "s3": {"description": "真實目標值與懂／不懂", "start": "r-targets"}
+  },
+  "faces": {
+    "noto-sans-tc": {"family": "Noto Sans TC", "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"},
+    "noto-serif-tc": {"family": "Noto Serif TC", "href": "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap"},
+    "jetbrains-mono": {"family": "JetBrains Mono", "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"}
+  },
+  "designSystems": []
+}
