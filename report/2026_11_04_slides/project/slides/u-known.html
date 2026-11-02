@@ -1,6 +1,6 @@
 <section id="u-known" style="display:flex; flex-direction:column; gap:32px; padding:128px 128px 160px; background:#f7f6f2">
   <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5">4 · 懂／不懂</p>
-  <h2 style="font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">8 個旋鈕各控制什麼已確認；HCC1395 只能驗資料，驗樹與 phase block 還沒處理</h2>
+  <h2 style="font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">8 個旋鈕各控制什麼已確認；HCC1395 只能驗資料，驗樹與其他模擬癌腫的 bulk 資料還沒處理</h2>
   <div style="display:flex; flex-direction:column; gap:24px; flex:1">
     <div style="display:flex; flex-direction:row; gap:32px; flex:1">
       <div style="display:flex; flex-direction:column; gap:16px; flex:1">
@@ -37,10 +37,10 @@
           </div>
         </div>
         <div style="display:flex; flex-direction:row; gap:24px; align-items:center; flex:1; padding:12px 20px; background:#ffffff; border:1px solid #e3e1da; border-left:6px solid #c96a1b; border-radius:12px">
-          <svg xmlns="http://www.w3.org/2000/svg" aria-label="上：真實資料分成多個 phase block，HP 顏色在 block 之間互換；下：diplosim 全長一段" viewBox="0 0 96 96" style="width:96px; height:96px"><rect x="4" y="16" width="28" height="12" fill="#2C5F9E"/><rect x="36" y="16" width="26" height="12" fill="#D9772B"/><rect x="66" y="16" width="26" height="12" fill="#2C5F9E"/><rect x="4" y="32" width="28" height="12" fill="#D9772B"/><rect x="36" y="32" width="26" height="12" fill="#2C5F9E"/><rect x="66" y="32" width="26" height="12" fill="#D9772B"/><rect x="4" y="60" width="88" height="12" fill="#2C5F9E"/><rect x="4" y="76" width="88" height="12" fill="#D9772B"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" aria-label="diplosim 和另一台模擬器各自產生 bulk 資料，中間一個問號" viewBox="0 0 96 96" style="width:96px; height:96px"><g transform="translate(2,10) scale(0.5)"><polygon points="20,2 52,2 44,14 28,14" fill="#2F6DB5"/><rect x="6" y="14" width="60" height="34" rx="6" fill="#2F6DB5"/><rect x="14" y="24" width="14" height="6" rx="3" fill="#2C5F9E"/><rect x="30" y="24" width="14" height="6" rx="3" fill="#D9772B"/><rect x="46" y="24" width="12" height="6" rx="3" fill="#9AA3AE"/></g><g transform="translate(58,10) scale(0.5)"><polygon points="20,2 52,2 44,14 28,14" fill="#4A5568"/><rect x="6" y="14" width="60" height="34" rx="6" fill="#4A5568"/><rect x="18" y="24" width="36" height="6" rx="3" fill="#C3CAD3"/></g><line x1="8" y1="56" x2="34" y2="56" stroke="#2C5F9E" stroke-width="5" stroke-linecap="round"/><line x1="8" y1="66" x2="34" y2="66" stroke="#D9772B" stroke-width="5" stroke-linecap="round"/><line x1="62" y1="56" x2="88" y2="56" stroke="#9AA3AE" stroke-width="5" stroke-linecap="round"/><line x1="62" y1="66" x2="88" y2="66" stroke="#9AA3AE" stroke-width="5" stroke-linecap="round"/><text x="48" y="92" text-anchor="middle" font-size="30" font-weight="700" fill="#c96a1b" font-family="Noto Sans TC, Arial, sans-serif">?</text></svg>
           <div style="display:flex; flex-direction:column; gap:4px; flex:1">
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#1f2a37">phase block 怎麼對齊</p>
-            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#6b7480">上：真實分段｜下：diplosim 一段</p>
+            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#1f2a37">其他模擬癌腫的 bulk 定序資料</p>
+            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.3; color:#6b7480">還沒和其他模擬器的輸出比較</p>
           </div>
         </div>
         <div style="display:flex; flex-direction:row; gap:24px; align-items:center; flex:1; padding:12px 20px; background:#ffffff; border:1px solid #e3e1da; border-left:6px solid #c96a1b; border-radius:12px">
@@ -52,13 +52,10 @@
         </div>
       </div>
     </div>
-    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; padding:16px 24px; border:3px dashed #9aa3ae; border-radius:12px">
-      <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#6b7480">我自己的懂／不懂：待補</p>
-    </div>
   </div>
   <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
     <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-11-04 diplosim：兩台機器與真實 long read</p>
-    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">9 / 9</p>
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">12 / 12</p>
   </div>
-  <aside>這頁整理懂和不懂。左邊藍色三張是已確認的：8 個新旋鈕各控制什麼，以及 HP1、HP2、unphased 的計數加起來等於 diplosim 的 ref、alt，這兩項是讀程式確認的；真實 HCC1395 哪些數值隨 purity 改變，是上一頁的實際結果。右邊橘色三張還不確定。第一，驗樹要用什麼資料，因為 HCC1395 沒有已知的 clone 樹。第二，phase block 怎麼對齊：上面是真實資料，分成好幾段，HP 顏色在段與段之間會互換；下面是 diplosim，整條只有一段。第三，新旋鈕的預設值目前是暫定，或是從 HCC1395 看出來的。最下面虛線這張是我自己的懂與不懂，之後補上。</aside>
+  <aside>這頁整理懂和不懂。左邊藍色三張是已確認的：8 個新旋鈕各控制什麼，以及 HP1、HP2、unphased 的計數加起來等於 diplosim 的 ref、alt，這兩項是讀程式確認的；真實 HCC1395 哪些數值隨 purity 改變，是上一頁的實際結果。右邊橘色三張還不確定。第一，驗樹要用什麼資料，因為 HCC1395 沒有已知的 clone 樹。第二，其他模擬癌腫的 bulk 定序資料：這週只拿 diplosim 和真實 HCC1395 比，還沒有和其他模擬器產生的癌腫 bulk 資料比較。第三，新旋鈕的預設值目前是暫定，或是從 HCC1395 看出來的。</aside>
 </section>

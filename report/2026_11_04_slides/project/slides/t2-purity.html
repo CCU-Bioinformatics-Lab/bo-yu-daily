@@ -120,7 +120,7 @@
   </svg>
   <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
     <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-11-04 diplosim：兩台機器與真實 long read</p>
-    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">6 / 9</p>
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">10 / 13</p>
   </div>
   <aside>這頁要看的是，我們把 HCC1395 的 tumor 和 normal read 照 5 種比例混合，做出 purity 不同的真實樣本。左邊深色是 tumor read，來自 HCC1395；淺色是 normal read，來自 HCC1395BL。這是 nominal 的 read 比例。箭頭接到數線上換算的 tumor 細胞比例，0.97 到 0.14，都比 read 比例低。原因看右邊：tumor 細胞約 3 份 DNA，normal 細胞 2 份，所以同樣的 read 對應較少的 tumor 細胞。purity 0.97、ploidy 3.06 來自 ASCAT，一個估 purity 和 ploidy 的軟體。下面是流程：真實端用 ClairS 這個軟體找 somatic SNV，依 HP 分 read，算數值；模擬端給 diplosim 同樣的 purity、coverage，得到 HP 計數，算同樣的數值。比較結果下次報告。下一頁看要算的是哪些數值。</aside>
 </section>

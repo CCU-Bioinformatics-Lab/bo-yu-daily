@@ -112,7 +112,6 @@ v3 → v4（使用者 2026-11-01）：HG008 全部不提（還沒考慮）；p8 
 - 標題：8 個旋鈕與它們影響的數值已確認；HCC1395 只能驗資料，驗樹與 phase block 還沒處理
 - 已確認：8 個新旋鈕各控制什麼〔程式〕；HP 計數加總等於 diplosim 的 ref、alt〔程式〕；真實 HCC1395 哪些數值隨 purity 改變〔實測〕。
 - 還不確定：驗樹要用什麼資料；diplosim 沒有 phase block，和真實資料怎麼對齊；新旋鈕的預設值只是暫定或從 HCC1395 看出來的。
-- 使用者自己的懂／不懂：**待使用者補**。
 
 ## 保留在計畫，不上投影片
 
@@ -125,3 +124,49 @@ v3 → v4（使用者 2026-11-01）：HG008 全部不提（還沒考慮）；p8 
 - HG008 先不提（還沒考慮）。
 - p8 畫成 6 條小折線。
 - 其餘內容與順序照 v3。
+
+---
+
+# v5（2026-11-01，使用者指示）
+
+- 旋鈕總覽頁（t1-knobs）移到第 2 頁，排在兩台機器頁之前。
+- 旋鈕總覽之後，每組旋鈕一頁（使用者選方案 B：照面板的組，一組一頁）。每頁說明：這組旋鈕模仿真實 long read bulk 的哪個現象、讓輸出多了什麼資訊、為什麼更接近真實腫瘤 bulk 定序資料。證據只用真實 HCC1395 t50（purity 0.97）的數值，不放模擬比較（使用者同意）。
+- depth 那組先等等（使用者 2026-11-01）：這次不做 depth 的說明頁，旋鈕總覽頁上 depth 的名稱也先不改。
+
+## 新頁序（13 頁）
+
+| 頁 | id | 內容 |
+|---|---|---|
+| 1 | outline | 大綱（左邊頁碼標籤改成 p2–p7、p8–p9） |
+| 2 | t1-knobs | 旋鈕總覽（原 p3） |
+| 3 | k-allele | SNV 落在哪條 allele |
+| 4 | k-tag | HP 標記（有標記的比例、各位點差異） |
+| 5 | k-error | read 錯誤（鹼基讀錯、HP 標錯、標錯集中） |
+| 6 | k-cn | 同一位置第二個 CN 事件 |
+| 7 | t1-machines | 兩台機器的輸出（原 p2） |
+| 8 | t1-hpsplit | HP 拆分 3 方案 |
+| 9–13 | t2-validation、t2-purity、t2-stats、r-targets、u-known | 不變 |
+
+## 每組一頁的內容（版面：左 真實現象，中 旋鈕，右 輸出改變）
+
+**p3 k-allele：SNV 落在哪條 allele**
+- 真實：t50 中 alt 主要在一條 HP 的 SNV，HP1 14,707 個、HP2 14,261 個（HP2 占 49.2%）〔實測，R6 的 real_per_snv，tagged alt ≥ 3、該 HP 占 ≥ 90%〕。
+- CONIPHER：SNV 一律在 allele A〔程式，DECISIONS 2026-10-30〕。
+- 旋鈕：SNV 落在 allele B 的機率，預設 0.5。
+- 輸出：真值欄「SNV 在哪條 allele」；alt 落在 HP1 或 HP2。
+
+**p4 k-tag：HP 標記**
+- 真實：unphased read 13.8%；各位點有標記比例的 SD 0.254；有標記比例 < 0.5 的位點 10.3%〔實測，R5 t50 real〕。原因〔推論〕：附近沒有 germline het SNP 或在 phase block 之外的 read 分不出 HP。
+- 旋鈕：有 HP 標記的 read 比例（預設 0.8，暫定）、各位點標記比例的差異（預設關閉）。
+- 輸出：unphased 的 ref、alt 計數；各位點 unphased 比例不同。
+
+**p5 k-error：read 錯誤**
+- 真實：2.7% 的 SNV，alt 同時出現在兩條 HP；另一條 HP 上有 ≥ 2 條 alt 的位點 2.4%；VAF 90% 分位 0.97（不是 1）〔實測，R5 t50 real；lab_report 2026-11-01_diplosim_split_alt_mistag 表〕。
+- 旋鈕：鹼基讀錯、HP 標錯、HP 標錯集中在少數位點（預設都關閉）。
+- 輸出：alt 跑到另一條 HP；ref、alt 互換。
+
+**p6 k-cn：同一位置第二個 CN 事件**
+- 真實：HCC1395 的 CN 中 20.7% 是「LOH 之後又 gain」，例如 (3,0) 12.3%；multiplicity ≥ 2 約 43.9%；minor HP depth < 0.1 的位點 48.2%〔實測，lab_report 2026-10-31_cn_state_ascat_vs_diplosim（ASCAT，long read）；R5〕。
+- CONIPHER：每個位置最多一個 CN 事件，產生不了「先 LOH 再 gain」〔程式，DECISIONS 2026-10-31〕。
+- 旋鈕：第二個 CN 事件的機率（預設 0）。
+- 輸出：allele A、B 的 copy number；帶 SNV 的 copy 數（multiplicity）。

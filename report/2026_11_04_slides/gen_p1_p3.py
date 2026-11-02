@@ -35,7 +35,7 @@ def footer(n):
     p = "font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480"
     return ('  <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">\n'
             f'    <p style="{p}">{FOOT_TXT}</p>\n'
-            f'    <p style="{p}">{n} / 9</p>\n  </div>\n')
+            f'    <p style="{p}">{n} / 12</p>\n  </div>\n')
 
 
 LABEL = "font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5"
@@ -96,8 +96,8 @@ def icon(kind, x, cy):
 
 
 rows = [
-    ("check", BLUE, "回應", "machine", "說清楚改了什麼", "兩台機器、8 個旋鈕", "p2–p3"),
-    ("check", BLUE, "回應", "options", "先比 2–3 個方案再選", "HP 拆分 3 方案、驗證資料比較", "p4–p5"),
+    ("check", BLUE, "回應", "machine", "說清楚改了什麼", "8 個旋鈕、每組一頁、兩台機器", "p2–p7"),
+    ("check", BLUE, "回應", "options", "先比 2–3 個方案再選", "這版沒有放方案比較頁", "—"),
     ("check", BLUE, "回應", "flow", "用流程圖呈現中間思考", "每頁一張主圖", "每頁"),
 ]
 
@@ -133,7 +133,7 @@ for i, (b, col, word, ic, phrase, how, seg) in enumerate(rows):
     L.append(f'<rect x="704" y="{cy-20}" width="112" height="40" rx="20" fill="#FFFFFF" stroke="#2F6DB5" stroke-width="2"/>')
     L.append(t(760, cy + 9, seg, 24, BLUE, 700, "middle"))
 left = ('<svg xmlns="http://www.w3.org/2000/svg" aria-label="上次會議的 3 項要求與本週回應：目的是用 diplosim 產生帶 HP1、HP2 的模擬 long read bulk，之後用來測 PhyClone 的 HP 擴充；'
-        '說清楚改了什麼見 p2 到 p3；先比 2 到 3 個方案再選見 p4 到 p5；用流程圖呈現中間思考見每頁" '
+        '說清楚改了什麼見 p2 到 p7；先比 2 到 3 個方案再選這版沒有放；用流程圖呈現中間思考見每頁" '
         'viewBox="0 0 840 540" style="width:840px; height:540px">' + "".join(L) + '</svg>')
 
 R = []
@@ -184,8 +184,8 @@ right = ('<svg xmlns="http://www.w3.org/2000/svg" aria-label="今天的 3 段：
 
 notes1 = ("這週要回答兩個問題：diplosim 多輸出哪些 long read 資訊，以及怎麼檢查它接近真實。"
           "左邊先接回上次會議。最上面是研究目的：用模擬資料生成器 diplosim，產生帶 HP1、HP2 的 long read bulk 資料；右邊灰色虛線框是之後的用途，拿這些資料測 PhyClone 的 HP 擴充。"
-          "下面是上次會議的三項要求，以及這週在哪裡回應。第一，說清楚改了什麼，用兩台機器和 8 個旋鈕說明，在第 2、3 頁。"
-          "第二，先比兩到三個方案再選，HP 拆分的三個方案和驗證資料的比較，在第 4、5 頁。"
+          "下面是上次會議的三項要求，以及這週在哪裡回應。第一，說清楚改了什麼，用 8 個旋鈕、每組旋鈕一頁，以及兩台機器的輸出比較說明，在第 2 到第 7 頁。"
+          "第二，先比兩到三個方案再選，這一版沒有放方案比較的頁面。"
           "第三，用流程圖呈現中間思考，每一頁都有一張主圖。"
           "右邊是今天的順序：先比兩台機器的旋鈕與輸出，再用五種 purity 的 HCC1395 真實 long read 檢查，最後是目標值，以及已確認和還不確定的事。")
 
@@ -292,12 +292,12 @@ notes3 = ("這頁要看的是：diplosim 沿用 CONIPHER 參數，新增 8 個�
           "上面藍框是面板，下面是 SNV1 實際輸出的一列，橘色箭頭指到改動的欄位。"
           "depth 的額外變異改 ref、alt 的總數；第二個 CN 事件改 allele A、B 的 copy number；灰色虛線這組沿用 CONIPHER。"
           "read 錯誤會讓 alt 出現在另一條 HP，這裡是 HP2 的 alt；HP 標記比例 0.8 決定 unphased 有多少；allele B 機率 0.5 決定真值在哪條 allele。"
-          "灰色指針是預設關閉。最下面：拿掉 sample 數相關參數，clone 數、SNV 數改名；新旋鈕設回 CONIPHER 值就等於 CONIPHER，這是程式推得，還沒實測。")
+          "灰色指針是預設關閉。最下面：拿掉 sample 數相關參數，clone 數、SNV 數改名；新旋鈕設回 CONIPHER 值就等於 CONIPHER，這是程式推得，還沒實測。接下來一組一組看，每組旋鈕模仿真實 long read 的什麼。")
 
 p3 = (f'<section id="t1-knobs" style="{SEC}">\n'
       f'  <p style="{LABEL}">1 · 兩台機器</p>\n'
       f'  <h2 style="{H2}">diplosim 沿用 CONIPHER 參數，新增 8 個旋鈕，分 5 組各改輸出的一部分</h2>\n'
-      f'  {knobs_svg}\n' + footer(3) + f'  <aside>{notes3}</aside>\n</section>\n')
+      f'  {knobs_svg}\n' + footer(2) + f'  <aside>{notes3}</aside>\n</section>\n')
 
 (OUT / "outline.html").write_text(p1)
 (OUT / "t1-knobs.html").write_text(p3)
