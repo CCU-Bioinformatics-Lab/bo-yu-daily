@@ -1,5 +1,7 @@
 # longbulksim：long read bulk 腫瘤模擬器
 
+> **已凍結（2026-10-29，v0.8，tag `longbulksim-v0.8-frozen` → `0e250e1`）。** 不再加功能，只保留作對照與既有實驗的重現。原因：功能加得太快，難以逐步說明它改了 CONIPHER 的哪些步驟。新實作在 `../diplosim/`（Rust），會照 CONIPHER 的步驟一步一步重寫。
+
 輸入一組摘要參數（clone 數、SNV 數、CN 比例、purity、depth 等，像 CONIPHER 的 `tx_simulation`），或一棵手寫的 HP-aware clone tree spec。輸出一個 bulk ONT 樣本的 PhyClone 輸入、HP 計數、SNV pair 共現表，以及獨立的真值目錄。
 
 範圍：molecule 層計數。每條 read 是一個 molecule，屬於一個 lineage、一條 HP、一個 copy。不產生 FASTQ／BAM（`plan.md` §5.8.4 L2-R 留到之後）。v0.2 加入觀測誤差：HP 錯標、phase switch、鹼基錯誤（見「觀測誤差」）。v0.3 加入選填的 het map tagging（見「HP tag」）。v0.4 加入參數模式（見「參數模式」），這是主要入口。v0.5 加入 somatic caller 的漏抓（見「Caller 漏抓」）。v0.6 加入 cohort preset（見「Preset」），WGD 改成依機率抽。v0.7 加入選填的 depth map（見「Depth map」）。v0.8 加入選填的 allele 計數過度離散（見「觀測誤差」）。

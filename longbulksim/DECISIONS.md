@@ -20,7 +20,7 @@
 | 2026-10-25 | trunk 方向：只有一個狀態是 ploidy-neutral 時取它，否則取多數狀態 | PCAWG Battenberg 看不出祖先狀態；TRACERx 有 ploidy 標記 | 65% 用多數規則；遺失率與 ploidy 規則相近（2.7% vs 3.2%） |
 | 2026-10-25 | gain／loss 選隨機 copy；SNV 在當下所有 copy 中均勻選一個 | 讓 multiplicity 與遺失由順序決定 | 2:1 early 0.24、2:0 0.42，都在 PCAWG IQR 內 |
 | 2026-10-25 | 遺失率高於 TRACERx 下限時不調參數 | TRACERx 是嚴格下限；論文估計更高 | 中位 0.5%、Q90 3.1%；照實記錄 |
-| 2026-10-25 | v0.2 加入 `mistag_rate`、`switch_rate_per_mb`、`base_error`，預設 0 | C4 穩健性測試需要（`research/phyclone_research/C4_ROBUSTNESS_PLAN.md`）。取代上面「不模擬 phasing 誤差」 | 錯誤率 0 時不抽亂數，`input/` 與 v0.1 逐位相同 |
+| 2026-10-25 | v0.2 加入 `mistag_rate`、`switch_rate_per_mb`、`base_error`，預設 0 | C4 穩健性測試需要（`lab_report/2026-10-25_c4_robustness/`；原計畫檔 `C4_ROBUSTNESS_PLAN.md` 已在 2026-10-29 刪除）。取代上面「不模擬 phasing 誤差」 | 錯誤率 0 時不抽亂數，`input/` 與 v0.1 逐位相同 |
 | 2026-10-25 | 錯標以整條 read 為單位；switch 依 read 中點決定 | haplotag 對整條 read 標記；同一 read 上的 SNV 必須同一個 tag | 推論：跨 switch 的 read 在 longphase 是依多數 het SNP 決定，中點是近似 |
 | 2026-10-25 | base error 是對稱的 ref↔alt 翻轉 | 計畫定義；只有 ref→alt 方向有實測（HCC1395BL 0.40%） | alt→ref 未量測 |
 | 2026-10-26 | v0.3 加入選填 `het_map`：tag 由 longphase-s germline 規則決定（覆蓋 ≥ 1 個 het，且只在一個 PS block） | PPC 顯示固定 tag 機率讓位點間 tag 比例太均勻（SD 0.05 vs 0.25） | 規則取自 `HaplotagStrategy.cpp`，沒有擬合參數；PPC 後 SD 0.248、聚集 0.426 vs 0.428。沒有 map 時輸出不變（`ZeroErrorsMatchV01`） |
@@ -51,3 +51,4 @@
 | 2026-10-27 | 樹的 root 是 normal（`N`）：spec 的 trunk clone 寫 `parent: N`，`truth_tree.tsv` 的 trunk clone parent 寫 `N`；`parent: null` 會報錯 | 使用者選擇。和 CONIPHER 一致（它的 root 節點是 diploid normal，底下接 truncal clone）；`replay` 本來就從 normal 的 genome 開始 | clone 數仍只算腫瘤 clone；模擬數值不變。讀 `truth_tree.tsv` 的 tools 同時接受 `root`（手寫樹舊流程）與 `N`。舊輸出的 `spec.yaml` 寫 `null`，不能再用 `parse_spec` 讀 |
 | 2026-10-27 | 參數模式的 WGD 改成 trunk 上單一時間點的 `{wgd: true}` 事件，全基因體一起加倍；各段 trunk 狀態拆成 WGD 前、後兩段，取事件數最少的拆法（例如 2:0 = WGD 前先 LOH） | 使用者選擇。真實 WGD 是一次性事件：WGD 前的 truncal SNV 都是 2 份、之後都是 1 份，比例全基因體一致。舊版每段各自加倍、時間不同；CONIPHER 則是每個 SNV 各自隨機排先後 | 無 WGD 的模擬與舊版逐位相同（15/15）；有 WGD 的輸出改變。`random_tree` 模式未改 |
 | 2026-10-28 | v0.8 加入選填 `allelic_precision`：每個 SNV 的 alt 計數 ~ BetaBinomial(n, vaf·s, (1−vaf)·s)，預設 0（binomial） | 使用者選擇。HCC1395BL normal 實測 s ≈ 140（截斷視窗 [0.2, 0.8]），比 PhyClone 預設 400 更分散；模擬是 binomial，評估偏樂觀 | 單一資料集校正，所以預設關閉。實作是 read 層的 allele 改寫（`disperse()`），不改 depth 與 molecule；關閉時不抽亂數，輸出不變（`ZeroErrorsMatchV01`、`AllelicDispersion`）。`lab_report/2026-10-28_normal_allelic_dispersion/` |
+| 2026-10-29 | 凍結在 v0.8（tag `longbulksim-v0.8-frozen` → `0e250e1`），之後不再改 | 使用者決定。實作進度太快，跟不上它改了 CONIPHER 的哪些步驟；改成在 `diplosim/` 用 Rust 逐步重寫 | 既有 lab_report 的結果仍可用此 tag 重現 |
