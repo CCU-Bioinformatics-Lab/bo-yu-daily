@@ -12,6 +12,8 @@
 4. **CN 對每個 SNV、每個 sample 獨立抽。** CN 沒有 segment 結構，也不跟著 clone 走。同一個 SNV 在 8 個 sample 中的 CN 可以全部不同。〔程式＋本機資料〕
 5. **因此要自己寫 HP-aware 生成器。** PhyClone 的程式可以沿用「樹 → prevalence → 計數」的骨架，但 CN、haplotype、read 共現都要重新設計。缺口見 [04](notes/04_GAPS_FOR_LONGREAD.md)。
 
+**現況（2026-10-29）：** 改造起點已從 PhyClone 的測試用生成器換成 CONIPHER 的 `tx_simulation`（10-28 會議議題一）。實作是 repo 根目錄的 `longbulksim/`：參數照 CONIPHER，另外加上雙套體（HP1／HP2）、copy 層級的 SNV 與 read 共現。〔會議〕〔程式〕比較見 [08](notes/08_SIMULATOR_COMPARISON.md)。
+
 標記：〔論文〕＝論文或補充文件的描述；〔程式〕＝讀程式碼得到的行為；〔實測〕＝本目錄實際執行的結果；〔本機資料〕＝讀 `/big8_disk/boyu114/phyclone_dataset/` 得到；〔推論〕＝分析推論，尚未直接證實。
 
 ## 目錄
@@ -23,11 +25,9 @@
 | [notes/03_BENCHMARK_DATASET_FORMAT.md](notes/03_BENCHMARK_DATASET_FORMAT.md) | 本機 benchmark 資料集的真值格式，以及從資料反推的生成參數 |
 | [notes/04_GAPS_FOR_LONGREAD.md](notes/04_GAPS_FOR_LONGREAD.md) | 要產生 long read 特徵還缺什麼；對應 `plan.md` 的 L1-B／L2 |
 | [notes/05_OTHER_SIMULATORS.md](notes/05_OTHER_SIMULATORS.md) | Pairtree（`pearsim`）與 CONIPHER（`TRACERx_simulation_tool`）生成器：來源、重現性、輸入輸出 |
-| [notes/06_CLONESIM.md](notes/06_CLONESIM.md) | clonesim（Pharming）程式層級紀錄。**已移出 bulk 範圍**：它的 read 層只有 single-cell |
 | [notes/07_SISTEM.md](notes/07_SISTEM.md) | SISTEM 程式層級拆解與試跑：allele 0／1＝haplotype、bulk 計數沒有抽樣也沒有 CN 加權 |
 | [notes/08_SIMULATOR_COMPARISON.md](notes/08_SIMULATOR_COMPARISON.md) | bulk 生成器三方比較（Pairtree、CONIPHER、SISTEM）與選用建議 |
-| [simulator_survey_2026-10-24/](simulator_survey_2026-10-24/README.md) | 其他「真值樹＋模擬 SNV 資料」生成器總調查（約 90 個工具，6 個方向）與總表 `ALL_SIMULATORS.tsv` |
-| [phyclone_sim_code/](phyclone_sim_code/SOURCE.md) | PhyClone 模擬與驗證程式的快照（上游 commit `2738324`），來源對照見 `SOURCE.md` |
+| [truth_evidence_2026-10-25/](truth_evidence_2026-10-25/README.md) | 真值樹合理性的證據：T2T／HG008／COLO829 等細胞株與真實腫瘤的事件證據 |
 | `references/` | 指向論文、補充文件、XLSX、benchmark 資料集 README 的 symlink |
 
 ## 相關文件（不複製，直接連結）
@@ -39,5 +39,5 @@
 
 ## 維護規則
 
-- `phyclone_sim_code/` 是唯讀快照。要改上游行為，在 submodule `../phyclone_research/PhyClone/` 內改並另外 commit。
+- PhyClone 模擬程式直接讀 submodule：`../phyclone_research/PhyClone/phyclone/tests/utilities/`（commit `2738324`）。要改上游行為，在 submodule 內改並另外 commit。
 - 新寫的生成器放 repo 根目錄 `tools/`，實驗結果放 `lab_report/YYYY-MM-DD_<主題>/`。本目錄只放分析文件。

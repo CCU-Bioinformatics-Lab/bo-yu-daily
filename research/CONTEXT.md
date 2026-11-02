@@ -14,7 +14,7 @@
 
 _別名與對照_：tumour phylogeny; tumor evolutionary tree; clone phylogeny。
 _用詞界線_：敘述特定結果時，另寫明節點代表細胞、克隆、突變或樣本。
-_原文定位_：[HCC L1](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L1](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T002 克隆（clone）**
 
@@ -22,7 +22,7 @@ _原文定位_：[HCC L1](hcc1395_golden_tree_research/hcc1395_tumor_evolution_t
 
 _別名與對照_：clonal population; 克隆群。
 _用詞界線_：不要把統計群集或單倍型直接稱為克隆。
-_原文定位_：[HCC L37](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L37](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T003 亞克隆（subclone）**
 
@@ -30,7 +30,7 @@ _原文定位_：[HCC L37](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：subclonal population。
 _用詞界線_：指出相對的祖先或比較範圍；低 VAF 本身不能證明亞克隆。
-_原文定位_：[HCC L8](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L44](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)。
+_原文定位_：[HCC L8](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L44](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)。
 
 **T004 克隆演化（clonal evolution）**
 
@@ -86,7 +86,7 @@ _原文定位_：[A05 L1](literature/papers/A05_mpal_multiome_2024/README.md)；
 
 _別名與對照_：topology; tree structure; 拓撲。
 _用詞界線_：統一寫「拓樸」；拓樸本身不包含分支長度或細胞比例。
-_原文定位_：[HCC L1](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L13](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)。
+_原文定位_：[HCC L1](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L13](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)。
 
 **T011 節點（node）**
 
@@ -94,7 +94,7 @@ _原文定位_：[HCC L1](hcc1395_golden_tree_research/hcc1395_tumor_evolution_t
 
 _別名與對照_：vertex。
 _用詞界線_：先寫明節點代表什麼；虛擬根節點不一定代表真實細胞。
-_原文定位_：[HCC L18](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/README.md)；[PC L5](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[HCC L18](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/README.md)；[PC L5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T012 邊（edge）**
 
@@ -102,7 +102,7 @@ _原文定位_：[HCC L18](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：tree edge。
 _用詞界線_：有根演化樹的邊有祖先方向；邊的存在不表示已有直接實驗驗證。
-_原文定位_：[HCC L10](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L17](phyclone_research/notes/05_EVIDENCE_MATRIX.md)。
+_原文定位_：[HCC L10](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L17](phyclone_research/notes/zh-TW/05_EVIDENCE_MATRIX.md)。
 
 **T013 根節點（root node）**
 
@@ -118,7 +118,7 @@ _原文定位_：[PC L12](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)；[B
 
 _別名與對照_：descendant subtree。
 _用詞界線_：計算 CCF 時，說明是否包含子樹內的所有後代。
-_原文定位_：[PC L5](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)；[B01 L742](literature/papers/B01_melanoma_longread_2026/paper.txt)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)；[B01 L742](literature/papers/B01_melanoma_longread_2026/paper.txt)。
 
 **T015 最近共同祖先（most recent common ancestor；MRCA）**
 
@@ -134,7 +134,7 @@ _原文定位_：[HCC L9](hcc1395_golden_tree_research/hcc1395_tumor_evolution_t
 
 _別名與對照_：ancestry; ancestor-descendant relation。
 _用詞界線_：區分直接親子關係與跨多層的祖先關係。
-_原文定位_：[HCC L17](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L5](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[HCC L17](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T017 線性演化（linear evolution）**
 
@@ -166,7 +166,7 @@ _原文定位_：[B01 L5](literature/papers/B01_melanoma_longread_2026/README.md
 
 _別名與對照_：mutation-to-clone assignment; SNV-to-node assignment。
 _用詞界線_：clone assignment 也可指細胞到克隆的指派，不能無條件視為同義詞。
-_原文定位_：[HCC L32](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[HCC L32](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T021 突變群集（mutation cluster）**
 
@@ -174,7 +174,7 @@ _原文定位_：[HCC L32](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：cluster; 叢集; 突變分群。
 _用詞界線_：統一寫「群集」；多個群集可能屬於同一克隆。
-_原文定位_：[HCC L45](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L45](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T124 趨同演化（convergent evolution）**
 
@@ -206,7 +206,7 @@ _原文定位_：[B01 L1053](literature/papers/B01_melanoma_longread_2026/paper.
 
 _別名與對照_：leaf; tip。
 _用詞界線_：葉節點可能代表細胞、克隆或樣本，須按樹類型說明。
-_原文定位_：[PC L9](phyclone_research/notes/07_PRESENTATION_BRIEF.md)；[B03 L19](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
+_原文定位_：[PC L9](phyclone_research/notes/zh-TW/07_PRESENTATION_BRIEF.md)；[B03 L19](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
 
 **T128 演化支（clade）**
 
@@ -214,7 +214,7 @@ _原文定位_：[PC L9](phyclone_research/notes/07_PRESENTATION_BRIEF.md)；[B0
 
 _別名與對照_：monophyletic group。
 _用詞界線_：演化支是樹內群組，不是任意相似度群集。
-_原文定位_：[HCC L65](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L35](phyclone_research/notes/04_CODE_MAPPING.md)。
+_原文定位_：[HCC L65](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L35](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)。
 
 **T129 事件定位（event placement）**
 
@@ -238,7 +238,7 @@ _原文定位_：[PC L9](phyclone_research/notes/zh-TW/07_PRESENTATION_BRIEF.md)
 
 _別名與對照_：preclustering; preclustering step。
 _用詞界線_：明示群集是否固定不可拆分，避免把分群改善誤認為拓樸改善。
-_原文定位_：[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)；[B04 L45](literature/papers/B04_lung_longread_phasing_2022/README.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)；[B04 L45](literature/papers/B04_lung_longread_phasing_2022/README.md)。
 
 **T191 克隆指派（clone assignment）**
 
@@ -280,7 +280,7 @@ _原文定位_：[HCC L16](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：single nucleotide variation。
 _用詞界線_：SNV 可屬於體細胞或生殖系；SNV 不等於 SNP。
-_原文定位_：[HCC L7](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L5](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[HCC L7](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T025 單核苷酸多型性（single-nucleotide polymorphism；SNP）**
 
@@ -320,7 +320,7 @@ _原文定位_：[A01 L17](literature/papers/A01_ovarian_cfDNA_2025/README.md)�
 
 _別名與對照_：copy-number state。
 _用詞界線_：區分單細胞整數狀態、克隆狀態與混合樣本的平均估計值。
-_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T030 拷貝數改變（copy-number alteration；CNA）**
 
@@ -328,7 +328,7 @@ _原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：copy-number aberration。
 _用詞界線_：癌症獲得性改變優先寫 CNA；需區分事件與觀測狀態。
-_原文定位_：[HCC L8](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L9](phyclone_research/notes/04_CODE_MAPPING.md)。
+_原文定位_：[HCC L8](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L9](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)。
 
 **T031 拷貝數變異（copy-number variation；CNV）**
 
@@ -336,7 +336,7 @@ _原文定位_：[HCC L8](hcc1395_golden_tree_research/hcc1395_tumor_evolution_t
 
 _別名與對照_：copy-number variant。
 _用詞界線_：文獻常與 CNA 交用；保留工具原名，不以 CNV 推定生殖系來源。
-_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md)；[PC L44](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)。
+_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md)；[PC L44](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)。
 
 **T032 總拷貝數（total copy number）**
 
@@ -344,7 +344,7 @@ _原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：total CN; C_total。
 _用詞界線_：在二等位表示法中，total CN 為 major CN 加 minor CN。
-_原文定位_：[PC L34](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)；[PW L65](hcc1395_golden_tree_research/phylowgs_model_review.md)。
+_原文定位_：[PC L34](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)；[PW L65](hcc1395_golden_tree_research/phylowgs_model_review.md)。
 
 **T033 等位基因特異性拷貝數（allele-specific copy number）**
 
@@ -352,7 +352,7 @@ _原文定位_：[PC L34](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)；[PW
 
 _別名與對照_：allele-specific CN; ASCN。
 _用詞界線_：major/minor 是數量排序；haplotype-specific CN 另外保留已定相的身份。
-_原文定位_：[HCC L98](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L5](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[HCC L98](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T034 主要與次要等位拷貝數（major and minor copy number）**
 
@@ -360,7 +360,7 @@ _原文定位_：[HCC L98](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：major/minor CN; major_cn/minor_cn。
 _用詞界線_：major 不固定對應 HP1；不同區段的排序可能交換。
-_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L7](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L7](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T035 單倍型特異性拷貝數（haplotype-specific copy number）**
 
@@ -408,7 +408,7 @@ _原文定位_：[A01 L25](literature/papers/A01_ovarian_cfDNA_2025/README.md)�
 
 _別名與對照_：mutant-copy number; multiplicity。
 _用詞界線_：不可與樹表示重數混用；須指定細胞或克隆的 CN 狀態。
-_原文定位_：[HCC L15](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L40](phyclone_research/notes/05_EVIDENCE_MATRIX.md)。
+_原文定位_：[HCC L15](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L40](phyclone_research/notes/zh-TW/05_EVIDENCE_MATRIX.md)。
 
 **T041 突變流失（mutation loss）**
 
@@ -416,7 +416,7 @@ _原文定位_：[HCC L15](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：mutation deletion; 突變丟失。
 _用詞界線_：缺少支持讀段不等於已發生突變流失。
-_原文定位_：[PC L5](phyclone_research/notes/07_PRESENTATION_BRIEF.md)；[A03 L33](literature/papers/A03_pancreatic_snDNA_2023/README.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/07_PRESENTATION_BRIEF.md)；[A03 L33](literature/papers/A03_pancreatic_snDNA_2023/README.md)。
 
 **T042 事件時序（event timing）**
 
@@ -424,7 +424,7 @@ _原文定位_：[PC L5](phyclone_research/notes/07_PRESENTATION_BRIEF.md)；[A0
 
 _別名與對照_：mutation timing; CNV timing。
 _用詞界線_：區分相對順序、分子時間與日曆時間。
-_原文定位_：[HCC L295](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L68](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[HCC L295](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L68](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T131 拷貝數區段（copy-number segment）**
 
@@ -440,7 +440,7 @@ _原文定位_：[HCC L55](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：CN gain; copy gain。
 _用詞界線_：須寫明正常、克隆或倍體基準。
-_原文定位_：[HCC L58](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L56](phyclone_research/notes/04_CODE_MAPPING.md)。
+_原文定位_：[HCC L58](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L56](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)。
 
 **T133 擴增（amplification）**
 
@@ -456,7 +456,7 @@ _原文定位_：[PC L44](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.m
 
 _別名與對照_：deletion; sequence deletion。
 _用詞界線_：與資料缺失及廣義 CN loss 分開；低覆蓋本身不能證明 DNA 缺失。
-_原文定位_：[PC L9](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)；[A03 L15](literature/papers/A03_pancreatic_snDNA_2023/README.md)。
+_原文定位_：[PC L9](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)；[A03 L15](literature/papers/A03_pancreatic_snDNA_2023/README.md)。
 
 **T135 等位基因不平衡（allelic imbalance）**
 
@@ -512,7 +512,7 @@ _原文定位_：[A04 L19](literature/papers/A04_aml_strandseq_2024/README.md)�
 
 _別名與對照_：genomic variant; sequence variant。
 _用詞界線_：先指定參考背景；變異判定是觀測結果，不直接給出演化事件時間。
-_原文定位_：[HCC L16](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L8](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)。
+_原文定位_：[HCC L16](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L8](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)。
 
 **T173 突變（mutation）**
 
@@ -520,7 +520,7 @@ _原文定位_：[HCC L16](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：mutational event。
 _用詞界線_：事件稱突變；觀測差異稱變異；引用文獻時保留原作者用詞。
-_原文定位_：[HCC L5](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L5](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T174 雜合（heterozygosity）**
 
@@ -528,7 +528,7 @@ _原文定位_：[HCC L5](hcc1395_golden_tree_research/hcc1395_tumor_evolution_t
 
 _別名與對照_：heterozygous; HET。
 _用詞界線_：在複雜 CN 背景中說明等位拷貝組成；未觀測到其中一種不直接證明純合。
-_原文定位_：[PC L48](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)；[PW L33](hcc1395_golden_tree_research/phylowgs_model_review.md)。
+_原文定位_：[PC L48](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)；[PW L33](hcc1395_golden_tree_research/phylowgs_model_review.md)。
 
 **T175 純合（homozygosity）**
 
@@ -544,7 +544,7 @@ _原文定位_：[A03 L15](literature/papers/A03_pancreatic_snDNA_2023/README.md
 
 _別名與對照_：CN loss; copy-number decrease。
 _用詞界線_：DNA 缺失或整條染色體流失都可能使 CN 減少；CN loss 不單指片段刪除。
-_原文定位_：[HCC L58](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L28](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)。
+_原文定位_：[HCC L58](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L28](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)。
 
 ### 單倍型與分子證據
 
@@ -554,7 +554,7 @@ _原文定位_：[HCC L58](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：等位型。
 _用詞界線_：等位基因不同不代表位於不同細胞或不同克隆。
-_原文定位_：[HCC L53](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L53](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T044 基因型（genotype）**
 
@@ -562,7 +562,7 @@ _原文定位_：[HCC L53](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：genotypic state。
 _用詞界線_：基因型可包含拷貝數；與基因表現狀態分開。
-_原文定位_：[HCC L23](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L8](phyclone_research/notes/04_CODE_MAPPING.md)。
+_原文定位_：[HCC L23](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L8](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)。
 
 **T045 單倍型（haplotype）**
 
@@ -682,7 +682,7 @@ _原文定位_：[B04 L1](literature/papers/B04_lung_longread_phasing_2022/READM
 
 _別名與對照_：reference base; ref allele。
 _用詞界線_：REF 不表示正常細胞來源，也不保證是演化祖先狀態。
-_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L34](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L34](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T177 替代等位基因（alternate allele；ALT）**
 
@@ -700,7 +700,7 @@ _原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：variant allele frequency; 變異等位基因頻率。
 _用詞界線_：統一寫 fraction／比例；多等位位點與缺失值須另定分母。
-_原文定位_：[HCC L7](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L8](phyclone_research/notes/04_CODE_MAPPING.md)。
+_原文定位_：[HCC L7](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/03_validation_evidence.md)；[PC L8](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)。
 
 **T057 癌細胞比例（cancer cell fraction；CCF）**
 
@@ -708,7 +708,7 @@ _原文定位_：[HCC L7](hcc1395_golden_tree_research/hcc1395_tumor_evolution_t
 
 _別名與對照_：cellular prevalence (PhyClone); 細胞盛行率（須核對分母）。
 _用詞界線_：在無流失的繼承模型中，節點 CCF 包含該節點及其後代；其他文獻的 prevalence 須另核對分母。
-_原文定位_：[HCC L18](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L5](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)。
+_原文定位_：[HCC L18](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L5](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)。
 
 **T058 克隆專有比例（exclusive clone fraction）**
 
@@ -716,7 +716,7 @@ _原文定位_：[HCC L18](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：clonal prevalence (PhyClone); clone-exclusive fraction; 克隆盛行率。
 _用詞界線_：文獻的 clonal prevalence 或 clone fraction 可能另有定義，引用前先核對分母。
-_原文定位_：[HCC L31](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L9](phyclone_research/notes/05_EVIDENCE_MATRIX.md)。
+_原文定位_：[HCC L31](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L9](phyclone_research/notes/zh-TW/05_EVIDENCE_MATRIX.md)。
 
 **T059 腫瘤細胞純度（cellular tumor purity）**
 
@@ -724,7 +724,7 @@ _原文定位_：[HCC L31](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：tumour content (PhyClone); cellular purity; tumor purity。
 _用詞界線_：purity 未定義時先釐清；不要直接用腫瘤 DNA 比例代入。
-_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T060 腫瘤 DNA 比例（tumor DNA fraction）**
 
@@ -756,7 +756,7 @@ _原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：read depth; coverage depth; coverage。
 _用詞界線_：區分平均深度與位點深度；coverage 也可能指覆蓋廣度。
-_原文定位_：[HCC L13](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L28](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)。
+_原文定位_：[HCC L13](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L28](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)。
 
 **T064 共同覆蓋深度（joint coverage）**〔支援詞〕
 
@@ -798,7 +798,7 @@ _原文定位_：[HCC L18](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：read; 讀序。
 _用詞界線_：「讀段」指物件；「讀長」指長度。
-_原文定位_：[HCC L3](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[HCC L3](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T069 長讀長定序（long-read sequencing）**
 
@@ -830,7 +830,7 @@ _原文定位_：[A04 L1](literature/papers/A04_aml_strandseq_2024/README.md)。
 
 _別名與對照_：bulk WGS/WES; bulk data。
 _用詞界線_：bulk 的等位比例是混合訊號，不直接提供單細胞基因型。
-_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L11](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T073 單細胞 DNA 定序（single-cell DNA sequencing；scDNA-seq）**
 
@@ -870,7 +870,7 @@ _原文定位_：[A01 L9](literature/papers/A01_ovarian_cfDNA_2025/README.md)；
 
 _別名與對照_：whole genome sequencing。
 _用詞界線_：WGS 不代表每個位置皆可判讀；另寫明深度與有效區域。
-_原文定位_：[HCC L5](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L18](phyclone_research/notes/07_PRESENTATION_BRIEF.md)。
+_原文定位_：[HCC L5](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L18](phyclone_research/notes/zh-TW/07_PRESENTATION_BRIEF.md)。
 
 **T078 全外顯子定序（whole-exome sequencing；WES）**
 
@@ -966,7 +966,7 @@ _原文定位_：[A03 L27](literature/papers/A03_pancreatic_snDNA_2023/README.md
 
 _別名與對照_：specimen。
 _用詞界線_：樣本可含多種細胞與多個克隆；不等於一個克隆。
-_原文定位_：[HCC L5](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L5](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T147 多部位取樣（multisite sampling）**
 
@@ -1038,7 +1038,7 @@ _原文定位_：[A02 L19](literature/papers/A02_sprinter_2025/README.md)；[A01
 
 _別名與對照_：BAM file; BAM alignment。
 _用詞界線_：讀段標籤的意義依格式規格與產生工具解讀。
-_原文定位_：[HCC L37](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md)；[PC L26](phyclone_research/notes/00_SOURCE_MAP.md)。
+_原文定位_：[HCC L37](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md)；[PC L51](phyclone_research/notes/zh-TW/00_SOURCE_MAP.md)。
 
 **T181 CRAM 比對格式（CRAM format；CRAM）**〔支援詞〕
 
@@ -1054,7 +1054,7 @@ _原文定位_：[SYN L3](literature/surveys/patient_sc_longread_2026/REPO_IMPRO
 
 _別名與對照_：VCF file; variant-call file。
 _用詞界線_：FORMAT 的 AF 等欄位依標頭定義解讀，不預設等於 CCF 或族群頻率。
-_原文定位_：[HCC L84](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md)；[PC L26](phyclone_research/notes/00_SOURCE_MAP.md)。
+_原文定位_：[HCC L84](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/01_data_and_callset.md)；[PC L51](phyclone_research/notes/zh-TW/00_SOURCE_MAP.md)。
 
 **T183 BED 區間格式（Browser Extensible Data format；BED）**〔支援詞〕
 
@@ -1096,7 +1096,7 @@ _原文定位_：[A01 L32](literature/papers/A01_ovarian_cfDNA_2025/paper.txt)�
 
 _別名與對照_：emission model; 發射分布。
 _用詞界線_：指定計數單位、錯誤模型與條件變數。
-_原文定位_：[HCC L19](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L16](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)。
+_原文定位_：[HCC L19](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L16](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)。
 
 **T088 概似（likelihood）**
 
@@ -1104,7 +1104,7 @@ _原文定位_：[HCC L19](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：似然; likelihood function。
 _用詞界線_：統一寫「概似」；概似值不是模型為真的機率。
-_原文定位_：[HCC L15](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L15](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T089 先驗分布（prior distribution）**
 
@@ -1112,7 +1112,7 @@ _原文定位_：[HCC L15](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：prior; 先驗。
 _用詞界線_：先驗可包含偏好與限制，不等於已證實的生物事實。
-_原文定位_：[HCC L297](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[HCC L297](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T090 後驗分布（posterior distribution）**
 
@@ -1120,7 +1120,7 @@ _原文定位_：[HCC L297](hcc1395_golden_tree_research/hcc1395_tumor_evolution
 
 _別名與對照_：posterior; 後驗。
 _用詞界線_：報告時交代模型、先驗與近似推論方式。
-_原文定位_：[HCC L29](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[HCC L29](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/07_branching_topology_paper_check_20260825.md)；[PC L5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T091 邊際化（marginalization）**
 
@@ -1128,7 +1128,7 @@ _原文定位_：[HCC L29](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：integrating out; 積分消去。
 _用詞界線_：邊際化不是把未知量設為固定最佳值。
-_原文定位_：[PC L5](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)；[B03 L36](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)；[B03 L36](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
 
 **T092 二項觀測模型（binomial observation model）**
 
@@ -1136,7 +1136,7 @@ _原文定位_：[PC L5](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)；[B03
 
 _別名與對照_：Binomial; 二項分布。
 _用詞界線_：讀段存在依賴或額外變異時，須檢查此模型是否適用。
-_原文定位_：[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)；[PW L29](hcc1395_golden_tree_research/phylowgs_model_review.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)；[PW L29](hcc1395_golden_tree_research/phylowgs_model_review.md)。
 
 **T093 貝他二項觀測模型（beta-binomial observation model）**
 
@@ -1144,7 +1144,7 @@ _原文定位_：[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)；[P
 
 _別名與對照_：Beta-Binomial; beta binomial。
 _用詞界線_：可表示相對二項分布的過度離散；參數化方式須明示。
-_原文定位_：[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)；[B03 L17](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)；[B03 L17](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
 
 **T094 馬可夫鏈蒙地卡羅（Markov chain Monte Carlo；MCMC）**
 
@@ -1152,7 +1152,7 @@ _原文定位_：[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)；[B
 
 _別名與對照_：MCMC sampling。
 _用詞界線_：須檢查混合與收斂；抽樣次數多不直接證明結果可靠。
-_原文定位_：[HCC L43](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)。
+_原文定位_：[HCC L43](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/05_lessons_for_current_repo.md)；[PC L5](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)。
 
 **T095 序列蒙地卡羅（sequential Monte Carlo；SMC）**〔支援詞〕
 
@@ -1160,7 +1160,7 @@ _原文定位_：[HCC L43](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：SMC sampling; SMC sampler。
 _用詞界線_：說明粒子數與重抽樣規則；SMC 步驟不一定是生物時間，粒子濾波是其應用之一。
-_原文定位_：[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T096 最大後驗估計（maximum a posteriori estimate；MAP）**
 
@@ -1168,7 +1168,7 @@ _原文定位_：[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
 
 _別名與對照_：MAP tree; maximum a posteriori。
 _用詞界線_：區分最高分聯合狀態與對其他狀態加總後的最高機率拓樸。
-_原文定位_：[PC L27](phyclone_research/notes/05_EVIDENCE_MATRIX.md)；[B03 L39](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
+_原文定位_：[PC L27](phyclone_research/notes/zh-TW/05_EVIDENCE_MATRIX.md)；[B03 L39](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
 
 **T097 共識樹（consensus tree）**
 
@@ -1176,7 +1176,7 @@ _原文定位_：[PC L27](phyclone_research/notes/05_EVIDENCE_MATRIX.md)；[B03 
 
 _別名與對照_：consensus phylogeny。
 _用詞界線_：寫明共識規則；它不一定等於任一抽到的樹或 MAP 樹。
-_原文定位_：[PC L35](phyclone_research/notes/04_CODE_MAPPING.md)；[B03 L19](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
+_原文定位_：[PC L35](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)；[B03 L19](literature/papers/B03_singlecell_mutational_processes_2022/README.md)。
 
 **T098 離群模型（outlier model）**
 
@@ -1184,7 +1184,7 @@ _原文定位_：[PC L35](phyclone_research/notes/04_CODE_MAPPING.md)；[B03 L19
 
 _別名與對照_：outlier mixture; 離群值模型。
 _用詞界線_：離群標籤不直接判定資料是技術錯誤或真實突變流失。
-_原文定位_：[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)；[A02 L1271](literature/papers/A02_sprinter_2025/paper.txt)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)；[A02 L1271](literature/papers/A02_sprinter_2025/paper.txt)。
 
 **T099 無限位點假設（infinite-sites assumption；ISA）**
 
@@ -1192,7 +1192,7 @@ _原文定位_：[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)；[A02
 
 _別名與對照_：infinite sites; infinite-sites model。
 _用詞界線_：PhyClone 的樹內繼承另要求後代保留突變；允許 CNA 造成流失時，須說明模型處理方式。
-_原文定位_：[PC L5](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)；[PW L145](hcc1395_golden_tree_research/phylowgs_model_review.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)；[PW L145](hcc1395_golden_tree_research/phylowgs_model_review.md)。
 
 **T100 可識別性（identifiability）**
 
@@ -1200,7 +1200,7 @@ _原文定位_：[PC L5](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)�
 
 _別名與對照_：identifiable topology; 可辨識性。
 _用詞界線_：不確定區間小不直接證明模型可識別或假設正確。
-_原文定位_：[PC L89](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)；[A02 L35](literature/papers/A02_sprinter_2025/README.md)。
+_原文定位_：[PC L89](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)；[A02 L35](literature/papers/A02_sprinter_2025/README.md)。
 
 **T101 事件最簡原則（event parsimony）**
 
@@ -1224,7 +1224,7 @@ _原文定位_：[B07 L23](literature/papers/B07_numbat_2022/README.md)；[B01 L
 
 _別名與對照_：collapsed likelihood; integrated likelihood。
 _用詞界線_：寫明消去了哪些未知量；不同邊際化範圍可能不是同一分數。
-_原文定位_：[HCC L318](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L16](phyclone_research/notes/04_CODE_MAPPING.md)。
+_原文定位_：[HCC L318](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L16](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)。
 
 **T155 後驗不確定性（posterior uncertainty）**
 
@@ -1232,7 +1232,7 @@ _原文定位_：[HCC L318](hcc1395_golden_tree_research/hcc1395_tumor_evolution
 
 _別名與對照_：topology uncertainty; assignment uncertainty。
 _用詞界線_：分別說明拓樸、事件位置與比例的不確定性。
-_原文定位_：[PC L7](phyclone_research/notes/05_EVIDENCE_MATRIX.md)；[B01 L34](literature/papers/B01_melanoma_longread_2026/README.md)。
+_原文定位_：[PC L7](phyclone_research/notes/zh-TW/05_EVIDENCE_MATRIX.md)；[B01 L34](literature/papers/B01_melanoma_longread_2026/README.md)。
 
 **T156 貝氏可信區間（credible interval）**〔支援詞〕
 
@@ -1272,7 +1272,7 @@ _原文定位_：[B05 L13](literature/papers/B05_medicc2_2022/README.md)；[A03 
 
 _別名與對照_：proposal kernel。
 _用詞界線_：提議分布不是目標後驗分布。
-_原文定位_：[HCC L297](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)。
+_原文定位_：[HCC L297](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L5](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)。
 
 **T161 暖機期（burn-in）**
 
@@ -1280,7 +1280,7 @@ _原文定位_：[HCC L297](hcc1395_golden_tree_research/hcc1395_tumor_evolution
 
 _別名與對照_：warm-up; burn in。
 _用詞界線_：說明實際演算法；PhyClone 的啟發式 SMC 暖機不當作後驗證據。
-_原文定位_：[HCC L37](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)。
+_原文定位_：[HCC L37](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L5](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)。
 
 **T162 鏈混合（chain mixing）**
 
@@ -1288,7 +1288,7 @@ _原文定位_：[HCC L37](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：MCMC mixing; sampler mixing。
 _用詞界線_：接受率高不一定表示能在不同拓樸間充分移動。
-_原文定位_：[PC L25](phyclone_research/notes/06_ASSUMPTIONS_LIMITATIONS.md)；[PW L127](hcc1395_golden_tree_research/phylowgs_model_review.md)。
+_原文定位_：[PC L25](phyclone_research/notes/zh-TW/06_ASSUMPTIONS_LIMITATIONS.md)；[PW L127](hcc1395_golden_tree_research/phylowgs_model_review.md)。
 
 **T188 鏈收斂（chain convergence）**
 
@@ -1410,7 +1410,7 @@ _原文定位_：[HCC L9](hcc1395_golden_tree_research/hcc1395_tumor_evolution_t
 
 _別名與對照_：synthetic data; simulated benchmark。
 _用詞界線_：生成樹可作模擬真值；不等於已知病人的完整歷史。
-_原文定位_：[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)；[A02 L37](literature/papers/A02_sprinter_2025/README.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)；[A02 L37](literature/papers/A02_sprinter_2025/README.md)。
 
 **T164 消融比較（ablation study）**
 
@@ -1418,7 +1418,7 @@ _原文定位_：[PC L5](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)；[A
 
 _別名與對照_：ablation; feature ablation。
 _用詞界線_：同時改變深度、分群與模型時，難以單獨歸因效益。
-_原文定位_：[PC L17](phyclone_research/notes/05_EVIDENCE_MATRIX.md)；[B01 L27](literature/papers/B01_melanoma_longread_2026/README.md)。
+_原文定位_：[PC L17](phyclone_research/notes/zh-TW/05_EVIDENCE_MATRIX.md)；[B01 L27](literature/papers/B01_melanoma_longread_2026/README.md)。
 
 **T165 重抽樣（resampling）**
 
@@ -1426,7 +1426,7 @@ _原文定位_：[PC L17](phyclone_research/notes/05_EVIDENCE_MATRIX.md)；[B01 
 
 _別名與對照_：resampling step; 重新抽樣。
 _用詞界線_：bootstrap 與粒子重抽樣是不同設計；須指定分子、細胞、區段或粒子單位。
-_原文定位_：[HCC L39](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L21](phyclone_research/notes/04_CODE_MAPPING.md)。
+_原文定位_：[HCC L39](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/02_tree_reconstruction.md)；[PC L21](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)。
 
 **T166 精確率（precision）**
 
@@ -1450,7 +1450,7 @@ _原文定位_：[HCC L48](hcc1395_golden_tree_research/hcc1395_tumor_evolution_
 
 _別名與對照_：F-score (F1)。
 _用詞界線_：F1 為 2PR/(P+R)；說明評估的是變異、指派或祖先關係。
-_原文定位_：[PC L14](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)；[B01 L602](literature/papers/B01_melanoma_longread_2026/paper.txt)。
+_原文定位_：[PC L14](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)；[B01 L602](literature/papers/B01_melanoma_longread_2026/paper.txt)。
 
 **T169 調整蘭德指數（adjusted Rand index；ARI）**〔支援詞〕
 
@@ -1466,7 +1466,7 @@ _原文定位_：[SYN L88](literature/surveys/patient_sc_longread_2026/REPO_IMPR
 
 _別名與對照_：V measure。
 _用詞界線_：它評估分群；不能單獨當作演化樹正確率。
-_原文定位_：[PC L13](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)。
+_原文定位_：[PC L13](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)。
 
 **T171 樹距離（tree distance）**
 
@@ -1492,7 +1492,7 @@ _原文定位_：[A05 L17](literature/papers/A05_mpal_multiome_2024/README.md)�
 
 _別名與對照_：particle Gibbs sampling。
 _用詞界線_：與單次無條件 SMC 分開；PhyClone 的暖機程序另有目的。
-_原文定位_：[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T116 粒子權重有效樣本數（particle-weight effective sample size；particle ESS）**〔方法補充〕
 
@@ -1500,7 +1500,7 @@ _原文定位_：[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
 
 _別名與對照_：SMC ESS; weight-based ESS。
 _用詞界線_：ESS 為 1/Σw²；與 relative ESS 及 MCMC ESS 分開。
-_原文定位_：[PC L22](phyclone_research/notes/04_CODE_MAPPING.md)。
+_原文定位_：[PC L22](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)。
 
 **T117 MCMC 有效樣本數（MCMC effective sample size；MCMC ESS）**〔方法補充〕
 
@@ -1516,7 +1516,7 @@ _原文定位_：[Stan 官方定義](https://mc-stan.org/docs/2_40/reference-man
 
 _別名與對照_：topology multiplicity; ordering multiplicity。
 _用詞界線_：此處 multiplicity 是組合計數，不是突變等位基因拷貝數。
-_原文定位_：[PC L89](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
+_原文定位_：[PC L89](phyclone_research/notes/zh-TW/02_METHODS_DEEP_DIVE.md)。
 
 **T119 有根森林（rooted forest）**〔方法補充〕
 
@@ -1524,7 +1524,7 @@ _原文定位_：[PC L89](phyclone_research/notes/02_METHODS_DEEP_DIVE.md)。
 
 _別名與對照_：rooted forest structure。
 _用詞界線_：PhyClone 可加入虛擬根連接各棵樹；虛擬根不代表生物共同祖先。
-_原文定位_：[PC L8](phyclone_research/notes/05_EVIDENCE_MATRIX.md)。
+_原文定位_：[PC L8](phyclone_research/notes/zh-TW/05_EVIDENCE_MATRIX.md)。
 
 **T120 樹結構折棒過程（tree-structured stick-breaking process；TSSB）**〔方法補充〕
 
@@ -1532,7 +1532,7 @@ _原文定位_：[PC L8](phyclone_research/notes/05_EVIDENCE_MATRIX.md)。
 
 _別名與對照_：tree structured stick breaking。
 _用詞界線_：保留 TSSB，避免與 PhyClone 的森林結構 CRP 先驗互換。
-_原文定位_：[HCC L194](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L7](phyclone_research/notes/03_EXPERIMENTS_RESULTS.md)。
+_原文定位_：[HCC L194](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/06_evolutionary_model_support_framework.md)；[PC L7](phyclone_research/notes/zh-TW/03_EXPERIMENTS_RESULTS.md)。
 
 **T121 森林結構 CRP 先驗（forest-structured Chinese restaurant process prior；FS-CRP）**〔方法補充〕
 
@@ -1540,7 +1540,7 @@ _原文定位_：[HCC L194](hcc1395_golden_tree_research/hcc1395_tumor_evolution
 
 _別名與對照_：FSCRP; forest-structured CRP。
 _用詞界線_：與 PhyloWGS 的 TSSB 是不同先驗模型。
-_原文定位_：[PC L5](phyclone_research/notes/01_PAPER_BIG_PICTURE.md)。
+_原文定位_：[PC L5](phyclone_research/notes/zh-TW/01_PAPER_BIG_PICTURE.md)。
 
 **T122 順式與反式相位（cis and trans phase）**〔方法補充〕
 
@@ -1564,4 +1564,4 @@ _原文定位_：[B07 L383](literature/papers/B07_numbat_2022/paper.txt)。
 
 _別名與對照_：relative ESS; normalized particle ESS。
 _用詞界線_：其範圍通常為 1/N 到 1；與未正規化的粒子 ESS 分開。
-_原文定位_：[PC L22](phyclone_research/notes/04_CODE_MAPPING.md)。
+_原文定位_：[PC L22](phyclone_research/notes/zh-TW/04_CODE_MAPPING.md)。

@@ -12,8 +12,8 @@
 | [`papers_by_category/`](papers_by_category/) | 依分類的 symlink 目錄，由腳本產生，不要手改 |
 | [`SYNTHESIS_phyclone_longphase.md`](SYNTHESIS_phyclone_longphase.md) | 跨論文去重與 PhyClone × longphase-s 整合地圖 |
 | [`surveys/patient_sc_longread_2026/`](surveys/patient_sc_longread_2026/README.md) | 病人 single-cell 與 long-read／haplotype 特徵調查（A／B 類摘要、資料與程式可得性、改進方案） |
-| [`surveys/methods_survey/`](surveys/methods_survey/README.md) | 腫瘤演化樹重建方法調查（2019–2026）；`workers/` 是分工檢索的原始紀錄 |
-| [`surveys/longread_tree_search_2026-10-19/`](surveys/longread_tree_search_2026-10-19/README.md) | long-read 建樹文獻補搜；`raw/` 是原始搜尋結果 |
+| [`surveys/methods_survey/`](surveys/methods_survey/README.md) | 腫瘤演化樹重建方法調查（2019–2026） |
+| [`surveys/longread_tree_search_2026-10-19/`](surveys/longread_tree_search_2026-10-19/README.md) | long-read 建樹文獻補搜 |
 | `tools/` | `sync_paper_categories.py`：由 TSV 同步 front-matter、symlink 與分類表 |
 
 HCC1395 golden tree（H01）的筆記不在本目錄，見 [`../hcc1395_golden_tree_research/`](../hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/README.md)。

@@ -1,6 +1,6 @@
 # 02 程式實作的模擬流程
 
-本檔記錄**程式的實際行為**〔程式〕。程式快照在 [`../phyclone_sim_code/`](../phyclone_sim_code/SOURCE.md)，版本是上游 commit `2738324`。行號指快照檔案。
+本檔記錄**程式的實際行為**〔程式〕。程式在 submodule [`../../phyclone_research/PhyClone/phyclone/tests/utilities/`](../../phyclone_research/PhyClone/phyclone/tests/utilities/)，版本是上游 commit `2738324`。行號指該 commit 的檔案。
 
 ## 1. 流程總覽
 

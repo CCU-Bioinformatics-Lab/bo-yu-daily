@@ -1,13 +1,13 @@
 # Long-read 特徵（HP／PS／同 read 共現）建演化樹：多 agent 搜尋總結
 
-日期：2026-10-19。4 個 subagent 平行搜尋。原始報告在 `raw/`：
+日期：2026-10-19。4 個 subagent 平行搜尋。原始報告（`raw/`）已在 2026-10-29 刪除，要查原文用 git 歷史。四個搜尋角度：
 
 | 檔案 | 搜尋角度 |
 |---|---|
-| `raw/search_A_cooccurrence.md` | 同 read SNV 共現、read phasing、PS／HP tag、mutation pair 排序 |
-| `raw/search_B_haplotype_cn.md` | phased long read 的 haplotype-specific CN、CNV／WGD timing |
-| `raw/search_C_singlecell_methyl_sv.md` | single-cell long read、methylation lineage、SV phylogeny |
-| `raw/search_D_repos_preprints.md` | GitHub、2023–2026 preprint、各 lab 專案 |
+| `search_A_cooccurrence.md` | 同 read SNV 共現、read phasing、PS／HP tag、mutation pair 排序 |
+| `search_B_haplotype_cn.md` | phased long read 的 haplotype-specific CN、CNV／WGD timing |
+| `search_C_singlecell_methyl_sv.md` | single-cell long read、methylation lineage、SV phylogeny |
+| `search_D_repos_preprints.md` | GitHub、2023–2026 preprint、各 lab 專案 |
 
 納入規則：一定要有建樹或排序步驟。只做 VAF clustering、Fishplot 或人工樹都不算。已排除 M03、B06、B08、B02，不列入。
 

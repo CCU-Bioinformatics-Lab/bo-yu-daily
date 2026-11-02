@@ -23,17 +23,17 @@
 - 只做 clustering：PyClone-VI、BnpC、DeCiFer。
 - 只做 CN 或 SV calling：HATCHet2、SIGNALS、CHISEL、Wakhan、Severus。
 
-**流程**：5 個平行 subagent 各查一個面向，原始報告在 `workers/`：
+**流程**：5 個平行 subagent 各查一個面向，原始報告（`workers/`）已在 2026-10-29 刪除，要查原文用 git 歷史。下文的 W1–W8 是來源標記：
 
 | Worker | 面向 | 檔案 |
 |---|---|---|
-| W1 | bulk SNV（＋CN）clone tree | [W1_bulk_snv_cn.md](workers/W1_bulk_snv_cn.md) |
-| W2 | single-cell DNA 的 SNV（＋CN）tree | [W2_single_cell_snv.md](workers/W2_single_cell_snv.md) |
-| W3 | CN／allele-specific CN／WGD／SV event phylogeny | [W3_cn_sv_event.md](workers/W3_cn_sv_event.md) |
-| W4 | read／molecule 層級連鎖、long-read、haplotype | [W4_read_phasing_longread.md](workers/W4_read_phasing_longread.md) |
-| W5 | 多資料整合方法、benchmark 與 review | [W5_integrative_benchmark.md](workers/W5_integrative_benchmark.md) |
-| W6 | 「待核」推論細節的正文核對 | [W6_verification.md](workers/W6_verification.md) |
-| W7 | 2025–2026 會議論文集與 2026 bioRxiv 補查 | [W7_proceedings_2025_2026.md](workers/W7_proceedings_2025_2026.md) |
+| W1 | bulk SNV（＋CN）clone tree | `W1_bulk_snv_cn.md` |
+| W2 | single-cell DNA 的 SNV（＋CN）tree | `W2_single_cell_snv.md` |
+| W3 | CN／allele-specific CN／WGD／SV event phylogeny | `W3_cn_sv_event.md` |
+| W4 | read／molecule 層級連鎖、long-read、haplotype | `W4_read_phasing_longread.md` |
+| W5 | 多資料整合方法、benchmark 與 review | `W5_integrative_benchmark.md` |
+| W6 | 「待核」推論細節的正文核對 | `W6_verification.md` |
+| W7 | 2025–2026 會議論文集與 2026 bioRxiv 補查 | `W7_proceedings_2025_2026.md` |
 
 **協調者核對**：
 - 主選表 50 個不重複 DOI，全部以 Crossref API 解析成功，標題與第一作者相符（2026-10-16）。
@@ -205,7 +205,7 @@ W5 也查了 deep learning／generative 型方法（2023–2026），沒有找�
 
 ## Benchmark 與評估指標（供 `evaluation_v1.md`）
 
-W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo 最有用的有三點：
+W5 整理了 11 篇 benchmark／review，完整表格原在 W5 檔（已刪除，見 git 歷史）。對本 repo 最有用的有三點：
 
 - **主指標**：不依賴 clone 編號的 pairwise 祖先關係。
   - SMC-Het 的 ADM Pearson correlation（Salcedo 2020 Nat Biotech，[10.1038/s41587-019-0364-z](https://doi.org/10.1038/s41587-019-0364-z)）。
@@ -218,7 +218,7 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
   - linear 與 branching topology 分層報告（Tomlinson 2019）。
 - **新的評估論點**：Satas et al.（WABI 2026）證明 single-cell 常用的 min-flip 目標函數在統計上不一致。
 - **缺口**：沒有找到中立的 single-cell tree 或 CN phylogeny benchmark，現有比較都寫在方法論文自己的章節裡。
-- **2026-10-18 補查**（[W8](workers/W8_benchmark_update_2026-10-18.md)）：2025-06 後沒有新的中立 tree benchmark。新資源是 Liu et al. 2026 Nat Commun（Kolmogorov 組）的 ONT 小鼠黑色素瘤 23 subline，有已知樹，可混成 long-read pseudo-bulk 測資。EMulSI-Phy poster 比較了 PhyClone，但只有摘要。
+- **2026-10-18 補查**（W8）：2025-06 後沒有新的中立 tree benchmark。新資源是 Liu et al. 2026 Nat Commun（Kolmogorov 組）的 ONT 小鼠黑色素瘤 23 subline，有已知樹，可混成 long-read pseudo-bulk 測資。EMulSI-Phy poster 比較了 PhyClone，但只有摘要。
 
 `tX_nY` 的 nominal purity 只能當 sanity check，不是 ground truth。
 
@@ -235,7 +235,7 @@ W5 整理了 11 篇 benchmark／review，完整表格見 W5 檔。對本 repo �
 
 ## 待核與已知缺口
 
-- **推論細節核對**：Pharming、TUSV-ext、PhylEx 已在 M04–M06 讀正文確認。COMPASS、ConDoR、CalicoST、DEVOLUTION、SiCloneFit、CellPhy、DelSIEVE、PICTograph、CALDER、BAMSE、SCICoNE、NestedBD 已讀正文核對，結果見 [W6_verification.md](workers/W6_verification.md)；表中已依此更正。W2／W3／W5 原檔保留原描述，衝突處以本表與 W6 為準（例如 CALDER 是 MILP、CalicoST 只用 LOH 建樹）。
+- **推論細節核對**：Pharming、TUSV-ext、PhylEx 已在 M04–M06 讀正文確認。COMPASS、ConDoR、CalicoST、DEVOLUTION、SiCloneFit、CellPhy、DelSIEVE、PICTograph、CALDER、BAMSE、SCICoNE、NestedBD 已讀正文核對，結果見 `W6_verification.md`；表中已依此更正。W2／W3／W5 原檔保留原描述，衝突處以本表與 W6 為準（例如 CALDER 是 MILP、CalicoST 只用 LOH 建樹）。
 - **會議論文補查（W7）**：RECOMB 2025、ISMB 2025／2026、ECCB 2026、WABI 2025／2026、RECOMB-CG 2025／2026 已逐篇看過目錄；RECOMB 2026 與 RECOMB-CCB 只部分覆蓋；bioRxiv 2025-06 到 2026-10 的 6 個 category 已用關鍵字與 lab 作者掃過；medRxiv 沒掃。bulk 端沒有找到新的 SNV＋CN 推樹方法。
 - **其他不確定處**：
   - 程式碼位置已查明：MEDICC2 論文寫 bitbucket.org/schwarzlab/medicc2，GitHub schwarzlab-ccb/medicc2 是同團隊目前維護的 repo（由轉址推斷）；PACTION 在 github.com/elkebir-group/paction（W5 寫的 raphael-group 是錯的 org）；Canopy2 在 github.com/annweideman/canopy2。

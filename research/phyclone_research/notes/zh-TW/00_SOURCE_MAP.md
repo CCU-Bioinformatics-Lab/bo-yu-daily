@@ -46,7 +46,7 @@ category_index: "../../../literature/PAPER_CATEGORIES.md"
 | `Experiment_Friedman_Nemenyi_Tests.xlsx` | 總體與成對檢定；補充表 S15–S27 | `eabda8bdfe0e8daa502a20a4a14c0532ca6e686b014960c760bb5d0c2bc5eebe` |
 | `Experiment_Posterior_Metrics.xlsx` | 原始 RRE/LPR 與檢定；補充表 S28–S36 | `6c25a17d3876930fff83576dd3703ce16cf172a5d33dab7edaf76830973d6268` |
 | `PhyClone/` | 目前實作、輸入／輸出契約、預設值與測試 | tag `0.8.0`，commit `27383246c1aff7b1d62c02662017bd61bfdfbc33` |
-| `RESEARCH_PLAN.md` | 研究流程與完成契約 | `a222f82b236646163215d21b25b0a53b7ebf036c2a83ff53bcc9c7cbf84dfc3b` |
+| `RESEARCH_PLAN.md`（2026-10-29 已刪除，見 git 歷史） | 研究流程與完成契約 | `a222f82b236646163215d21b25b0a53b7ebf036c2a83ff53bcc9c7cbf84dfc3b` |
 
 目前沒有獨立的原始 BAM/VCF、模擬種子、評估指令碼或論文結果追蹤檔案。XLSX 活頁簿是隨附的結果產物；應用程式儲存庫中不含基準測試／統計分析流程。
 
