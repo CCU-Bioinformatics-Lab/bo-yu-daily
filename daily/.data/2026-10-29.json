@@ -1,0 +1,389 @@
+{
+  "schema_version": "2",
+  "date": "2026-10-29",
+  "headline": "longbulksim 凍結在 v0.8，改用 Rust 照 CONIPHER 一步一步重寫成 diplosim，參數已逐條定下 13 條；CLAUDE.md 依兩次會議改成「先列方案、一次一步」的流程，並和 report_rule.md 分工",
+  "covers": "10-28 23:00 ~ 10-29 23:00",
+  "issues": [],
+  "advisor": [],
+  "scan": {
+    "last_scanned": "2026-10-29T23:00:10",
+    "sessions": [
+      "8d74fa21",
+      "37532337",
+      "92c2bfe8",
+      "3e48594e",
+      "81a420bf",
+      "881f7551",
+      "b542072e"
+    ],
+    "layers": {
+      "show": 5,
+      "record": 4,
+      "border": 0
+    }
+  },
+  "items": [
+    {
+      "title": "diplosim 要從 CONIPHER 搬哪些參數？逐條決定，記下 13 條決策",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "15 個 CONIPHER 參數先照原預設加入，多樣本與 long read 觀測類參數先不加；對照網頁分成 11 步流程頁與參數表兩頁",
+      "question": "diplosim 要照 CONIPHER 的步驟一步一步重寫。每一步要能說明「沿用 CONIPHER 哪個函式」或「為什麼新寫」。所以要先知道：CONIPHER 有哪些輸入參數、longbulksim 加了或拿掉哪些，哪些該搬進 diplosim？",
+      "approach": "- 寫 `diplosim/docs/conipher_steps.md`：CONIPHER 生成流程分成 S1–S11，每步附 CONIPHER 與 longbulksim 的 `檔案:行號`。\n- 做成一個 SVG 為主的網頁：第一頁上排是 CONIPHER 每一步，下排是 longbulksim 改了或加了什麼；第二頁是參數表，可依來源（CONIPHER／longbulksim／兩者）和狀態（已決定／待決）篩選。\n- 使用者逐一問每個參數的意思，再決定加不加。每個決定寫進 `diplosim/DECISIONS.md`，附理由與可逆性。",
+      "result": "- **加入（暫用 CONIPHER 預設）**：`n_clones`、`n_snv`（改名自 n_nodes、n_positions）、`prop_truncal_snvs`、`prop_pos_gained`／`prop_pos_lost`、`prop_gained_truncal`／`prop_lost_truncal`、`gain_events`／`loss_events`、`prop_mutloss_positions`、`mutloss_truncal`、`constant_multiplicity`、`clonal_wgd`／`subclonal_wgd`／`n_subclonal_wgd`。單位先用 position。\n- **不加**：`n_samples` 固定 1，理由是病人定序成本高，不可能隔一段時間或分區域多次定序；`min／max_clones_per_sample`、`all_leaf_observed` 同理。long read 觀測類的 `het_map`、`depth_map`、`caller`、`allelic_precision`，以及 `--preset`、`--phased` 也先不加。\n- 讀 CONIPHER 程式時找到 4 個行為和名字不一致的地方，例如 `mutloss_truncal=False` 其實沒有排除 truncal SNV（`evolution.py:266-269`）。",
+      "interpretation": "diplosim 的參數集合現在可以逐條向老師說明「從哪裡來、為什麼要或不要」。這正是 10-28 會議要的「你怎麼選」。但剩下的參數和設計問題都還沒定，也還沒寫任何 Rust 程式。",
+      "gaps": "還沒決定：CONIPHER 的 `minimum_branch_length`、purity 上下限、`coverage`、noise 三個參數；longbulksim 新增的約 15 個參數；WGD 時間機制；不用 `--phased` 時 HP tag 怎麼決定；CONIPHER 的 4 個怪行為要照搬還是修正。diplosim 從哪一步開始寫（方案 A／B／C）也還沒選。全部改動都還沒 commit。",
+      "artifacts": {
+        "files": [
+          "diplosim/docs/conipher_steps.md",
+          "diplosim/docs/conipher_vs_longbulksim.html",
+          "diplosim/DECISIONS.md"
+        ],
+        "commands": [],
+        "outputs": [
+          "https://claude.ai/artifact/Vz6RXnh1AUPsQpomkoMVKZ"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "truncal",
+          "plain": "所有腫瘤細胞共有、在樹幹上的突變或事件"
+        },
+        {
+          "term": "prop_pos_gained",
+          "plain": "有 copy gain 的 SNV 位置佔多少比例"
+        },
+        {
+          "term": "constant_multiplicity",
+          "plain": "subclone 的 CN 事件不改變某個 SNV 已經有幾份突變 copy"
+        },
+        {
+          "term": "position",
+          "plain": "CONIPHER 把每個 SNV 位置當成獨立的一段，沒有染色體區段"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 5736,
+          "session_id": "81a420bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 15:48",
+          "ref": "81a420bf:5736"
+        },
+        {
+          "line": 8219,
+          "session_id": "881f7551",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 21:39",
+          "ref": "881f7551:8219"
+        }
+      ]
+    },
+    {
+      "title": "會議指出的工作流程缺點，改進 CLAUDE.md，並畫成一張泳道圖",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "加入 10-21 的 L1–L7 與 10-28 的 M1–M3，再補「先確認最新會議」與「一次只做一步」；流程放寬，報告順序改成會議報告的順序；CLAUDE.md 管講什麼，report_rule.md 只管投影片怎麼做",
+      "question": "兩次會議老師都指出工作流程的問題：沒先列方案就動手、報告只給成品、做太快跟不上。這些要寫成每次對話都會執行的規則，報告才會更好、更快。",
+      "approach": "- 先把 `research/meeting_record/` 搬到頂層 `meeting_record/`。\n- 把 10-21 summary 的 L1–L7 和 10-28 紀錄的 M1–M3 寫進 CLAUDE.md「研究與報告流程」，commit 成 `7fd501f`。\n- 晚上回查今天全部 session，列出被糾正的地方（A1–A5、B1–B5），使用者選 A1、A2 補上。\n- 用 `tools/draw_claude_md_workflow.py` 把規則畫成泳道圖：一種任務一列，依使用者回饋改了數版。\n- 照使用者要求放寬規則，再選方案 A 分工兩份文件。",
+      "result": "- **新規則**：整理會議前先 `ls meeting_record/` 確認最新一次（A1）；一次只做一步，等使用者看懂才做下一步（A2）。\n- **放寬**：說明流程不再固定「輸入→步驟→輸出→假設」四欄（L2、L-8）；報告改成挑 1–3 個任務實際嘗試。\n- **交付重排**：接回上次會議 → 本週 1–3 個任務 → 方案與理由 → 結果（含失敗）→ 懂／不懂 → 自我檢查。\n- **分工（方案 A）**：report_rule.md 的 L-1～L-9、L-11 改成指向 CLAUDE.md，只留投影片專屬做法；代號不改，因為其他 `BRIEF.md` 有 10 處引用。",
+      "interpretation": "報告要講什麼、照什麼順序，現在只寫在 CLAUDE.md 一處。以後改規則只改一份。今天「四欄」和「1–3 個任務」各改了兩份，以後不會再這樣。",
+      "gaps": "晚上的改動（A1、A2、放寬、分工、泳道圖）還沒 commit。糾正清單的 A3、A4、B1、B2、B4 還沒決定要不要寫進去；CLAUDE.md 的 diplosim 那行仍寫「目前是空目錄」。10-28 會議還沒有 `_summary.md`。",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md",
+          "report/report_rule.md",
+          "plan.md",
+          "research/INDEX.md",
+          "meeting_record/2026_10_28_meeting_record.md",
+          "tools/draw_claude_md_workflow.py"
+        ],
+        "commands": [
+          "python3 tools/draw_claude_md_workflow.py"
+        ],
+        "outputs": [
+          "report/claude_md_workflow/claude_md_workflow.svg",
+          "report/claude_md_workflow/index.html",
+          "commit 7fd501f"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "泳道圖",
+          "plain": "一種任務畫一列，同一列由左到右是那種任務的步驟"
+        },
+        {
+          "term": "M1",
+          "plain": "10-28 會議的規則：遇到設計問題先列 2–3 個方案，停下來讓使用者選"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 8237,
+          "session_id": "881f7551",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 21:49",
+          "ref": "881f7551:8237"
+        },
+        {
+          "line": 8843,
+          "session_id": "881f7551",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 22:04",
+          "ref": "881f7551:8843"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] longbulksim 不再改，凍結在 v0.8，改用 Rust 照 CONIPHER 重寫",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "longbulksim 4 天做到 v0.8、11 步改了 10 步，使用者跟不上；打 tag 凍結，新目錄 `diplosim/` 照 CONIPHER 一步一步重寫",
+      "question": "longbulksim 加功能的速度太快，使用者說不清楚它改了 CONIPHER 的哪些步驟，也就沒辦法向老師說明。要繼續改它，還是換一種做法？",
+      "approach": "- 先量 longbulksim 一次模擬要多久：預設參數 21 秒，PCAWG 全基因組規模 3 分 52 秒。\n- 在 v0.8 的 commit `0e250e1` 打 tag `longbulksim-v0.8-frozen`。\n- README 開頭加「已凍結」與原因，DECISIONS.md 加一列，CLAUDE.md 目錄改寫。\n- 新建空目錄 `diplosim/`，名字取自 diploid（兩套染色體）。",
+      "result": "- longbulksim 只保留作對照，和重現既有實驗。\n- 新規則：diplosim 每一步都要標「沿用 CONIPHER 哪個函式」或「新寫、為什麼」。\n- 這次的原因也寫進 CLAUDE.md 的 A2「一次只做一步」規則。",
+      "interpretation": "之前的實驗結果仍然有效，但之後的模擬器改動都要從 CONIPHER 出發，一次一步。這讓報告可以講「改了哪一步、為什麼」，而不是只給成品。",
+      "gaps": "tag 只在本機，沒有 push。`diplosim` 這個名字沒有查過是否和現有工具撞名。凍結相關的文件改動還沒 commit。",
+      "artifacts": {
+        "files": [
+          "longbulksim/README.md",
+          "longbulksim/DECISIONS.md",
+          "CLAUDE.md"
+        ],
+        "commands": [
+          "git tag longbulksim-v0.8-frozen 0e250e1",
+          "python3 -m longbulksim.generate <out>"
+        ],
+        "outputs": [
+          "tag longbulksim-v0.8-frozen",
+          "diplosim/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "凍結",
+          "plain": "不再加功能或修改，只用來對照和重跑舊實驗"
+        },
+        {
+          "term": "PCAWG preset",
+          "plain": "換成 PCAWG 全基因組資料的參數，SNV 數約大 12 倍"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 4489,
+          "session_id": "81a420bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 15:04",
+          "ref": "81a420bf:4489"
+        },
+        {
+          "line": 4537,
+          "session_id": "81a420bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 15:05",
+          "ref": "81a420bf:4537"
+        }
+      ]
+    },
+    {
+      "title": "research/ 裡哪些檔過時或重複？刪掉 58 個，修好連結",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "刪掉英文版 notes、舊計畫、舊調查原稿等 58 個檔；CONTEXT.md 85 個連結改指中文版 notes，INDEX.md 補上新入口",
+      "question": "`research/` 累積了舊計畫、重複的語言版本和已不用的調查原稿。這些檔會讓 agent 讀到過時資訊，也不符合現在的工作流程。哪些可以刪？",
+      "approach": "- 列出清單，分 A（刪除）、B（修正）、C（待決）三類，每項附理由與證據。\n- 使用者選：A 全刪、B 修正、C2／C3／C5 刪。\n- 刪英文 notes 前，先核對英文版和 zh-TW 版的行號是否一樣，再改連結。\n- 刪完後掃一次 `research/` 所有 markdown 的相對連結。",
+      "result": "- **刪除 58 個檔**：英文版 `notes/0*.md`（8）、`phyclone_sim_code/`（12）、`06_CLONESIM.md`、`RESEARCH_PLAN.md`、兩份 C4 計畫、`golden_tree.html`、兩個調查原稿目錄、`simulator_survey_2026-10-24/`（22）。\n- **修正 10 個檔**：CONTEXT.md 85 個連結改指 zh-TW（只有 `00_SOURCE_MAP` 的 L26 要改成 L51）；INDEX.md 新增 longbulksim、haploclone、真值樹證據、sc＋long-read 資料集四個入口。\n- 掃描後沒有新增壞連結。",
+      "interpretation": "`research/` 現在每份內容只留一個版本，入口都在 INDEX.md。之後找資料比較不會讀到過時的計畫。",
+      "gaps": "`.gitignore` 忽略整個 `/research/`，只有 force-add 的檔有追蹤；`06_CLONESIM.md` 從沒進過 git，只備份在 `/tmp` scratchpad。`REPO_IMPROVEMENTS.md` 原本就有一個壞連結沒修。全部還沒 commit。",
+      "artifacts": {
+        "files": [
+          "research/CONTEXT.md",
+          "research/INDEX.md",
+          "research/simulation_pipeline_research/README.md",
+          "research/phyclone_research/FSCRP_PRIOR_PLAN.md",
+          "research/phyclone_research/notes/zh-TW/00_SOURCE_MAP.md",
+          "research/literature/README.md"
+        ],
+        "commands": [],
+        "outputs": []
+      },
+      "concepts": [
+        {
+          "term": "force-add",
+          "plain": "用 `git add -f` 把被 .gitignore 擋住的檔硬加進版控"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 3587,
+          "session_id": "81a420bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 14:47",
+          "ref": "81a420bf:3587"
+        },
+        {
+          "line": 4373,
+          "session_id": "81a420bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 14:54",
+          "ref": "81a420bf:4373"
+        }
+      ]
+    },
+    {
+      "title": "phyclone_rs 可以刪了嗎？golden 搬進 haploclone，驗證全過後刪除",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "golden 與移植文件搬到 haploclone 的 `rust/golden/`、`rust/docs/`（commit 8894569）；測試 118 通過、334 個 golden 檔相同；main_work 刪除 phyclone_rs（commit 4277076）",
+      "question": "PhyClone 的 Rust 移植已經在 haploclone repo 裡。main_work 的 `phyclone_rs/` 還放著 golden（原版的凍結輸入輸出）和移植文件。可以刪嗎？刪了 haploclone 的測試還跑得動嗎？",
+      "approach": "- 照建議把 golden 放進 haploclone 的 git：golden 搬到 `rust/golden/`，PORTING.md、decisions.tsv 搬到 `rust/docs/`。\n- 先把 `phyclone_rs/` 暫時改名，確認 haploclone 不再依賴它，再跑全部檢查。\n- `check_m7_runs.py` 依賴 `phyclone_rs/v3/trace_io.py`，把這個檔複製進 `golden/`。\n- 都通過後，兩邊各自 commit。",
+      "result": "- Rust 測試：118 通過、1 ignored，和搬之前一樣。\n- `manifest.py --check`：334 個檔全部相同；`verify_against_traces.py`、`check_rerun.py`、`check_m7_runs.py` 都通過。\n- haploclone commit `8894569`（435 個檔）；main_work commit `4277076` 刪掉 `phyclone_rs/`。",
+      "interpretation": "haploclone 現在自己就能驗證，不再依賴 main_work。v3–v5 和 profile 的舊紀錄沒有搬，需要時可從 `7fd501f` 拿回。",
+      "gaps": "兩邊都還沒 push。v3、v4、v5、profile 的紀錄只留在 main_work 的 git 歷史。",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md"
+        ],
+        "commands": [
+          "cargo test --release",
+          "python3 rust/golden/manifest.py --check",
+          "python rust/golden/check_m7_runs.py"
+        ],
+        "outputs": [
+          "haploclone commit 8894569",
+          "main_work commit 4277076"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "golden",
+          "plain": "原版 PhyClone 凍結下來的輸入和輸出，Rust 版要和它一模一樣才算對"
+        },
+        {
+          "term": "bit-identical",
+          "plain": "輸出檔逐位元相同"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 3397,
+          "session_id": "3e48594e",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 14:42",
+          "ref": "3e48594e:3397"
+        },
+        {
+          "line": 3482,
+          "session_id": "3e48594e",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 14:43",
+          "ref": "3e48594e:3482"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "CONIPHER 的 WGD 為什麼沒有時間點？truncal multiplicity 固定約 50:50",
+      "status": "ongoing",
+      "what": "使用者問：為什麼 longbulksim 的 WGD 是單一時間點、CONIPHER 卻推不出時間點，更真實的模擬是否該像 longbulksim。讀 CONIPHER 程式發現：每個 position 上的 SNV 和 WGD 兩個事件各自洗牌決定先後，沒有全基因組共用的 WGD 時間〔程式〕。寫 tools/conipher_wgd_multiplicity.py 直接呼叫 CONIPHER 的 simulate_topology 與 tree_profiles（clonal WGD、無其他 CNA），3 個 seed 各 1000 個 truncal SNV，multiplicity 2 的比例為 0.500、0.490、0.477〔實測〕，結果在 lab_report/2026-10-29_conipher_wgd_timing/。所以從 CONIPHER 資料推 WGD 時間，永遠得到同一個中間值，無法驗證推時間的方法。另外列出 longbulksim 的三個缺口：WGD 後 SNV 速率沒加倍、沒有 subclonal WGD（TRACERx 19%）、WGD 時間均勻抽。S5 候選三案（① 照搬 CONIPHER ② 像 longbulksim ③ 速率隨 copy 數變＋subclonal WGD）寫進 conipher_steps.md 的「補充（待決）」。使用者說「可以先補充，但還不是最終決定」，未選。",
+      "why_demoted": "被呈現層 5 項上限擠掉（12 分）",
+      "artifacts": {
+        "files": [
+          "tools/conipher_wgd_multiplicity.py",
+          "diplosim/docs/conipher_steps.md"
+        ],
+        "outputs": [
+          "lab_report/2026-10-29_conipher_wgd_timing/README.md",
+          "lab_report/2026-10-29_conipher_wgd_timing/multiplicity.tsv"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 5164,
+          "session_id": "81a420bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 15:27",
+          "ref": "81a420bf:5164"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 不再需要 HG008 資料：刪下載腳本與相關描述",
+      "status": "dropped",
+      "what": "使用者表示不再需要 GIAB HG008 資料（10-26 選為最佳 bulk long read＋單細胞資料集，10-27 用來佐證真值樹事件）。先查確認：帳號下沒有在跑的下載，crontab 也沒有排程；/big8_disk/boyu114/benchmark_data/GIAB/ 只剩 HG002（21 MB）和 stratifications_v3.6（175 MB），HG008/ 目錄已不在。接著刪掉 tools/download_hg008.sh，從 tools/download_benchmark_small.sh 刪掉 HG008 下載段（bash -n 通過，沒有重跑下載），從 benchmark_data/README.md 刪掉 HG008 列與注意事項，memory sc-longread-datasets.md 加註以後不主動重新下載。依 HG008 得出的 lab_report 與 memory 結論保留。10-28 會議要求說明 HG008／HCC 各能支持什麼，這條驗證路徑之後若要用就要重新下載。下載腳本修改未 commit。",
+      "why_demoted": "被呈現層 5 項上限擠掉（11 分）；翻案項最低進記錄層",
+      "artifacts": {
+        "files": [
+          "tools/download_benchmark_small.sh",
+          "tools/download_hg008.sh"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1485,
+          "session_id": "92c2bfe8",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 13:34",
+          "ref": "92c2bfe8:1485"
+        },
+        {
+          "line": 1751,
+          "session_id": "92c2bfe8",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 13:44",
+          "ref": "92c2bfe8:1751"
+        }
+      ]
+    },
+    {
+      "title": "寫完 10-28 日誌並推進游標",
+      "status": "done",
+      "what": "10-28 23:00 用 daily-log 寫 10-28 的日誌（session 8d74fa21）。掃描、列 5 個候選、分層後寫成呈現 3 項、記錄 1 項、邊界 1 項；validate、verify_evidence、render 通過，check_readability 提醒兩個標題過長，改短後重渲染。游標推進到 2026-10-28T23:00:08。產物 daily/2026-10-28.html 與 daily/.data/2026-10-28.json，未 commit。",
+      "why_demoted": "使用者 0 則訊息，例行工作",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-10-28.json"
+        ],
+        "outputs": [
+          "daily/2026-10-28.html"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1444,
+          "session_id": "8d74fa21",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-28 23:03",
+          "ref": "8d74fa21:1444"
+        }
+      ]
+    },
+    {
+      "title": "整理 10-28 會議重點，對照 11/4 報告的缺口",
+      "status": "done",
+      "what": "使用者下週三（11/4）要報告，問這週會議重點。直接讀 meeting_record/2026_10_28_meeting_record.md（沒有 10-28 的 _summary.md）整理：核心要求是讓老師看到「怎麼想、怎麼選」，不只給 AI 的成品；議題二雙套體改造、三驗證（帶 2–3 種驗證方法，說明 HG008／HCC 各能支持什麼）、四報告結構、五圖解、六 AI 規則。對照本週進度：改造候選有部分（凍結原因、diplosim 13 條決策、S5 WGD 三候選）；圖解有（對照網頁、WGD 實測）；AI 規則已完成。缺口三個：驗證方法 2–3 案本週完全沒做；diplosim 從哪一步開始（A／B／C）沒選；沒有 10-28 summary。提議先列驗證方法候選，使用者還沒回答。",
+      "why_demoted": "只有 1 則訊息、沒有改檔",
+      "artifacts": {
+        "files": [
+          "meeting_record/2026_10_28_meeting_record.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 8227,
+          "session_id": "881f7551",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-29 21:39",
+          "ref": "881f7551:8227"
+        }
+      ]
+    }
+  ]
+}

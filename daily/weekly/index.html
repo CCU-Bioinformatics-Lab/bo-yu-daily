@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>方向進度總覽（截至 2026-11-02）</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<header class="page">
+<h1 class="date">方向進度總覽（截至 2026-11-02）</h1>
+<div class="meta">來源：14 篇日誌（09-18、10-19 ~ 11-01），重要數字已對照 <code>lab_report/</code> 與 git log。用到的會議：10-21（record ＋ summary）、10-28（record，沒有 summary）。</div>
+<p class="headline">研究目的：把 long read 的 HP 資訊接進 PhyClone，並用有真值樹的 long read 模擬資料驗證。目前主線是模擬器 diplosim。它已經能產生 HP1／HP2 計數，read 與 HP 層級的統計在 HCC1395 的 5 個 purity 上大多對得上。但它還沒有同 read 共現，樹的結構也還沒驗證，HP 擴充還沒在 diplosim 資料上測。</p>
+</header>
+
+<h2 class="section">週報</h2>
+<nav class="outline"><ol>
+<li><a href="2026-09-18_2026-10-25.html">週報 1：09-18、10-19 ~ 10-25</a> —— 從找現成資料轉成自己做模擬器；A2／C4 在壓力測試樹上有效</li>
+<li><a href="2026-10-26_2026-11-01.html">週報 2：10-26 ~ 11-01</a> —— longbulksim 凍結，改寫 diplosim；HCC1395 多 purity 驗證</li>
+</ol></nav>
+
+<h2 class="section">兩週的主線</h2>
+<section class="item"><div class="scroll-x"><pre>
+10-19 文獻：沒找到 HP 建樹方法
+   │
+10-21 會議：只用 long read 模擬資料
+   │
+10-23 CONIPHER 能重現作者資料 ──► 當改造起點
+   │
+10-24 現成工具都沒有 HP 共現 ──► 自己寫
+   │
+10-25 longbulksim v0.1 ──► A2、C4 在壓力樹上有效
+   │
+10-26 HP 擴充卡在 FSCRP prior；haploclone（Rust）完成
+   │
+10-28 會議：先列方案、一次一步、用圖
+   │
+10-29 longbulksim 凍結 ──► 照 CONIPHER 重寫 diplosim
+   │
+10-30 diplosim v1：14 項只有 5 項像真實資料
+   │
+10-31 補 CN 與雜訊：t50 很像，換 purity 就失準
+   │
+11-01 補量測端：12/13/12/11/8（t50 → t10）
+</pre></div></section>
+
+<h2 class="section">各方向現在的狀態</h2>
+<section class="item"><div class="scroll-x"><table>
+<tr><th>方向</th><th>狀態</th><th>依據</th><th>下一個缺口</th></tr>
+<tr><td>A. 模擬器 diplosim</td><td><span class="badge ongoing">可行，進行中</span></td><td>v1 照 CONIPHER，和 CONIPHER 比平均值 |z| &lt; 2〔實測，commit 877b751〕</td><td>需求表三條：long read ✓、真值樹 ✓、HP1／HP2 ✓、同 read 共現 ✗（延後）</td></tr>
+<tr><td>B. diplosim 驗證（HCC1395 多 purity）</td><td><span class="badge ongoing">部分可行</span></td><td>13 項統計通過 12/13/12/11/8（t50 → t10）〔實測，<code>lab_report/2026-11-01_diplosim_purity_summary/</code>〕</td><td>t10 只過 8/13；範圍只來自一株細胞；樹與 subclone 結構沒驗證（HCC1395 沒真值樹）</td></tr>
+<tr><td>C. PhyClone 的 HP 擴充（A2、C4）</td><td><span class="badge ongoing">未定</span></td><td>在 longbulksim 壓力樹上 A2、C4 有效；40 棵隨機樹 ARI +0.05〜0.06〔實測〕</td><td>錯樹主因是 FSCRP prior；prior 實驗等老師同意；還沒在 diplosim 資料上跑</td></tr>
+<tr><td>D. haploclone（Rust 版 PhyClone）</td><td><span class="badge done">完成</span></td><td>M0–M9；67 trial PASS；速度中位數 28×；預設輸出逐位元相同〔實測〕</td><td>當 C 的執行工具；§4 prior 實驗待批准</td></tr>
+<tr><td>E. 單細胞真值（HG008）</td><td><span class="badge dropped">暫停</span></td><td>單細胞只支持主幹與兩個共享分枝；HG008 至少 5 群〔實測〕</td><td>約 47 顆分不出群的細胞怎麼處理，沒決定</td></tr>
+<tr><td>F. PCDH 甲基化條碼</td><td><span class="badge dropped">暫停</span></td><td>3／5 株整區高甲基化；H1437 兩群較像兩份 copy〔實測＋推論〕</td><td>somatic SNV linkage 測試沒做</td></tr>
+<tr><td>G. 新穎性（文獻）</td><td><span class="badge done">已查</span></td><td>在 10-19 的 4 組搜尋範圍內，沒找到用 long read HP／PS 建樹的已發表方法〔論文〕</td><td>Hackett 2026 只讀到摘要</td></tr>
+</table></div></section>
+
+<h2 class="section">要決定或要問的</h2>
+<section class="item"><div class="field gaps"><div class="body"><ul>
+<li>11-04 報告：13 頁已做，最後一版的自我檢查與 <code>check_slides.py</code> 還沒重跑。</li>
+<li>diplosim 下一步（等你選）：補同 read 共現、改善 t10、或先在 diplosim 資料上跑 PhyClone 與 HP 擴充。</li>
+<li>要問老師：short read 統計能不能當參考範圍；§4 prior 實驗的判定門檻。</li>
+<li><code>prop_tagged</code> 等旋鈕範圍只有 HCC1395 一個來源。</li>
+</ul></div></div></section>
+</div>
+</body>
+</html>

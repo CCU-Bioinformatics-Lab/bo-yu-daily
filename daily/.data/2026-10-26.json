@@ -1,0 +1,884 @@
+{
+  "schema_version": "2",
+  "date": "2026-10-26",
+  "headline": "改良版 PhyClone 在模擬資料上選錯樹，是模型的問題，不是模擬器的 bug；三種削弱 pair 證據的修法都失敗，主因是 PhyClone 原本的 FSCRP prior",
+  "covers": "10-25 23:00 ~ 10-26 23:05",
+  "items": [
+    {
+      "title": "C4 選錯樹，是 `longbulksim` 寫錯還是改良版 PhyClone 錯？是模型",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "模擬器 1097 項檢查全過，MCMC 也找到模型最愛的樹，所以錯在模型；拆 clone 來自 pair term，C3 變第二個 root 來自 FSCRP prior；下一步改 prior",
+      "question": "C4（read 上 SNV 共現的 pair term）在壓力測試樹上有兩種失效：模式 1 把一個 clone 拆成好幾個，模式 2 把 C3 推成第二個 root。早上的診斷顯示 pair term 太重，計畫是把它乘上權重 w < 1。下午出現一個更根本的疑問：選錯樹到底是 `longbulksim` 產生的資料錯了，還是改良版 PhyClone 錯了？",
+      "approach": "依序做五件事，每一步都由上一步的結果決定：\n- 固定 w（0.5／0.3／0.2）掃描 36 個 run。\n- 真值樹 vs MAP 樹：129 個 run，把兩者的分數拆成 prior、SNV data likelihood、pair term，判定是抽樣沒找到還是模型偏好錯樹。\n- 模擬器解析期望檢查：不經過 PhyClone，直接檢查 90 個 sim 的輸出是否符合它自己的真值與宣稱機制，並注入 6 種錯誤確認檢查抓得到。\n- 把定序錯誤率 e 寫進 pair score（誤差模型），取代原本的固定容忍值 ε。\n- 再把「SNV 可能在另一條 HP」的不確定性放進 pair score。",
+      "result": "- **錯在模型，不在模擬器。** 90 個 sim、**1097 項**檢查全部通過，6 種注入錯誤全部被抓到。129 個 run 中只有 3 個是抽樣問題。\n- 模式 1 由 pair term 造成：b03 的錯誤樹在 pair term 上贏 20–71 log 單位。\n- 模式 2 主要由 FSCRP prior 造成：pair term 其實偏好真值，prior 偏好「一大一小」的 node 大小，把接近平手的情況推向錯的樹。\n- **固定 w 失敗。** 模式 1 改善，但 C1／C2 分開的 run 從 9 降到 3–4，模式 2 變嚴重。\n- **誤差模型有效，但 e 必須從 normal 校正。** b03 用真實錯誤率 0.03 時模式 1 消失（clone 數 4／7／5 → 3／3／3）。e 高估時模式 2 回來。\n- **HP 不確定性修好了它鎖定的 real s1，但整體沒有改善**，正確的分支證據也被削弱。",
+      "interpretation": "三次「一律削弱 pair 證據」的修法結果一樣：錯的證據變弱，C4 對抗 prior、分開 C1／C2 的力量也一起變弱。所以 pair 證據的強度不要再調。採用誤差模型（e 從 normal 校正，HCC1395BL 是 0.004），HP 不確定性只留作選項 `--pair-hp-uncertain`。下一步改 FSCRP prior，計畫寫在 `FSCRP_PRIOR_PLAN.md`。",
+      "tables": [
+        {
+          "caption": "壓力測試樹 ×10，base＋C4，4 種誤差條件 × 3 seed（每列 12 個 run）",
+          "columns": [
+            "pair score 設定",
+            "錯誤樹 > 0.5",
+            "C1／C2 分開",
+            "完整 4 clone 樹 > 0.5",
+            "segment C 相容比例平均"
+          ],
+          "rows": [
+            [
+              "ε 0.01（原本）",
+              0,
+              9,
+              2,
+              "0.728"
+            ],
+            [
+              "w 0.5",
+              4,
+              4,
+              0,
+              "0.699"
+            ],
+            [
+              "w 0.3",
+              3,
+              4,
+              0,
+              "0.747"
+            ],
+            [
+              "w 0.2",
+              4,
+              3,
+              0,
+              "0.803"
+            ],
+            [
+              "誤差模型 e 0.004",
+              1,
+              11,
+              4,
+              "0.856"
+            ],
+            [
+              "誤差模型 e 0.03",
+              3,
+              6,
+              0,
+              "0.790"
+            ],
+            [
+              "誤差模型校正組合",
+              1,
+              10,
+              3,
+              "0.943"
+            ],
+            [
+              "校正組合＋HP 不確定性",
+              2,
+              9,
+              2,
+              "0.936"
+            ]
+          ]
+        },
+        {
+          "caption": "真值樹 vs MAP 的判定（129 個 run；tie＝分數差 ≤ 2 log 單位）",
+          "columns": [
+            "方法",
+            "ok",
+            "tie",
+            "抽樣",
+            "模型"
+          ],
+          "rows": [
+            [
+              "base",
+              4,
+              7,
+              0,
+              1
+            ],
+            [
+              "A2",
+              2,
+              10,
+              0,
+              0
+            ],
+            [
+              "base＋C4，ε 0.01",
+              6,
+              2,
+              0,
+              4
+            ],
+            [
+              "A2＋C4，ε 0.01",
+              9,
+              0,
+              0,
+              3
+            ],
+            [
+              "base＋C4，ε 0.03",
+              2,
+              2,
+              1,
+              4
+            ],
+            [
+              "base＋C4，ε 0.01，w 0.3",
+              7,
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "svg",
+          "caption": "C1／C2 分開的 run 數（共 12 個）。削弱 pair 證據的設定（黃）都比原本少；只有校正過的誤差模型（藍）保住或增加",
+          "content": "<svg viewBox=\"0 0 640 250\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"inherit\" font-size=\"12\"><line x1=\"190\" y1=\"20\" x2=\"190\" y2=\"222\" stroke=\"#eaeef2\"/><line x1=\"380\" y1=\"20\" x2=\"380\" y2=\"222\" stroke=\"#eaeef2\"/><line x1=\"570\" y1=\"20\" x2=\"570\" y2=\"222\" stroke=\"#eaeef2\"/><text x=\"190\" y=\"240\" text-anchor=\"middle\" fill=\"#57606a\">0</text><text x=\"380\" y=\"240\" text-anchor=\"middle\" fill=\"#57606a\">6</text><text x=\"570\" y=\"240\" text-anchor=\"middle\" fill=\"#57606a\">12</text><g><text x=\"182\" y=\"36\" text-anchor=\"end\">ε 0.01（原本）</text><rect x=\"190\" y=\"24\" width=\"285\" height=\"16\" fill=\"#57606a\"/><text x=\"481\" y=\"36\">9</text></g><g><text x=\"182\" y=\"60\" text-anchor=\"end\">w 0.5</text><rect x=\"190\" y=\"48\" width=\"127\" height=\"16\" fill=\"#d4a72c\"/><text x=\"323\" y=\"60\">4</text></g><g><text x=\"182\" y=\"84\" text-anchor=\"end\">w 0.3</text><rect x=\"190\" y=\"72\" width=\"127\" height=\"16\" fill=\"#d4a72c\"/><text x=\"323\" y=\"84\">4</text></g><g><text x=\"182\" y=\"108\" text-anchor=\"end\">w 0.2</text><rect x=\"190\" y=\"96\" width=\"95\" height=\"16\" fill=\"#d4a72c\"/><text x=\"291\" y=\"108\">3</text></g><g><text x=\"182\" y=\"132\" text-anchor=\"end\">誤差模型 e 0.004</text><rect x=\"190\" y=\"120\" width=\"348\" height=\"16\" fill=\"#1f6feb\"/><text x=\"544\" y=\"132\">11</text></g><g><text x=\"182\" y=\"156\" text-anchor=\"end\">誤差模型 e 0.03（高估）</text><rect x=\"190\" y=\"144\" width=\"190\" height=\"16\" fill=\"#d4a72c\"/><text x=\"386\" y=\"156\">6</text></g><g><text x=\"182\" y=\"180\" text-anchor=\"end\">誤差模型校正組合</text><rect x=\"190\" y=\"168\" width=\"317\" height=\"16\" fill=\"#1f6feb\"/><text x=\"513\" y=\"180\">10</text></g><g><text x=\"182\" y=\"204\" text-anchor=\"end\">校正組合＋HP 不確定性</text><rect x=\"190\" y=\"192\" width=\"285\" height=\"16\" fill=\"#d4a72c\"/><text x=\"481\" y=\"204\">9</text></g></svg>"
+        }
+      ],
+      "gaps": "FSCRP prior 還沒改，只寫了計畫。real s1 剩下的錯誤樹（segment A 的 s8 放錯）是 base 模型的問題，還沒處理。全部結果只在壓力測試樹（3 seed × 4 種誤差）上，沒有在 TRACERx 隨機樹上重跑。解析期望檢查只證明模擬器照設計產生資料，不證明資料像真實 ONT。",
+      "artifacts": {
+        "files": [
+          "tools/phyclone_pairs.py",
+          "tools/phyclone_hp.py",
+          "tools/c4_pair_evidence.py",
+          "tools/test_phyclone_pairs.py",
+          "tools/c4_truth_vs_map.py",
+          "tools/summarize_truth_vs_map.py",
+          "tools/check_sim_expectations.py",
+          "research/phyclone_research/FSCRP_PRIOR_PLAN.md"
+        ],
+        "commands": [
+          "python3 tools/phyclone_hp.py ... --pair-weight W",
+          "python3 tools/phyclone_hp.py ... --pair-error 0.004 [--pair-hp-uncertain]",
+          "python3 tools/check_sim_expectations.py <sim dir>"
+        ],
+        "outputs": [
+          "lab_report/2026-10-26_c4_composite_weight/",
+          "lab_report/2026-10-26_c4_truth_vs_map/",
+          "lab_report/2026-10-26_sim_expectation_check/",
+          "lab_report/2026-10-26_c4_error_model/",
+          "lab_report/2026-10-26_c4_hp_uncertain/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "C4 pair term",
+          "plain": "看同一條 read 上兩個 SNV 是否一起出現，用來判斷兩個 clone 是上下游還是分岔"
+        },
+        {
+          "term": "失效模式 1",
+          "plain": "一個 clone 被拆成好幾個"
+        },
+        {
+          "term": "失效模式 2",
+          "plain": "本來在樹裡的 C3 被推成另一個獨立的根"
+        },
+        {
+          "term": "FSCRP prior",
+          "plain": "PhyClone 對樹形狀與 clone 大小的事前偏好；它偏好一大一小的 clone"
+        },
+        {
+          "term": "composite weight w",
+          "plain": "把整個 pair term 乘上一個小於 1 的數，讓它不要那麼重"
+        },
+        {
+          "term": "誤差模型",
+          "plain": "在 pair score 裡明寫每個鹼基有 e 的機率讀錯，而不是給一個固定容忍值"
+        },
+        {
+          "term": "tie",
+          "plain": "真值樹和選出的樹分數幾乎一樣，單一 bulk 樣本本來就分不開"
+        }
+      ],
+      "details": "commits 458ddc6（composite weight）、51d859c（誤差模型）、3b91b17（HP 不確定性）。\n壓力測試樹 ×10 密度，條件 e0／real／sw5／b03 × seed 1–3。\nHCC1395BL 校正錯誤率 0.004 來自 lab_report/2026-10-25_c4_robustness 第 2 節。\n真值 vs MAP 重算的 log_p_one 與 trace 存值差 ≤ 2.3e-13（129 個 run）。",
+      "evidence": [
+        {
+          "line": 12471,
+          "session_id": "b8ebe3fe",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 16:54",
+          "ref": "b8ebe3fe:12471"
+        },
+        {
+          "line": 11794,
+          "session_id": "b8ebe3fe",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 16:34",
+          "ref": "b8ebe3fe:11794"
+        },
+        {
+          "line": 13938,
+          "session_id": "b8ebe3fe",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 17:47",
+          "ref": "b8ebe3fe:13938"
+        },
+        {
+          "line": 14037,
+          "session_id": "b8ebe3fe",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 17:49",
+          "ref": "b8ebe3fe:14037"
+        },
+        {
+          "line": 15576,
+          "session_id": "b8ebe3fe",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 19:54",
+          "ref": "b8ebe3fe:15576"
+        }
+      ]
+    },
+    {
+      "title": "`longbulksim` 改成像 CONIPHER 一樣只填高階參數，並加入 ONT somatic caller 漏抓",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "v0.4–v0.6：參數模式（TRACERx 中位數預設）、TRACERx／PCAWG preset、WGD 機率；ClairS 約要 10 條 alt read 才 call 得到，預設模擬只剩 17% subclonal SNV",
+      "question": "原本 `longbulksim` 要使用者自己寫 clones、segments、edges 的 YAML，使用者不會想填。另外它把每個真實 SNV 都當成 call 到，即使只有 1 條 alt read。真實流程中 somatic caller 會漏抓低 alt 數的 SNV，所以之前的結果可能太樂觀。",
+      "approach": "- 參考 CONIPHER 模擬器，加 `longbulksim.generate`：只填 clone 數、purity、depth 等高階參數，預設用 TRACERx 中位數。\n- 加 `--preset tracerx／pcawg`，WGD 改成依機率發生，clone 數沿用 TRACERx。\n- 用 CASTLE HCC1395 ONT（depth 中位 84×）上 ClairS 與 DeepSomatic 的實際 call，對照 SEQC2 真值 37,329 個位點，擬合「alt 數＋depth → 被 call 到的機率」曲線，接成 `--caller clairs／deepsomatic`。",
+      "result": "- **ClairS 大約要 ≥ 10 條 alt read，DeepSomatic 大約 ≥ 5 條。** alt 數相同時，depth 越高越難被 call 到，表示 caller 實際看的是 VAF。\n- **預設模擬（purity 0.41、50×）加上漏抓後**：ClairS 只 call 到 **72%** truncal、**17%** subclonal SNV；DeepSomatic 是 92% 與 45%。\n- CCF < 0.2 的 subclone 幾乎都看不見（只有 purity 0.7＋DeepSomatic 例外）。",
+      "interpretation": "之前「可偵測 clone」用 alt ≥ 3 判定，比 ClairS 的實際門檻寬鬆很多，所以 10-25 的隨機樹 baseline 偏樂觀。低 purity 時 SNV 本來就少，會直接影響能推出幾個 clone。`--caller` 曲線只用 HCC1395 一個樣本擬合，所以預設仍是 `none`。",
+      "tables": [
+        {
+          "caption": "CASTLE HCC1395 ONT，依 alt read 數的偵測率（SEQC2 真值位點）",
+          "columns": [
+            "alt read 數",
+            "位點數",
+            "ClairS",
+            "DeepSomatic"
+          ],
+          "rows": [
+            [
+              "0–2",
+              4252,
+              "0",
+              "0"
+            ],
+            [
+              "3",
+              1006,
+              "0.001",
+              "0.036"
+            ],
+            [
+              "5",
+              445,
+              "0.011",
+              "0.425"
+            ],
+            [
+              "8–9",
+              146,
+              "0.281",
+              "0.829"
+            ],
+            [
+              "10–14",
+              452,
+              "0.704",
+              "0.918"
+            ],
+            [
+              "15–19",
+              1879,
+              "0.905",
+              "0.989"
+            ],
+            [
+              "≥ 30",
+              18382,
+              "0.988–0.994",
+              "0.997"
+            ]
+          ]
+        }
+      ],
+      "gaps": "偵測曲線只來自一個細胞株（HCC1395，purity 約 1）；低 purity 的驗證找不到現成的 ONT call，沒有完成。preset 的 WGD 與 clone 數分布沒有對其他 cohort 交叉驗證。",
+      "artifacts": {
+        "files": [
+          "longbulksim/longbulksim/param_tree.py",
+          "longbulksim/longbulksim/generate.py",
+          "longbulksim/longbulksim/presets.py",
+          "longbulksim/longbulksim/data/caller_detection_hcc1395.tsv",
+          "longbulksim/tests/test_param_tree.py",
+          "longbulksim/tests/test_caller.py",
+          "tools/caller_detection_calibration.py",
+          "tools/caller_impact.py",
+          "tools/caller_detection_validation.py"
+        ],
+        "commands": [
+          "python3 tools/caller_detection_calibration.py lab_report/2026-10-26_caller_detection",
+          "python3 -m longbulksim.generate GRID/p0.41_d50 --n-sims 20 --seed 7 --purity 0.41 --depth 50"
+        ],
+        "outputs": [
+          "lab_report/2026-10-26_caller_detection/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "參數模式",
+          "plain": "只填 clone 數、purity、depth 這類高階數字，樹與 CN 由程式抽"
+        },
+        {
+          "term": "preset",
+          "plain": "一組現成的預設值，照某個大型 cohort（TRACERx 或 PCAWG）的分布"
+        },
+        {
+          "term": "WGD",
+          "plain": "整個基因組加倍"
+        },
+        {
+          "term": "caller 漏抓",
+          "plain": "真的突變因為支持 read 太少，somatic caller 沒有報出來"
+        }
+      ],
+      "details": "commits 23026ae（het map＋參數模式）、0e6aaa7（caller dropout）、7cf6ecf（preset＋WGD）。\nlogistic：logit P(call) = b0 + b1·log(alt) + b2·log(depth)；ClairS (3.802, 4.693, −3.371)，DeepSomatic (4.759, 4.179, −2.779)。\nClairS v0.4.0 ssrs 與 DeepSomatic 的 VCF 在 /big8_disk/Somatic_calling/HCC1395/。",
+      "evidence": [
+        {
+          "line": 5268,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 11:57",
+          "ref": "a7ec7281:5268"
+        },
+        {
+          "line": 7888,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 13:44",
+          "ref": "a7ec7281:7888"
+        },
+        {
+          "line": 7256,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 13:18",
+          "ref": "a7ec7281:7256"
+        }
+      ]
+    },
+    {
+      "title": "pair SNV 改成建樹後再挑樹，會比放進模型好嗎？不會",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "事後挑樹選錯 4–5／12 次，放進模型的 C4 是 0／12；另外量到 pair term 的變動是 base 的 6.8–33 倍，一條 read 平均被算進約 3 個 pair",
+      "question": "pair SNV 要不要改成像 Sakamoto 2022 肺癌研究那樣，先用一般 PhyClone 建樹，再用 pair 證據挑樹，而不是把它放進模型？",
+      "approach": "在 12 個 sim 上補跑沒有 C4 的 base 與 A2，再用兩種方式事後挑樹：軟（每棵樹乘上 C4 分數重新加權）與硬（照肺癌研究的條數門檻，只留違反最少的樹）。之後量 pair term 和 base 分數各自的變動幅度，並數一條 read 被算進幾個 pair。",
+      "result": "- **事後挑樹比放進模型差。** base＋事後挑樹選錯 4–5／12 次，base＋C4 是 0／12；24 個 run 都推不出完整的 4 clone 樹。\n- 事後挑樹的有效樣本數只有 1–18，接近一個點估計。\n- **pair term 太重。** 它的變動是 base log_p 的 6.8–33 倍（中位數 11.6）。一條 read 平均被計入約 3.2 個 pair，最多 105 個。一個鹼基讀錯可以在同一條 read 的 9 個 pair 各罰一次，合計約 41 log 單位。",
+      "interpretation": "C4 仍然放在模型裡。事後硬篩選只當報告用的檢查，列出 MAP 樹違反哪些 pair。pair term 太重的診斷導出了下午 composite weight 的計畫（結果見第一項：失敗）。",
+      "tables": [
+        {
+          "caption": "12 個 sim，每種方法 12 個 run",
+          "columns": [
+            "方法",
+            "錯誤樹 > 0.5",
+            "直線樹 ≥ 0.1",
+            "C1／C2 分開",
+            "完整 4 clone 樹 > 0.5"
+          ],
+          "rows": [
+            [
+              "base",
+              2,
+              12,
+              0,
+              0
+            ],
+            [
+              "base＋事後軟",
+              4,
+              0,
+              3,
+              0
+            ],
+            [
+              "base＋事後硬",
+              5,
+              1,
+              2,
+              0
+            ],
+            [
+              "base＋C4",
+              0,
+              0,
+              9,
+              2
+            ],
+            [
+              "A2＋事後軟",
+              0,
+              0,
+              3,
+              0
+            ],
+            [
+              "A2＋C4",
+              1,
+              0,
+              8,
+              3
+            ]
+          ]
+        }
+      ],
+      "gaps": "事後挑樹只用現有的 1100 iteration 樣本；用更多 chain 讓 base 抽到 pair 支持的樹，結果可能不同，沒有測。",
+      "artifacts": {
+        "files": [
+          "tools/c4_posthoc.py",
+          "tools/c4_pair_weight_diagnostics.py",
+          "lab_report/2026-10-25_c4_robustness/run_posthoc.sh",
+          "research/phyclone_research/C4_COMPOSITE_WEIGHT_PLAN.md"
+        ],
+        "outputs": [
+          "lab_report/2026-10-25_c4_robustness/README.md（第 7、8 節）",
+          "lab_report/2026-10-25_c4_robustness/posthoc_vs_inmodel.tsv",
+          "lab_report/2026-10-25_c4_robustness/pair_weight_diagnostics.tsv"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "事後挑樹",
+          "plain": "模型照常建樹，跑完後再用 pair 證據從抽到的樹裡選"
+        },
+        {
+          "term": "in-model",
+          "plain": "把 pair 證據直接加進模型分數，邊抽樣邊影響"
+        },
+        {
+          "term": "ESS",
+          "plain": "加權後實際等於幾個獨立樣本"
+        }
+      ],
+      "details": "commits 5c65a06、a05583e。\n硬門檻：k = 3 條、容忍 t = 1 條。\ne0 的 base 與 10-25 的 run_base 逐位相同。",
+      "evidence": [
+        {
+          "line": 621,
+          "session_id": "69486274",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 08:39",
+          "ref": "69486274:621"
+        },
+        {
+          "line": 1262,
+          "session_id": "69486274",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 09:49",
+          "ref": "69486274:1262"
+        },
+        {
+          "line": 11199,
+          "session_id": "b8ebe3fe",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 15:20",
+          "ref": "b8ebe3fe:11199"
+        }
+      ]
+    },
+    {
+      "title": "`longbulksim` 的模擬資料像真實 HCC1395 ONT 嗎？4 項不像，修好其中 2 項",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "用沒拿來當輸入的統計量比對：read 幾何與 split-HP 吻合；tag 比例的位點差異用真實 het map 修好，depth 起伏用真實 normal 的 depth map 補回一半以上；兩者維持選填",
+      "question": "`longbulksim` 產生的資料，在「沒有拿來當輸入參數」的統計量上，像不像真實的 long read bulk 資料？如果不像，C4 與 A1／A2 的結果可能被高估或低估。",
+      "approach": "用 HCC1395 的真實 SNV 位置與 ASCAT CN 模擬一份 `t50_n00`，和真實資料用同一套統計定義比較（posterior predictive check）。發現不吻合後：\n- 用真實 phased het SNP 位置加上 longphase-s 的 tag 規則（het map），取代每條 read 獨立抽 tag。\n- 用 HCC1395BL normal 每 10 kb 的 read 起點密度（depth map）重現位置相關的 depth 起伏。",
+      "result": "- **吻合**：跨越 read 數 vs 間距、HP 深度 vs CN、split-HP 比例（模擬 2.1–2.2%，真實 2.4%）。\n- **原本 4 項不吻合**：depth 起伏太小、tag 比例的位點差異太小、< 1 kb 的 SNV 同 HP 比例偏低（真實 0.82，模擬 0.58–0.65；推論是 APOBEC kataegis）、近距離 pair 共現偏少。\n- **het map 修好 tag 比例**，沒有擬合任何參數。\n- **depth map 補回技術性的 depth 起伏**：VMR 從 1.0 升到 1.81–2.46（真實 2.39–3.24）。剩下的差距推論來自 CN 估計誤差，本次不模擬。",
+      "interpretation": "原本模擬給每個位點的 HP 資訊太均勻、太完整，A1／A2 的增益可能被高估；近距離共現偏少，C4 拿到的證據可能偏少。het map 與 depth map 只用 HCC1395 校正，參數模式的人工座標配 depth map 會有 12–26% 的 SNV depth 為 0，所以兩者維持選填，不設為預設。",
+      "tables": [
+        {
+          "caption": "PPC 主要統計量（3 seed 平均；27,713 個 SNV）",
+          "columns": [
+            "統計量",
+            "真實",
+            "模擬（修正前）",
+            "判定"
+          ],
+          "rows": [
+            [
+              "split-HP 比例（alt ≥ 3）",
+              "0.024",
+              "0.021–0.022",
+              "吻合"
+            ],
+            [
+              "depth VMR（CN 2）",
+              "3.24",
+              "0.99",
+              "已用 depth map 部分補回"
+            ],
+            [
+              "tag 比例 < 0.7 的位點",
+              "0.155",
+              "0.004",
+              "已用 het map 修好"
+            ],
+            [
+              "< 1 kb pair 同 HP（非 LOH）",
+              "0.817",
+              "0.58–0.65",
+              "未修（kataegis）"
+            ],
+            [
+              "< 1 kb pair ≥ 1 條雙 ALT read",
+              "0.840",
+              "0.46–0.62",
+              "未修"
+            ]
+          ]
+        }
+      ],
+      "gaps": "kataegis（成簇突變在同一條 haplotype）沒有放進模擬。PS block 方向與位點相關的錯誤長尾沒有建模。CN 造成的 depth 起伏沒有模擬。全部只對 HCC1395 一個細胞株比較。",
+      "artifacts": {
+        "files": [
+          "tools/longbulksim_ppc.py",
+          "longbulksim/longbulksim/het_map.py",
+          "longbulksim/longbulksim/depth_map.py",
+          "longbulksim/tests/test_het_map.py",
+          "longbulksim/tests/test_depth_map.py",
+          "longbulksim/README.md"
+        ],
+        "commands": [
+          "python3 tools/longbulksim_ppc.py lab_report/2026-10-26_longbulksim_ppc --seeds 3 --min-vaf 0.05",
+          "python3 -m longbulksim.depth_map /big8_disk/data/HCC1395/ONT/HCC1395BL.cram /big8_disk/ref/GRCh38_no_alt_analysis_set.fasta longbulksim/longbulksim/data/hcc1395bl_ont_depth_10kb.npz"
+        ],
+        "outputs": [
+          "lab_report/2026-10-26_longbulksim_ppc/",
+          "lab_report/2026-10-26_longbulksim_depth_map/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "PPC（posterior predictive check）",
+          "plain": "拿模擬資料和真實資料比較那些沒被拿來設定模擬的統計量"
+        },
+        {
+          "term": "split-HP",
+          "plain": "同一個 SNV 的 alt read 同時出現在 HP1 和 HP2"
+        },
+        {
+          "term": "tag 比例",
+          "plain": "一個位點上有多少 read 被 longphase-s 標上 HP"
+        },
+        {
+          "term": "VMR",
+          "plain": "depth 的變異數除以平均數；純隨機抽樣時約為 1"
+        },
+        {
+          "term": "het map",
+          "plain": "真實 normal 的已 phase 雜合 SNP 位置，決定一條 read 能不能被標 HP"
+        },
+        {
+          "term": "kataegis",
+          "plain": "APOBEC 造成的一小段區域內成簇突變"
+        }
+      ],
+      "details": "commits 23026ae（v0.3 het map）、0e411fd（v0.7 depth map）。\nSEQC2 有 16.6% 的位點在這批 ONT 中 VAF < 0.05，主要比較排除了它們。",
+      "evidence": [
+        {
+          "line": 10123,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 14:33",
+          "ref": "a7ec7281:10123"
+        },
+        {
+          "line": 10229,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 14:43",
+          "ref": "a7ec7281:10229"
+        },
+        {
+          "line": 10799,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 15:08",
+          "ref": "a7ec7281:10799"
+        }
+      ]
+    },
+    {
+      "title": "哪份公開資料同時有 bulk long read 和單細胞？GIAB HG008",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "HG008 同一批 p23 細胞有 ONT／PacBio bulk 與 119 個 SNV 層級單細胞；HG009 是第二候選；病人腫瘤仍沒有公開資料",
+      "question": "TRACERx、PCAWG 只能證明真值樹的形狀合理。要驗證「只從 bulk long read 推出的樹」，需要同一批細胞同時有 bulk long read 和 single-cell DNA。有哪些公開資料？",
+      "approach": "以資料集為單位查 GIAB、GEO 與 2026 年新上傳的資料，補上 10-15 那次以論文為主的調查。確認三點：有沒有 long read、單細胞是不是 SNV 層級、是不是同一批細胞。",
+      "result": "- **最好：GIAB HG008（胰臟癌細胞株）。** bulk 有 ONT standard／ultra-long 與 PacBio Revio 約 80×；119 個 PTA 單細胞，每細胞 coverage 中位 23×，有 CRAM 與 VCF；兩者都來自 passage p23 同一批。另有 8 株單細胞衍生的 clonal line，有現成 somatic 分析。\n- **第二：GIAB HG009**，10 株單細胞衍生 clone，有 PacBio Revio，本次沒看到 ONT。\n- COLO829 有 10x scCNV 但不同批，也沒有樹。\n- 病人腫瘤：沒有公開資料（B04 是 JGA 受控，B03 要 MTA）。",
+      "interpretation": "HG008 可以當真實資料的答案：用單細胞自己建一棵參考樹，再拿 bulk ONT 跑改良版 PhyClone 比對。它沒有現成的真值樹，要自己建。下載已在背景執行，寫入 `/big8_disk/boyu114/benchmark_data/GIAB/HG008/`。",
+      "gaps": "下載還沒完成，沒有確認檔案完整。HG008 的單細胞參考樹要自己建，方法未定。HG009 的 passage 對應與有沒有 ONT 未確認。",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/sc_longread_datasets_2026-10-26/README.md",
+          "tools/download_hg008.sh"
+        ],
+        "outputs": [
+          "/big8_disk/boyu114/benchmark_data/GIAB/HG008/README_download_2026-10-26.md"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "PTA",
+          "plain": "一種單細胞全基因組擴增方法，SNV 層級較準"
+        },
+        {
+          "term": "clonal line",
+          "plain": "從單一細胞長出來的細胞株"
+        },
+        {
+          "term": "passage p23",
+          "plain": "細胞培養第 23 代；同一代表示 bulk 與單細胞來自同一批"
+        }
+      ],
+      "details": "使用者選「建樹必要檔＋bulk ONT＋單細胞 VCF」這組下載。\nHG008 單細胞 VCF 合計約 64 GB；bulk ONT 約 63×。",
+      "evidence": [
+        {
+          "line": 9307,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 14:12",
+          "ref": "a7ec7281:9307"
+        },
+        {
+          "line": 9692,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 14:19",
+          "ref": "a7ec7281:9692"
+        }
+      ]
+    },
+    {
+      "title": "把 PhyClone 移植成 Rust（`haploclone`），完成 M0–M5，同一個 C4 設定快約 32 倍",
+      "status": "ongoing",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "先凍結原版 PhyClone 的輸入輸出當 golden，再照 PORTING.md 逐步移植；sampler 已能跑，確定性步驟與 Python 差 ≤ 8.4e-14，統計比較（V3）還在跑",
+      "question": "一組 C4 實驗（24 個 run × 4 chain × 1100 iteration）要 43–61 分鐘。接下來改 prior、比較 pair score 要跑很多組，速度是主要瓶頸。",
+      "approach": "- 先凍結原版 PhyClone 0.8.0 的輸入與輸出當 golden（`phyclone_rs/golden/`）。\n- 把上游 PhyClone clone 到 `/bip8_disk/boyu114/haploclone` 當對照，在 branch `rust-port` 寫 Rust crate。\n- 寫 `PORTING.md`：完整移植、全部功能都支援、trace 改用不壓縮的 TSV。\n- 用 pstack 依 M0–M9 分工：M1 量熱點，M2 data／likelihood，M3 tree／prior，M4 四種 pair model，M5 SMC＋Particle Gibbs。",
+      "result": "- **M1**：base run 有 86% 時間在 tree 更新、SMC proposal 與 convolution，沒有單一熱點；開 C4 時 pair term 佔 31%。\n- **M2–M4** 逐位對齊 Python（lgamma 改用 C libm 才能逐位相同）。\n- **M5**：62 個 test 通過；同 seed 跑兩次 trace 逐 byte 相同；確定性步驟和 Python 最大相對差 8.4e-14。\n- 移植時找到並更正兩處計畫的錯誤說法：existing-node proposal 其實有看到 pair term；隨機樹的 alpha 只有第 0 個 iteration 是 1.0。",
+      "interpretation": "Rust 版已能跑完 7 個 golden 設定，速度足以支撐接下來 prior 的大量比較。但 Rust 的亂數和 numpy 不同，sampler 不能逐位比對，必須等 V3 統計比較確認 posterior 落在 Python 的 seed 變異範圍內，才能拿它取代 Python 跑實驗。",
+      "tables": [
+        {
+          "caption": "M5 速度（單一 run；delegate 回報的數字未重跑者另註）",
+          "columns": [
+            "設定",
+            "Python",
+            "Rust",
+            "加速"
+          ],
+          "rows": [
+            [
+              "b03_base_err003_hpu（開 C4）",
+              "272 秒",
+              "8.4–8.6 秒",
+              "約 32 倍"
+            ],
+            [
+              "其餘一般 golden 設定",
+              "—",
+              "—",
+              "31–43 倍（delegate 回報）"
+            ],
+            [
+              "upstream 範例",
+              "—",
+              "—",
+              "14 倍（推論受 Python 啟動時間影響，未量）"
+            ]
+          ]
+        }
+      ],
+      "gaps": "V3 統計比較（7 個設定 × 10 seed 的 Python baseline）還在跑，`phyclone_rs/v3/` 尚未 commit。M6–M9（trace 輸出、outlier 等選項、dataset 驗證、prior 可替換）還沒做。PG 子樹重新加權的 bug 要不要照原版保留，等使用者決定。",
+      "artifacts": {
+        "files": [
+          "phyclone_rs/PORTING.md",
+          "phyclone_rs/decisions.tsv",
+          "phyclone_rs/golden/freeze.py",
+          "phyclone_rs/golden/README.md",
+          "phyclone_rs/golden/cases.tsv",
+          "phyclone_rs/profile/README.md"
+        ],
+        "commands": [
+          "cd /bip8_disk/boyu114/haploclone/rust && cargo test --release"
+        ],
+        "outputs": [
+          "/bip8_disk/boyu114/haploclone（branch rust-port，8941bf3..3ecf7e7）"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "golden",
+          "plain": "原版程式在固定輸入下的輸出，拿來檢查新版本有沒有算一樣"
+        },
+        {
+          "term": "逐位相同",
+          "plain": "浮點數每一個 bit 都一樣"
+        },
+        {
+          "term": "V3 統計比較",
+          "plain": "亂數不同時，改比多個 seed 的 posterior 摘要是否落在同一個範圍"
+        },
+        {
+          "term": "Particle Gibbs",
+          "plain": "PhyClone 用來更新整棵樹的抽樣方法"
+        }
+      ],
+      "details": "main_work commits：0194713（golden）、1584d12（PORTING.md）、438e264（M0–M3）、a418452（M1 profile）、c6c01a9（M4）、aba7b2f（M5）。\nhaploclone rust-port：M0 8941bf3、M2 683eaea、M3 680f344，最新 3ecf7e7。\nRust toolchain 用 rustup 裝到家目錄；crate 設 target-cpu=x86-64-v3。",
+      "evidence": [
+        {
+          "line": 14915,
+          "session_id": "b8ebe3fe",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 19:36",
+          "ref": "b8ebe3fe:14915"
+        },
+        {
+          "line": 16186,
+          "session_id": "b8ebe3fe",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 20:14",
+          "ref": "b8ebe3fe:16186"
+        },
+        {
+          "line": 18534,
+          "session_id": "3cd9cf3c",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 22:56",
+          "ref": "3cd9cf3c:18534"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "CLAUDE.md 的 ASD-STE100 回答風格放寬到約 80%",
+      "what": "為什麼：使用者希望回答維持 ASD-STE100 的短句、主動語態風格，但不要過度嚴格到讀起來生硬。做了什麼：在 CLAUDE.md 工作慣例那條規則加上「約做到 80% 即可；說明因果、比較或限制時可以用較長或合併的句子，以自然、清楚為優先」。結果：規則已寫入並 commit（df3b203）。狀態：完成，之後所有 session 讀到的都是放寬後的版本。",
+      "why_demoted": "被 5 項上限擠掉（分數 10，排第 7）",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 6059,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 12:16",
+          "ref": "a7ec7281:6059"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 失效模式 2（C3 變成第二個 root）的成因改判：不是 pair 與 bulk 的結構衝突，主要是 FSCRP prior",
+      "what": "原本：早上的事後挑樹實驗（lab_report/2026-10-25_c4_robustness 第 7.4 節）與 composite weight 計畫都寫「模式 2 是結構衝突：bulk 分不開 C1／C2，而 pair 說 C2 和 C3 是分支」，所以預期降權只能減少它。現在：下午的真值樹 vs MAP 分數拆解（lab_report/2026-10-26_c4_truth_vs_map）顯示，5 個模式 2 失敗 run 中有 4 個的 pair term 其實偏好真值（+0.3 到 +7.0），讓錯誤樹勝出的是 FSCRP prior（MAP 高 2.1–14.9），來源是 CRP 的 node 大小項 Σ log(n−1)!，偏好一大一小的 node。bulk 和 pair 都不反對真值。強度：完全改判成因；「降權解決不了模式 2」這個預測仍然成立，但原因不同。之後怎麼做：不再調 pair 證據強度，改處理 FSCRP prior（research/phyclone_research/FSCRP_PRIOR_PLAN.md）。",
+      "why_demoted": "被 5 項上限擠掉（分數 9）；同一條線的主結論已在呈現層第一項",
+      "status": "done",
+      "artifacts": {
+        "outputs": [
+          "lab_report/2026-10-26_c4_truth_vs_map/README.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1441,
+          "session_id": "69486274",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 10:04",
+          "ref": "69486274:1441"
+        },
+        {
+          "line": 13244,
+          "session_id": "b8ebe3fe",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 17:15",
+          "ref": "b8ebe3fe:13244"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 10-25 C4 穩健性實驗裡的 mistag 0.025 設太高（重複計算），但該實驗的結論不變",
+      "what": "原本：10-25 的 C4 穩健性實驗把整條 read 錯標 HP 的機率（mistag）設成 0.025，這個值是從真實 HCC1395 的 split-HP 比例校正來的。今天的 PPC（lab_report/2026-10-26_longbulksim_ppc）發現，只用 phase switch 1／Mb 加 base error 0.004 就已經產生 2.1–2.2% 的 split（真實 2.4%）；再加上 mistag 0.025 會變成 6.8–7.0%，約是真實的 3 倍，表示同一個 split 被算了兩次。強度：參數下修，結論不受影響，因為 C4 對整條 read 錯標幾乎不敏感。之後怎麼做：模擬真實 ONT 錯誤時不加 mistag，只用 switch＋base error；longbulksim README 與 memory 已註記。",
+      "why_demoted": "落在邊界（分數 6）",
+      "status": "done",
+      "artifacts": {
+        "outputs": [
+          "lab_report/2026-10-26_longbulksim_ppc/README.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 4444,
+          "session_id": "a7ec7281",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 11:11",
+          "ref": "a7ec7281:4444"
+        }
+      ]
+    },
+    {
+      "title": "研究 PDF 與頂層工作目錄加入 .gitignore，累積變更分類成 8 筆 commit 並 push",
+      "what": "為什麼：research/literature 底下的論文 PDF 不該進 git，且前幾天累積了大量未提交變更。做了什麼：.gitignore 加上 research/**/*.pdf，另加 /lab_report/、/report/、/research/、/tools/ 的規則；把 git status 分類成 chore(git)、plan 刪 L0/L1-B、terminology 刪除、文獻計數同步、模擬器調查收斂、report 規則、10-21~10-25 日誌等 commit（fd8f6a3、c222461、dde8e96、9922fc3、105e9cd、90fbcf5、09c4817），push 到 origin main；最後刪掉 research/INDEX.md 裡已刪除的 evaluation_v1 那行再 commit push（2668e18）。狀態：完成。注意：/lab_report/ 等被 ignore 後，之後新的 lab_report 檔不會自動進 git，已追蹤的檔不受影響。",
+      "why_demoted": "落在邊界（分數 5，有 commit 保底）；屬環境整理",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          ".gitignore",
+          "research/INDEX.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 3372,
+          "session_id": "6fd5a24f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 10:38",
+          "ref": "6fd5a24f:3372"
+        },
+        {
+          "line": 3743,
+          "session_id": "6fd5a24f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "10-26 10:51",
+          "ref": "6fd5a24f:3743"
+        }
+      ]
+    }
+  ],
+  "issues": [],
+  "advisor": [],
+  "questions_for_advisor": [],
+  "next": [],
+  "scan": {
+    "last_scanned": "2026-10-26T23:05:00",
+    "sessions": [
+      "69486274",
+      "a6941cbe",
+      "6fd5a24f",
+      "a7ec7281",
+      "b8ebe3fe",
+      "3cd9cf3c"
+    ],
+    "layers": {
+      "show": 6,
+      "record": 2,
+      "border": 2
+    }
+  }
+}

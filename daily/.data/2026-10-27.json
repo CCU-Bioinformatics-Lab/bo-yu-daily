@@ -1,0 +1,442 @@
+{
+ "schema_version": "2",
+ "date": "2026-10-27",
+ "headline": "HG008 的真實 clone 樹上找得到真值樹 ②–⑦ 六類事件；119 顆單細胞支持主幹與兩個共享分枝，但各 clone 的 private 枝無法證實",
+ "covers": "10-26 23:05 ~ 10-27 23:00",
+ "items": [
+  {
+   "title": "HG008 的真實 clone 樹上，找得到真值樹的事件嗎？",
+   "status": "done",
+   "kind": "research",
+   "priority": "P3",
+   "summary": "真值樹的 ②–⑦ 六類事件都出現在 HG008 的 subclone 枝上；單細胞支持 truncal、{SC9,SC14,SC24,SC28}、{SC14,SC28}，private 枝看不到",
+   "question": "`longbulksim` 的壓力測試真值樹假設 subclone 由「分到 HP1／HP2 的 SNV」加上 copy number 事件形成。10-25 的 HG008 分析只看到 truncal SNV，回答不了 subclone 這一層。這些事件在真實的 clone 樹上存在嗎？這棵樹本身又有沒有單細胞證據？",
+   "approach": "- 用 GIAB HG008 的 8 株單細胞衍生 clone（PacBio，第 14、19 代）的 SNV 共享關係排出 clone 樹。\n- 每條枝的 SNV 用 bulk ONT 63×（第 23 代）的 read 判 haplotype，CN 事件用 PURPLE allele-specific CN。\n- 再用 119 顆 PTA 單細胞的 VCF（第 23 代）逐枝檢查：每顆細胞帶不帶這條枝的 SNV。\n- 最後用每株 clone 自己的 PacBio phasing，依 HG008-N assembly 統一方向，替 9 個節點都填上 HP1／HP2 數字。",
+   "result": "- **②–⑦ 六類事件都找到，而且在 subclone 枝上。** ① purity 不適用（細胞株）。\n- **⑤ HP 拆分：** {SC14, SC28} 枝上 SNV HP1 24、HP2 27 個。\n- **② subclonal 單一 HP gain：** {2D6, 2E6} 共有 chr2 約 32 Mb 1+1→2+1。\n- **⑦ CN timing：** gain 區 truncal SNV multiplicity 2 有 56 個、1 有 46 個；10 個 phase block 內 0 例外。\n- **③ 突變遺失：** SC6 的 chr1q cnLOH 帶走 205 個 SNV，全在被取代的 HP1。\n- **單細胞：** truncal 119／119，{SC9, SC14, SC24, SC28} 48／119（原樹沒畫出的新 clade），{SC14, SC28} 16／119，和 bulk CCF 約 0.14 吻合。\n- **private 枝：** 8 條都沒有任何細胞帶超過一半，無法證實。",
+   "interpretation": "這證明真值樹的事件在真實的 clone 演化中會發生，而且 long read 能把它們對到 HP1／HP2。能當「單細胞證據樹」的是 truncal → {SC9, SC14, SC24, SC28} → {SC14, SC28} 與 3E4 那一支。chr10 同一段兩群細胞失去不同的 haplotype（mirrored LOH），只看 copy number 分不出來，是「HP 才看得到的事件」的真實例子。",
+   "gaps": "這是細胞株在培養中的演化，不是病人腫瘤，事件頻率仍要看 TRACERx 統計。CN 來自 PURPLE 推論。單細胞 VCF 只有 PASS 呼叫，沒呼叫到不等於沒有；要確認得看 CRAM（4.8 TB，沒下載）。chr10 只用 germline het 數量判斷，分不出 deletion 和 cnLOH。`branch_bulk_hp.tsv` 與部分分群分析在對話中執行，沒存成腳本。",
+   "figures": [
+    {
+     "type": "img",
+     "src": "figures/2026-10-27/hg008_clone_tree.png",
+     "caption": "HG008 clone 樹：節點下是 SNV 數，綠字是帶這條枝的單細胞數（共 119 顆），下方卡片是各枝的事件"
+    }
+   ],
+   "artifacts": {
+    "files": [
+     "tools/hg008_clone_tree.py",
+     "tools/hg008_clone_events.py",
+     "tools/hg008_bulk_hp.py",
+     "tools/draw_hg008_clone_tree.py",
+     "tools/hg008_sc_tree_check.py",
+     "tools/hg008_clone_hp_orient.py"
+    ],
+    "commands": [
+     "python3 -I tools/hg008_clone_events.py $H $L",
+     "python3 tools/hg008_bulk_hp.py $H/bulk_ONT_T_p23/*.bam <full_tumornormal.vcf.gz> $L 23",
+     "python3 -I tools/hg008_sc_tree_check.py <snv_patterns.tsv> $H/single_cell_vcf/vcf <out> 8"
+    ],
+    "outputs": [
+     "lab_report/2026-10-27_hg008_clone_tree_hp/",
+     "lab_report/2026-10-27_hg008_sc_tree_check/"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "單細胞衍生 clone",
+     "plain": "從一顆細胞養大的細胞株，代表當時那顆細胞的突變"
+    },
+    {
+     "term": "PTA 單細胞",
+     "plain": "把一顆細胞的 DNA 擴增後直接定序，能看出那顆細胞帶哪些突變，但會漏掉一部分"
+    },
+    {
+     "term": "private 枝",
+     "plain": "只有一株 clone 有的突變"
+    },
+    {
+     "term": "mirrored LOH",
+     "plain": "同一段染色體，不同群細胞各自丟掉不同的那一條"
+    },
+    {
+     "term": "multiplicity",
+     "plain": "一個突變在細胞裡有幾份"
+    }
+   ],
+   "details": "資料：/big8_disk/boyu114/benchmark_data/GIAB/HG008/（8 clones HiFi-somatic v0.9.4、bulk_ONT_T_p23、smvar_V0.4、single_cell_vcf 119 顆）。\nsession 1f5138cf 13:37–14:41（clone 樹與事件）、649c955a 15:41–16:37（單細胞檢查、clone 定相）。\n單細胞檢查 8 process 約 1.3 分鐘；bulk HP 23 process 約 1.5 分鐘。",
+   "evidence": [
+    {
+     "line": 12918,
+     "session_id": "1f5138cf",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 14:42",
+     "ref": "1f5138cf:12918"
+    },
+    {
+     "line": 15084,
+     "session_id": "649c955a",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 15:48",
+     "ref": "649c955a:15084"
+    }
+   ]
+  },
+  {
+   "title": "10-28 簡報加入 longbulksim 架構圖與 HG008 佐證頁",
+   "status": "done",
+   "kind": "research",
+   "priority": "P2",
+   "summary": "簡報第 8 頁改成 CONIPHER 與 longbulksim 的五步架構對照，第 9–11 頁用 HG008 佐證；11 頁講稿精簡成 30 秒到 1 分鐘",
+   "question": "10-28 簡報原本 7 頁，只講 CONIPHER 怎麼產生模擬資料。要接到「long read 版的模擬器怎麼做、它的事件有沒有真實根據」。",
+   "approach": "- 下午先加 HG008 佐證頁，再拆成一頁一個事件：左邊是 HG008 的真實樹，右邊是設計的模擬真值樹。\n- 18:42 使用者指出方向偏了：講完第 7 頁的輸入輸出，應該先講整體的最精簡生成程式。於是在第 8 頁加架構圖，HG008 頁順延成第 9–11 頁。\n- 架構圖兩列對照 CONIPHER 與 longbulksim 的五步（定參數、建樹、放事件、混合 clone、產生 read），每格標「沿用／修改／擴充／新寫」。定參數格列出共同參數名稱。\n- 晚上把 11 頁講稿全部重寫成只講畫面上有的東西。",
+   "result": "- 簡報現在 11 頁：第 1–7 頁 CONIPHER 流程，第 8 頁架構圖，第 9 頁 HG008 資料，第 10 頁 HP 拆分，第 11 頁 HP gain。\n- 第 11 頁的份數示意圖原本畫反（gain 前就出現 B 突變），改成依時間順序畫。\n- 講稿每頁約 190–250 字。\n- `report_rule.md` 新增或修改 S-1、S-2、S-11（講稿只講畫面上有的）與 L-10 子條。",
+   "interpretation": "簡報的故事線變成「CONIPHER 怎麼做 → long read 版改哪幾步 → 新加的事件在真實資料裡有根據」。HG008 頁從主角降為佐證。",
+   "gaps": "架構圖上 longbulksim 定參數寫「範圍內隨機值」，但程式目前還是固定值，講稿有註明。發布後的講稿列出幾處頁面之間數字對不上，還沒修。本地 `report/` 與線上版要再確認一致。",
+   "artifacts": {
+    "files": [
+     "report/2026_10_28_slides/project/slides/s2-architecture.html",
+     "report/2026_10_28_slides/project/slides/s2-hg008-data.html",
+     "report/2026_10_28_slides/project/slides/s2-hp-split.html",
+     "report/2026_10_28_slides/project/slides/s2-hp-gain.html",
+     "report/2026_10_28_slides/BRIEF.md",
+     "report/report_rule.md"
+    ],
+    "commands": [
+     "python3 tools/check_slides.py report/2026_10_28_slides/ --titles"
+    ],
+    "outputs": [
+     "https://claude.ai/artifact/VD3N6zKfSawc7HCgoUZx6q（version 152）"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "架構圖",
+     "plain": "把模擬程式的五個步驟排成一列，CONIPHER 一列、longbulksim 一列，對照哪步改了"
+    },
+    {
+     "term": "HP gain",
+     "plain": "只有一條 haplotype 多出一份 copy"
+    }
+   ],
+   "details": "session 1f5138cf 13:05–14:07、649c955a 15:06–19:06、0453610a 19:52–21:20、6385ac26 21:44–21:50。每次修改都記在 BRIEF.md 的 2026-10-27 各節。",
+   "evidence": [
+    {
+     "line": 17994,
+     "session_id": "649c955a",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 18:42",
+     "ref": "649c955a:17994"
+    },
+    {
+     "line": 22501,
+     "session_id": "6385ac26",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 21:48",
+     "ref": "6385ac26:22501"
+    }
+   ]
+  },
+  {
+   "title": "Rust 版 PhyClone 在論文 benchmark 上能取代 Python 版嗎？",
+   "status": "done",
+   "kind": "research",
+   "priority": "P2",
+   "summary": "haploclone 完成 M6–M9；V4 論文 benchmark 67 個 trial PASS，V5 速度中位數 28×（5.2–48×），預設輸出和原版逐位相同",
+   "question": "要比較多種 prior 與 pair score，Python PhyClone 太慢。10-26 完成移植的 M0–M5。今天要補完後處理、outlier 與 loss prior，並證明 Rust 版在論文 benchmark 上沒有變差、到底快多少。",
+   "approach": "- M6–M8：補後處理、outlier 模型、loss prior、FFT convolution；每個 milestone 交給 subagent 做，再派審查，修完才進下一步。\n- V4：先寫評估程式重現論文 xlsx 的 V-measure 與 AD F-score，再在 67 個 trial 上跑 Python 0.8.0 與 Rust（56 core）。\n- M9：tree prior 改成可替換（含 Pitman–Yor）。\n- V5：10 個設定各跑 3 次比速度，找出 Rust 在某些設定慢的原因並修正。",
+   "result": "- **評估程式：** 重現論文 2,832 列中的 2,830 列。\n- **V4 PASS：** Rust − Python 成對差，V 與 AD 中位數都是 0（p = 0.70、0.58），沒有 trial 差超過 0.05。\n- **V5：** 修正前中位數 18×，修正後 28×（5.2–48×）。原因是原版會快取 `compute_log_S`，Rust 每次重算；加了 cache 後 grid 1000 從 1.6× 到 8.2×。\n- 7 個 golden 設定的 seed-1 trace 和修正前逐位相同；`cargo test` 118 pass。",
+   "interpretation": "移植計畫 M0–M9 全部完成。Rust 版可以直接拿來跑 `FSCRP_PRIOR_PLAN.md` §4 的 prior 實驗，以前一組 43–61 分鐘的實驗現在幾分鐘可完成。和原版唯一的模型差異是 PG 子樹重新加權修正，預設不會用到。",
+   "gaps": "§4 prior 實驗還沒開始，判定門檻要老闆同意。V5 每格只跑 3 次（清單要求 5 次）。FS-CRP 只快約 5×，因為 Python 那段本來就是 numpy 編譯過的運算。Pitman–Yor 在 K = 1 時 alpha 仍會堆到下限。M9 的效能修正沒有另外送審查。",
+   "figures": [
+    {
+     "type": "svg",
+     "content": "<svg viewBox=\"0 0 640 296\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"inherit\" font-size=\"11\"><rect x=\"150\" y=\"8\" width=\"10\" height=\"8\" fill=\"#57606a\"/><text x=\"164\" y=\"16\" fill=\"#57606a\">修正前</text><rect x=\"220\" y=\"8\" width=\"10\" height=\"8\" fill=\"#1f6feb\"/><text x=\"234\" y=\"16\" fill=\"#57606a\">修正後（加 log_s cache）</text><line x1=\"150.0\" y1=\"28\" x2=\"150.0\" y2=\"286\" stroke=\"#eaeef2\"/><text x=\"150.0\" y=\"38\" text-anchor=\"middle\" fill=\"#57606a\">0×</text><line x1=\"240.0\" y1=\"28\" x2=\"240.0\" y2=\"286\" stroke=\"#eaeef2\"/><text x=\"240.0\" y=\"38\" text-anchor=\"middle\" fill=\"#57606a\">10×</text><line x1=\"330.0\" y1=\"28\" x2=\"330.0\" y2=\"286\" stroke=\"#eaeef2\"/><text x=\"330.0\" y=\"38\" text-anchor=\"middle\" fill=\"#57606a\">20×</text><line x1=\"420.0\" y1=\"28\" x2=\"420.0\" y2=\"286\" stroke=\"#eaeef2\"/><text x=\"420.0\" y=\"38\" text-anchor=\"middle\" fill=\"#57606a\">30×</text><line x1=\"510.0\" y1=\"28\" x2=\"510.0\" y2=\"286\" stroke=\"#eaeef2\"/><text x=\"510.0\" y=\"38\" text-anchor=\"middle\" fill=\"#57606a\">40×</text><line x1=\"600.0\" y1=\"28\" x2=\"600.0\" y2=\"286\" stroke=\"#eaeef2\"/><text x=\"600.0\" y=\"38\" text-anchor=\"middle\" fill=\"#57606a\">50×</text><text x=\"144\" y=\"57\" text-anchor=\"end\" fill=\"#24292f\">real_a2（A2）</text><rect x=\"150\" y=\"46\" width=\"438.4\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"54\" width=\"435.1\" height=\"7\" fill=\"#1f6feb\"/><text x=\"589.1\" y=\"61\" fill=\"#1f6feb\">48.3×</text><text x=\"144\" y=\"81\" text-anchor=\"end\" fill=\"#24292f\">V4 CONIPHER</text><rect x=\"150\" y=\"70\" width=\"93.1\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"78\" width=\"365.9\" height=\"7\" fill=\"#1f6feb\"/><text x=\"519.9\" y=\"85\" fill=\"#1f6feb\">40.7×</text><text x=\"144\" y=\"105\" text-anchor=\"end\" fill=\"#24292f\">b03（C4 pair）</text><rect x=\"150\" y=\"94\" width=\"297.6\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"102\" width=\"299.3\" height=\"7\" fill=\"#1f6feb\"/><text x=\"453.3\" y=\"109\" fill=\"#1f6feb\">33.3×</text><text x=\"144\" y=\"129\" text-anchor=\"end\" fill=\"#24292f\">e0_out001</text><rect x=\"150\" y=\"118\" width=\"266.1\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"126\" width=\"281.9\" height=\"7\" fill=\"#1f6feb\"/><text x=\"435.9\" y=\"133\" fill=\"#1f6feb\">31.3×</text><text x=\"144\" y=\"153\" text-anchor=\"end\" fill=\"#24292f\">e0_base_bin</text><rect x=\"150\" y=\"142\" width=\"251.2\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"150\" width=\"252.4\" height=\"7\" fill=\"#1f6feb\"/><text x=\"406.4\" y=\"157\" fill=\"#1f6feb\">28.0×</text><text x=\"144\" y=\"177\" text-anchor=\"end\" fill=\"#24292f\">e0_out001_fully</text><rect x=\"150\" y=\"166\" width=\"230.2\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"174\" width=\"250.6\" height=\"7\" fill=\"#1f6feb\"/><text x=\"404.6\" y=\"181\" fill=\"#1f6feb\">27.8×</text><text x=\"144\" y=\"201\" text-anchor=\"end\" fill=\"#24292f\">V4 Pairtree</text><rect x=\"150\" y=\"190\" width=\"37.1\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"198\" width=\"192.7\" height=\"7\" fill=\"#1f6feb\"/><text x=\"346.7\" y=\"205\" fill=\"#1f6feb\">21.4×</text><text x=\"144\" y=\"225\" text-anchor=\"end\" fill=\"#24292f\">grid 1000</text><rect x=\"150\" y=\"214\" width=\"14.6\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"222\" width=\"73.5\" height=\"7\" fill=\"#1f6feb\"/><text x=\"227.5\" y=\"229\" fill=\"#1f6feb\">8.2×</text><text x=\"144\" y=\"249\" text-anchor=\"end\" fill=\"#24292f\">V4 FS-CRP</text><rect x=\"150\" y=\"238\" width=\"30.7\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"246\" width=\"51.2\" height=\"7\" fill=\"#1f6feb\"/><text x=\"205.2\" y=\"253\" fill=\"#1f6feb\">5.7×</text><text x=\"144\" y=\"273\" text-anchor=\"end\" fill=\"#24292f\">fscrp_assign_loss</text><rect x=\"150\" y=\"262\" width=\"29.7\" height=\"7\" fill=\"#57606a\"/><rect x=\"150\" y=\"270\" width=\"46.6\" height=\"7\" fill=\"#1f6feb\"/><text x=\"200.6\" y=\"277\" fill=\"#1f6feb\">5.2×</text></svg>",
+     "caption": "V5：10 個設定的 Python／Rust 牆鐘比（3 次中位數），灰＝修正前，藍＝修正後"
+    }
+   ],
+   "artifacts": {
+    "files": [
+     "phyclone_rs/PORTING.md",
+     "phyclone_rs/decisions.tsv",
+     "phyclone_rs/v3/run_rust.py",
+     "phyclone_rs/v4/run_v4.py",
+     "phyclone_rs/v5/bench.py",
+     "phyclone_rs/v5/check_identity.py",
+     "tools/eval_phyclone_dataset.py"
+    ],
+    "commands": [
+     "~/venvs/phyclone/bin/python phyclone_rs/v4/run_v4.py run --impl rust --slots 14",
+     "~/venvs/phyclone/bin/python phyclone_rs/v4/run_v4.py score",
+     "cargo test --release"
+    ],
+    "outputs": [
+     "phyclone_rs/v4/README.md",
+     "phyclone_rs/v5/README.md",
+     "phyclone_rs/v5/summary.tsv",
+     "lab_report/2026-10-27_v4_evaluator/",
+     "/big8_disk/boyu114/phyclone_v4/"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "haploclone",
+     "plain": "PhyClone 的 Rust 移植版"
+    },
+    {
+     "term": "V4",
+     "plain": "在 PhyClone 論文的模擬資料上，比較 Rust 與 Python 推出的樹和真值的相似度"
+    },
+    {
+     "term": "V5",
+     "plain": "同一批輸入上，量 Rust 比 Python 快幾倍"
+    },
+    {
+     "term": "AD F-score",
+     "plain": "兩個突變的上下游關係猜對的比例"
+    },
+    {
+     "term": "逐位相同",
+     "plain": "同一個 seed 輸出的每個數字都一模一樣"
+    }
+   ],
+   "details": "haploclone branch rust-port 合併 perf-m9b → 7e1daeb；main_work commits aba7b2f..db5d044。session 3cd9cf3c。",
+   "evidence": [
+    {
+     "line": 4703,
+     "session_id": "3cd9cf3c",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 15:58",
+     "ref": "3cd9cf3c:4703"
+    },
+    {
+     "line": 6471,
+     "session_id": "3cd9cf3c",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 20:44",
+     "ref": "3cd9cf3c:6471"
+    }
+   ]
+  },
+  {
+   "title": "longbulksim 的樹改成以 normal 為 root，WGD 改成 trunk 上同一時間點的一次加倍",
+   "status": "ongoing",
+   "kind": "research",
+   "priority": "P2",
+   "summary": "樹的 root 改成 normal（和 CONIPHER 一致）；WGD 改成單一時間點全基因體加倍；禁用 read_span 輸入；65 個測試通過，未 commit",
+   "question": "對照 CONIPHER 與 `longbulksim` 的參數與建樹過程時，發現三處不合理：`longbulksim` 的 root 不是 normal；WGD 在每一段各自加倍、時間不同；spec 可以自己填 read 長度，但使用者不需要。",
+   "approach": "- root 改成 normal（`N`），trunk clone 的 parent 寫 `N`；讀 `truth_tree.tsv` 的 tools 同時接受舊的 `root`。\n- 參數模式加入 `{wgd: true}` 事件：重播到它時，所有段、所有 copy 一起加倍。各段 trunk 狀態拆成 WGD 前、後兩段，取事件最少的拆法。\n- spec 的 `read_span` 欄位改成報錯，read 長度固定用 HCC1395 `t50_n00` 分位數表。",
+   "result": "- 65 個測試全部通過（新增 3 個 WGD 測試）。\n- 沒有 WGD 的模擬和改動前 15／15 逐位相同；有 WGD 的輸出改變。\n- 實跑 `generate --wgd yes`：trunk 200 個事件裡只有一個 WGD，在第 168 個。",
+   "interpretation": "WGD 前的 truncal SNV 現在一律 2 份、之後 1 份，比例全基因體一致，符合真實 WGD 是一次性事件。CONIPHER 則是每個 SNV 各自隨機排先後。",
+   "gaps": "改動還沒 commit。`random_tree` 模式的 WGD 沒改，仍是各段各自 gain。之前產生的模擬輸出（含今天畫的 sim_0001）都是舊做法，要用新做法得重新產生。舊輸出的 `spec.yaml` 寫 `parent: null`，不能再用 `parse_spec` 讀。",
+   "artifacts": {
+    "files": [
+     "longbulksim/longbulksim/model.py",
+     "longbulksim/longbulksim/param_tree.py",
+     "longbulksim/longbulksim/random_tree.py",
+     "longbulksim/longbulksim/simulate.py",
+     "longbulksim/DECISIONS.md",
+     "longbulksim/README.md",
+     "tools/eval_hp_truth_phyclone.py"
+    ],
+    "commands": [
+     "cd longbulksim && python3 -m unittest discover -s tests",
+     "python3 -m longbulksim.generate <out> --wgd yes"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "WGD",
+     "plain": "整個基因體一次全部多複製一份"
+    },
+    {
+     "term": "trunk",
+     "plain": "所有腫瘤細胞共有的那段演化"
+    },
+    {
+     "term": "root 是 normal",
+     "plain": "樹的最上面是正常細胞，第一個腫瘤 clone 接在它下面"
+    }
+   ],
+   "details": "session 0453610a 19:10–21:37。DECISIONS.md 2026-10-27 三列。",
+   "evidence": [
+    {
+     "line": 20092,
+     "session_id": "0453610a",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 20:10",
+     "ref": "0453610a:20092"
+    },
+    {
+     "line": 21849,
+     "session_id": "0453610a",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 21:37",
+     "ref": "0453610a:21849"
+    }
+   ]
+  },
+  {
+   "title": "回顧 20 個 session 後修 daily-log 與 CLAUDE.md，晚上再把 CLAUDE.md 精簡",
+   "status": "done",
+   "kind": "tooling",
+   "priority": "P2",
+   "summary": "夜間日誌 5 次壞 4 次的 bug 加 `|| true`；CLAUDE.md 改成本機能跑的 PhyClone 指令、加耗時運算前說明與「簡單說」規則，晚上再精簡",
+   "question": "用 pstack 的 reflect 看最近 20 個 session，什麼最拖慢 AI？",
+   "approach": "reflect 列出 13 條建議，使用者選 A1–A8 套用：daily-log 4 條（修腳本、補手動補跑步驟、無人值守限制、cron 權限），CLAUDE.md 4 條（PhyClone 指令、耗時運算前先說明、繁中規則範圍、「簡單說」先白話）。晚上依使用者要求把 CLAUDE.md 去重、精簡，並加入 `phyclone_rs` 與 INDEX 入口。",
+   "result": "- 最大問題：夜間 daily-log 5 次有 4 次在 `collect_day.sh` 第 218 行中止，10-22 因此沒有日誌。已加 `|| true`。\n- 8 個 session 各自重找能跑的 PhyClone 指令；CLAUDE.md 已改成實測可跑的寫法。\n- 兩個 commit：b660f82、ec524b2。",
+   "interpretation": "這兩處是重複浪費工具呼叫的主因，修好後夜間 cron 與新 session 都不必再繞路。",
+   "gaps": "A1 的修正只確認語法，要看今晚 cron 才知道是否修好。A9–A13（專案代號表、commit 規則、被 ignore 的 12 個實驗目錄與 15 支腳本要不要 `git add -f`）還沒決定。",
+   "artifacts": {
+    "files": [
+     "~/.claude/skills/daily-log/scripts/collect_day.sh",
+     "~/.claude/skills/daily-log/SKILL.md",
+     "~/.claude/skills/daily-log/RECOVERY.md",
+     "~/.config/daily-log/cron_daily_log.sh",
+     "CLAUDE.md"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "reflect",
+     "plain": "讓 AI 回頭讀過去的對話，整理出哪些地方一再卡住"
+    }
+   ],
+   "details": "session 78a0128e 12:34–13:00、6385ac26 21:41–21:43。reflect 原文在 session scratchpad 的 REFLECT_2026-10-27.md。",
+   "evidence": [
+    {
+     "line": 9844,
+     "session_id": "78a0128e",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 12:55",
+     "ref": "78a0128e:9844"
+    },
+    {
+     "line": 10199,
+     "session_id": "78a0128e",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 13:00",
+     "ref": "78a0128e:10199"
+    }
+   ]
+  }
+ ],
+ "record": [
+  {
+   "title": "[翻案] 單細胞檢查後修正 HG008 clone 樹的三處分枝",
+   "status": "done",
+   "what": "下午先用 8 株 clone 的 SNV 共享關係排出 clone 樹（lab_report/2026-10-27_hg008_clone_tree_hp）。接著用 119 顆 PTA 單細胞檢查，三處要改：(1)「只缺 2E6」的 82 個 SNV 有 71 個在 chr10，44 顆細胞缺全部 chr10 SNV 且該段 germline het 少 93%，所以不是分枝，是 chr10 LOH；另 24 顆在同一段失去另一條 haplotype（mirrored LOH），LOH 至少獨立發生兩次。(2)「只缺 3E4」的 411 個 SNV 是真的分枝：3E4 最早分出，有 8 顆姊妹細胞。(3) 8 條 private 枝沒有任何細胞帶超過一半，無法證實，推論是分離後培養中才產生。另外找到原樹沒畫出的 {SC9, SC14, SC24, SC28} clade（48／119）。clone_tree_hp/README §6 與樹圖已依此更新；2E6 卡片的「chr10 deletion 遺失 72 個」因使用者只要求補兩點，先沒改。",
+   "why_demoted": "被 5 項上限擠掉；內容也寫在呈現層 HG008 那一項",
+   "artifacts": {
+    "files": [
+     "tools/hg008_sc_tree_check.py"
+    ],
+    "outputs": [
+     "lab_report/2026-10-27_hg008_sc_tree_check/README.md",
+     "lab_report/2026-10-27_hg008_sc_tree_check/tables/chr10_germline_het.tsv"
+    ]
+   },
+   "evidence": [
+    {
+     "line": 15091,
+     "session_id": "649c955a",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 15:48",
+     "ref": "649c955a:15091"
+    },
+    {
+     "line": 15096,
+     "session_id": "649c955a",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 15:48",
+     "ref": "649c955a:15096"
+    }
+   ]
+  },
+  {
+   "title": "[翻案] read 長度與 pair 共現程式碼先不刪，只禁用 read_span 輸入",
+   "status": "dropped",
+   "what": "使用者發現 longbulksim 可以輸入 read 長度，先要求禁止這個輸入，再要求刪掉所有跟 read 長度有關的特徵程式碼。agent 問刪除範圍時被中斷；使用者改問是否一定要 read 長度才能用 het_map、switch。回答：只有 het_map 本質上需要 read 長度，mistag、base error 不用，switch 可改用 SNV 位置。agent 建議不刪：pairs.tsv（同一 read 上 SNV 共現）是研究主軸之一，C4 會讀它，壓力測試樹只有 105 列，保留成本低。使用者沒再要求刪除，轉去改簡報。最後狀態：只有 spec 的 read_span 欄位被禁用，read 長度固定用 HCC1395 t50_n00 分位數表；pair 共現與 read 長度相關程式碼都保留。",
+   "why_demoted": "落在邊界",
+   "artifacts": {
+    "files": [
+     "longbulksim/longbulksim/sample.py",
+     "longbulksim/longbulksim/simulate.py"
+    ]
+   },
+   "evidence": [
+    {
+     "line": 19161,
+     "session_id": "0453610a",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 19:42",
+     "ref": "0453610a:19161"
+    },
+    {
+     "line": 19230,
+     "session_id": "0453610a",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 19:50",
+     "ref": "0453610a:19230"
+    }
+   ]
+  },
+  {
+   "title": "用 daily-log 寫完 10-26 日誌並推進游標",
+   "status": "done",
+   "what": "10-26 23:00 跑 daily-log 寫 10-26 的日誌。collect_day.sh 在第 218 行（`| head -100`）中止，先把腳本複製到 /tmp/dl_scripts、在該行加 `|| true` 繞過，再寫 candidates、JSON、驗證引文、渲染。完成後游標推進到 2026-10-26T23:05:00。這個 bug 隔天由 reflect 的 A1 正式修在 skill 裡。",
+   "why_demoted": "使用者 0 則訊息，例行工作",
+   "artifacts": {
+    "files": [
+     "daily/.data/2026-10-26.json"
+    ],
+    "outputs": [
+     "daily/2026-10-26.html"
+    ]
+   },
+   "evidence": [
+    {
+     "line": 8776,
+     "session_id": "d8bb5566",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-26 23:06",
+     "ref": "d8bb5566:8776"
+    }
+   ]
+  },
+  {
+   "title": "把 ~/.rustup、~/.cargo 搬離已滿的系統碟",
+   "status": "done",
+   "what": "V5 結束時發現系統碟 / 已 100%，只剩 10 GB。查證 Claude 相關檔案約 12.6 GB，Rust build 目錄與 V4、V5 輸出都不在系統碟。使用者同意後刪掉過去 session 的 /tmp/claude-1024 暫存目錄（約 8.8 GB），並把 ~/.rustup、~/.cargo（約 1.56 GB）搬到 /bip8_disk/boyu114/，原位置留 symlink；之後 cargo build 確認可用。可用空間從 10 GB 增加到 20 GB，系統碟仍 99% 滿，剩下約 1 TB 不是這些工作產生的。",
+   "why_demoted": "環境類，分數低",
+   "evidence": [
+    {
+     "line": 6812,
+     "session_id": "3cd9cf3c",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "10-27 20:52",
+     "ref": "3cd9cf3c:6812"
+    }
+   ]
+  }
+ ],
+ "issues": [],
+ "advisor": [],
+ "scan": {
+  "last_scanned": "2026-10-27T23:00:07",
+  "sessions": [
+   "3cd9cf3c",
+   "d8bb5566",
+   "78a0128e",
+   "1f5138cf",
+   "649c955a",
+   "0453610a",
+   "6385ac26",
+   "91d55d2b"
+  ],
+  "layers": {
+   "show": 5,
+   "record": 3,
+   "border": 1
+  }
+ }
+}

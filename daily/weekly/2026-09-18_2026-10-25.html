@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>週報 1：09-18、10-19 ~ 10-25</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<header class="page">
+<h1 class="date">週報 1：09-18、10-19 ~ 10-25</h1>
+<div class="meta">濃縮 7 篇日誌：09-18、10-19、10-20、10-21、10-23、10-24、10-25（10-22 沒有日誌）　·　<a href="index.html">回到方向進度總覽</a></div>
+<p class="headline">這一週從「找現成的驗證資料」轉成「自己做 long read 模擬器」。現成的生成器都做不出 HP 與同 read 共現，所以寫了 longbulksim v0.1。在壓力測試樹上，HP 拆分計數（A2）與 read 共現（C4）都修好了原版 PhyClone 的錯誤。</p>
+</header>
+
+<h2 class="section">主線：照時間順序</h2>
+
+<section class="item"><h3><span class="num">01</span> 文獻：在搜尋範圍內，沒找到用 long read HP／PS 建樹的方法（10-19）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>4 個 subagent 分角度搜尋。在這些搜尋的範圍內，沒找到把 long read 的 haplotype／phase set 放進演化樹模型的已發表方法。新收 BitPhylogeny（M08）。</li>
+<li>訂出納入標準：要用到建樹軟體或自己的建樹演算法。文獻清單從 22 篇刪到 18 篇。10-21 再刪掉 TreeClone（M02）。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">02</span> 10-21 會議：老師要 long read 模擬資料的實際產出</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>10-21 的報告回答「驗證資料存不存在」。老師要的是「長讀驗證資料怎麼產生」。兩者不是同一個問題。</li>
+<li>規則定下來：只用 long read 模擬資料。short read 資料集（PhyClone benchmark、SMC-Het）都不用。</li>
+<li>老師指出 7 個邏輯問題（L1–L7），例如「程式存在不等於程式適用」、「沒找到不等於不存在」。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">03</span> 現成生成器：CONIPHER 能重現作者資料，但沒有工具做得出 HP 共現（10-21 ~ 10-24）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>PhyClone 附的模擬程式只是測試工具。重跑 100 份全部通過規則檢查，但和作者 benchmark 有兩處不同（10-21）。</li>
+<li>CONIPHER 的公開生成程式重跑 300 份，和 PhyClone 用的資料逐 byte 相同。Pairtree 分布相同，但逐筆不同，因為作者的種子沒生效（10-23）。所以 10-28 簡報改講 CONIPHER 的生成流程。</li>
+<li>讀了約 90 個工具的程式，沒有一個產生 long read 上 somatic SNV 共現的真值。篩選標準改成「輸出能直接餵 PhyClone、真值對得上 clone tree」後，clonesim、VISOR、PSiTE 移出，ProCESS、SCOUT 刪除（10-24）。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">04</span> 原版 PhyClone 的基線：不給 HP 時會錯（10-24）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>在 HP 壓力測試樹上跑 10 次，MAP 有 9 次選錯拓樸。</li>
+<li>遺失的 SNV 有 99.8% 被併進低 CCF clone，outlier 機制抓不到。</li>
+<li>限制：只有一份資料、一個 sample，只能當單一案例。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">05</span> longbulksim v0.1 與 HP 擴充的第一批結果（10-25）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>HP 真值樹的 7 類事件在 HG008、TRACERx、PCAWG 都找得到實例。但事件密度與突變遺失偏高，所以原樹改稱「壓力測試樹」。</li>
+<li>寫出 longbulksim v0.1：從 YAML 樹產生 PhyClone 輸入、HP 計數與 SNV pair 共現表。</li>
+<li>A2（HP 拆分計數）：遺失 SNV 被錯併的比例從 0.92–1.00 降到 0.00–0.01。A2 用的是真值 φ。</li>
+<li>C4（read 共現拓樸項）：錯誤直線樹的 posterior 從 0.39–0.48 降到 0.000–0.002，12 個 run 都一樣。</li>
+<li>40 棵 TRACERx 隨機樹：A1／A2 的 ARI 平均 +0.053／+0.063，95% CI 不含 0。</li>
+<li>HCC1395 真實 ONT：alt read 有 HP tag 的比例 85.9%。但只有 19% 的相鄰 SNV pair 有共同 read。</li>
+<li>老師的新規則：研究針對只有一個 bulk 樣本的情境，多樣本只當上限參考。</li>
+</ul></div></div></section>
+
+<h2 class="section">支線</h2>
+<section class="item"><h3><span class="num">06</span> PCDH 甲基化條碼：多數 cell line 不能用，之後暫停（10-20 ~ 10-21）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>5 株 cell line 裡有 3 株的 PCDH 區整區高甲基化，條碼只剩 H1437、HCC1954 能評估。</li>
+<li>H1437 只有 tumor HP1 分成兩群（約 4：6）。這比較像 HP1 有兩份 copy 各自漂移，不像 subclone〔推論〕。下一步本來是 somatic SNV linkage 測試，沒有做。</li>
+</ul></div></div></section>
+<section class="item"><h3><span class="num">07</span> 09-18：舊專案規格清空成佔位內容</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><p>data.md、model.md 等 5 份規格改成「重新設計中」，當作重新開始的起點。和之後的研究沒有直接關係。</p></div></div></section>
+
+<h2 class="section">這週的翻案</h2>
+<section class="item"><div class="field gaps"><div class="body"><ul>
+<li>10-21 簡報下午版偏離主題，整份換掉。</li>
+<li>TreeClone 是 short read 方法，從簡報與 research/ 全部刪掉。</li>
+<li>PhyClone 的模擬程式是測試工具，不是作者版本 → 10-28 簡報改用 CONIPHER 當主軸。</li>
+<li>HP 真值樹不是典型腫瘤 → 下修為壓力測試樹。</li>
+</ul></div></div></section>
+
+<h2 class="section">週末時還缺的</h2>
+<section class="item"><div class="field gaps"><div class="body"><ul>
+<li>A2 的 φ 從哪裡估，沒有決定。</li>
+<li>longbulksim 只產生計數，沒有 read。phasing、mistag、定序錯誤到 v0.2 才加。</li>
+<li>C4 只在壓力樹上測，沒在隨機樹上測。</li>
+</ul></div></div></section>
+</div>
+</body>
+</html>

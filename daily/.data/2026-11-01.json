@@ -1,0 +1,228 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-01",
+  "phase": "diplosim 驗證：HCC1395 多 purity holdout，並準備 11-04 報告",
+  "headline": "diplosim 在 HCC1395 t10–t50 的 13 項統計，通過數從 8/6/5/3/1 升到 12/13/12/11/8；低 purity 的差距大多來自量測端（ClairS 的 normal 規則、purity 換算、偵測靈敏度），不是 diplosim 的生成機制。11-04 報告照 CLAUDE.md 做成 13 頁，並改成以圖為主",
+  "covers": "10-31 23:00 ~ 11-01 23:00",
+  "items": [
+    {
+      "title": "照 CLAUDE.md 做 11-04 報告，再把每頁改成以圖說明",
+      "status": "ongoing",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "報告主軸改成「diplosim 比 CONIPHER 多哪些參數與資訊」，先不講 purity holdout 結果、不提 HG008；最後 13 頁，旋鈕每組一頁，實際結果改成示意圖",
+      "question": "11-04 要向老師報告 diplosim。完全照 CLAUDE.md 的「交付」順序做，報告會不會比較順、比較好懂？",
+      "approach": "- 先照 CLAUDE.md 寫大綱 v1，用 subagent 審查兩輪（REVIEW_v1、REVIEW_v2），把使用者原話記進 BRIEF.md。\n- 使用者改主軸：不講 diplosim 的 purity 結果，只講 CONIPHER 和 diplosim 相比新增哪些參數；用「兩台機器輸出 bulk 定序資料」比喻，比較資訊量；驗證部分只說「拿 HCC1395 逼近真實資料」。\n- HG008 全部拿掉；統計頁畫成 6 條小折線。\n- 使用者覺得字太多：在 `report/report_rule.md` 加「檢查每頁圖文比例」規則，大綱、p3、p5、p6 改成圖示。\n- 10-28 會議的三項決議移到大綱的「上次方向」區塊。\n- 大綱 v5：旋鈕總覽移到第 2 頁，之後每組旋鈕一頁（方案 B），每頁說明模仿哪個真實現象、多了什麼資訊；證據只用 HCC1395 t50 的真實數值。depth 那組先不做。\n- 新畫兩張示意圖：`prop_tagged` 與 `tag_concentration` 的差別（`tools/draw_tag_knobs.py`）、三個 read 錯誤旋鈕（`tools/draw_error_knobs.py`）。",
+      "result": "- 投影片 13 頁，3 個 commit：d17513e（初版）、86f9ae8（修 `<` 跳脫）、dadee49（四頁改成一頁一張主圖）。\n- 22:00 之後的改動（旋鈕每組一頁、兩張示意圖、第五頁左下改成圖）還沒 commit。\n- 使用者問到 `mistag_concentration` 打開後 alt 是否仍在兩條 HP 上，於是讀 `diplosim/src/hp.rs` 的 `site_rate`、`swap_some` 核對，再重畫示意圖。",
+      "figures": [
+        {"type": "img", "src": "figures/2026-11-01/read_error_knobs.png", "caption": "三個 read 錯誤旋鈕的示意圖（base_error、mistag_rate、mistag_concentration），11-04 報告用"}
+      ],
+      "interpretation": "使用者想讓老師先懂「改了什麼、多了什麼資訊」，再看驗證結果。所以本週報告刻意不放 purity holdout 的數字，那部分留到之後。另一個收穫是新的投影片規則：實際結果不能只放數字，要畫成示意圖。",
+      "gaps": "22:00 之後的投影片改動還沒 commit。depth 那組旋鈕沒有說明頁。CLAUDE.md「交付」第 6 項的自我檢查與 check_slides.py 只在中途跑過，最終版沒有重跑。",
+      "artifacts": {
+        "files": [
+          "report/2026_11_04_slides/OUTLINE.md",
+          "report/2026_11_04_slides/BRIEF.md",
+          "report/2026_11_04_slides/REVIEW_v1.md",
+          "report/2026_11_04_slides/REVIEW_v2.md",
+          "report/2026_11_04_slides/project/deck.json",
+          "report/2026_11_04_slides/project/slides/outline.html",
+          "report/2026_11_04_slides/project/slides/t1-knobs.html",
+          "report/2026_11_04_slides/project/slides/r-targets.html",
+          "report/2026_11_04_slides/project/slides/t2-stats.html",
+          "report/2026_11_04_slides/gen_p1_p3.py",
+          "report/2026_11_04_slides/gen_k_slides.py",
+          "report/report_rule.md",
+          "tools/draw_tag_knobs.py",
+          "tools/draw_error_knobs.py"
+        ],
+        "commands": [
+          "python3 tools/check_slides.py report/2026_11_04_slides/ --titles"
+        ],
+        "outputs": [
+          "report/2026_11_04_slides/figs/prop_tagged_vs_tag_concentration.png",
+          "report/2026_11_04_slides/figs/read_error_knobs.png",
+          "commit d17513e、86f9ae8、dadee49"
+        ]
+      },
+      "concepts": [
+        {"term": "旋鈕", "plain": "diplosim 的一個可調參數"},
+        {"term": "prop_tagged", "plain": "有 HP1 或 HP2 標記的 read 佔多少"},
+        {"term": "tag_concentration", "plain": "各位點的標記比例差多少；開了之後有些位點幾乎全有標記，有些很少"},
+        {"term": "mistag_concentration", "plain": "HP 標錯集中在少數位點，而不是平均分散"}
+      ],
+      "details": "大綱版本：OUTLINE_v1、v2、v4 另存；v5 加在 OUTLINE.md 末尾。\n使用者指示（11-01）：先不講 purity 結果；HG008 不提；p8 畫 6 條小折線；10-28 三項決議放進上次方向區塊；旋鈕頁用方案 B；depth 先等等。",
+      "evidence": [
+        {"quote": "先不要說明diplosim後面purity的結果，大致說到conipher和diplosim相比新增甚麼參數"},
+        {"quote": "幫我檢查每一頁的圖文比例，因為我還是覺得有些頁，你沒有善用到圖示化的視覺會比較好懂"},
+        {"quote": "應該是先把第三頁的搬到第二頁吧，然後再把每一頁都說明那八個參數的用途是甚麼"}
+      ]
+    },
+    {
+      "title": "低 purity 對不上，是 diplosim 錯還是量測流程沒模擬到？大多是量測端",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "補上 ClairS 的 normal AF 規則、purity 換算的 normal 污染、ClairS 偵測曲線後，t20 從 7/13 升到 11/13、t10 從 6/13 升到 8/13",
+      "question": "旋鈕改成範圍抽樣後，t20、t10 仍只有 7、6 項落在模擬 95% 區間內：call 數高估約 50%，VAF 偏低。問題在 diplosim 怎麼產生資料，還是比較流程沒有模擬 ClairS 與 subsample 的量測方式？",
+      "approach": "- 量 ClairS 偵測曲線：同一組 t50 位點，在 t10–t40 被叫出的比例對 alt 數、VAF 作圖（`tools/plot_clairs_detection_curve.py`）。\n- 低 purity 時高 VAF 的 SNV 反而叫不出來。下載 ClairS v0.4.1 原始碼查原因。\n- 確認 ClairS 用的 `normal_25x` 和 `t00_n25` 是同一批 read（總鹼基數逐位相同）。\n- 方案 A：在 Python 比較流程中模擬配對 normal 與 ClairS 的 normal AF 規則；normal 有自己的 base error，並含少量 tumor read（比例 c，範圍 0.005–0.025）。\n- 低 purity 的 VAF 偏低：先排除 diplosim CN，再發現是 purity 換算沒算進 normal 裡的 tumor read，換算加入 c。\n- 把偵測曲線改成範圍抽樣，接進比較流程。\n- 最後寫總整理 `lab_report/2026-11-01_diplosim_purity_summary/`。",
+      "result": "- ClairS 會刪掉 normal AF ≥ 0.05 且 tumor AF < 6 × normal AF 的候選〔程式〕。t10 中 VAF ≥ 0.26 的 1,725 個位點只叫出 685 個，970 個沒出現在 VCF〔實測〕。\n- 偵測曲線和 purity 有關：alt = 5 時，t10／t20／t30／t40 叫出比例是 0.11／0.15／0.24／0.36。\n- 配對 normal 讓 call 數改善，但通過數幾乎不變。\n- 加 c 換算與偵測曲線後，通過數見表。平均 |相對差距|：t10 0.501 → 0.262。\n- 10 個 commit（7e12fa7 到 8d1c1c5）。",
+      "tables": [
+        {
+          "caption": "13 項統計中落在模擬 95% 區間內的項數（lab_report/2026-11-01_diplosim_purity_summary）",
+          "columns": ["步驟", "t50", "t40", "t30", "t20", "t10"],
+          "rows": [
+            ["① 單一值（10-31 v2）", "8", "6", "5", "3", "1"],
+            ["② 逐位點 mistag", "7", "6", "3", "2", "2"],
+            ["③ 旋鈕範圍抽樣", "12", "12", "10", "7", "6"],
+            ["④ 配對 normal＋ClairS 規則", "12", "11", "10", "7", "6"],
+            ["⑤ purity 換算加入 c", "12", "13", "11", "7", "6"],
+            ["⑥ ClairS 偵測曲線", "12", "13", "12", "11", "8"]
+          ]
+        }
+      ],
+      "figures": [
+        {"type": "img", "src": "figures/2026-11-01/progress.png", "caption": "六個步驟下，5 個 purity 的通過項數"},
+        {"type": "img", "src": "figures/2026-11-01/detection_curve.png", "caption": "ClairS 在 4 個 purity 下的偵測曲線"}
+      ],
+      "interpretation": "diplosim 本身的生成機制大致沒錯。低 purity 的差距，大部分是比較流程少了真實量測會做的事：ClairS 的規則、偵測靈敏度、purity 換算。所以之後用 diplosim 做 benchmark 時，要把 caller 的行為一起模擬，不能只用硬門檻。",
+      "gaps": "t10 只過 8/13。split alt 在 t10 仍高估 +0.59。高 purity 的 call 數偏少（t50 模擬 25,460、真實 31,350），因為曲線把 t50 自己的 call 當真 SNV。真實 normal 的 alt 集中在少數位點，均勻 c 模型解釋不了。c 的兩個估計不一致：normal alt 給 1.2–1.6%，VAF 反推給 2.6–3.5%。全部只來自 ClairS v0.4.1＋HCC1395 ONT。",
+      "artifacts": {
+        "files": [
+          "tools/plot_clairs_detection_curve.py",
+          "tools/diplosim_ppc_hcc1395.py",
+          "tools/diplosim_knob_ranges_hcc1395.tsv",
+          "tools/clairs_detection_curve_hcc1395.tsv",
+          "tools/diplosim_purity_holdout_v2.sh",
+          "tools/plot_diplosim_purity_summary.py"
+        ],
+        "commands": [],
+        "outputs": [
+          "lab_report/2026-11-01_clairs_detection_curve/",
+          "lab_report/2026-11-01_diplosim_matched_normal/",
+          "lab_report/2026-11-01_diplosim_purity_normal_share/",
+          "lab_report/2026-11-01_diplosim_detection_curve/",
+          "lab_report/2026-11-01_diplosim_purity_summary/",
+          "commit 7e12fa7、fa59549、e2e44c1、4b6a645、792051d、0a524fe、a3bfb08、faa0bfc、3aea0bc、688516b、8d1c1c5"
+        ]
+      },
+      "concepts": [
+        {"term": "holdout", "plain": "只用 t50 調參數，再看沒用來調的 t40–t10 對不對得上"},
+        {"term": "偵測曲線", "plain": "一個 SNV 有幾條 alt read 時，ClairS 叫出它的機率"},
+        {"term": "配對 normal", "plain": "ClairS 用來對照的正常樣本；normal 有 alt 的位點會被刪掉"},
+        {"term": "c", "plain": "正常樣本裡混進的 tumor read 比例"},
+        {"term": "t10_n40", "plain": "HCC1395 subsample，10x tumor 加 40x normal"}
+      ],
+      "details": "c 範圍 0.005–0.025（0a524fe）。真實 normal 的 alt 集中在少數位點，見 clairs_detection_curve README 第 5 節。",
+      "evidence": [
+        {"quote": "先 git commit，再確認 normal_25x 和 t00_n25 是否同一批"},
+        {"quote": "直接跑 5 個 purity。 c 範圍已經和量測一致，先看整體的通過數改善多少"}
+      ]
+    },
+    {
+      "title": "diplosim 怎麼修好「alt 分在兩條 HP」與 depth 變異？加逐位點 mistag，φ 從 normal 量",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "新增 `--mistag-concentration`，base error 降到 0.001；split alt 在 5 個 purity 都落在 −0.11 到 −0.16（原本 t10 +3.35）",
+      "question": "10-31 鎖住 t50 的旋鈕後，「alt 分在兩條 HP」在 t10 高估 +3.35，depth 變異在低 purity 高估 +0.50。差距從哪來？",
+      "approach": "- 在真實資料中，取 alt 多的那條 HP 為 X、另一條為 O，比較「O 的 alt ÷ X 的 alt」和「O 的 alt ÷ O 的 ref」。\n- 前者穩定、後者隨 purity 下降，表示錯誤來自 HP 標錯，不是 base error。\n- diplosim 新增 `--mistag-concentration`（κ）：每個位點從 Beta 分布抽自己的 mistag 機率。\n- HCC1395 設定改成 `--base-error 0.001 --mistag-rate 0.01 --mistag-concentration 1`。\n- depth 的 φ 改從 normal-only 樣本量，不碰 holdout 樣本（`tools/diplosim_estimate_knobs.py`）。",
+      "result": "- split alt 在 5 個 purity 都落在 −0.11 到 −0.16（v2：−0.01 → +3.35）。\n- 13 項平均 |相對差距|：t10 0.501 → 0.251，t20 0.348 → 0.198。\n- 副作用：「SNV 在 depth 少的那條 HP」從 +0.07 變 +0.12。\n- φ 依估計式在 0.006–0.025 之間，差 4 倍，沒有單一值（見翻案項）。\n- 新參數不設時，輸出與改動前逐位元相同；cargo test 通過。commit d2f0908、31b03a5。",
+      "interpretation": "diplosim 的錯誤模型更像真實 long read：HP 標錯集中在少數位點，像局部 phasing 錯誤。這是看真實資料的比例推出來的機制，不是硬調數字。",
+      "gaps": "split alt 仍隨 purity 下降偏高（最後 t10 +0.59）。逐位點 mistag 只用 HCC1395 一個樣本決定。",
+      "artifacts": {
+        "files": [
+          "diplosim/src/hp.rs",
+          "diplosim/src/params.rs",
+          "diplosim/src/output.rs",
+          "diplosim/tests/behaviour.rs",
+          "diplosim/DECISIONS.md",
+          "tools/diplosim_estimate_knobs.py",
+          "tools/plot_purity_holdout_heatmap.py"
+        ],
+        "commands": [
+          "cd diplosim && cargo test --release",
+          "python3 -I tools/diplosim_estimate_knobs.py phi <real_per_snv.tsv>"
+        ],
+        "outputs": [
+          "lab_report/2026-11-01_diplosim_split_alt_mistag/",
+          "lab_report/2026-11-01_diplosim_phi_from_normal/",
+          "commit d2f0908、31b03a5"
+        ]
+      },
+      "concepts": [
+        {"term": "split alt", "plain": "alt read 同時出現在 HP1 和 HP2 的 SNV 比例"},
+        {"term": "mistag", "plain": "read 被標到錯的 HP"},
+        {"term": "base error", "plain": "鹼基讀錯，把 ref 讀成 alt"},
+        {"term": "φ", "plain": "depth 比 Poisson 多出的變異"}
+      ],
+      "details": "真實比例表：O alt ÷ X alt 0.0063→0.0100；O alt ÷ O ref 0.0103→0.0043（t50→t10）。最小平方粗估：每條 alt read 約 0.46%、每條 ref read 約 0.27% 被標到另一條 HP。",
+      "evidence": [
+        {"quote": "直接挑方案解決 alt 分在兩條 HP 偏高"},
+        {"quote": "好，先做方案 1，從 φ 開始"}
+      ]
+    },
+    {
+      "title": "[翻案] 旋鈕不再找單一最佳值，改成從真實資料的範圍抽樣",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "φ 依估計式差 4 倍，找不到單一值；使用者改選方案 3a：6 個旋鈕從範圍抽樣，真實值大致落在模擬區間內就算過",
+      "question": "原本的做法是一個旋鈕一個旋鈕找最佳值（方案 1，從 φ 開始）。φ 量出來依估計式差 4 倍。要繼續逐一量下去，還是換一個不用一直試的做法？",
+      "approach": "- 使用者問有沒有「一勞永逸」的做法。列出三個方案：逐項量測、自動擬合、範圍抽樣。\n- 使用者選方案 3a：每次模擬從範圍抽 6 個旋鈕，範圍照真實資料的量測表（`tools/diplosim_knob_ranges_hcc1395.tsv`）。\n- 理由：diplosim 是拿來 benchmark，不必精確複製一株細胞。",
+      "result": "- 13 項通過數：單一值 7/6/3/2/2 → 範圍抽樣 12/12/10/7/6（t50→t10）。\n- 代價：平均 |相對差距| 稍變大（t10 0.251 → 0.294），一部分是區間變寬造成的。\n- commit 5d67cca。",
+      "figures": [
+        {"type": "img", "src": "figures/2026-11-01/knob_ranges_purity_trend.png", "caption": "範圍抽樣後各統計量隨 purity 的變化"}
+      ],
+      "interpretation": "驗證標準從「找到最像 HCC1395 的那組值」改成「真實值落在模擬範圍內」。只有一個 HCC1395 樣本，本來就不夠支持微調。之後的通過數要搭配平均相對差距一起看，因為區間變寬本身也會讓通過數上升。",
+      "gaps": "範圍本身仍只來自 HCC1395。prop_tagged 範圍中點 0.85 低於真實 0.862，造成 HP0 比例偏移。",
+      "artifacts": {
+        "files": ["tools/diplosim_knob_ranges_hcc1395.tsv", "tools/diplosim_ppc_hcc1395.py"],
+        "commands": [],
+        "outputs": ["lab_report/2026-11-01_diplosim_knob_ranges/", "commit 5d67cca"]
+      },
+      "concepts": [
+        {"term": "範圍抽樣", "plain": "每次模擬從一個區間隨機抽參數，而不是固定一個值"},
+        {"term": "95% 區間", "plain": "模擬跑很多次，中間 95% 的結果範圍"}
+      ],
+      "evidence": [
+        {"quote": "有沒有那種更一勞永逸的作法，可以不用在亂調選紐亂試"},
+        {"quote": "改成方案 3：不追求單一值，旋鈕改成抽樣範圍，只要大概在模擬出來在真實cram數據統計範圍區間就好"}
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "用 daily-log 寫完 10-31 日誌並推進游標",
+      "status": "done",
+      "what": "10-31 23:00 在 session 8bb7dab0 跑 /daily-log，掃 10-30 23:00 到 10-31 23:00。產出 daily/.data/2026-10-31.json 與 daily/2026-10-31.html：呈現 7 項（同位置多次 CNA、4 種 read／HP 雜訊、purity holdout、刪方案圖、ASCAT 5kHz、兩個翻案），記錄 1 項。圖複製到 daily/figures/2026-10-31/。validate 0 error、可讀性 0 提醒，collect_day.sh --commit 把游標推到 2026-10-31T23:00:09。日誌 repo 沒有 commit 或 push。",
+      "why_demoted": "例行工具操作，沒有使用者訊息；大部分落在重疊區。",
+      "artifacts": {
+        "files": ["daily/.data/2026-10-31.json", "daily/2026-10-31.html", "daily/.data/_cursor.json"],
+        "commands": ["bash /home/boyu114/.claude/skills/daily-log/scripts/collect_day.sh --commit"]
+      },
+      "evidence": [
+        {"quote": "10/31 的日誌寫好了：`/bip8_disk/boyu114/main_work/daily/2026-10-31.html`（呈現 7 項、記錄 1 項）"}
+      ]
+    },
+    {
+      "title": "調查 /bip8_disk 誰佔最多用量，以及 jyunhong104 的內容",
+      "status": "dropped",
+      "what": "11-01 13:36 在 session b05fbf1a，使用者想知道 /bip8_disk 誰用最多空間。用 du 逐目錄量：yungjen114 約 3.5 TB（約 29%）最多，pingting114 約 2.0 TB，jyunhong104 約 1.3 TB，boyu114 約 0.9 TB 排第四。再看 jyunhong104：1.3 TB 幾乎全是 2024 年的 HG002 phasing benchmark 中間檔（ONT R10.4.1 sup，10x–60x 六種深度，比較 longphase、WhatsHap、Margin、MethPhaser），主要是 BAM，最後修改 2024-06。使用者接著要查有沒有人的文件引用它，搜尋途中被使用者中斷，沒有結論，也沒有刪任何檔。",
+      "why_demoted": "環境類工作，與研究主線無關，沒有改檔也沒有 commit。",
+      "artifacts": {"files": [], "commands": ["du -sx --block-size=1G /bip8_disk/*/"]},
+      "evidence": [
+        {"quote": "簡單說：**yungjen114 用最多，約 3.5 TB**，大概佔整顆碟的 29%"}
+      ]
+    }
+  ],
+  "issues": [],
+  "advisor": [],
+  "questions_for_advisor": [],
+  "next": [],
+  "scan": {
+    "last_scanned": "2026-11-01T23:00:08",
+    "sessions": ["8bb7dab0", "8d47f079", "b05fbf1a", "725bb4fc", "aa4784a6"],
+    "layers": {"show": 4, "record": 2, "border": 0}
+  }
+}

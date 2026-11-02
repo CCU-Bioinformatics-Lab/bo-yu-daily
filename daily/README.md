@@ -33,6 +33,12 @@ cd bo-yu-daily && xdg-open index.html      # macOS 用 open，Windows 用 start
 
 ### 2026-10
 
+- **[2026-10-31](2026-10-31.html)** —— diplosim 補了 5 個機制後，在 HCC1395 t50_n00 上 13 項統計的平均相對差距從 0.497 降到 0.061；但旋鈕鎖住、換成較低 purity 的樣本後，差距升到 0.08–0.50，表示 base_error 與 depth φ 只是在 t50_n00 上湊對
+- **[2026-10-30](2026-10-30.html)** —— diplosim v1 寫完並 commit：流程照 CONIPHER，只多 2 個 HP 參數；拿真實 HCC1395 long read 比，14 個統計量只有 5 個落在模擬範圍內，tag 比例、定序誤差和 CN 組成是三個缺口
+- **[2026-10-29](2026-10-29.html)** —— longbulksim 凍結在 v0.8，改用 Rust 照 CONIPHER 一步一步重寫成 diplosim，參數已逐條定下 13 條；CLAUDE.md 依兩次會議改成「先列方案、一次一步」的流程，並和 report_rule.md 分工
+- **[2026-10-28](2026-10-28.html)** —— 真實 ONT 的 allele 計數比 binomial 分散（s≈140），longbulksim v0.8 加入選用 beta-binomial 雜訊；共現能否分兄弟 clone 取決於 truncal 比例，HCC1395 約 75%，模擬每棵分支樹約 4 列兄弟證據
+- **[2026-10-27](2026-10-27.html)** —— HG008 的真實 clone 樹上找得到真值樹 ②–⑦ 六類事件；119 顆單細胞支持主幹與兩個共享分枝，但各 clone 的 private 枝無法證實
+- **[2026-10-26](2026-10-26.html)** —— 改良版 PhyClone 在模擬資料上選錯樹，是模型的問題，不是模擬器的 bug；三種削弱 pair 證據的修法都失敗，主因是 PhyClone 原本的 FSCRP prior
 - **[2026-10-25](2026-10-25.html)** —— HP 真值樹的 7 類事件在 HG008、TRACERx、PCAWG 都找得到實例，但事件密度與突變遺失偏高，所以原樹改當壓力測試，另設計一棵典型樹
 - **[2026-10-24](2026-10-24.html)** —— 公開生成器縮到只剩 SISTEM 能直接餵 PhyClone；不給 HP 資訊時，PhyClone 有 99.8% 把遺失的 SNV 併進低 CCF clone，拓樸也分不出來
 - **[2026-10-23](2026-10-23.html)** —— CONIPHER 的公開生成程式能逐 byte 重現 PhyClone 用的 300 份資料，所以 10-28 簡報改講它的生成流程，已做成 7 頁
