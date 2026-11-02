@@ -21,7 +21,8 @@ def read_tsv(path):
 
 def newick_parents(text):
     """Return {node: parent} for a Newick string with labelled internal nodes."""
-    text = re.sub(r":[0-9.eE+-]+", "", text.strip().rstrip(";"))
+    # Labels never hold spaces; the paper's HGSOC p3_wgs_t tree.nwk writes "(4)3, 2".
+    text = re.sub(r"\s+", "", re.sub(r":[0-9.eE+-]+", "", text.strip().rstrip(";")))
     parent, stack, i, pending = {}, [], 0, []
     tok = re.compile(r"[^(),]+")
     while i < len(text):
