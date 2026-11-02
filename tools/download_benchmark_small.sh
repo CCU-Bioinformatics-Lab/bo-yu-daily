@@ -47,15 +47,8 @@ for f in SAMPLE.wf_snp.vcf.gz SAMPLE.wf_snp.vcf.gz.tbi SAMPLE.wf_snp.haploblocks
   [[ -s $d/$f ]] || aws s3 cp --quiet --no-sign-request "$ONT/$f" "$d/$f" || FAILED+=("$ONT/$f")
 done
 
-# ---------- GIAB HG008 somatic、mosaic、stratifications ----------
+# ---------- GIAB HG002 mosaic、stratifications ----------
 G=$OUT/GIAB
-SM=$GIAB/data_somatic/HG008/Liss_lab/analysis/NIST_HG008-T_somatic-smvar_DraftBenchmark_V0.4-20261006
-SV=$GIAB/data_somatic/HG008/Liss_lab/analysis/NIST_HG008-T_somatic-stvar-CNV_DraftBenchmark_V0.6-20261006
-for f in README.md checksums.md5; do get "$SM/$f" "$G/HG008/smvar_V0.4"; get "$SV/$f" "$G/HG008/stvar-CNV_V0.6"; done
-mirror "$SM/GRCh38/"     "$G/HG008/smvar_V0.4/GRCh38"      8 "*nogermlinewithin50bp.bed"
-mirror "$SM/HG008Nv6.3/" "$G/HG008/smvar_V0.4/HG008Nv6.3"  8 "*nogermlinewithin50bp.bed"
-mirror "$SV/GRCh38/"     "$G/HG008/stvar-CNV_V0.6/GRCh38"  8
-mirror "$SV/HG008Nv6.3/" "$G/HG008/stvar-CNV_V0.6/HG008Nv6.3" 8
 
 MO=$GIAB/release/AshkenazimTrio/HG002_NA24385_son/mosaic_v1.10/GRCh38/SNV
 for f in README.md checksum.md5 HG002_GRCh38_MosaicSNVv1.1.bed HG002_GRCh38_MosaicSNVv1.1.vcf.gz HG002_GRCh38_MosaicSNVv1.1.vcf.gz.tbi; do
