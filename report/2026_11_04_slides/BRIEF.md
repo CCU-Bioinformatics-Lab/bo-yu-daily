@@ -38,7 +38,7 @@ CONIPHER 格式只會有 ref 36、alt 21（同一列的共用欄位）。頁面�
 | R2 | `diplosim/src/params.rs`（參數列表）、`diplosim/src/hp.rs`（HP 拆分與錯誤） |
 | R3 | CONIPHER 模擬器 `src/conversion.py:31`（24 欄輸出）、`src/simulate.py:186-205`（參數） |
 | R4 | `lab_report/2026-10-31_diplosim_purity_holdout_plan/`（purity 換算：ASCAT purity 0.97、ploidy 3.06） |
-| R5 | `lab_report/2026-11-01_diplosim_detection_curve/*/tables/ppc_stats.tsv` real 欄（真實 HCC1395 數值） |
+| R5 | `lab_report/2026-11-01_diplosim_detection_curve/*/tables/ppc_stats.tsv` real 欄（真實 HCC1395 數值）。p14 r-targets 自 2026-11-03 起改用 `lab_report/2026-11-03_diplosim_mask_ig_loci/*/tables/ppc_stats.tsv`（真實端排除 IGH、IGK、IGL，模擬端不變） |
 | R6 | `lab_report/2026-10-30_diplosim_ppc_hcc1395/`（真實資料處理：ClairS PASS ∩ HC、longphase haplotag） |
 
 ## 規則檢查
@@ -153,3 +153,44 @@ p9：每一項一個小圖示（旋鈕、read、樹＋問號、phase block 色�
 - p3 刪掉：8 個參數名小字、每組「影響：…」文字（改用箭頭）、舊參數名、設回 CONIPHER 的具體值、講稿的 LOH 解說（p7 有解釋 LOH）。
 - p1、p3 的文字有一部分搬進圖內；總字數比舊版少約 25–35%。
 - p2、p4、p7、p9 還沒改版。
+
+## 2026-11-03 新增 p3「CONIPHER 參數」（c-params）
+
+- 使用者要求：在原第 3 頁前加 CONIPHER 參數頁，只放影響 ref、alt、VAF、copy number 的參數。
+- 頁面參數與例子值取自貫穿例子的 run（`data/diplosim_default_seed1/diplosim_info.tsv`，新旋鈕關閉時等於 CONIPHER 參數）：clone 數 3、trunk SNV 比例 0.5、purity 0.9、gain／loss 比例 0.5／0.3、WGD 無、coverage 53。
+- 參數 → 欄位對照（〔程式〕CONIPHER 模擬器）：
+  - clone 數、trunk SNV 比例 → SNV 在哪個 clone、CCF：`src/simulate.py:162`（simulate_topology）、`src/evolution.py:48`（snv_assignment）。
+  - gain／loss 比例、WGD → CN_A、CN_B：`src/evolution.py:184-233`（cna_assignment）、`:75-88`（wgd_assignment）。
+  - purity → 期望 VAF：`src/sequencing.py:54`（purity 隨機）、`:66-92`（VAF＝帶 SNV 的份數 ÷ 總份數，normal 佔 1−purity）。
+  - coverage → depth：`src/sequencing.py:95-99`（Poisson，平均 ∝ coverage × 該位點總 copy number）。
+  - 期望 VAF → alt：`src/sequencing.py:102-104`（Binomial(depth, VAF)）；ref＝depth − alt：`src/conversion.py:13`。
+- SNV1 實際結果：CN 1、1，CCF 1.0，TRUE_VAF 0.45（0.9 × 1 ÷ 2），depth 57，alt 21，ref 36，VAF_OBS 0.37。
+- 插頁後頁碼：t1-knobs 起各頁 +1；同時修正 r-targets、u-known 原本寫成「/ 12」的頁尾；大綱頁段落頁碼改為 p3–p9、p10–p11、p12–p13。
+- 腳本檢查（2026-11-03）：13 頁，0 個錯誤。未渲染縮圖確認排版。
+
+## 2026-11-03 新增 p9「depth 旋鈕」（k-depth）
+
+- 使用者留言：t1-knobs 的 depth 旋鈕沒有展開頁，要求照 k-allele 版型補一頁。排在 k-cn 之後（面板由右到左展開的最後一組）。
+- 編輯器端先放了一版，左下用「全部 SNV 的 depth 變異÷平均」（9.41…1.68）。這個值大部分來自 CN 之間的差異（總變異 7.0 + 2.4，見 R7），不能支持這個旋鈕，所以改成只看 CN 相同的位點。
+- 左下〔實測〕：`lab_report/2026-10-31_diplosim_ppc_hcc1395_depthdisp0.03/README.md` §2（ASCAT CN 分組；CN 2＋0 1.83、CN 5＋2 3.06，6 組 1.83–3.06）。purity 是 ASCAT 估計 0.97。
+- 旋鈕〔程式〕：`diplosim/src/sequencing.rs:141-160`（每位點 Poisson 平均乘 Gamma(1/φ, φ)）；`diplosim/DECISIONS.md` 2026-10-31 列。預設不設＝Poisson。
+- 右邊 SNV1〔實測〕：貫穿例子參數加 `--depth-dispersion 0.03`（`data/diplosim_seed1_depthdisp003/`）。tree、CN、VAF、allele 與預設 run 相同（第 3 個 SNV）；座標因亂數順序不同而不同，頁面不顯示。depth 57→50，ref 27、alt 23，HP1 4／17、HP2 18／0、unphased 5／6。
+- 中間「本例 CN 1＋1 的 90 個位點變異÷平均 0.85 → 2.54」〔實測〕：同兩個 run 中 CN_A＝CN_B＝1 的位點。
+- 插頁後頁碼：k-depth 9；t1-machines 起 +1，總頁數 14；大綱卡「p8–9 CN 事件、depth」。腳本檢查：14 頁，0 個錯誤。
+
+## 2026-11-03 新增 p5「前提說明」（k-premise）
+
+- 使用者要求：在 t1-knobs 與 k-allele 之間加一頁前提，說明接下來每個新參數都是先觀察到 HCC1395 真實資料的現象，再加參數來模擬。
+- 版面：上排三步（看 HCC1395 現象 → 加新參數 → diplosim 輸出也出現），下排 5 列「現象 → 新參數」對應 p6–p10。
+- 5 個現象的數字取自各頁標題（p6 49.2%、p7 13.8%、p8 約一成、p9 20.7%、p10 1.8–3.1 倍），沒有新數字。
+- 插頁後總頁數 15；大綱卡改為 p3–5、p6、p7、p8、p9–10、p11；段落 p3–p11、p12–p13、p14–p15。腳本檢查：15 頁，0 個錯誤。
+- 注意：本地 `project/slides/` 中 k-allele、k-tag、k-error、k-cn、t1-knobs、t2-stats、r-targets、u-known 在本次之前就和線上版不同（使用者在編輯器改過），只同步了頁碼。以線上版為準。
+
+## 2026-11-03 修改 p14「真實 HCC1395 對 diplosim」（r-targets）：真實端排除抗體基因區
+
+- 原因：LOH 比例在 purity 0.48、0.29、0.14 落在區間外。t10 的 22 個低 minor HP 位點中，19 個在 IGL 基因座；normal（B 淋巴母細胞株）在這段的 depth 只有兩側的一半〔實測〕。推論是 V(D)J 刪除，所以 normal 補不回 minor HP〔推論〕。詳見 `lab_report/2026-11-03_diplosim_mask_ig_loci/`。
+- 使用者 2026-11-03 選方案 1：真實端排除 IGH、IGK、IGL（81–114 個 SNV），模擬端沿用原本的 sim 統計量。
+- 頁面改動：標題改成「6 個數值中 5 個在 5 個 purity 都落在模擬區間內，depth 高低程度只在 purity 0.97 略偏」；LOH 小圖變成 5/5；加一行「真實端排除抗體基因區（normal 細胞在此少一條 HP）：81–114 個 SNV」；講稿改寫 LOH 那段，並標出推論（S-8）。
+- `gen_p11.py` 同時對齊線上版編輯器裡的改動：骰子那一行、刪掉橘色「SNV 偏少」那行、講稿開頭的骰子句。
+- 規則檢查（P-8 局部修改）：`check_slides.py --titles` 15 頁 0 錯誤；W-3 標題串讀 p13 → p14 → p15 仍接得上；E-1 不受影響；C-7：刪除原因標為推論；S-5：講稿最後一句的「lab_report 2026-11-01_diplosim_detection_curve」是線上版原有的路徑，腳本沒抓到，未改動。
+
