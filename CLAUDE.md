@@ -12,7 +12,7 @@
 
 ## 去哪裡找
 
-先看 `research/INDEX.md`（研究總入口）。術語以 `research/CONTEXT.md` 為準。
+先看 `research/INDEX.md`（研究總入口）。
 
 | 要找 | 先看 |
 |---|---|

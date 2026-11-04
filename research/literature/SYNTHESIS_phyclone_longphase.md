@@ -24,8 +24,7 @@
 | D3 | 「五篇 B 類不是五個 ONT clone-tree 方法」的篇數聲明 | `README.md`、`B_SUMMARY.md`、`INTERSECTION_SUMMARY.md` | `README.md` | 另兩份刪除重述 |
 | D4 | 未納入候選清單（LongSom、HATCHet2、ALPACA、SomaticHaplotype、RCK、Meltos、SAVANA…） | `INTERSECTION_SUMMARY.md` 擴展搜尋表、`B_SUMMARY.md` 暫未列入表、`SEARCH_LOG.md` | `SEARCH_LOG.md` | 兩張表合併進 SEARCH_LOG |
 | D6 | C0–C6 × 論文對照 | `plan.md` §4（設計）、`REPO_IMPROVEMENTS.md` §4（彙總表）、13 篇 README 末段 | 設計以 `plan.md` 為準；文獻對照以本文件 §3、§4 為準 | 各 README 末段保留「最小 benchmark」，C0–C6 逐條建議可縮短 |
-| D7 | purity 三種定義（cellular `rho`／tumor DNA fraction `delta`／nominal mixture） | `REPO_IMPROVEMENTS.md` §3、`plan.md` §1.2、`A01`、`A03` README、`CONTEXT.md` | `REPO_IMPROVEMENTS.md` §3（有換算式） | 其餘引用即可 |
-| D8 | 共用術語 193 條 | `CONTEXT.md`（渲染版）與 `terminology/terms.tsv`（資料版） | `terms.tsv` 為資料源，`CONTEXT.md` 為閱讀版 | 確認兩者由同一流程產生；不要手改 CONTEXT.md |
+| D7 | purity 三種定義（cellular `rho`／tumor DNA fraction `delta`／nominal mixture） | `REPO_IMPROVEMENTS.md` §3、`plan.md` §1.2、`A01`、`A03` README | `REPO_IMPROVEMENTS.md` §3（有換算式） | 其餘引用即可 |
 | D9 | 「HCC1395 Fig. 4a 是 candidate topology，不是 lineage truth」 | `hcc1395.../README.md`、`02`、`04`、`06`、`07`、`TERMINOLOGY`／`CONTEXT` | `04_confidence_and_limits.md` | 其他章節縮成一句 |
 | D10 | 「reference tree 與驗證資料不獨立」 | `REPO_IMPROVEMENTS.md` §6、`A01`、`A02`、`B01` README、`hcc1395/04` | `REPO_IMPROVEMENTS.md` §6 | — |
 

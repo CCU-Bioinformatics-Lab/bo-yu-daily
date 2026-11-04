@@ -1,7 +1,5 @@
 # 研究索引
 
-跨研究共用名詞先查 [研究共用術語](CONTEXT.md)；統一寫法、ASD-STE100 風格與來源範圍見 [術語使用指南](TERMINOLOGY.md)。
-
 | 主題 | 入口 | 內容 |
 |---|---|---|
 | **論文分類（平台 × single-cell 真值）** | [分類索引](literature/PAPER_CATEGORIES.md) | 19 篇分 C1 短讀／未說平台、C2 long-read 特徵、C3a／C3b single-cell 真值 × 平台；每篇 README 有可 grep 的 front-matter；`literature/papers_by_category/` 依類瀏覽 |
