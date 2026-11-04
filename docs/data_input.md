@@ -42,7 +42,7 @@
 | `/big8_disk/liaoyoyo2001/data/vcf/HCC1395BL_methyl_phase.vcf.gz` | phased normal SNP VCF（含 PS），上述 BAM 共用 |
 | `longphase-s-boyu/output/whole_bam_phase_rerun_ssrs/HCC1395BL_ssrs_rerun.vcf.gz` | normal 全基因組 phasing 重跑版（76 MB） |
 | `/big8_disk/liaoyoyo2001/InterSubMod/data/vcf/HCC1395/pileup/filtered_snv_tp.vcf.gz` | ClairS PASS ∩ SEQC2 truth 的 TP，30,490 個 SNV（chr1–22） |
-| `/bip8_disk/boyu114/intersubmod/output/annotated_with_PS.vcf.gz` | new-split tagging 用的 somatic SNV（附 PS） |
+| `/bip8_disk/boyu114/intersubmod/output/annotated_with_PS.vcf.gz` | new-split tagging 用的 somatic SNV（附 PS）。**2026-11-04：已不存在**，`InterSubMod/output/` 裡的同名檔是指向它的斷 symlink；第 3 節的 co-read 表是用它產生的，要重做須重建這個 VCF |
 | `longphase-s-boyu/output/tumor_phase_experiment_origin/` | chr1 的 tumor phasing 實驗 VCF |
 
 ---

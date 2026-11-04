@@ -115,6 +115,26 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 - `subsample` 路徑：`/big8_disk/data/HCC1954/ONT/subsample/`
 - 純度種類：`t00_n25`（0%）、`t10_n40`（20%）、`t20_n30`（40%）、`t30_n20`（60%）、`t40_n10`（80%）、`t50_n00`（100%）
 
+## HG008（GIAB 胰臟癌細胞株；共用下載，不要重複下載）
+
+- **位置：** `/big8_disk/yungjen114/data/HG008/`（2.2 TB，yungjen114 下載）。**直接引用這份，不要自己再下載**，避免多人重複下載把 server 硬碟用完。只讀，不要在該目錄寫檔。
+- **完成狀態：** 2026-10-28 下載完成，所有檔案通過 md5／sha256 驗證（`READY_TO_MOVE.txt`、`logs/status.json` 的 `phase: complete`）。2026-11-04 核對。
+- **說明文件：** `/big8_disk/yungjen114/data/HG008/README.md`（內容、來源、限制）、`USAGE_AND_LIMITATIONS.zh-TW.md`、`HANDOFF.md`。
+- **只有 bulk long read。** 單細胞 WGS（Bioskryb PTA）與 8 株單細胞衍生 clone **沒有下載**，README 標為 deferred。需要單細胞時，先和 yungjen114 確認，不要各自下載。
+
+| 平台 | 檔案（別名） | 樣本 | 來源標示深度 |
+|---|---|---|---|
+| ONT R10.4.1 | `ONT/HG008.bam` | tumor（p23） | 63x |
+| ONT | `ONT/HG008-N-P.bam`（`HG008BL.bam` 也指向它） | normal 胰臟組織 | 41x |
+| ONT | `ONT/HG008-N-D.bam` | normal 十二指腸組織 | 94x |
+| ONT ultra-long | `ONT_UL/HG008.bam` | tumor（同一樣本另一次定序） | 54x |
+| PacBio HiFi | `PacBio/HG008.bam`、`HG008-N-P.bam`、`HG008-N-D.bam` | tumor／兩個 normal | 116x／35x／68x |
+
+- **reference：** 這些 BAM 對齊到 `/big8_disk/yungjen114/data/HG008/reference/GRCh38-GIABv3/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.gz`。**不能換成實驗室常用的 `/big8_disk/ref/GRCh38_no_alt_analysis_set.fasta`**（README「References」）。
+- **真值（NIST draft benchmark）：** `NIST/somatic-smvar_v0.4_20261006/`（somatic SNV／indel，偏 clonal／truncal）、`NIST/somatic-stvar-CNV_v0.6_20261006/`（SV 與 CNV）。不是完整的 subclonal 或 cellular purity 真值。
+- **ONT purity 系列（subsample）：** `ONT/subsample/<label>/HG008_<label>.cram`，label 為 `t44_n00`、`t40_n10`、`t30_n20`、`t20_n30`、`t10_n40`、`t00_n25`，normal 用 N-P（`subsample/mix_plan.tsv`、`run.log`）。除了 `t00_n25`，每個都有 ClairS-TO 的 `ClairS_TO_ss_v0_3_0/`、`ClairS_TO_ssrs_v0_3_0/` 結果。`expected_tdf` 是 nominal tumor DNA 比例，不是實測 purity。
+- **已知限制：** tumor assembly 只有 v3.2，benchmark 用的是 v3.4；ONT tumor 與 normal 的 basecaller 版本不同（README）。
+
 ## 來源與範圍
 
 - Current inventory：2026-10-15 重新盤點 `/big8_disk/data/` 與 `/big8_disk/Google_somatic_data/bams/` 的目錄、檔名和 symlink 狀態；CRAM reference 取自 `samtools view -H`。
@@ -123,6 +143,8 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 - `/big8_disk/data/colo829_nygc/` 的 COLO829 NYGC 資料是額外的 Illumina 外部驗證資料，不另列為第七種細胞株。
 
 ## PhyClone Benchmarking 資料集
+
+> **2026-11-04：本機已不存在。** `/big8_disk/boyu114/phyclone_dataset/` 已刪除。下文只保留結構說明；這是 short read 資料，依 2026-10-21 會議不當輸入或真值。
 
 - 根目錄：`/big8_disk/boyu114/phyclone_dataset/`
 - 內容：PhyClone 論文 benchmarking 用的模擬資料與 HGSOC 真實資料，包含 ground truth、各方法輸入檔與輸出結果。官方說明見該目錄的 `README.md`。
@@ -195,6 +217,8 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 正確說法：「樹由單細胞定序加 bulk 資料推論，論文拿來當真值用。」
 
 ## SMC-Het（DREAM）資料集
+
+> **2026-11-04：本機已不存在。** `/big8_disk/boyu114/smchet_dataset/` 已刪除。下文只保留結構說明；這是 short read 資料，依 2026-10-21 會議不當輸入或真值。
 
 - 根目錄：`/big8_disk/boyu114/smchet_dataset/`（解壓後共約 25G）
 - 來源：Synapse 專案 `syn2813581`，2026-10-18 下載。對應論文見 `research/literature/papers/M07_smchet_benchmark_2024/`。
