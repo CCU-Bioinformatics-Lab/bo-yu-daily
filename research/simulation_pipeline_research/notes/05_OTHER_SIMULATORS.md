@@ -236,4 +236,4 @@ Copy_Number_Error（450 份）不在這條路徑上。它是 PhyClone 作者自�
 - 評估時另外報告「可辨識真值」：先合併 CCF 向量相同的 clone，再把新增 SNV 少於門檻（例如 5）的 clone 併入 parent，然後才算分數。
 - 我們自己的生成器要設定每個 clone 的最少 SNV 數，並讓每個非 root clone 至少在一個 sample 有不同的 CCF。
 
-重現：`python3 tools/conipher_clone_resolvability.py`。
+重現：`python3 tools/conipher_clone_resolvability.py`（2026-11-04 刪除，未進 git，無法取回）。

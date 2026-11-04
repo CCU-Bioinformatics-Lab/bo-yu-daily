@@ -79,6 +79,6 @@
 
 ## 下載
 
-**小檔已下載（2026-10-25）**：`/big8_disk/boyu114/benchmark_data/`，共 1.2 GB，361 個檔案，md5／gzip 檢查通過。清單見該目錄 `README.md`；腳本是 `tools/download_benchmark_small.sh`。
+**小檔已下載（2026-10-25）**：`/big8_disk/boyu114/benchmark_data/`，共 1.2 GB，361 個檔案，md5／gzip 檢查通過。清單見該目錄 `README.md`；腳本是 `tools/download_benchmark_small.sh`（2026-11-04 刪除；取回：`git show 1208b27:tools/download_benchmark_small.sh`）。
 已下載的小檔：SEQC2 v1.2.1 VCF 與 high-confidence BED、SEQC2 CNV/LOH benchmark、GIAB v5.0q GRCh38 small variant VCF/BED、HG008 V0.4 VCF 與 V0.6 CNV、GIAB v3.6 stratification BED。
 大檔（各 90–113 GB）：HG002 ONT haplotagged CRAM、HG008-T ONT BAM。要做真實 read 植入時再下載。
