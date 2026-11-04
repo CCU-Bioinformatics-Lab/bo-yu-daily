@@ -1,6 +1,6 @@
 # 資料輸入盤點：tagged BAM 與 SNV 定序資訊
 
-> 盤點日期：2026-10-15。範圍：`/bip8_disk/boyu114/` 內，可給 `plan.md`（PhyClone + longphase-s HP 特徵）使用的 tagged BAM，以及已萃取出來的 SNV 計數表。
+> 盤點日期：2026-10-15。範圍：`/bip8_disk/boyu114/` 內，可給 `plan.md`（2026-11-04 搬到 `/bip8_disk/boyu114/haploclone/rust/docs/plan.md`；PhyClone + longphase-s HP 特徵）使用的 tagged BAM，以及已萃取出來的 SNV 計數表。
 > 以下路徑若沒有特別寫，都是相對於 `/bip8_disk/boyu114/`。
 > 證據來源：BAM 的 `@PG` header、`samtools view` 抽查、各目錄的 `RECORD.md` / `run_metadata.json` / 腳本原始碼。
 
@@ -19,14 +19,19 @@
 | 路徑 | 範圍 | tagging 版本 | `--tumor-snv-file` | 大小 | 索引 |
 |---|---|---|---|---|---|
 | `longphase-s-origin/output/hcc1395_old_tagging_rerun/hcc1395_old_tagging.bam` | 全基因組 | old | ClairS PASS：`/big8_disk/liaoyoyo2001/data/vcf/ClairS_ss/HCC1395/ONT_5khz_simplex_5mCG_5hmCG/pileup/HCC1395_methyl_PASS.vcf`（203,611 筆） | 283 GB | `.bai` |
-| `longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/hcc1395_new_split_tagging.bam` | 全基因組 | new，`--enable-two-site-split` | `/bip8_disk/boyu114/intersubmod/output/annotated_with_PS.vcf.gz` | 292 GB | `.bai` |
-| `longphase-s-boyu/.worktrees/longphase-s-origin-new-split/output/hcc1395_old_tagging_rerun/hcc1395_old_tagging.bam` | 全基因組 | old（worktree 重跑） | ClairS PASS | 292 GB | `.bai` |
-| `longphase-s-boyu/.worktrees/longphase-s-origin-new-split/output/hcc1395_chr1_split_enabled/hcc1395_chr1_split_enabled.bam` | chr1 | new split | ClairS PASS | 25 GB | **沒有 `.bai`** |
-| `longphase-s-boyu/.worktrees/longphase-s-origin-new-split/output/hcc1395_new_split_tagging_annotated_ps_chr1/hcc1395_new_split_tagging_annotated_ps_chr1.bam` | chr1 | new split | `longphase-s-boyu/output/tumor_phase_experiment_origin/annotated_with_PS.chr1.vcf.gz` | 25 GB | `.bai` |
+| `longphase-s-boyu/.worktrees/longphase-s-origin-new-split/output/hcc1395_old_tagging_rerun/hcc1395_old_tagging.cram` | 全基因組 | old（worktree 重跑） | ClairS PASS | 168 GB（CRAM，讀取需 `-T /big8_disk/ref/GRCh38_no_alt_analysis_set.fasta`；2026-11-03 刪掉原 292 GB BAM；轉檔時 read 的 `RG:Z` tag 遺失，其餘欄位與 tag 抽查一致） | `.crai` |
 | `longphase-s-boyu/output/chr16_34600401_phase_cleanup_ab/haplotag_on/chr16_34600401_cleanup_on.bam` | chr16:34,550,000–34,850,000 | phase cleanup on | ClairS PASS；normal VCF 用 `phase_on/HCC1395BL_chr16_cleanup_on.vcf.gz`，`--disableFilter` | 79 MB | `.bai` |
 | `longphase-s-boyu/output/chr16_34600401_phase_cleanup_ab/haplotag_off/chr16_34600401_cleanup_off.bam` | 同上 | phase cleanup off | 同上（`phase_off/`） | 79 MB | `.bai` |
 
 每個目錄都有一份 `*_purity.out`（longphase-s purity 估計），可以和 ASCAT purity 比較。
+
+**已刪除（2026-11-02，釋放磁碟空間）**：下列 3 個 new split BAM 連同 `.bai`、`*_purity.out` 與所在目錄都已刪除。目前沒有任何全基因組或 chr1 的 new split tagged BAM。要重做，需從 `HCC1395.cram` 重跑 `somatic_haplotag`（原始 `HCC1395.bam` 已不存在）。
+
+| 已刪除的路徑 | 範圍 | tagging 版本 | `--tumor-snv-file` | 原大小 |
+|---|---|---|---|---|
+| `longphase-s-boyu/output/hcc1395_new_split_tagging_bundle/hcc1395_new_split_tagging.bam` | 全基因組 | new，`--enable-two-site-split` | `/bip8_disk/boyu114/intersubmod/output/annotated_with_PS.vcf.gz` | 292 GB |
+| `longphase-s-boyu/.worktrees/longphase-s-origin-new-split/output/hcc1395_chr1_split_enabled/hcc1395_chr1_split_enabled.bam` | chr1 | new split | ClairS PASS | 25 GB |
+| `longphase-s-boyu/.worktrees/longphase-s-origin-new-split/output/hcc1395_new_split_tagging_annotated_ps_chr1/hcc1395_new_split_tagging_annotated_ps_chr1.bam` | chr1 | new split | `longphase-s-boyu/output/tumor_phase_experiment_origin/annotated_with_PS.chr1.vcf.gz` | 25 GB |
 
 **決定（2026-10-15）：C0 前處理用 old tagging**，檔案是 `longphase-s-origin/output/hcc1395_old_tagging_rerun/hcc1395_old_tagging.bam`（第一列）。worktree 裡同指令重跑的版本大小不同（292 GB vs 283 GB），不使用。第 3 節的 co-read 計數表也是用這個 BAM 產生的，兩者可以互相對照。longphase-s purity 估計為 0.992164（`hcc1395_old_tagging_purity.out`）。
 

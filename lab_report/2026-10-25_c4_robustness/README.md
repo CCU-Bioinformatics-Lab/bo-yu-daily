@@ -1,6 +1,6 @@
 # C4 穩健性：HP 錯標、phase switch、鹼基錯誤（2026-10-25）
 
-問題：C4（read 共現 topology 因子）在無誤差資料上排除了錯誤的直線樹（`lab_report/2026-10-25_c4_pair_term_stress/`）。加入真實 ONT 的觀測誤差後，它還穩健嗎？ε 該怎麼設？計畫見 `research/phyclone_research/C4_ROBUSTNESS_PLAN.md`。
+問題：C4（read 共現 topology 因子）在無誤差資料上排除了錯誤的直線樹（`lab_report/2026-10-25_c4_pair_term_stress/`）。加入真實 ONT 的觀測誤差後，它還穩健嗎？ε 該怎麼設？計畫見 `research/phyclone_research/C4_ROBUSTNESS_PLAN.md`（已於 commit `227a5cc` 刪除；取回：`git show 227a5cc^:research/phyclone_research/C4_ROBUSTNESS_PLAN.md`）。
 
 標記：〔實測〕＝本實驗計算；〔論文〕＝文獻數字；〔推論〕＝本檔推論。
 
@@ -213,4 +213,4 @@ env PYTHONPATH=research/phyclone_research/PhyClone ~/venvs/phyclone/bin/python \
 
 ### 8.2 下一步
 
-先試 composite likelihood 加權：pair term 乘上 w ≈ 1／（每個 read 平均出現在幾個 pair），這裡是 0.25–0.42。計畫：`research/phyclone_research/C4_COMPOSITE_WEIGHT_PLAN.md`。之後再考慮以 read 為單位的 likelihood。
+先試 composite likelihood 加權：pair term 乘上 w ≈ 1／（每個 read 平均出現在幾個 pair），這裡是 0.25–0.42。計畫：`research/phyclone_research/C4_COMPOSITE_WEIGHT_PLAN.md`（已於 commit `227a5cc` 刪除；取回：`git show 227a5cc^:research/phyclone_research/C4_COMPOSITE_WEIGHT_PLAN.md`）。之後再考慮以 read 為單位的 likelihood。

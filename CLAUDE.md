@@ -4,13 +4,14 @@
 
 先看 `research/INDEX.md`（研究總入口）。術語以 `research/CONTEXT.md` 為準。
 
-- `plan.md`：HP 特徵接進 PhyClone 的設計與驗證層級。`data_input.md`：tagged BAM 與 SNV 計數表盤點。
+- HP 特徵設計與驗證層級（原 `plan.md`）：2026-11-04 搬到 `/bip8_disk/boyu114/haploclone/rust/docs/plan.md`（10-21 後未更新，先看檔頭「現況」）。
+- `docs/`：**找資料路徑先看 `docs/index.md`**（問題 → 檔案章節 → 一句話答案）。`docs/data_input.md`：HCC1395 tagged BAM、VCF、SNV 計數表盤點。`docs/tumor_sample.md`：六株 ONT 細胞株的 CRAM 路徑、subsample 純度與實測 purity。
 - `research/literature/`：**找論文先看這裡**（見其 `README.md`）。分類只改 `paper_categories.tsv`，再跑 `python3 research/literature/tools/sync_paper_categories.py`（`--check` 查 drift）。
 - `research/phyclone_research/`：PhyClone 分析。先讀 `notes/zh-TW/`，再查原始碼。`PhyClone/` 是 git submodule，改動要在 submodule 內 commit。
 - `research/simulation_pipeline_research/`：模擬生成流程研究。`upstream/` 是 Pairtree、CONIPHER 模擬器的 submodule。
 - `research/hcc1395_golden_tree_research/`：HCC1395 參考樹文獻，可作驗證參考。
 - `longbulksim/`：**已凍結（v0.8，tag `longbulksim-v0.8-frozen`），不再修改。** long read bulk 模擬器，輸出 PhyClone 輸入、HP 計數、SNV pair 共現與獨立的 `truth/`。說明見 `README.md`、`DECISIONS.md`。測試：`cd longbulksim && python3 -m unittest discover -s tests`。
-- `diplosim/`：longbulksim 的 Rust 重寫（2026-10-29 建立，目前是空目錄）。照 CONIPHER 模擬步驟逐步移植，每一步都要能說明「沿用哪個函式」或「新寫什麼、為什麼」。
+- `diplosim/`：**現行模擬器**，longbulksim 的 Rust 重寫（2026-10-29 建立）。照 CONIPHER 模擬步驟逐步移植，每一步都要能說明「沿用哪個函式」或「新寫什麼、為什麼」。決策與現況先看 `DECISIONS.md`；CONIPHER 步驟對照見 `docs/conipher_steps.md`、`docs/porting_map.md`。測試：`cd diplosim && cargo test`。
 - haploclone（PhyClone 的 Rust 移植）：程式、golden、移植文件都在 `/bip8_disk/boyu114/haploclone/rust/`（branch `rust-port`）。現況與決策見 `rust/docs/PORTING.md`、`rust/docs/decisions.tsv`。改 haploclone 時，預設路徑的輸出要和原版保持 bit-identical。
 - `tools/`：分析與繪圖腳本。`lab_report/`：一個實驗一個目錄（`YYYY-MM-DD_<主題>/README.md`：結論、資料、做法、結果、限制），腳本放 `tools/`。
 - `report/`：投影片輸出。`daily/`：工作日誌，只作導覽，不能當事實來源。
@@ -25,7 +26,7 @@
 
 ## 研究與報告流程
 
-來源：`meeting_record/2026_10_21_meeting_summary.md` §2（老師指出的邏輯問題 L1–L7）、`meeting_record/2026_10_28_meeting_record.md` 議題四至六（M1–M3）。新會議若指出新問題，整理時一併更新本節。整理前先 `ls meeting_record/`，列出全部會議日期，確認用到最新一次，並在回覆中寫明用了哪幾次會議。
+來源：`meeting_record/2026_10_21_meeting_summary.md` §2（老師指出的邏輯問題 L1–L7）、`meeting_record/2026_10_28_meeting_summary.md` §2（M1–M3，原始紀錄議題四至六）。新會議若指出新問題，整理時一併更新本節。整理前先 `ls meeting_record/`，列出全部會議日期，確認用到最新一次，並在回覆中寫明用了哪幾次會議。
 
 **決策點：先列方案，停下來讓使用者選（M1，最優先）**
 
