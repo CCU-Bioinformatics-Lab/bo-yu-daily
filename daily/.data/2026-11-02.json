@@ -1,0 +1,510 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-02",
+  "headline": "11-04 報告的結果頁加上 diplosim 的 95% 區間後，6 項統計中有 4 項在 5 個 purity 都落在區間內；LOH 比例雖然只有 2/5 落在區間內，但差距不到 0.005",
+  "items": [
+    {
+      "title": "真實 HCC1395 落在 diplosim 模擬範圍內嗎？6 項中 4 項是",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "結果頁從只放真實值，改成真實值對 diplosim 95% 區間；6 項中 4 項 5/5，另在最前面加一頁接回 10-28 會議",
+      "question": "11-04 報告的結果頁原本只放真實 HCC1395 的統計值，頁尾寫「比較結果下次報告」。可是 diplosim 的模擬值其實已經算好了。老師看這頁時，會想知道真實資料到底有沒有落在模擬範圍內。",
+      "approach": "新寫 gen_p11.py，從 11-01 的 ppc_stats.tsv 讀出每個 purity 的真實值、diplosim 中位數與 95% 區間（200 次模擬去掉最高、最低各 2.5%），每項畫一張小圖。另外照使用者指示，在最前面加一頁「接回 10-28 會議」，列出 4 項待辦的本週狀態。上午約 25 則 artifact 留言逐則處理：改卡片名稱、重設驗證頁、刪掉 HP 拆分頁與驗證頁，最後把本機檔案全部同步成線上版本。",
+      "result": "6 項統計中，unphased read 比例、alt 分在兩條 HP、VAF 中位數、每個 SNV 位點的 HP 標記比例多寡這 4 項，5 個 purity 都落在區間內。depth 高低程度 4/5，只有 purity 0.97 略高（真實 9.41，上限 9.36）。LOH 比例 2/5，但兩邊都接近 0，真實值只比區間上限高 0.0006–0.0021。簡報最後是 12 頁。",
+      "interpretation": "diplosim 生成的 HP 計數，在 5 個 purity 下大致都能涵蓋真實 HCC1395。LOH 那張圖標成 2/5，是因為低 purity 時區間非常窄，不是差距大。照「差距小於約 0.1 不必調」的原則，這張可以算對上。高 purity 時 diplosim 叫出的 SNV 偏少，可能是偵測曲線重複扣了一次，這是推論。",
+      "tables": [
+        {
+          "caption": "真實 HCC1395 落在 diplosim 95% 區間內的 purity 數（共 5 個 purity：0.97／0.70／0.48／0.29／0.14）",
+          "columns": [
+            "統計",
+            "落在區間內",
+            "備註"
+          ],
+          "rows": [
+            [
+              "unphased read 比例",
+              "5/5",
+              ""
+            ],
+            [
+              "alt 分在兩條 HP 的 SNV 比例",
+              "5/5",
+              ""
+            ],
+            [
+              "VAF 中位數",
+              "5/5",
+              ""
+            ],
+            [
+              "每個 SNV 位點的 HP 標記比例多寡",
+              "5/5",
+              "真實 0.254→0.241，模擬中位數約 0.26"
+            ],
+            [
+              "每個 SNV 的 depth 高低程度",
+              "4/5",
+              "purity 0.97：真實 9.41，上限 9.36"
+            ],
+            [
+              "發生 LOH 的比例",
+              "2/5",
+              "purity ≤0.48 真實值高出上限 0.0006–0.0021"
+            ]
+          ]
+        }
+      ],
+      "gaps": "LOH 那張圖要改成「差距 < 0.005」（方案 A）還是只在講稿補一句（方案 B），使用者還沒選。12 頁中前 10 頁頁尾還寫「/ 13」，check_slides.py 報 10 個錯誤。gen_k_slides.py、gen_p8.py、gen_p1.py、gen_p9.py 產生的是舊版頁面，重跑會蓋掉線上版。11-02 下午之後線上又被發布多次，本機再度落後。10-28 待辦「先比 2–3 個方案再選」這版沒有放頁面。",
+      "artifacts": {
+        "files": [
+          "report/2026_11_04_slides/gen_p11.py",
+          "report/2026_11_04_slides/gen_p0.py",
+          "report/2026_11_04_slides/gen_p9.py",
+          "report/2026_11_04_slides/gen_p8.py",
+          "report/2026_11_04_slides/gen_p1.py",
+          "report/2026_11_04_slides/project/deck.json",
+          "report/2026_11_04_slides/project/slides/r-targets.html",
+          "report/2026_11_04_slides/project/slides/outline.html",
+          "report/2026_11_04_slides/project/slides/t2-stats.html",
+          "report/2026_11_04_slides/project/slides/k-cn.html",
+          "report/2026_11_04_slides/project/slides/t1-machines.html",
+          "report/2026_11_04_slides/removed_slides/"
+        ],
+        "commands": [
+          "python3 tools/check_slides.py report/2026_11_04_slides/ --titles"
+        ],
+        "outputs": [
+          "lab_report/2026-11-01_diplosim_detection_curve/*/tables/ppc_stats.tsv",
+          "commit 761ec36"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "95% 區間",
+          "plain": "同一個 purity 模擬 200 次，去掉最低和最高各 2.5%，剩下中間那段的範圍"
+        },
+        {
+          "term": "artifact",
+          "plain": "放在 claude.ai 上的線上簡報，使用者在上面留言要求修改"
+        },
+        {
+          "term": "LOH 比例",
+          "plain": "較少那條 HP 的 read 不到一成的位點占幾成"
+        },
+        {
+          "term": "depth 高低程度（depth_VMR）",
+          "plain": "各 SNV 的 depth 變異數除以平均，1 代表只有隨機起伏"
+        }
+      ],
+      "details": "結果頁腳本：report/2026_11_04_slides/gen_p11.py，讀 lab_report/2026-11-01_diplosim_detection_curve/*/tables/ppc_stats.tsv 的 real、sim_median 與 95% 區間欄。\n95% 區間定義：tools/diplosim_ppc_hcc1395.py:343；200 次模擬：tools/diplosim_purity_holdout_v2.sh:16。\n新第 1 頁 m-axis（gen_p0.py）只依據 10-28 會議原始紀錄（沒有 _summary.md）。\n725bb4fc 10:11–10:14：驗證頁重設（gen_p9.py），刪 t1-hpsplit 移到 removed_slides/。\n97a5ca0f 14:53：本機 project/ 同步成線上版，12 頁加 deck.json 的 sha256 全部一致；t2-validation 移到 removed_slides/t2-validation_2026-11-02.html；換掉前的本機版備份在 session scratchpad 的 local_before_sync/。\n另一個 session 同時處理同一份 artifact 的留言，至少撞了 3 次，數則留言被回覆兩次。",
+      "evidence": [
+        {
+          "line": 14258,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 10:47",
+          "ref": "97a5ca0f:14258"
+        },
+        {
+          "line": 16334,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 14:46",
+          "ref": "97a5ca0f:16334"
+        },
+        {
+          "line": 14303,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 10:50",
+          "ref": "97a5ca0f:14303"
+        },
+        {
+          "line": 14622,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 14:06",
+          "ref": "97a5ca0f:14622"
+        },
+        {
+          "line": 16809,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 14:58",
+          "ref": "97a5ca0f:16809"
+        }
+      ]
+    },
+    {
+      "title": "把 daily/ 的 14 篇日誌濃縮成兩份週報",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "daily/weekly/ 產出兩份週報與進度總覽並 commit；09-18 到 10-31 的 13 個單日 HTML 用 git rm 刪除（未 commit）",
+      "question": "單日日誌累積到 14 篇，一篇一篇讀太慢。使用者想要每 7 篇濃縮成一週，並看到目前各方向的進度。",
+      "approach": "每 7 篇一組，寫成 daily/weekly/ 下的兩份週報與 index.html 進度總覽。重要數字回頭對照 lab_report/ 與 git log，因為日誌只能當導覽。整理時用了 10-21 與 10-28 兩次會議紀錄。之後使用者確認週報有涵蓋 10-31，就用 git rm 刪掉 09-18 到 10-31 的 13 個單日 HTML。",
+      "result": "週報 1 涵蓋 09-18 與 10-19～10-25，週報 2 涵蓋 10-26～11-01。總覽的主線結論：diplosim 方向可行，13 項統計通過數 12/13/12/11/8（t50 到 t10）；PhyClone 的 HP 擴充還不能下結論；HG008 與 PCDH 暫停。週報與日誌 JSON 在 e6bcebf commit；刪 HTML 的動作只暫存、沒 commit。",
+      "interpretation": "之後回顧進度改讀週報。單日 HTML 刪掉後，.data/*.json 仍是事實來源，要時可用 render.py 重建。",
+      "gaps": "daily/index.html 還有 12 個連結指向已刪掉的 HTML。figures/ 裡 10-24 到 10-31 的圖週報有沒有引用，還沒查。分組照「每 7 篇」而不是日曆週。11-01 的單日 HTML 從沒產生。",
+      "artifacts": {
+        "files": [
+          "daily/weekly/2026-09-18_2026-10-25.html",
+          "daily/weekly/2026-10-26_2026-11-01.html",
+          "daily/weekly/index.html"
+        ],
+        "commands": [
+          "git rm -q 2026-09-18.html 2026-10-{19,20,21,23,24,25,26,27,28,29,30,31}.html"
+        ],
+        "outputs": [
+          "commit e6bcebf"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "週報",
+          "plain": "把 7 篇單日日誌濃縮成一頁，只留下方向與數字"
+        }
+      ],
+      "details": "01d8c4d2 16:06–16:09 寫週報；264e888a 16:35–16:36 刪單日 HTML。\n刪除後 daily/ 剩 assets/、figures/（5.5M）、index.html、README.md、weekly/。\n復原指令：git checkout HEAD -- daily/<日期>.html",
+      "evidence": [
+        {
+          "line": 18774,
+          "session_id": "01d8c4d2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 16:09",
+          "ref": "01d8c4d2:18774"
+        },
+        {
+          "line": 19871,
+          "session_id": "264e888a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 16:36",
+          "ref": "264e888a:19871"
+        }
+      ]
+    },
+    {
+      "title": "11-04 報告的結果頁比了哪些統計？13 項分 6 類",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "比較程式共 17 項統計，其中 13 項分 6 類用於比較；投影片寫 12 項，少算 tag_frac_lt_0.5_sites；6 類分法是推論、沒實測",
+      "question": "使用者看報告第 10 頁「12 項數值分成 6 類」時，問不出這 12 項是哪些、怎麼分的。報告前要能自己講清楚。",
+      "approach": "回到 tools/diplosim_ppc_hcc1395.py 的 stats() 與 sketches/s2.md，逐項列出統計、白話意思、對應的 diplosim 旋鈕，以及結果頁有沒有畫。",
+      "result": "stats() 共算 17 項。扣掉 n_called、frac_called、depth_median、inHP_VAF_q90 這 4 項，剩下 13 項分 6 類，也是 lab_report 比較用的。投影片寫 12 項，少了 tag_frac_lt_0.5_sites（有標記的 read 不到一半的位點比例）。它屬於第 2 類，所以刪掉它不會變成 7 類，也不會讓第 2 類消失。結果頁實際畫的是每類 1 項，共 6 項。",
+      "interpretation": "6 類的分法依據是「這項統計主要被哪個旋鈕推動」，但這是讀程式推論的。從沒做過「只轉一個旋鈕、看哪些統計跟著動」的實驗。老師若追問分類依據，目前只能說是推論。",
+      "tables": [
+        {
+          "caption": "13 項統計怎麼分成 6 類（分類來源 sketches/s2.md，標為推論）",
+          "columns": [
+            "類別",
+            "項數",
+            "主要對應旋鈕"
+          ],
+          "rows": [
+            [
+              "1. unphased read 比例",
+              1,
+              "prop_tagged"
+            ],
+            [
+              "2. 各位點 HP 標記比例多寡",
+              2,
+              "tag_concentration"
+            ],
+            [
+              "3. alt 分在兩條 HP",
+              1,
+              "base_error、mistag_rate、mistag_concentration"
+            ],
+            [
+              "4. 發生 LOH 的比例",
+              3,
+              "prop_pos_lost、loss_events、prop_pos_second_cna"
+            ],
+            [
+              "5. depth 高低程度",
+              1,
+              "depth_dispersion"
+            ],
+            [
+              "6. VAF 分位",
+              5,
+              "沒有專屬旋鈕（purity、CN、clone 比例）"
+            ]
+          ]
+        }
+      ],
+      "gaps": "第 10 頁要改回「13 項」還是維持 12 項並在講稿補一句，使用者還沒選。逐一轉旋鈕的驗證實驗沒做。最後 4 項為什麼不進比較，程式與 sketch 都沒寫理由（只有 n_called 在 lab_report 寫了原因）。tag_frac_lt_0.5_sites 只核對了 purity 0.97 與 0.14。",
+      "artifacts": {
+        "files": [
+          "tools/diplosim_ppc_hcc1395.py",
+          "report/2026_11_04_slides/sketches/s2.md"
+        ],
+        "outputs": [
+          "lab_report/2026-11-01_diplosim_detection_curve/*/tables/ppc_stats.tsv"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "tag_frac_lt_0.5_sites",
+          "plain": "一半以上的 read 分不出 HP 的位點，占全部位點幾成"
+        },
+        {
+          "term": "tag_frac_SD_sites",
+          "plain": "每個位點有 HP 標記的 read 占幾成，各位點之間差多少"
+        },
+        {
+          "term": "旋鈕",
+          "plain": "diplosim 可以調的模擬參數"
+        }
+      ],
+      "details": "stats() 定義：tools/diplosim_ppc_hcc1395.py:283-327（13 項比較用 :311-327）；只算 alt ≥ 3 且 VAF ≥ 0.08 的 SNV。\ntag_frac_lt_0.5_sites：:293、:321，只算 depth ≥ 20 的位點；purity 0.97 真實 0.103，區間 0.079–0.165。\n分類來源：report/2026_11_04_slides/sketches/s2.md:68-75。\n97a5ca0f 15:14–15:34。",
+      "evidence": [
+        {
+          "line": 17284,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 15:24",
+          "ref": "97a5ca0f:17284"
+        },
+        {
+          "line": 17178,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 15:19",
+          "ref": "97a5ca0f:17178"
+        },
+        {
+          "line": 17359,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 15:34",
+          "ref": "97a5ca0f:17359"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] CLAUDE.md 刪掉「懂／不懂」這一段交付",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "撤回 10-29 起的「懂／不懂」交付要求；CLAUDE.md 交付改成 4 點加自我檢查，report_rule.md 的編號一起改",
+      "question": "報告最後一頁有一個「我自己的懂／不懂：待補」虛線框，是 agent 依規則自動放的佔位。使用者不想被強制在投影片上放這一格。",
+      "approach": "先刪投影片上的框與講稿句，並在 report_rule.md 加一條「不做待補佔位框」。使用者接著要求連 CLAUDE.md「交付」第 5 點「懂／不懂：寫出已懂與未懂的部分」也刪掉，於是把原第 6 點改成第 5 點，report_rule.md 引用這些編號的 4 處一起改。",
+      "result": "CLAUDE.md 交付剩 5 點：接回上次會議、本週任務、方案與理由、結果、自我檢查。report_rule.md 的 L-11 對應範圍從「交付 2–5」改成「交付 2–4」，子規則改寫成「懂／不懂不是必要段落；要放時只放有內容的項目」。check_slides.py、CONTEXT.md、INDEX.md 都沒提到懂／不懂。",
+      "interpretation": "之後做報告，agent 不會再自動加「懂／不懂」段落或佔位框。最後一頁的懂／不懂頁本身還在簡報裡，要不要刪由使用者決定。",
+      "gaps": "最後一頁（懂／不懂頁）還沒決定刪不刪。這次改動和 10-28 會議規則一起進了 commit 9182b9d，沒有單獨的 commit 可以對照。",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md",
+          "report/report_rule.md",
+          "report/2026_11_04_slides/OUTLINE.md"
+        ],
+        "outputs": [
+          "commit 9182b9d"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "交付",
+          "plain": "CLAUDE.md 裡規定報告要照什麼順序講哪幾段"
+        },
+        {
+          "term": "佔位框",
+          "plain": "內容還沒寫、先放一個寫著「待補」的空框"
+        }
+      ],
+      "details": "97a5ca0f 15:03–15:05。\nreport_rule.md 改動：L-11 範圍、子規則、交付前檢查「交付 6」→「交付 5」、規則對照表「交付 1–5」→「交付 1–4」。",
+      "evidence": [
+        {
+          "line": 16833,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 15:03",
+          "ref": "97a5ca0f:16833"
+        },
+        {
+          "line": 17031,
+          "session_id": "97a5ca0f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 15:05",
+          "ref": "97a5ca0f:17031"
+        }
+      ]
+    },
+    {
+      "title": "11-01 的 daily-log 為什麼沒產生 HTML？額度用完",
+      "status": "failed",
+      "kind": "tooling",
+      "priority": "P3",
+      "summary": "11-01 23:00 的 daily-log 寫完 JSON、validate 通過後額度用完；沒有 HTML、evidence 沒定位、游標停在 10-31",
+      "question": "每晚的 daily-log 要把 11-01 的工作寫成日誌。",
+      "approach": "照流程掃描、分層（呈現 4 項、記錄 2 項）、複製 4 張圖、寫 .data/2026-11-01.json，validate_log.py 通過。",
+      "result": "下一步要跑 verify_evidence.py 時碰到 5 小時額度上限，流程中斷。11-01 的 JSON 留在 evidence 未定位的狀態，沒有產生 HTML，游標沒推進。所以這次掃描從 10-31 23:00 開始，11-01 的對話又被讀了一次。",
+      "interpretation": "游標沒推進是設計上的保護：中斷的那段不會遺失。這次已比對 11-01 的 JSON，只記 11-01 23:00 之後的新工作，沒有重複記錄。",
+      "gaps": "11-01 的 evidence 還沒跑 verify_evidence.py，原文仍留在主檔；11-01 的 HTML 沒產生（使用者已把單日 HTML 改成看週報，要不要補由使用者決定）。",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-11-01.json",
+          "daily/figures/2026-11-01/"
+        ],
+        "commands": [
+          "python3 ~/.claude/skills/daily-log/scripts/validate_log.py 2026-11-01"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "游標",
+          "plain": "記錄日誌上次讀到哪個時間點；沒推進，下次就從舊位置再讀一次"
+        }
+      ],
+      "details": "session aa4784a6 11-01 23:00–23:03。最後一則輸出是額度上限訊息。",
+      "evidence": [
+        {
+          "line": 13167,
+          "session_id": "aa4784a6",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-01 23:01",
+          "ref": "aa4784a6:13167"
+        },
+        {
+          "line": 13235,
+          "session_id": "aa4784a6",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-01 23:03",
+          "ref": "aa4784a6:13235"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "畫一張 IGV 風格圖，說明 diplosim 用到的 long read 特徵與 10 種 CN 情況",
+      "what": "為什麼：使用者想用一張圖說清楚 diplosim 目前模擬了哪些 long read 特徵、能產生哪些 copy number 事件。做了什麼：新寫 tools/draw_diplosim_features_igv.py，產生 diplosim/docs/figs/diplosim_features_igv.png（2600×2860）。A 區是 IGV 樣式的 read 畫面（coverage 軌，HP1 藍、HP2 橘、HP0 灰，綠色方塊是 alt）加參數表：預設啟用 depth Poisson（coverage 400）、alt Binomial（purity 從 U(0.7, 0.9) 抽）、prop_snv_on_b 0.5、ref 依 copy 數拆 HP、prop_tagged 0.8；需手動設 depth_dispersion、tag_concentration、mistag_rate、mistag_concentration、base_error、fract_noise；同 read 共現標「沒有」（10-31 暫緩）。B 區是 10 種 CN 情況：預設啟用無 CNA、gain_A、gain_B、gain_both、loss_B、cnloh_B；預設不開 WGD、loss_A／cnloh_A、第二個 CNA（例 cnloh_B → SNV → gain_A 得 (3,0)）。結果：read 是示意，diplosim 只輸出計數。B 區假設純腫瘤、全部 read 有 tag、CN 事件在 SNV 之後，沒畫 subclonal CNA。狀態：圖與腳本未 commit（git status 顯示 png 為 untracked），是否放進 11-04 投影片未定。",
+      "why_demoted": "落在邊界（7 分）：只有 1 則使用者訊息，未 commit。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "tools/draw_diplosim_features_igv.py",
+          "diplosim/docs/figs/diplosim_features_igv.png"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 20238,
+          "session_id": "9fca9a7b",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 16:43",
+          "ref": "9fca9a7b:20238"
+        }
+      ]
+    },
+    {
+      "title": "清 /bip8_disk：刪 3 個 tagged BAM 釋放約 318G，old tagging BAM 轉 CRAM 在背景跑",
+      "what": "為什麼：/bip8_disk 用了 78%，使用者目錄裡 longphase-s-boyu 佔 601G，其中 4 個 BAM 合計約 592G。做了什麼：先刪 .worktrees/longphase-s-origin-new-split/output/ 下兩個 chr1 BAM（各 23G）、其索引與 purity.out、空目錄；再刪 output/hcc1395_new_split_tagging_bundle/ 的全基因組 new split tagged BAM（272G）與 .bai（114M）、purity.out、空目錄。刪前確認沒有程式開啟這些檔，也確認 main_work 只有 data_input.md 提到它，C0 用的是 longphase-s-origin 的 old tagging BAM。data_input.md 第 1 節移除 3 列，新增「已刪除（2026-11-02）」小節，寫明現在沒有任何 new split tagged BAM，要重做只能從 HCC1395.cram 重跑 somatic_haplotag。結果：共釋放約 318G，使用率 78% → 75%，剩 3.1T。另把 worktree 的 old tagging BAM（292G）用 samtools 16 執行緒轉 CRAM（reference GRCh38_no_alt_analysis_set.fasta，header 195 條 contig 已比對），轉完做 quickcheck、header 比對、逐筆比對，結果是 records_identical 才刪 BAM。狀態：轉檔在背景進行中，完成與否未確認；data_input.md 改動未 commit。",
+      "why_demoted": "落在邊界（6 分）：屬於環境類工作，扣分；有 8 則使用者訊息但沒有 commit。",
+      "status": "ongoing",
+      "artifacts": {
+        "files": [
+          "data_input.md"
+        ],
+        "outputs": [
+          "/tmp/claude-1024/-bip8-disk-boyu114-main-work/264e888a-3516-436f-8dd8-c0fe9f652eac/scratchpad/bam2cram.log"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 19330,
+          "session_id": "264e888a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 16:25",
+          "ref": "264e888a:19330"
+        },
+        {
+          "line": 19557,
+          "session_id": "264e888a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 16:28",
+          "ref": "264e888a:19557"
+        },
+        {
+          "line": 19665,
+          "session_id": "264e888a",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 16:30",
+          "ref": "264e888a:19665"
+        }
+      ]
+    },
+    {
+      "title": "累積變更分成 8 個 commit 推上 diplosim-v1；刪掉 TRACERx_simulation_tool 後又恢復",
+      "what": "為什麼：工作樹累積了多天未 commit 的變更。做了什麼：分類成 8 個 commit 並 push 到新建的 origin/diplosim-v1：227a5cc 刪 58 個過時 research 檔、6e89ae8 修連結與索引（補交）、ae06b83 記錄 longbulksim v0.8 凍結、9182b9d 把 10-28 會議要點寫成工作規則並分開 CLAUDE.md 與 report_rule.md、6619749 Newick 去空白再解析、9547372 下載腳本不再抓 HG008、761ec36 11-04 簡報修改、e6bcebf 日誌與週報。沒動的：CONIPHER submodule 只有 7 個 __pycache__ .pyc 變動；main 沒推（本機 main 比 origin/main 多 34 個 commit）；tag longbulksim-v0.8-frozen 只在本機。之後使用者要求刪掉 TRACERx_simulation_tool submodule，agent 刪掉並指出 diplosim/docs/porting_map.md、conipher_steps.md 的行號引用與 3 支 tools 腳本會失效，使用者隨即要求恢復，已用 git reset 與 checkout 復原。狀態：完成；CLAUDE.md 寫 diplosim/ 是空目錄這句已過時，未改。",
+      "why_demoted": "落在邊界（5 分，有 commit 保底）：屬於環境類工作。",
+      "status": "done",
+      "artifacts": {
+        "commands": [
+          "git push -u origin diplosim-v1"
+        ],
+        "outputs": [
+          "227a5cc",
+          "6e89ae8",
+          "ae06b83",
+          "9182b9d",
+          "6619749",
+          "9547372",
+          "761ec36",
+          "e6bcebf"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 19025,
+          "session_id": "01d8c4d2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 16:13",
+          "ref": "01d8c4d2:19025"
+        },
+        {
+          "line": 19099,
+          "session_id": "01d8c4d2",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-02 16:19",
+          "ref": "01d8c4d2:19099"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "title": "兩個 session 同時處理同一份 artifact 的留言，互相搶先發布",
+      "detail": "11-02 上午到下午，97a5ca0f 與另一個 session 都收到 artifact 留言通知，至少 3 次發布衝突（HTTP 409 或版本已變），數則留言被回覆兩次，本機與線上版本多次分岔",
+      "resolution": "14:53 把本機全部同步成線上版本；之後仍有衝突，agent 建議只留一個 session 處理留言"
+    }
+  ],
+  "advisor": [],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "10-31 23:00 ~ 11-02 23:00",
+  "scan": {
+    "last_scanned": "2026-11-02T23:00:16",
+    "sessions": [
+      "8bb7dab0",
+      "8d47f079",
+      "b05fbf1a",
+      "725bb4fc",
+      "aa4784a6",
+      "97a5ca0f",
+      "01d8c4d2",
+      "264e888a",
+      "9fca9a7b",
+      "d5ab9653"
+    ],
+    "layers": {
+      "show": 5,
+      "record": 0,
+      "border": 3
+    }
+  }
+}
