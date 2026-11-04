@@ -22,6 +22,8 @@
 
 ## diplosim 驗證主流程
 
+> **2026-11-04 起暫停**（`diplosim/DECISIONS.md`）。以下只供重現既有結果，不要用來開新的 HCC1395 實驗。
+
 1. **真實端（每個 subsample 一次）：** `bash tools/diplosim_purity_holdout_one.sh ...`：haplotag、ClairS HC 位點、pileup。
 2. **模擬＋比較：** 設定 `OUT_ROOT`、`DIPLOSIM_PPC_RANGES=tools/diplosim_knob_ranges_hcc1395.tsv`、`KNOBS`，再跑 `bash tools/diplosim_purity_holdout_v2.sh <purity> <purity 範圍> <coverage> <真實端目錄>`。
 3. **評分與畫圖：** `ppc_distance_score.py`、`plot_purity_holdout_trend.py`。

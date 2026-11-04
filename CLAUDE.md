@@ -7,6 +7,7 @@
 - **目的：** 模擬帶 HP1／HP2 的 long read bulk 腫瘤定序資料，附已知的真值演化樹，用來測試把 HP 資訊加進樹重建（haploclone）能不能改善結果。模擬器是 `diplosim/`。〔repo〕`report/2026_11_04_slides/OUTLINE.md`「研究目的」
 - **真值和觀測分開：** 模擬器知道每個 SNV、每條 read（或每個計數）來自哪條 HP、哪個 clone、哪個位置，這些都要留在真值裡。HP0／unphased、mistag、caller 漏抓只屬於觀測層，不能讓真值跟著遺失。（N1）
 - **需求表：** 只用 long read（輸入與驗證參考都是）；要有真值樹。只優化一個 bulk sample，多 sample 只當上限參考。（同 read 共現：2026-11-04 使用者決定先不列為需求）〔會議〕10-21；〔repo〕`diplosim/DECISIONS.md` 2026-10-29、10-30
+- **目前暫停：HCC1395 的觀察與驗證**（PPC、purity holdout、為了對上 HCC1395 統計量的調參）。不要提議新的 HCC1395 實驗或參數；既有結果只當歷史參考。現在的方向是先查單點突變的生物假說（N2、N4）。〔repo〕`diplosim/DECISIONS.md` 2026-11-04
 - **最新會議優先：** 本檔的規則來自各次會議（L1–L7：10-21，M1–M3：10-28，N1–N5：11-04）。一律以 `meeting_record/index.md` 裡日期最新的一次為準；本檔和最新會議衝突時，照最新會議做，並告訴使用者要更新本檔。
 
 ## 去哪裡找
