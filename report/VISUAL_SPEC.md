@@ -219,7 +219,7 @@
   - 長讀版的 haplotype 切分要用父母資料等獨立來源，不能用待測的 phasing 工具產生真值（推論）。
   - 底層深度要夠。不要靠複製 read 補深度，複製會產生重複分子（推論）。
   - 參賽者只拿到變異清單與拷貝數結果，不是 BAM。不要畫成參賽者直接讀 read。
-- **(e) 出處**：Salcedo, Tarabichi et al. 2024 *Nat Biotechnol* 43:581，Methods p.13（GIAB GM24385/HG002 300× Illumina、PhaseTools 定相、phased contig 中位長約 85 kb、依 phase × chromosome 切 sub-BAM、BAMSurgeon spike-in、MuTect／Battenberg 呼叫）；M07 README「BAM 模擬流程」。長讀版難點為 `report/2026_10_21_slides/REVIEW_v5.md` 教授審查推論。
+- **(e) 出處**：Salcedo, Tarabichi et al. 2024 *Nat Biotechnol* 43:581，Methods p.13（GIAB GM24385/HG002 300× Illumina、PhaseTools 定相、phased contig 中位長約 85 kb、依 phase × chromosome 切 sub-BAM、BAMSurgeon spike-in、MuTect／Battenberg 呼叫）；M07 README「BAM 模擬流程」。長讀版難點為 `report/2026_10_21_slides/REVIEW_v5.md`（2026-11-04 刪除；取回：`git show b7976d4:report/2026_10_21_slides/REVIEW_v5.md`） 教授審查推論。
 
 ## 11. single-cell DNA：標靶 panel 對淺層全基因體
 

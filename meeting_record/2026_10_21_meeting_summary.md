@@ -75,7 +75,7 @@
 | SMC-Het 的真值來源？ | **模擬。** 短讀 HG002 依 haplotype 切 read pool，再植入突變。reference 是 GRCh37 | 同上 |
 | SMC-Het 有沒有公開模擬程式？ | 部分公開：BAMSurgeon、PhaseTools、Galaxy workflows、評分程式。**完整的逐腫瘤生成腳本是否公開，仍待查** | 同上「資料與程式可取得性」 |
 | SMC-Het 的三類問題？ | sc1：purity、clone 數、clone 比例；sc2：SNV 歸屬與共聚；sc3：樹拓撲 | 同上 |
-| 文獻是「特徵進建樹」還是「特徵篩樹」？ | 肺癌長讀研究（B04）屬於後者：長讀只用來在兩棵候選樹中事後挑一棵 | 〔repo〕`report/2026_10_21_slides/OUTLINE_v5.3.md` P4 講稿 |
+| 文獻是「特徵進建樹」還是「特徵篩樹」？ | 肺癌長讀研究（B04）屬於後者：長讀只用來在兩棵候選樹中事後挑一棵 | 〔repo〕`report/2026_10_21_slides/OUTLINE.md`（原 `OUTLINE_v5.3.md`） P4 講稿 |
 | 「農綠」是什麼？ | 很可能是「長讀」 | 〔推論〕與短讀對比 |
 | White clone／Fi Clone／PCBA | 可能是 PhyClone、PhyClone、PCAWG | 〔推論〕僅依發音，需再確認 |
 
