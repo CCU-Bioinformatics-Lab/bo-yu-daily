@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure the ONT base error rate at somatic SNV sites in a normal sample (longbulksim base_error).
+"""Measure the ONT base error rate at somatic SNV sites in a normal sample (simulator base_error).
 
 HCC1395BL (normal) carries none of the SEQC2 HighConf somatic SNVs of HCC1395, so every read
 that shows the somatic alt base there is a sequencing (or alignment) error. Per site: reads with

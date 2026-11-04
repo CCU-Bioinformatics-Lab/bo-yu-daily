@@ -34,7 +34,7 @@
 ```bash
 D=lab_report/2026-11-01_clairs_detection_curve
 for p in t40_n10 t30_n20 t20_n30 t10_n40; do
-  python3 -I tools/diplosim_ppc_hcc1395.py real $D/$p lab_report/2026-10-30_diplosim_ppc_hcc1395/tables/clairs_hc_sites.tsv \
+  python3 -I tools/diplosim_ppc_hcc1395.py real $D/$p lab_report/2026-10-31_diplosim_ppc_hcc1395_lost045/tables/clairs_hc_sites.tsv \
     /big8_disk/boyu114/hcc1395_hp_split/tagged_$p.cram
 done
 python3 tools/plot_clairs_detection_curve.py $D lab_report/2026-10-31_diplosim_purity_holdout

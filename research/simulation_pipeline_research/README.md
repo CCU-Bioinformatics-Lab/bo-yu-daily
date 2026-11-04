@@ -12,7 +12,7 @@
 4. **CN 對每個 SNV、每個 sample 獨立抽。** CN 沒有 segment 結構，也不跟著 clone 走。同一個 SNV 在 8 個 sample 中的 CN 可以全部不同。〔程式＋本機資料〕
 5. **因此要自己寫 HP-aware 生成器。** PhyClone 的程式可以沿用「樹 → prevalence → 計數」的骨架，但 CN、haplotype、read 共現都要重新設計。缺口見 [04](notes/04_GAPS_FOR_LONGREAD.md)。
 
-**現況（2026-10-29）：** 改造起點已從 PhyClone 的測試用生成器換成 CONIPHER 的 `tx_simulation`（10-28 會議議題一）。實作是 repo 根目錄的 `longbulksim/`：參數照 CONIPHER，另外加上雙套體（HP1／HP2）、copy 層級的 SNV 與 read 共現。〔會議〕〔程式〕比較見 [08](notes/08_SIMULATOR_COMPARISON.md)。
+**現況（2026-10-29）：** 改造起點已從 PhyClone 的測試用生成器換成 CONIPHER 的 `tx_simulation`（10-28 會議議題一）。實作是 repo 根目錄的 `diplosim/`：參數照 CONIPHER，另外加上雙套體（HP1／HP2）的計數（見 `diplosim/DECISIONS.md`）。〔會議〕〔程式〕比較見 [08](notes/08_SIMULATOR_COMPARISON.md)。
 
 標記：〔論文〕＝論文或補充文件的描述；〔程式〕＝讀程式碼得到的行為；〔實測〕＝本目錄實際執行的結果；〔本機資料〕＝讀 `/big8_disk/boyu114/phyclone_dataset/` 得到；〔推論〕＝分析推論，尚未直接證實。
 

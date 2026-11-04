@@ -1,4 +1,4 @@
-"""Paired comparison of PhyClone base / A1 / A2 on the same longbulksim random-tree simulations.
+"""Paired comparison of PhyClone base / A1 / A2 on the same random-tree simulations.
 
 Reads DIR/per_sim.tsv (base), DIR/per_sim_a1.tsv, DIR/per_sim_a2.tsv from
 tools/eval_random_tree_phyclone.py. For each metric: per-method median, and the paired

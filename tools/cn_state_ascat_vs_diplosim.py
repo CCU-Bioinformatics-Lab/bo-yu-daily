@@ -25,7 +25,7 @@ if __name__=="__main__":
     # ASCAT on real called SNVs
     cn={(r["chrom"],r["pos"]):(int(r["total_cn"]),int(r["minor_cn"])) for r in csv.DictReader(open("lab_report/2026-10-30_ascat_hcc1395_5khz/tables/snv_cn.tsv"),delimiter="\t")}
     rc=Counter(); rm_=Counter()
-    for r in csv.DictReader(open("lab_report/2026-10-30_diplosim_ppc_hcc1395/tables/real_per_snv.tsv"),delimiter="\t"):
+    for r in csv.DictReader(open("lab_report/2026-10-31_diplosim_ppc_hcc1395_lost045/tables/real_per_snv.tsv"),delimiter="\t"):
         k=(r["chrom"],r["pos"]); v=[int(r[x]) for x in ("ref1","alt1","ref2","alt2","ref0","alt0")]
         d=sum(v); alt=v[1]+v[3]+v[5]
         if d==0 or not ok(alt,d) or k not in cn: continue

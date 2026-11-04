@@ -1,6 +1,6 @@
-"""Score PhyClone MAP results on longbulksim random-tree simulations.
+"""Score PhyClone MAP results on random-tree simulations.
 
-For each SIM_DIR/<name>/ with truth/ (longbulksim output) and RUN/map_table.tsv + RUN/map_tree.nwk,
+For each SIM_DIR/<name>/ with truth/ (simulator output) and RUN/map_table.tsv + RUN/map_tree.nwk,
 computes against the origin clone of each SNV:
   n_clones_true / n_clones_inferred   clones that hold >= 1 SNV
   n_clones_detectable                 true clones whose SNVs have a median expected alt count

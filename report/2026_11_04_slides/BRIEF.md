@@ -39,7 +39,7 @@ CONIPHER 格式只會有 ref 36、alt 21（同一列的共用欄位）。頁面�
 | R3 | CONIPHER 模擬器 `src/conversion.py:31`（24 欄輸出）、`src/simulate.py:186-205`（參數） |
 | R4 | `lab_report/2026-10-31_diplosim_purity_holdout_plan/`（purity 換算：ASCAT purity 0.97、ploidy 3.06） |
 | R5 | `lab_report/2026-11-01_diplosim_detection_curve/*/tables/ppc_stats.tsv` real 欄（真實 HCC1395 數值）。p14 r-targets 自 2026-11-03 起改用 `lab_report/2026-11-03_diplosim_mask_ig_loci/*/tables/ppc_stats.tsv`（真實端排除 IGH、IGK、IGL，模擬端不變） |
-| R6 | `lab_report/2026-10-30_diplosim_ppc_hcc1395/`（真實資料處理：ClairS PASS ∩ HC、longphase haplotag） |
+| R6 | `lab_report/2026-10-30_diplosim_ppc_hcc1395/`（2026-11-04 刪除，未進 git，無法取回）；真實資料表的副本在 `lab_report/2026-10-31_diplosim_ppc_hcc1395_lost045/tables/`（真實資料處理：ClairS PASS ∩ HC、longphase haplotag） |
 
 ## 規則檢查
 

@@ -22,12 +22,12 @@
 ## 2. 資料與做法
 
 - normal：`/big8_disk/data/HCC1395/ONT/subsample/t00_n25/HCC1395_t00_n25.cram`（0× tumor、25× normal）。normal 沒有 CN 變化，所以 VMR = 1 + φ × 平均 depth〔程式＋推論〕。
-- 位點：`t50_n00` 的 31,595 個 ClairS PASS ∩ HC SNV（`lab_report/2026-10-30_diplosim_ppc_hcc1395/tables/clairs_hc_sites.tsv`）。和 tumor 用同一組位點、同一組 pileup 過濾條件。
+- 位點：`t50_n00` 的 31,595 個 ClairS PASS ∩ HC SNV（`lab_report/2026-10-31_diplosim_ppc_hcc1395_lost045/tables/clairs_hc_sites.tsv`）。和 tumor 用同一組位點、同一組 pileup 過濾條件。
 
 ```bash
 D=lab_report/2026-11-01_diplosim_phi_from_normal
 # 1. pileup（約 3 分鐘），沿用 tumor 的流程，只換 CRAM
-python3 -I tools/diplosim_ppc_hcc1395.py real $D lab_report/2026-10-30_diplosim_ppc_hcc1395/tables/clairs_hc_sites.tsv \
+python3 -I tools/diplosim_ppc_hcc1395.py real $D lab_report/2026-10-31_diplosim_ppc_hcc1395_lost045/tables/clairs_hc_sites.tsv \
   /big8_disk/data/HCC1395/ONT/subsample/t00_n25/HCC1395_t00_n25.cram
 # 2. 估計 φ = (VMR − 1) ÷ 平均 depth
 python3 -I tools/diplosim_estimate_knobs.py phi $D/tables/real_per_snv.tsv > $D/tables/phi_estimate.tsv

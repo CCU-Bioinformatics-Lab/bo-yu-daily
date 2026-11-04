@@ -15,7 +15,6 @@
 | 真值樹合理性證據 | [truth_evidence_2026-10-25](simulation_pipeline_research/truth_evidence_2026-10-25/README.md) | T2T HG002、GIAB HG008、COLO829 與真實腫瘤的事件證據，用來判斷模擬真值樹是否合理 |
 | bulk long read＋single-cell 公開資料 | [資料集調查](literature/surveys/sc_longread_datasets_2026-10-26/README.md) | HG008（同批 bulk ONT＋119 個 PTA 單細胞）、HG009 等驗證候選 |
 | **雙套體 long read bulk 模擬器（現行）** | [diplosim/DECISIONS.md](../diplosim/DECISIONS.md) | CONIPHER 模擬器的 Rust 移植，加上 HP1／HP2 計數；每步沿用或新寫的對照見 [conipher_steps.md](../diplosim/docs/conipher_steps.md)、[porting_map.md](../diplosim/docs/porting_map.md)；HCC1395 驗證整理見 [purity summary](../lab_report/2026-11-01_diplosim_purity_summary/README.md) |
-| long read bulk 模擬器（**已凍結 v0.8，不再修改**） | [longbulksim](../longbulksim/README.md) | 2026-10-29 由 diplosim 取代；參數照 CONIPHER `tx_simulation`；輸出 PhyClone 輸入、HP 計數、SNV pair 共現與獨立 `truth/`；決策見 `DECISIONS.md` |
 | PhyClone Rust 移植（haploclone） | `/bip8_disk/boyu114/haploclone/rust/`（branch `rust-port`） | 現況見 `rust/docs/PORTING.md`、決策見 `rust/docs/decisions.tsv`；prior 實驗計畫見 [FSCRP_PRIOR_PLAN.md](phyclone_research/FSCRP_PRIOR_PLAN.md) |
 | HCC1395 參考演化樹 | [既有文獻分析](hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/README.md) | bulk 推理與 single-cell CNV 驗證的證據邊界；不能視為病人 lineage ground truth |
 | 會議紀錄 | [2026-10-28 整理](../meeting_record/2026_10_28_meeting_summary.md)（[原始紀錄](../meeting_record/2026_10_28_meeting_record.md)）；[2026-10-21 整理](../meeting_record/2026_10_21_meeting_summary.md) | 每週會議原始紀錄與會後整理、決議、待辦；開工前先讀最新一次 |

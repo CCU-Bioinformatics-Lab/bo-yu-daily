@@ -1,6 +1,6 @@
 """Draw the HG008 clone tree with the truth-tree event types found on real branches.
 
-Numbers come from lab_report/2026-10-27_hg008_clone_tree_hp/ (8 single-cell-derived clones,
+Numbers came from lab_report/2026-10-27_hg008_clone_tree_hp/ (deleted 2026-11-04, never tracked; 8 single-cell-derived clones,
 DeepSomatic + PURPLE + bulk ONT haplotypes); event numbers match the stress truth tree (slide 8).
 Topology (updated 2026-10-27 with the 119 PTA single cells, lab_report/2026-10-27_hg008_sc_tree_check/):
 truncal -> {3E4 lineage, 7-clone branch (303 SNVs absent from the 8 3E4-sister cells)};

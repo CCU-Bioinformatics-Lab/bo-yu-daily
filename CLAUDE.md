@@ -10,8 +10,7 @@
 - `research/phyclone_research/`：PhyClone 分析。先讀 `notes/zh-TW/`，再查原始碼。`PhyClone/` 是 git submodule，改動要在 submodule 內 commit。
 - `research/simulation_pipeline_research/`：模擬生成流程研究。`upstream/` 是 Pairtree、CONIPHER 模擬器的 submodule。
 - `research/hcc1395_golden_tree_research/`：HCC1395 參考樹文獻，可作驗證參考。
-- `longbulksim/`：**已凍結（v0.8，tag `longbulksim-v0.8-frozen`），不再修改。** long read bulk 模擬器，輸出 PhyClone 輸入、HP 計數、SNV pair 共現與獨立的 `truth/`。說明見 `README.md`、`DECISIONS.md`。測試：`cd longbulksim && python3 -m unittest discover -s tests`。
-- `diplosim/`：**現行模擬器**，longbulksim 的 Rust 重寫（2026-10-29 建立）。照 CONIPHER 模擬步驟逐步移植，每一步都要能說明「沿用哪個函式」或「新寫什麼、為什麼」。決策與現況先看 `DECISIONS.md`；CONIPHER 步驟對照見 `docs/conipher_steps.md`、`docs/porting_map.md`。測試：`cd diplosim && cargo test`。
+- `diplosim/`：**現行模擬器**，用 Rust 寫的雙套體 long read bulk 模擬器（2026-10-29 建立）。照 CONIPHER 模擬步驟逐步移植，每一步都要能說明「沿用哪個函式」或「新寫什麼、為什麼」。決策與現況先看 `DECISIONS.md`；CONIPHER 步驟對照見 `docs/conipher_steps.md`、`docs/porting_map.md`。測試：`cd diplosim && cargo test`。
 - haploclone（PhyClone 的 Rust 移植）：程式、golden、移植文件都在 `/bip8_disk/boyu114/haploclone/rust/`（branch `rust-port`）。現況與決策見 `rust/docs/PORTING.md`、`rust/docs/decisions.tsv`。改 haploclone 時，預設路徑的輸出要和原版保持 bit-identical。
 - `tools/`：分析與繪圖腳本。`lab_report/`：一個實驗一個目錄（`YYYY-MM-DD_<主題>/README.md`：結論、資料、做法、結果、限制），腳本放 `tools/`。
 - `report/`：投影片輸出。`daily/`：工作日誌，只作導覽，不能當事實來源。
@@ -34,7 +33,7 @@
 - 使用者選定前，不寫實作。只有一個合理方案時，也要寫出排除其他方案的理由，再請使用者確認。
 - 實作細節（命名、重構、測試、格式、bug 修正）可以自己決定，不必停。
 - 動手後，用白話列出「改了哪裡、為什麼」，讓使用者能不看程式就向老師說明。
-- 控制速度：一次只做一個步驟或一組改動。做完後停下來，等使用者確認看懂了，才做下一步。不要一次連做多步或多個版本。（來源：2026-10-29 longbulksim 4 天做到 v0.8、改了 11 步裡的 10 步，使用者跟不上，因此凍結並改寫成 diplosim）
+- 控制速度：一次只做一個步驟或一組改動。做完後停下來，等使用者確認看懂了，才做下一步。不要一次連做多步或多個版本。（來源：2026-10-29 前一版模擬器 4 天改了 CONIPHER 11 步裡的 10 步，使用者跟不上，因此改寫成 diplosim）
 
 **開工前**
 

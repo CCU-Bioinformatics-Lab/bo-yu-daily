@@ -13,7 +13,7 @@
 
 ## 2. 資料與做法
 
-和 `lab_report/2026-10-30_diplosim_ppc_hcc1395/` 相同，只多一個參數。真實資料表直接複製過來。
+和 `lab_report/2026-10-30_diplosim_ppc_hcc1395/`（2026-11-04 刪除，未進 git，無法取回） 相同，只多一個參數。真實資料表直接複製過來。
 
 ```bash
 O=lab_report/2026-10-31_diplosim_ppc_hcc1395_lost05

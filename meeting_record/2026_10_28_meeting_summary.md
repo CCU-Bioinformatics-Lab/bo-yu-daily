@@ -76,7 +76,7 @@ M1–M3 已寫進 `CLAUDE.md`「研究與報告流程」〔repo〕commit `9182b9
 原紀錄「未決事項」中，repo 已有答案的：
 
 - 模擬工具正式名稱：CONIPHER 的 TRACERx simulation tool（轉寫的 conifer／Cypher）。〔repo〕`.gitmodules` 的 `TRACERx_simulation_tool`；`diplosim/docs/conipher_steps.md`
-- 初版修改內容：見 `diplosim/DECISIONS.md`。longbulksim 已凍結，不再當現行版本。〔repo〕
+- 初版修改內容：見 `diplosim/DECISIONS.md`。〔repo〕
 
 仍未決：
 

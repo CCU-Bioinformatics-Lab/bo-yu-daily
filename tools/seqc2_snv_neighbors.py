@@ -1,4 +1,4 @@
-"""Neighbour counts of somatic SNVs: SEQC2 HCC1395 truth vs uniform placement vs longbulksim sims.
+"""Neighbour counts of somatic SNVs: SEQC2 HCC1395 truth vs uniform placement vs simulated data.
 
 For each SNV, the number of other SNVs within d bp on the same chromosome (sims: same segment).
 Uniform null: the same number of SNVs placed uniformly inside the SEQC2 high-confidence regions,
@@ -93,16 +93,16 @@ def main():
            "n_sim_snv": int(sum(len(p) for p in sims.values())),
            "truth": summary(neighbours(truth)),
            "uniform_in_hc": summary(neighbours(uniform_in(rng, reg, n))),
-           "longbulksim": summary(neighbours(sims))}
+           "sim": summary(neighbours(sims))}
     nb = neighbours(truth)[1_000]
     res["truth_1kb_neighbour_quantiles"] = {q: float(np.quantile(nb, q)) for q in (0.5, 0.9, 0.99, 0.999)}
     (out / "result.json").write_text(json.dumps(res, indent=1))
     print(f"truth SNVs {n}, HC {hc_bp / 1e9:.2f} Gb, density in HC {res['truth_density_per_mb_in_hc']:.1f}/Mb; "
           f"sim SNVs {res['n_sim_snv']}")
-    print(f"{'':6s}" + "".join(f"{k:>34s}" for k in ("truth", "uniform_in_hc", "longbulksim")))
+    print(f"{'':6s}" + "".join(f"{k:>34s}" for k in ("truth", "uniform_in_hc", "sim")))
     for d in res["truth"]:
         print(f"{d:6s}" + "".join(f"   mean {res[k][d]['mean']:8.3f} >=1 {res[k][d]['share_ge1']:6.3f}"
-                                  for k in ("truth", "uniform_in_hc", "longbulksim")))
+                                  for k in ("truth", "uniform_in_hc", "sim")))
     print("truth 1 kb neighbour quantiles", res["truth_1kb_neighbour_quantiles"])
 
 
