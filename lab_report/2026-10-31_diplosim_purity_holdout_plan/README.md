@@ -29,7 +29,7 @@ diplosim 目前的旋鈕值（10 個參數）都是在 `t50_n00` 一個樣本上
 
 ## 3. 流程（對應圖中編號）
 
-1. **鎖住機器。** 用 commit `8bf1f4d` 的 diplosim 與目前最佳設定：
+1. **鎖住機器。** 用 commit `b63cebd` 的 diplosim 與目前最佳設定：
    `--prop-pos-lost 0.45 --loss-events cnloh_B --prop-pos-second-cna 0.5 --gain-events gain_A,gain_B,gain_B,gain_both --prop-truncal-snvs 0.8 --depth-dispersion 0.03 --base-error 0.01 --mistag-rate 0.005 --prop-tagged 0.862 --tag-concentration 1`。
    這些值在整個驗證中不改。
 2. **準備真實資料**（每個 subsample 各做一次）。

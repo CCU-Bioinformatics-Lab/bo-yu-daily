@@ -67,7 +67,7 @@ out.append(f'<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" r
            f'<path d="M0,0 L10,5 L0,10 z" fill="{MUTED}"/></marker></defs>')
 R(0, 0, W, H, BG, rx=0)
 T(40, 50, "diplosim purity holdout：同一台機器、鎖住旋鈕，只轉 purity，能不能吐出各 purity 的 HCC1395 bulk 資料？", 22, INK, "bold")
-T(40, 80, "旋鈕值都是在 t50_n00 上校正的（commit 8bf1f4d）。其餘 4 個 subsample 從沒用來調參數，所以是 holdout。", 14, MUTED)
+T(40, 80, "旋鈕值都是在 t50_n00 上校正的（commit b63cebd）。其餘 4 個 subsample 從沒用來調參數，所以是 holdout。", 14, MUTED)
 
 # ---- machine ----
 mx, my, mw, mh = 40, 110, 610, 650

@@ -49,7 +49,7 @@ K log α + Σ_k log (n_k − 1)!              CRP（node 大小）
 
 1. **先不跑 MCMC。** 用 `tools/c4_truth_vs_map.py` 的分數拆解，在現有的 177 個 run 上，換成各候選 prior 重算 MAP 與最佳相容樹的分數。看模式 2 的 run 是否翻成偏好真值，以及原本 `ok` 的 run 是否被翻壞。這一步需要在工具裡加上 prior 的選項。
 2. **MCMC。** 選出 1–2 個候選，跑 12 個壓力測試 sim（e0／real／sw5／b03）× 誤差模型校正組合。
-3. **過度拆分的檢查。** 必須在 40 棵 TRACERx 隨機樹（`lab_report/2026-10-25_random_tree_phyclone_baseline/`（2026-11-04 刪除；取回：`git show efb15e9:lab_report/2026-10-25_random_tree_phyclone_baseline/README.md`））上確認 clone 數沒有變得太多。壓力測試樹只有 4 個 clone，看不出過度拆分。
+3. **過度拆分的檢查。** 必須在 40 棵 TRACERx 隨機樹（`lab_report/2026-10-25_random_tree_phyclone_baseline/`（2026-11-04 刪除；取回：`git show db9fa20:lab_report/2026-10-25_random_tree_phyclone_baseline/README.md`））上確認 clone 數沒有變得太多。壓力測試樹只有 4 個 clone，看不出過度拆分。
 4. **判定（提案）：** 模式 2 的 run（real s2、sw5 s1）錯誤樹 < 0.5；C1／C2 分開的 run 數 ≥ 誤差模型校正組合（10／12）；隨機樹的 clone 數錯誤沒有變差（配對 bootstrap CI）。
 
 ## 5. 和 Rust 重寫的關係

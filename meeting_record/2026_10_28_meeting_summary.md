@@ -23,7 +23,7 @@
 
 ### 2.1 問題清單
 
-M1–M3 已寫進 `CLAUDE.md`「研究與報告流程」〔repo〕commit `9182b9d`。
+M1–M3 已寫進 `CLAUDE.md`「研究與報告流程」〔repo〕commit `74203c3`。
 
 | # | 發生了什麼 | 問題 | 改法（已寫進 CLAUDE.md 的段落） |
 |---|---|---|---|
@@ -66,7 +66,7 @@ M1–M3 已寫進 `CLAUDE.md`「研究與報告流程」〔repo〕commit `9182b9
 | 整理模擬器改造的候選方案，說明各方案精神 | 已做。模擬器改寫成 diplosim，每個決策列出候選方案與使用者的選擇 | 〔repo〕`diplosim/DECISIONS.md`（例：2026-10-30 HP 計數拆分 ①②③、SNV 放到 B ①②③） |
 | 探討 2–3 種驗證方法，釐清 HG008／HCC 能支持什麼 | 部分。三個候選中排除 ①（TRACERx cohort 統計，short read）；② HCC1395 ONT PPC 已跑；③ HG008：會議前（10-27）已檢查 clone 樹，但還沒拿來驗證 diplosim，11-04 大綱也不提 | 〔repo〕`diplosim/DECISIONS.md` 2026-10-30 驗證列；`lab_report/2026-11-01_diplosim_purity_summary/`；`lab_report/2026-10-27_hg008_*`；`report/2026_11_04_slides/OUTLINE.md` v4 註記 |
 | 選代表性案例做圖解／投影片，保留未懂與失敗 | 進行中。11-04 投影片 | 〔repo〕`report/2026_11_04_slides/OUTLINE.md`、`BRIEF.md` |
-| 調整 AI 工作規則，設定決策點 | 已做 | 〔repo〕commit `9182b9d`（`CLAUDE.md` M1–M3） |
+| 調整 AI 工作規則，設定決策點 | 已做 | 〔repo〕commit `74203c3`（`CLAUDE.md` M1–M3） |
 | 報告開頭交代前次方向 | 已排進 11-04 大綱「交付 1」 | 〔repo〕`report/2026_11_04_slides/OUTLINE.md` |
 
 ---

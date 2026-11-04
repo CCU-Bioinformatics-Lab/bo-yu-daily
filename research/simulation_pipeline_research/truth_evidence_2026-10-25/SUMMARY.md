@@ -89,8 +89,8 @@
 | 文獻核對 | `truth_evidence_2026-10-25/05`、`06` |
 | HG008 事件統計 | `lab_report/2026-10-25_hg008_truth_tree_plausibility/` |
 | HCC1395 實測 purity | `lab_report/2026-10-25_seqc2_hcc1395_measured_purity/` |
-| TRACERx 421 統計 | `lab_report/2026-10-25_tracerx_event_stats/`（2026-11-04 刪除，已排除的路線；取回：`git show 1208b27:lab_report/2026-10-25_tracerx_event_stats/README.md`） |
-| PCAWG 統計 | `lab_report/2026-10-25_pcawg_event_stats/`（2026-11-04 刪除，已排除的路線；取回：`git show 1208b27:lab_report/2026-10-25_pcawg_event_stats/README.md`） |
+| TRACERx 421 統計 | `lab_report/2026-10-25_tracerx_event_stats/`（2026-11-04 刪除，已排除的路線；取回：`git show 872c8cc:lab_report/2026-10-25_tracerx_event_stats/README.md`） |
+| PCAWG 統計 | `lab_report/2026-10-25_pcawg_event_stats/`（2026-11-04 刪除，已排除的路線；取回：`git show 872c8cc:lab_report/2026-10-25_pcawg_event_stats/README.md`） |
 | 典型樹設計 | `lab_report/2026-10-25_typical_truth_tree/` |
 | HCC1395 HP 拆分 | `lab_report/2026-10-25_hcc1395_hp_split/` |
 | 公開資料 | `/big8_disk/boyu114/benchmark_data/`（各子目錄有 README） |

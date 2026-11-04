@@ -80,7 +80,7 @@
 
 ## 5. 發現的過時內容與不一致
 
-HCC1395 目錄的過時內容已於 2026-10-16 刪除，分 6 個 commit（`89bf0ba`…`b938ab3`）保存：C++ finite-K backend 相關段落、K4／K6／K8 pilot 對照、舊 pipeline 模塊邊界、失效的 `golden_tree/` 與 `data.md` 等連結。舊內容可由 `git show <commit>^:<path>` 取回。
+HCC1395 目錄的過時內容已於 2026-10-16 刪除，分 6 個 commit（`8477348`…`32ae340`）保存：C++ finite-K backend 相關段落、K4／K6／K8 pilot 對照、舊 pipeline 模塊邊界、失效的 `golden_tree/` 與 `data.md` 等連結。舊內容可由 `git show <commit>^:<path>` 取回。
 
 | 位置 | 仍待處理 |
 |---|---|

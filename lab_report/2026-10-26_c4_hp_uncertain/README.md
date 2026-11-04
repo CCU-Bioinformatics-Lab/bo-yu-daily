@@ -1,6 +1,6 @@
 # C4 pair score 加入 SNV 的 HP 不確定性（2026-10-26）
 
-> **2026-11-04 註記：** 文中引用的 `2026-10-25_c4_robustness` 已刪除，可用 `git show efb15e9:lab_report/2026-10-25_c4_robustness/README.md` 取回。
+> **2026-11-04 註記：** 文中引用的 `2026-10-25_c4_robustness` 已刪除，可用 `git show db9fa20:lab_report/2026-10-25_c4_robustness/README.md` 取回。
 
 問題：real s1 的錯誤樹，來自低 VAF 的 s7_07 被鹼基錯誤判到錯的 HP（`lab_report/2026-10-26_c4_error_model/` 第 2.4 節）。如果 pair score 不再假設 SNV 一定在 snv_hp 上，而是依 HP1／HP2 的 alt 計數給一個後驗機率，能不能修好這類失敗，又不傷到其他 run？
 

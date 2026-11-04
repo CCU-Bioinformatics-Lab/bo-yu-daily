@@ -262,7 +262,7 @@ log L_ij(rel) = Σ_{禁止格 k} log Bin(n_k | n_total, ε)  +  Σ_{允許格} 0
 
 ### 9.1 B 層（C4）第一輪結果（2026-10-25）
 
-實驗：`lab_report/2026-10-25_c4_pair_term_stress/`（2026-11-04 刪除；取回：`git show efb15e9:lab_report/2026-10-25_c4_pair_term_stress/README.md`）。程式：`tools/phyclone_pairs.py`，經 `tools/phyclone_hp.py --pairs` 開啟（submodule 外的 monkeypatch）。
+實驗：`lab_report/2026-10-25_c4_pair_term_stress/`（2026-11-04 刪除；取回：`git show db9fa20:lab_report/2026-10-25_c4_pair_term_stress/README.md`）。程式：`tools/phyclone_pairs.py`，經 `tools/phyclone_hp.py --pairs` 開啟（submodule 外的 monkeypatch）。
 
 - **P2 解決。** 直線樹比例從 0.39–0.48 降到 0.000–0.002，連實測密度（16 個合格 pair）也一樣。〔實測〕
 - **P1 只部分改善。** ×10 密度下 C1／C2 不再合併（3 個 seed 中 2 個），但 base＋C4 改成 C2／C4 合併。只有 A2＋C4 的一個 seed 推出完整 4 clone 樹。C2 與 C4 的 SNV 在不同 HP，沒有 read 能區分它們。〔實測＋推論〕

@@ -2,7 +2,7 @@
 
 整理日期：2026-10-15。適用範圍：本 repo 的 `research/`。
 
-> **2026-10-21 更新**：結構化資料 `research/terminology/`（`terms.tsv`、`evidence.tsv`、`corpus.tsv`）已刪除。詞條定義仍以 [CONTEXT.md](CONTEXT.md) 為準。下文的數量與欄位名稱描述 2026-10-15 掃描的結果。需要原始資料時，用 `git show 6bc87ca:research/terminology/<檔名>` 取回。
+> **2026-10-21 更新**：結構化資料 `research/terminology/`（`terms.tsv`、`evidence.tsv`、`corpus.tsv`）已刪除。詞條定義仍以 [CONTEXT.md](CONTEXT.md) 為準。下文的數量與欄位名稱描述 2026-10-15 掃描的結果。需要原始資料時，用 `git show a6cfaf8:research/terminology/<檔名>` 取回。
 
 統一定義請讀 [研究共用術語](CONTEXT.md)。每個詞條都有英文名稱、繁體中文名稱、別名對照、簡短定義與使用界線。後續撰寫研究比較時，使用詞條中的名稱。引用論文原句、工具名稱、程式參數與欄位名稱時，保留原字串。
 
@@ -134,7 +134,7 @@ ASD-STE100 是英文技術文件的受控語言標準。本次採用其短句、
 | `terminology/evidence.tsv` | 2026-10-21 刪除 | 每個詞條在各研究單位的一個文字定位；含路徑、行號與命中片段 |
 | `terminology/corpus.tsv` | 2026-10-21 刪除 | 掃描的來源清單、行數與 SHA-256 |
 
-三個 TSV 的最後版本在 commit `6bc87ca`，用 `git show 6bc87ca:research/terminology/<檔名>` 取回。
+三個 TSV 的最後版本在 commit `a6cfaf8`，用 `git show a6cfaf8:research/terminology/<檔名>` 取回。
 
 `terms.tsv` 的 `study_count` 只計不同研究單位。英文與繁中版本不重複計數。跨研究綜整文件使用 `SYN`，不計入 `study_count`。`family_count` 則按三個原始研究目錄計算。這兩個欄位是不同層級。
 
@@ -157,7 +157,7 @@ ASD-STE100 是英文技術文件的受控語言標準。本次採用其短句、
 
 | status | source | locator／用途 |
 |---|---|---|
-| `current` | 本 repo 的研究筆記與論文文字 | 原 `corpus.tsv` 與 `evidence.tsv`（已刪除，見 commit `6bc87ca`）；含當時簽出中未追蹤的文獻調查，不能據此宣稱已實驗驗證 |
+| `current` | 本 repo 的研究筆記與論文文字 | 原 `corpus.tsv` 與 `evidence.tsv`（已刪除，見 commit `a6cfaf8`）；含當時簽出中未追蹤的文獻調查，不能據此宣稱已實驗驗證 |
 | `lab-canonical` | `/big8_disk/liaoyoyo2001/Knowledge/08_references/glossary.md` | L67–85：LOH、定相、HP、細胞純度、DNA 比例與名目比例；L90–91：體細胞變異 |
 | `lab-canonical` | `/big8_disk/liaoyoyo2001/Knowledge/README.md` | L109–111：真值集適用範圍、定相標籤與 LOH 判讀界線 |
 | `lab-canonical` | `/big8_disk/liaoyoyo2001/Knowledge/00_background/benchmark-methodology.md` | L30–42：precision、recall、F1 與固定評估範圍 |
@@ -170,4 +170,4 @@ MCMC ESS 與順式／反式相位屬區分多義詞所需的補充，不宣稱�
 
 BAM、CRAM、VCF 與 BED 的格式界線另核對 [HTS 官方規格索引](https://samtools.github.io/hts-specs/)。BED 的座標說明核對 [UCSC 格式文件](https://genome.ucsc.edu/FAQ/FAQformat#format1)。這些外部來源用於補充定義，不計為本地研究的新增命中。
 
-定義、別名或來源更新時，直接更新 [CONTEXT.md](CONTEXT.md)。`terminology/` 已刪除，不再維護 TSV。要重做詞形統計時，先從 commit `6bc87ca` 取回三個 TSV，再重新掃描。
+定義、別名或來源更新時，直接更新 [CONTEXT.md](CONTEXT.md)。`terminology/` 已刪除，不再維護 TSV。要重做詞形統計時，先從 commit `a6cfaf8` 取回三個 TSV，再重新掃描。

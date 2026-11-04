@@ -1,6 +1,6 @@
 # 真值樹 vs MAP 樹的分數比較（2026-10-26）
 
-> **2026-11-04 註記：** 本實驗用到的 `2026-10-25_c4_robustness`、`2026-10-26_c4_composite_weight` 已刪除。文中引用保留原文；第 89–90 行的重跑指令已無法執行。`c4_robustness` 可用 `git show efb15e9:lab_report/2026-10-25_c4_robustness/README.md` 取回，`c4_composite_weight` 未進 git，無法取回。
+> **2026-11-04 註記：** 本實驗用到的 `2026-10-25_c4_robustness`、`2026-10-26_c4_composite_weight` 已刪除。文中引用保留原文；第 89–90 行的重跑指令已無法執行。`c4_robustness` 可用 `git show db9fa20:lab_report/2026-10-25_c4_robustness/README.md` 取回，`c4_composite_weight` 未進 git，無法取回。
 
 問題：改良版 PhyClone 選錯樹時，是**抽樣**沒找到真值樹，還是**模型**本身偏好錯誤的樹？如果是模型，是哪一項（FSCRP prior、SNV data likelihood、C4 pair term）造成的？
 

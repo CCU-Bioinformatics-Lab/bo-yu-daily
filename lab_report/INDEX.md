@@ -94,4 +94,4 @@
 
 ## 已刪除的實驗
 
-2026-11-04 刪除了已排除路線（PCDH、FS-CRP 重跑、TRACERx／PCAWG 統計等）和舊模擬器的實驗。有進 git 的可用 `git show efb15e9:lab_report/<目錄>/README.md` 取回（2026-10-25 的 c4、random_tree 系列），其餘沒進 git，無法取回。
+2026-11-04 刪除了已排除路線（PCDH、FS-CRP 重跑、TRACERx／PCAWG 統計等）和舊模擬器的實驗。有進 git 的可用 `git show db9fa20:lab_report/<目錄>/README.md` 取回（2026-10-25 的 c4、random_tree 系列），其餘沒進 git，無法取回。

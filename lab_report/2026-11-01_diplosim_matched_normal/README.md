@@ -34,7 +34,7 @@
 
 ## 2. 改了什麼
 
-沿用 `tools/diplosim_ppc_hcc1395.py` 的配對 normal（commit `4b6a645`、`792051d`、`0a524fe`）：
+沿用 `tools/diplosim_ppc_hcc1395.py` 的配對 normal（commit `2bc6ced`、`6f8c7c1`、`65f7912`）：
 
 - 每個 seed 用同一棵樹、同一組 clone，以 purity = c 產生一份 25.1× 的 normal 樣本（`normal.tsv`）。
 - c 從 0.5–2.5% 抽樣；normal 自己的 base error 從 0–0.001 抽樣（`tools/diplosim_knob_ranges_hcc1395.tsv`）。

@@ -1,6 +1,6 @@
 # C4 pair score 的誤差模型（2026-10-26）
 
-> **2026-11-04 註記：** 本實驗用到的 `2026-10-25_c4_robustness`（含 `sims/`）、`2026-10-26_c4_composite_weight`、`2026-10-26_sim_expectation_check` 已刪除。文中引用保留原文；重跑需要的模擬資料已不在。`c4_robustness` 可用 `git show efb15e9:lab_report/2026-10-25_c4_robustness/README.md` 取回 README，另外兩個未進 git，無法取回。
+> **2026-11-04 註記：** 本實驗用到的 `2026-10-25_c4_robustness`（含 `sims/`）、`2026-10-26_c4_composite_weight`、`2026-10-26_sim_expectation_check` 已刪除。文中引用保留原文；重跑需要的模擬資料已不在。`c4_robustness` 可用 `git show db9fa20:lab_report/2026-10-25_c4_robustness/README.md` 取回 README，另外兩個未進 git，無法取回。
 
 問題：把定序錯誤寫進 pair score（`--pair-error e`）之後，失效模式 1（clone 被拆開）會不會消失？會不會像 composite weight 一樣，讓 C1／C2 重新合併、模式 2 變嚴重？背景：`lab_report/2026-10-26_c4_composite_weight/`（固定 w 失敗）、`lab_report/2026-10-26_c4_truth_vs_map/`（模式 1 來自 pair term，模式 2 主要來自 FSCRP prior）。
 
@@ -87,7 +87,7 @@
 
 - 資料：`2026-10-25_c4_robustness/sims/x10_{e0,real,sw5,b03}_s{1,2,3}`，沒有重生。這些 sim 已經通過 `2026-10-26_sim_expectation_check` 的全部檢查。
 - 方法：base＋C4，`--pair-error 0.004` 或 `0.03`；PhyClone 設定同前（`-d binomial -b 100 -n 1000 --num-chains 4 --seed 1`，outlier 關閉）。每個 run 的 `run.log` 都有「error = E, weight = 1.0」。
-- 誤差模型：`tools/phyclone_pairs.py` 的 `error_relation_scores`（commit `51d859c`）。
+- 誤差模型：`tools/phyclone_pairs.py` 的 `error_relation_scores`（commit `5b77349`）。
 
 ```bash
 L=lab_report/2026-10-26_c4_error_model
