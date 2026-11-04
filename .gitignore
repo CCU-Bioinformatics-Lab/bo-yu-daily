@@ -13,4 +13,4 @@ lab_report/**/*.log
 
 # Published papers and their supplements: not ours to redistribute in a public repo.
 research/**/*.pdf
-research/literature/**/supplementary_tables.xlsx
+research/**/*.xlsx
