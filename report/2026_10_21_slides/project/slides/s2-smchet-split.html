@@ -1,0 +1,87 @@
+<section id="s2-smchet-split" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">2 · 我們怎麼驗證</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">SMC-Het 把建樹拆成三個可以評分的子問題</h2>
+<div style="flex:1;display:flex;flex-direction:row;gap:32px">
+<div style="width:1072px;display:flex;flex-direction:column;gap:12px;align-items:center">
+<div style="width:1072px;display:flex;flex-direction:row;gap:20px;align-items:center;justify-content:center;background:#EEF2F6;border-radius:16px;padding:14px 24px">
+<svg aria-label="輸入示意：左邊一灰一紅兩根柱，代表 SNV 的 ref 與 alt read 數；右邊一條階梯線，代表拷貝數片段。" width="150" height="44" viewBox="0 0 150 44"><rect x="4" y="8" width="18" height="34" fill="#8E99A8"/><rect x="28" y="22" width="18" height="20" fill="#D23A2E"/><polyline points="66,30 90,30 90,10 118,10 118,30 146,30" fill="none" stroke="#1F2A37" stroke-width="4"/></svg>
+<p style="font-size:30px;font-weight:700;color:#1F2A37">輸入：一個 bulk 樣本的 SNV 計數＋拷貝數</p>
+</div>
+<x-shape kind="arrow-down" style="width:14px;height:28px;background:#4A5568"></x-shape>
+<div style="display:flex;flex-direction:row;gap:8px;align-items:center">
+<div style="width:328px;display:flex;flex-direction:column;gap:10px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px">
+<h3 style="font-size:30px;font-weight:700;line-height:1.25;color:#1F2A37">① 有幾群 clone、各占多少？</h3>
+<svg aria-label="三根柱由高到低：深灰、綠、紫，代表三群 clone 的 CCF，是示意。" width="278" height="130" viewBox="0 0 278 130"><line x1="10" y1="124" x2="268" y2="124" stroke="#4A5568" stroke-width="3"/><rect x="40" y="14" width="52" height="110" fill="#4A5568"/><rect x="114" y="58" width="52" height="66" fill="#2A9D8F"/><rect x="188" y="94" width="52" height="30" fill="#7B5EA7"/></svg>
+<p style="font-size:24px;color:#4A5568">柱高＝CCF（示意）</p>
+<div style="display:flex;flex-direction:column;gap:2px">
+<p style="font-size:24px;line-height:1.35"><b><span style="color:#2F6DB5">1A</span></b>　purity</p>
+<p style="font-size:24px;line-height:1.35"><b><span style="color:#2F6DB5">1B</span></b>　clone 數</p>
+<p style="font-size:24px;line-height:1.35"><b><span style="color:#2F6DB5">1C</span></b>　各 clone 的 CCF</p>
+</div>
+</div>
+<x-shape kind="arrow-right" style="width:28px;height:14px;background:#4A5568"></x-shape>
+<div style="width:328px;display:flex;flex-direction:column;gap:10px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px">
+<h3 style="font-size:30px;font-weight:700;line-height:1.25;color:#1F2A37">② 每個 SNV 屬於哪一群？</h3>
+<svg aria-label="上排八個灰點是 SNV，每個灰點用細線連到下方三個虛線框之一：深灰群三個、綠群三個、紫群兩個。" width="278" height="130" viewBox="0 0 278 130"><g stroke="#9AA3AE" stroke-width="2"><line x1="20" y1="22" x2="30" y2="102"/><line x1="52" y1="22" x2="122" y2="102"/><line x1="84" y1="22" x2="218" y2="102"/><line x1="116" y1="22" x2="56" y2="102"/><line x1="148" y1="22" x2="148" y2="102"/><line x1="180" y1="22" x2="82" y2="102"/><line x1="212" y1="22" x2="174" y2="102"/><line x1="244" y1="22" x2="248" y2="102"/></g><g fill="#8E99A8"><circle cx="20" cy="16" r="9"/><circle cx="52" cy="16" r="9"/><circle cx="84" cy="16" r="9"/><circle cx="116" cy="16" r="9"/><circle cx="148" cy="16" r="9"/><circle cx="180" cy="16" r="9"/><circle cx="212" cy="16" r="9"/><circle cx="244" cy="16" r="9"/></g><rect x="10" y="90" width="92" height="36" rx="10" fill="none" stroke="#4A5568" stroke-width="2.5" stroke-dasharray="6 4"/><rect x="108" y="90" width="92" height="36" rx="10" fill="none" stroke="#2A9D8F" stroke-width="2.5" stroke-dasharray="6 4"/><rect x="206" y="90" width="62" height="36" rx="10" fill="none" stroke="#7B5EA7" stroke-width="2.5" stroke-dasharray="6 4"/><g fill="#4A5568"><circle cx="30" cy="108" r="9"/><circle cx="56" cy="108" r="9"/><circle cx="82" cy="108" r="9"/></g><g fill="#2A9D8F"><circle cx="122" cy="108" r="9"/><circle cx="148" cy="108" r="9"/><circle cx="174" cy="108" r="9"/></g><g fill="#7B5EA7"><circle cx="222" cy="108" r="9"/><circle cx="248" cy="108" r="9"/></g></svg>
+<p style="font-size:24px;color:#4A5568">細線＝SNV 分到哪一群</p>
+<div style="display:flex;flex-direction:column;gap:2px">
+<p style="font-size:24px;line-height:1.35"><b><span style="color:#2F6DB5">2A</span></b>　SNV 屬哪一群</p>
+<p style="font-size:24px;line-height:1.35"><b><span style="color:#2F6DB5">2B</span></b>　兩 SNV 同群機率</p>
+</div>
+</div>
+<x-shape kind="arrow-right" style="width:28px;height:14px;background:#4A5568"></x-shape>
+<div style="width:328px;display:flex;flex-direction:column;gap:10px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px">
+<h3 style="font-size:30px;font-weight:700;line-height:1.25;color:#1F2A37">③ 這些群怎麼接成樹？</h3>
+<svg aria-label="演化樹：最上方空心圓是正常細胞，往下接深灰 clone，深灰 clone 再分出綠、紫兩個 clone。" width="278" height="130" viewBox="0 0 278 130"><g stroke="#4A5568" stroke-width="4"><line x1="139" y1="16" x2="139" y2="62"/><line x1="139" y1="62" x2="84" y2="112"/><line x1="139" y1="62" x2="194" y2="112"/></g><circle cx="139" cy="16" r="12" fill="#FDFDFB" stroke="#4A5568" stroke-width="3"/><circle cx="139" cy="62" r="14" fill="#4A5568"/><circle cx="84" cy="112" r="14" fill="#2A9D8F"/><circle cx="194" cy="112" r="14" fill="#7B5EA7"/></svg>
+<p style="font-size:24px;color:#4A5568">空心＝正常細胞</p>
+<div style="display:flex;flex-direction:column;gap:2px">
+<p style="font-size:24px;line-height:1.35"><b><span style="color:#2F6DB5">3A</span></b>　每群的 parent</p>
+<p style="font-size:24px;line-height:1.35"><b><span style="color:#2F6DB5">3B</span></b>　兩 SNV 祖孫機率</p>
+</div>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.4;color:#1F2A37">七個子題分開和真值比分；2B、3B 交機率，不交單一答案</p>
+</div>
+<div style="width:560px;display:flex;flex-direction:column;gap:20px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:28px">
+<h3 style="font-size:30px;font-weight:700;line-height:1.25;color:#1F2A37">benchmark 資料（全部是模擬）</h3>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;font-weight:700;color:#1F2A37">51 棵設計樹</p>
+<svg aria-label="一條分成三段的橫條：藍色 25 棵來自泛癌研究，深灰 16 棵來自文獻，橘色 10 棵是特殊情境。" width="502" height="28" viewBox="0 0 502 28"><rect x="0" y="0" width="246" height="28" fill="#2F6DB5"/><rect x="248" y="0" width="156" height="28" fill="#4A5568"/><rect x="406" y="0" width="96" height="28" fill="#C96A1B"/></svg>
+<div style="display:flex;flex-direction:row;gap:20px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5">泛癌研究 25</p>
+<p style="font-size:24px;font-weight:700;color:#4A5568">文獻 16</p>
+<p style="font-size:24px;font-weight:700;color:#C96A1B">特殊情境 10</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;font-weight:700;color:#1F2A37">深度系列：5 個腫瘤 × 5 種深度</p>
+<div style="display:flex;flex-direction:row;gap:12px;align-items:end">
+<div style="width:88px;display:flex;flex-direction:column;gap:4px;align-items:center"><svg aria-label="最矮的柱" width="40" height="12" viewBox="0 0 40 12"><rect x="0" y="0" width="40" height="12" fill="#8E99A8"/></svg><p style="font-size:24px;color:#4A5568">8×</p></div>
+<div style="width:88px;display:flex;flex-direction:column;gap:4px;align-items:center"><svg aria-label="第二矮的柱" width="40" height="24" viewBox="0 0 40 24"><rect x="0" y="0" width="40" height="24" fill="#8E99A8"/></svg><p style="font-size:24px;color:#4A5568">16×</p></div>
+<div style="width:88px;display:flex;flex-direction:column;gap:4px;align-items:center"><svg aria-label="中間高度的柱" width="40" height="36" viewBox="0 0 40 36"><rect x="0" y="0" width="40" height="36" fill="#8E99A8"/></svg><p style="font-size:24px;color:#4A5568">32×</p></div>
+<div style="width:88px;display:flex;flex-direction:column;gap:4px;align-items:center"><svg aria-label="第二高的柱" width="40" height="48" viewBox="0 0 40 48"><rect x="0" y="0" width="40" height="48" fill="#8E99A8"/></svg><p style="font-size:24px;color:#4A5568">64×</p></div>
+<div style="width:88px;display:flex;flex-direction:column;gap:4px;align-items:center"><svg aria-label="最高的柱" width="40" height="60" viewBox="0 0 40 60"><rect x="0" y="0" width="40" height="60" fill="#4A5568"/></svg><p style="font-size:24px;color:#4A5568">128×</p></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:row;gap:16px">
+<div style="width:235px;display:flex;flex-direction:column;gap:6px;background:#EEF2F6;border-radius:12px;padding:16px">
+<div style="display:flex;flex-direction:row;gap:8px;align-items:center"><x-icon name="Database" style="width:28px;height:28px;color:#2F6DB5"></x-icon><p style="font-size:24px;font-weight:700;color:#2F6DB5">給方法</p></div>
+<p style="font-size:24px;line-height:1.35">SNV 計數</p>
+<p style="font-size:24px;line-height:1.35">拷貝數片段</p>
+<p style="font-size:24px;line-height:1.35">purity</p>
+</div>
+<div style="width:235px;display:flex;flex-direction:column;gap:6px;background:#EEF2F6;border-radius:12px;padding:16px">
+<div style="display:flex;flex-direction:row;gap:8px;align-items:center"><x-icon name="Lock" style="width:28px;height:28px;color:#C96A1B"></x-icon><p style="font-size:24px;font-weight:700;color:#C96A1B">藏起來的真值</p></div>
+<p style="font-size:24px;line-height:1.35">樹</p>
+<p style="font-size:24px;line-height:1.35">SNV 的 clone</p>
+<p style="font-size:24px;line-height:1.35">CCF</p>
+</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-21 腫瘤演化樹研究進度</p>
+<p style="font-size:24px;color:#6B7480">8 / 8</p>
+</div>
+<aside>這頁看前人的建樹競賽 SMC-Het，怎麼把「樹建得準不準」拆清楚。結論是：它拆成三個子問題，照推理順序排。大家先看上面，輸入只有一個 bulk 樣本的 SNV 計數和拷貝數。左邊第一張卡問有幾群 clone、各占多少細胞。中間這張問每個 SNV 屬於哪一群。右邊這張問這些群怎麼接成樹。三題再細分成七個子題，分開和真值比分，所以看得出方法錯在哪一步。這是我們的解讀：前一步錯了，後一步通常跟著錯。再看最右邊的資料，全部是模擬。51 棵設計樹，25 棵照大型泛癌研究的腫瘤，16 棵照文獻，10 棵是故意考倒演算法的特殊情境。另外 5 個腫瘤各做 8 倍到 128 倍五種深度。資料是在公開的標準正常人樣本 HG002 的 300 倍短讀上植入突變做出來的。BAM 要申請，突變清單和真值要註冊帳號下載。PhyClone 不在受測方法裡，我們可以補上它的基線。</aside>
+</section>

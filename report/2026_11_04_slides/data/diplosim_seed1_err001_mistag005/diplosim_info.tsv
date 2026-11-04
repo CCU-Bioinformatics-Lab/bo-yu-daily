@@ -1,0 +1,36 @@
+parameter	value
+patient_name	diplosim
+n_clones	3
+n_snv	450
+prop_truncal_snvs	0.5
+prop_pos_gained	0.5
+prop_pos_lost	0.3
+prop_gained_truncal	1.0
+prop_lost_truncal	1.0
+prop_pos_second_cna	0.0
+gain_events	gain_A,gain_B,gain_both
+loss_events	loss_B,cnloh_B
+prop_mutloss_positions	0.0
+mutloss_truncal	False
+constant_multiplicity	True
+clonal_wgd	False
+subclonal_wgd	False
+n_subclonal_wgd	1
+minimum_branch_length	1
+coverage	53.0
+depth_dispersion	None
+min_tumour_purity	0.9
+max_tumour_purity	0.9
+fract_noise	0.0
+n_noise_clones	0
+prop_snv_on_b	0.5
+prop_tagged	0.8
+tag_concentration	None
+mistag_rate	0.05
+mistag_concentration	None
+base_error	0.01
+random_seed	1
+purity	0.9
+prop_mut_lost	0.0
+noise_clones	
+simulation_warnings	

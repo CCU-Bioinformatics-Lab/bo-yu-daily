@@ -1,0 +1,15 @@
+sheet	program	rows	json_match	table_match	max_abs_dV	max_abs_dAD
+S2 TSSB-Low	PhyClone	500	500	500	1.55e-15	3.33e-16
+S3 TSSB-High	PhyClone	400	400	400	3.86e-14	2.22e-16
+S4 FS-CRP Loss	PhyClone	300	300	300	4.44e-16	2.22e-16
+S4 FS-CRP Loss	PhyClone-N	300	300	300	4.44e-16	2.22e-16
+S5 Pairtree	PhyClone	576	576	576	2e-15	2.22e-16
+S6 CONIPHER No-Noise	PhyClone	150	150	150	1.55e-15	2.22e-16
+S7 CONIPHER Noise	PhyClone	150	150	150	8.88e-16	1.67e-16
+S8 HGSOC WGS, p2	PhyClone	1	1	1	0	0
+S9 HGSOC WGS + Targeted, p2	PhyClone	1	1	1	0	0
+S10 HGSOC WGS, p3	PhyClone	1	0	0	0	0.0312
+S11 HGSOC WGS + Targeted, p3	PhyClone	1	0	0	0	0.0362
+S12 HGSOC WGS, p9	PhyClone	1	1	1	2.22e-16	1.11e-16
+S13 HGSOC WGS + Targeted, p9	PhyClone	1	1	1	0	0
+S14 Copy Number Error	PhyClone	450	450	450	1.44e-15	2.22e-16

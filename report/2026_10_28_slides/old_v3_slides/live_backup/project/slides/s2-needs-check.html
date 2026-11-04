@@ -1,0 +1,70 @@
+<section id="s2-needs-check" style="background:#EEF2F6;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">2 · 能不能直接用</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">對照我們的五項需求，PhyClone 模擬只有真值樹</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<table style="font-size:26px;color:#1F2A37;width:1664px;border-collapse:collapse;background:#FDFDFB;border:1px solid #D9DDE3">
+<tr style="background:#E3E8EF">
+<th style="width:22%;text-align:left;padding:8px 16px;line-height:1.4">需求</th>
+<th style="width:16%;text-align:center;padding:8px 16px;line-height:1.4">PhyClone 模擬器</th>
+<th style="width:62%;text-align:left;padding:8px 16px;line-height:1.4">原因</th>
+</tr>
+<tr style="border-top:1px solid #D9DDE3">
+<td style="padding:8px 16px;line-height:1.4;font-weight:700">long read</td>
+<td style="padding:8px 16px;line-height:1.4;text-align:center;font-weight:700;color:#B4442F;background:#F5E3DF">無</td>
+<td style="padding:8px 16px;line-height:1.4">不產生 read</td>
+</tr>
+<tr style="border-top:1px solid #D9DDE3">
+<td style="padding:8px 16px;line-height:1.4;font-weight:700">真值樹</td>
+<td style="padding:8px 16px;line-height:1.4;text-align:center;font-weight:700;color:#2E7D4F;background:#E3F0E8">有</td>
+<td style="padding:8px 16px;line-height:1.4">樹與 CCF 都存下來</td>
+</tr>
+<tr style="border-top:1px solid #D9DDE3">
+<td style="padding:8px 16px;line-height:1.4;font-weight:700">HP</td>
+<td style="padding:8px 16px;line-height:1.4;text-align:center;font-weight:700;color:#B4442F;background:#F5E3DF">無</td>
+<td style="padding:8px 16px;line-height:1.4">沒有父親和母親版本不一樣的位點（germline SNP）；較多／較少那邊每個位點各自決定，不對應固定的一份染色體</td>
+</tr>
+<tr style="border-top:1px solid #D9DDE3">
+<td style="padding:8px 16px;line-height:1.4;font-weight:700">同 read 共現</td>
+<td style="padding:8px 16px;line-height:1.4;text-align:center;font-weight:700;color:#B4442F;background:#F5E3DF">無</td>
+<td style="padding:8px 16px;line-height:1.4">每個位點各自隨機亂數產生；沒有真實位置</td>
+</tr>
+<tr style="border-top:1px solid #D9DDE3">
+<td style="padding:8px 16px;line-height:1.4;font-weight:700">拷貝數跟著 clone 走</td>
+<td style="padding:8px 16px;line-height:1.4;text-align:center;font-weight:700;color:#B4442F;background:#F5E3DF">無</td>
+<td style="padding:8px 16px;line-height:1.4">每個 SNV 各自隨機亂數產生，不成段</td>
+</tr>
+</table>
+<div style="display:flex;gap:40px;align-items:stretch">
+<div style="width:700px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px 32px;display:flex;gap:32px;align-items:center">
+<div style="display:flex;gap:10px">
+<div style="width:56px;height:56px;border:3px solid #2E7D4F;background:#E3F0E8;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#2E7D4F">有</p></div>
+<div style="width:56px;height:56px;border:3px solid #B4442F;background:#F5E3DF;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#B4442F">無</p></div>
+<div style="width:56px;height:56px;border:3px solid #B4442F;background:#F5E3DF;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#B4442F">無</p></div>
+<div style="width:56px;height:56px;border:3px solid #B4442F;background:#F5E3DF;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#B4442F">無</p></div>
+<div style="width:56px;height:56px;border:3px solid #B4442F;background:#F5E3DF;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#B4442F">無</p></div>
+</div>
+<p style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37">五項只有一項符合。<br>不能直接用。</p>
+</div>
+<div style="flex:1;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px 32px">
+<div style="position:relative;width:850px;height:140px">
+<p style="position:absolute;left:0;top:3px;width:100px;font-size:24px;font-weight:700;color:#4A5568">第一份</p>
+<p style="position:absolute;left:0;top:63px;width:100px;font-size:24px;font-weight:700;color:#4A5568">第二份</p>
+<div style="position:absolute;left:110px;top:0;width:740px;height:40px;background:#D5DAE0;border-radius:8px"></div>
+<div style="position:absolute;left:110px;top:60px;width:740px;height:40px;background:#D5DAE0;border-radius:8px"></div>
+<div style="position:absolute;left:200px;top:0;width:96px;height:40px;background:#4A5568;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#FDFDFB">較多</p></div>
+<div style="position:absolute;left:432px;top:60px;width:96px;height:40px;background:#4A5568;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#FDFDFB">較多</p></div>
+<div style="position:absolute;left:664px;top:0;width:96px;height:40px;background:#4A5568;border-radius:8px;display:flex;align-items:center;justify-content:center"><p style="font-size:24px;font-weight:700;color:#FDFDFB">較多</p></div>
+<p style="position:absolute;left:188px;top:106px;width:120px;font-size:24px;color:#4A5568;text-align:center">位點 1</p>
+<p style="position:absolute;left:420px;top:106px;width:120px;font-size:24px;color:#4A5568;text-align:center">位點 2</p>
+<p style="position:absolute;left:652px;top:106px;width:120px;font-size:24px;color:#4A5568;text-align:center">位點 3</p>
+<p style="position:absolute;left:0;top:104px;width:80px;font-size:24px;color:#4A5568;border:2px solid #9AA3AE;border-radius:8px;padding:0 12px;text-align:center">示意</p>
+</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-28 PhyClone 模擬資料生成流程</p>
+<p style="font-size:24px;color:#6B7480">10 / 13</p>
+</div>
+<aside>結論先講：拿我們的五項需求來對，PhyClone 模擬只符合真值樹這一項，所以不能直接用。先說明需求：我們只用 long read 模擬資料。表格左欄五項依序是：read 要長到跨過多個位點；要有答案樹；每條 read 要有 HP；一條 read 上要能同時看到兩個突變，也就是同 read 共現；拷貝數要跟著 clone 走，因為拷貝數改變是某個 clone 的事件，會遺傳給後代。大家看表格中間這欄，只有綠色的真值樹是有，因為樹和 CCF 都存下來了。其他四個紅色的無，每一個我們都在程式原碼裡找到原因。long read：程式根本不產生 read。HP：這裡先解釋一個詞，父親和母親版本不一樣的位點，也就是 germline SNP，是正常細胞就有的差異位點，read 靠它分到 HP1 或 HP2，而程式完全沒有產生這種位點。老師可能會問：第四步不是已經分了較多和較少兩邊嗎？請看右下這張圖。有分，但每個位點各自重分，所以位點 1 和位點 2 的較多那邊，不一定是同一份染色體。同 read 共現：每個位點各自隨機亂數產生，也沒有真實位置。拷貝數：每個 SNV 各自隨機亂數產生，不成段，同一個 clone 的突變也不共用。不能直接用，那有哪幾條路可以走？</aside>
+</section>

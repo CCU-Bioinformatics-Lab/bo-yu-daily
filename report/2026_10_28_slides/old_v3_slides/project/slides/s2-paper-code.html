@@ -1,0 +1,66 @@
+<section id="s2-paper-code" style="background:#EEF2F6;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">2 · 能不能直接用</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">程式和論文有三處不同，一處論文沒寫</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<table style="font-size:26px;color:#1F2A37;width:1664px;border-collapse:collapse;background:#FDFDFB;border:1px solid #D9DDE3">
+<tr style="background:#E3E8EF">
+<th style="width:18%;text-align:left;padding:8px 16px;line-height:1.4">項目</th>
+<th style="width:41%;text-align:left;padding:8px 16px;line-height:1.4">論文寫的</th>
+<th style="width:41%;text-align:left;padding:8px 16px;line-height:1.4">程式做的</th>
+</tr>
+<tr style="border-top:1px solid #D9DDE3">
+<td style="padding:8px 16px;line-height:1.4;font-weight:700">樹形</td>
+<td style="padding:8px 16px;line-height:1.4"><b><span style="color:#4A5568">模擬設計：</span></b>所有樹形機率相同</td>
+<td style="padding:8px 16px;line-height:1.4">parent 不小於 child；root 是最大群</td>
+</tr>
+<tr style="border-top:1px solid #D9DDE3">
+<td style="padding:8px 16px;line-height:1.4;font-weight:700">樹根</td>
+<td style="padding:8px 16px;line-height:1.4"><b><span style="color:#4A5568">模擬設計：</span></b>多棵樹接到空的共同 root</td>
+<td style="padding:8px 16px;line-height:1.4">一棵樹；root 本身帶突變</td>
+</tr>
+<tr style="border-top:1px solid #D9DDE3">
+<td style="padding:8px 16px;line-height:1.4;font-weight:700">拷貝數</td>
+<td style="padding:8px 16px;line-height:1.4;background:repeating-linear-gradient(45deg,#E3E8EF 0px,#E3E8EF 8px,#FDFDFB 8px,#FDFDFB 16px)"><b><span style="color:#4A5568">模擬設計：</span></b>沒寫怎麼產生</td>
+<td style="padding:8px 16px;line-height:1.4">每個 SNV 各自隨機亂數產生，不成段</td>
+</tr>
+<tr style="border-top:3px solid #4A5568">
+<td style="padding:8px 16px;line-height:1.4;font-weight:700">帶突變份數與 read 數產生方式</td>
+<td style="padding:8px 16px;line-height:1.4"><b><span style="color:#1F2A37">建樹模型：</span></b>1 到較多那邊的任何份數；read 數分布較寬（補充 S1.2、主文 §2.4.2）</td>
+<td style="padding:8px 16px;line-height:1.4">只取 1、較多或較少那邊的份數；read 數用二項分布隨機亂數產生</td>
+</tr>
+</table>
+<div style="display:flex;gap:40px;align-items:stretch">
+<div style="width:600px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:24px 32px;display:flex;gap:24px;align-items:center">
+<div style="position:relative;width:200px;height:156px">
+<svg aria-label="大群在上、小群在下的示意樹" width="200" height="120" viewBox="0 0 200 120" style="position:absolute;left:0;top:0;width:200px;height:120px">
+<line x1="100" y1="54" x2="40" y2="96" stroke="#1F2A37" stroke-width="3"/>
+<line x1="100" y1="56" x2="100" y2="96" stroke="#1F2A37" stroke-width="3"/>
+<line x1="100" y1="54" x2="160" y2="98" stroke="#1F2A37" stroke-width="3"/>
+<circle cx="100" cy="30" r="26" fill="#FDFDFB" stroke="#1F2A37" stroke-width="3"/>
+<circle cx="40" cy="104" r="13" fill="#FDFDFB" stroke="#1F2A37" stroke-width="3"/>
+<circle cx="100" cy="106" r="11" fill="#FDFDFB" stroke="#1F2A37" stroke-width="3"/>
+<circle cx="160" cy="108" r="9" fill="#FDFDFB" stroke="#1F2A37" stroke-width="3"/>
+</svg>
+<p style="position:absolute;left:0;top:0;width:60px;font-size:24px;color:#6B7480">示意</p>
+<p style="position:absolute;left:134px;top:10px;width:66px;font-size:24px;font-weight:700;color:#1F2A37">大群</p>
+<p style="position:absolute;left:0;top:122px;width:200px;font-size:24px;font-weight:700;color:#1F2A37;text-align:center">小群</p>
+</div>
+<p style="font-size:30px;font-weight:700;line-height:1.4;color:#1F2A37;width:280px">用作者的模擬，會偏向「大群在上面」的樹。</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:700;color:#4A5568">沒有公開的程式</p>
+<div style="display:flex;gap:16px;flex:1">
+<div style="flex:1;border:1px solid #D9DDE3;border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#E3E8EF 0px,#E3E8EF 8px,#FDFDFB 8px,#FDFDFB 16px)"><p style="font-size:30px;font-weight:700;color:#1F2A37;text-align:center">突變丟失</p></div>
+<div style="flex:1;border:1px solid #D9DDE3;border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#E3E8EF 0px,#E3E8EF 8px,#FDFDFB 8px,#FDFDFB 16px)"><p style="font-size:30px;font-weight:700;color:#1F2A37;text-align:center">另一種樹生成法</p></div>
+<div style="flex:1;border:1px solid #D9DDE3;border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#E3E8EF 0px,#E3E8EF 8px,#FDFDFB 8px,#FDFDFB 16px)"><p style="font-size:30px;font-weight:700;color:#1F2A37;text-align:center">拷貝數擾動</p></div>
+<div style="flex:1;border:1px solid #D9DDE3;border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,#E3E8EF 0px,#E3E8EF 8px,#FDFDFB 8px,#FDFDFB 16px)"><p style="font-size:30px;font-weight:700;color:#1F2A37;text-align:center">寫成檔案</p></div>
+</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-28 PhyClone 模擬資料生成流程</p>
+<p style="font-size:24px;color:#6B7480">9 / 13</p>
+</div>
+<aside>這頁的結論是：程式和論文有三處不同，一處論文沒寫；另外有一部分程式沒有公開。大家看上面的表，中間是論文寫的，右邊是程式實際做的。第一列樹形：論文說所有樹形機率相同，程式做出來卻是 parent 不小於 child，root 是最大群。所以用作者的模擬，會偏向左下這種大群在上面的樹。這種偏向可能讓方法在判斷祖先關係時看起來比較準，這是我們的推論。第二列樹根，論文和程式也不同。第三列拷貝數不算不同，是論文沒寫怎麼產生；所以左邊那格畫斜線底。最後一列是第三處不同。要注意，左邊標的是論文的建樹模型，不是模擬設計。意思是生成的資料比建樹模型假設的更單純；較寬的分布，是說建樹模型容許 read 數比二項分布更分散。再看右下斜線底的四張卡：我們在 PhyClone repo、論文補充文件和作者 benchmark 的資料目錄裡，都沒找到這四段程式。沒有公開，代表作者 benchmark 的部分資料我們無法重做。接著拿我們的需求來對。</aside>
+</section>

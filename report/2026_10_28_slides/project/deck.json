@@ -1,0 +1,52 @@
+{
+  "v": 4,
+  "attachments": {},
+  "createdOnFiles": {
+    "at": "2026-10-21T16:00:00+08:00",
+    "v": 1
+  },
+  "designSystems": [],
+  "faces": {
+    "jetbrains-mono": {
+      "family": "JetBrains Mono",
+      "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+    },
+    "noto-sans-tc": {
+      "family": "Noto Sans TC",
+      "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"
+    },
+    "noto-serif-tc": {
+      "family": "Noto Serif TC",
+      "href": "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap"
+    }
+  },
+  "lists": "css",
+  "order": [
+    "outline",
+    "s1-overview",
+    "s1-params",
+    "s1-tree",
+    "s1-cn",
+    "s1-counts",
+    "s1-output",
+    "s2-architecture",
+    "s2-hg008-data",
+    "s2-hp-split",
+    "s2-hp-gain"
+  ],
+  "sections": {
+    "s0": {
+      "description": "這週大綱與上次的問題：模擬資料怎麼產生",
+      "start": "outline"
+    },
+    "s1": {
+      "description": "CONIPHER 生成流程：五步（第 1 步定參數起），用 5 個節點的示意樹貫穿",
+      "start": "s1-overview"
+    },
+    "s2": {
+      "description": "long read 版：沿用 CONIPHER 五步的架構圖，再用 HG008 真實 clone 樹佐證新事件",
+      "start": "s2-architecture"
+    }
+  },
+  "title": "2026-10-28 CONIPHER 模擬資料生成流程"
+}

@@ -1,0 +1,95 @@
+<section id="summary" style="background:#1F2A37;color:#F7F6F2;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#F7F6F2">總結</h2>
+<div style="flex:1;display:flex;gap:40px">
+<div style="width:860px;display:flex;flex-direction:column;justify-content:center">
+<div style="border:2px solid #BFD0E0;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;color:#BFD0E0">老師的問題</p>
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;color:#F7F6F2">模擬資料怎麼產生？→ 五步</h3>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex"><div style="background:#2F6DB5;border-radius:8px;padding:2px 12px"><p style="font-size:24px;color:#F7F6F2">產生樹</p></div></div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+<div style="border:3px solid #2F6DB5;border-radius:10px;padding:10px 14px"><p style="font-size:30px;color:#F7F6F2">SNV 分群</p></div>
+<x-shape kind="arrow-right" style="background:#BFD0E0;width:32px;height:16px"></x-shape>
+<div style="border:3px solid #2F6DB5;border-radius:10px;padding:10px 14px"><p style="font-size:30px;color:#F7F6F2">形成樹拓樸</p></div>
+<x-shape kind="arrow-right" style="background:#BFD0E0;width:32px;height:16px"></x-shape>
+<div style="border:3px solid #2F6DB5;border-radius:10px;padding:10px 14px"><p style="font-size:30px;color:#F7F6F2">填每個 clone 的 CCF</p></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex"><div style="background:#C96A1B;border-radius:8px;padding:2px 12px"><p style="font-size:24px;color:#F7F6F2">產生 read 數</p></div></div>
+<div style="display:flex;gap:16px;align-items:center">
+<div style="border:3px solid #C96A1B;border-radius:10px;padding:10px 18px"><p style="font-size:30px;color:#F7F6F2">拷貝數</p></div>
+<x-shape kind="arrow-right" style="background:#BFD0E0;width:40px;height:20px"></x-shape>
+<div style="border:3px solid #C96A1B;border-radius:10px;padding:10px 18px"><p style="font-size:30px;color:#F7F6F2">隨機亂數產生 read 數</p></div>
+</div>
+</div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<div style="border:2px solid #F7F6F2;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<x-icon name="Play" style="width:40px;height:40px;color:#F7F6F2"></x-icon>
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;color:#F7F6F2">下一步</h3>
+</div>
+<p style="font-size:30px;color:#F7F6F2">先寫 C（計數層生成器），產生一棵小樹的 HP 模擬資料。</p>
+<div style="position:relative;width:480px;height:84px">
+<svg aria-label="小樹產生 HP1 與 HP2 的 read 計數" width="480" height="84" viewBox="0 0 480 84">
+<line x1="40" y1="16" x2="16" y2="66" stroke="#F7F6F2" stroke-width="3"/>
+<line x1="40" y1="16" x2="64" y2="66" stroke="#F7F6F2" stroke-width="3"/>
+<circle cx="40" cy="16" r="12" fill="#1F2A37" stroke="#F7F6F2" stroke-width="3"/>
+<circle cx="16" cy="66" r="10" fill="#1F2A37" stroke="#F7F6F2" stroke-width="3"/>
+<circle cx="64" cy="66" r="10" fill="#1F2A37" stroke="#F7F6F2" stroke-width="3"/>
+<line x1="96" y1="42" x2="140" y2="42" stroke="#BFD0E0" stroke-width="4"/>
+<polygon points="152,42 138,34 138,50" fill="#BFD0E0"/>
+<rect x="240" y="20" width="230" height="10" rx="5" fill="#2C5F9E"/>
+<rect x="240" y="56" width="230" height="10" rx="5" fill="#D9772B"/>
+<rect x="250" y="4" width="90" height="8" rx="4" fill="#2C5F9E"/>
+<rect x="360" y="4" width="100" height="8" rx="4" fill="#2C5F9E"/>
+<rect x="270" y="72" width="100" height="8" rx="4" fill="#D9772B"/>
+<circle cx="300" cy="25" r="7" fill="#D23A2E"/>
+</svg>
+<div style="position:absolute;left:164px;top:8px;width:64px;background:#2C5F9E;border-radius:6px"><p style="font-size:24px;font-weight:700;color:#FFFFFF;text-align:center">HP1</p></div>
+<div style="position:absolute;left:164px;top:44px;width:64px;background:#D9772B;border-radius:6px"><p style="font-size:24px;font-weight:700;color:#FFFFFF;text-align:center">HP2</p></div>
+</div>
+</div>
+<div style="border:2px solid #BFD0E0;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:16px;align-items:center">
+<x-icon name="Users" style="width:40px;height:40px;color:#BFD0E0"></x-icon>
+<h3 style="font-family:'Noto Serif TC', Georgia, serif;font-size:40px;font-weight:700;color:#F7F6F2">請老師決定</h3>
+</div>
+<p style="font-size:30px;color:#F7F6F2">樹形偏向要修正，還是保留以便和作者資料比較？</p>
+<div style="display:flex;gap:32px;align-items:center">
+<p style="width:200px;font-size:30px;font-weight:700;color:#F7F6F2">我們的提案：兩套都產生。</p>
+<div style="display:flex;flex-direction:column;gap:4px;align-items:center">
+<svg aria-label="原版樹：root 是最大群" width="110" height="76" viewBox="0 0 110 76">
+<line x1="55" y1="22" x2="22" y2="62" stroke="#F7F6F2" stroke-width="3"/>
+<line x1="55" y1="22" x2="88" y2="62" stroke="#F7F6F2" stroke-width="3"/>
+<circle cx="55" cy="22" r="18" fill="#1F2A37" stroke="#F7F6F2" stroke-width="3"/>
+<circle cx="22" cy="62" r="9" fill="#1F2A37" stroke="#F7F6F2" stroke-width="3"/>
+<circle cx="88" cy="62" r="7" fill="#1F2A37" stroke="#F7F6F2" stroke-width="3"/>
+</svg>
+<p style="font-size:24px;color:#BFD0E0">原版</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px;align-items:center">
+<svg aria-label="修正版樹" width="110" height="76" viewBox="0 0 110 76">
+<line x1="55" y1="14" x2="24" y2="56" stroke="#F7F6F2" stroke-width="3"/>
+<line x1="55" y1="14" x2="88" y2="62" stroke="#F7F6F2" stroke-width="3"/>
+<circle cx="55" cy="14" r="9" fill="#1F2A37" stroke="#F7F6F2" stroke-width="3"/>
+<circle cx="24" cy="56" r="17" fill="#1F2A37" stroke="#F7F6F2" stroke-width="3"/>
+<circle cx="88" cy="62" r="8" fill="#1F2A37" stroke="#F7F6F2" stroke-width="3"/>
+</svg>
+<p style="font-size:24px;color:#BFD0E0">修正版</p>
+</div>
+<p style="font-size:24px;color:#BFD0E0">示意</p>
+</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#BFD0E0">2026-10-28 PhyClone 模擬資料生成流程</p>
+<p style="font-size:24px;color:#BFD0E0">13 / 13</p>
+</div>
+<aside>最後總結。先看左邊這張卡，就是上次老師問的問題的答案：PhyClone 的模擬分五步，藍框三步產生樹，橘框兩步產生 read 數。再看右上這張：下一步，我們先寫 C，也就是計數層生成器，用一棵小樹產生帶 HP 的模擬資料。它也是之後植入真實 read 那條路的藍圖。最後右下這張，要請老師決定：第二步的樹形偏向要修正，還是保留，方便和作者資料比較？我們的提案是兩套都產生。下面兩棵小樹是示意：左邊原版，右邊修正版。原版可以直接和作者資料對照。</aside>
+</section>

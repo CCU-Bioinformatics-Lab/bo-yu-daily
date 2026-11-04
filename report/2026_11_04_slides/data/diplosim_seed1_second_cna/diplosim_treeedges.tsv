@@ -1,0 +1,4 @@
+Parent	Child	CNA_gains	CNA_losses	SNVs	WGD	Truncal
+5	1	0	0	63	0	No
+4	5	0	0	162	0	No
+6	4	412	281	225	0	Yes

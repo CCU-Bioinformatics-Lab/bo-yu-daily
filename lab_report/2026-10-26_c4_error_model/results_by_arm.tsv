@@ -1,0 +1,4 @@
+arm	wrong_gt_0.5	c3_under_c4_max	c1c2_separated	full_4clone_gt_0.5	segC_compat_mean
+e0.01	0	0.001	9	2	0.728
+err0.004	1	0.0	11	4	0.856
+err0.03	3	0.001	6	0	0.79

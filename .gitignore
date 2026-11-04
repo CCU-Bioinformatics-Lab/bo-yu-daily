@@ -1,9 +1,16 @@
 __pycache__/
+*.pyc
 .data/_private/
 daily/.data/_private/
 .worklog_scan/
-lab_report/**/trace.h5
+
+# Large simulation / run outputs: regenerable, too big for the repo.
+# (lab_report/, report/, research/ are tracked; only these file types are kept out.)
+lab_report/**/*.h5
+lab_report/**/*.gz
+lab_report/**/*.nwk
+lab_report/**/*.log
+
+# Published papers and their supplements: not ours to redistribute in a public repo.
 research/**/*.pdf
-/lab_report/
-/report/
-/research/
+research/literature/**/supplementary_tables.xlsx

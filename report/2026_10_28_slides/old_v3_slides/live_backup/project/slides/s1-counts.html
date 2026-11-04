@@ -1,0 +1,85 @@
+<section id="s1-counts" style="background:#F7F6F2;color:#1F2A37;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:700;color:#2F6DB5;letter-spacing:2px">1 · 程式怎麼產生資料</p>
+<h2 style="font-family:'Noto Serif TC', Georgia, serif;font-size:64px;font-weight:700;line-height:1.15;color:#1F2A37">第五步：算出突變 read 比例，再隨機亂數產生 read 數</h2>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;gap:40px">
+<div style="width:820px;background:#FDFDFB;border:1px solid #D9DDE3;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:30px;font-weight:700;color:#1F2A37">一個位點的細胞組成</p>
+<p style="font-size:24px;color:#4A5568;border:2px solid #9AA3AE;border-radius:8px;padding:0 12px">示意</p>
+</div>
+<div style="display:flex;width:754px">
+<p style="width:200px;font-size:24px;color:#4A5568">正常</p>
+<p style="width:380px;font-size:24px;color:#4A5568">沒帶突變的腫瘤</p>
+<p style="width:174px;font-size:24px;color:#D23A2E">帶突變</p>
+</div>
+<div style="display:flex;width:754px;height:48px">
+<div style="width:200px;height:48px;background:#1F2A37"></div>
+<div style="width:380px;height:48px;background:#9AA3AE"></div>
+<div style="width:174px;height:48px;background:#D23A2E"></div>
+</div>
+<div style="height:8px"></div>
+<div style="display:flex;width:754px">
+<div style="width:251px;display:flex;flex-direction:column;align-items:center;gap:8px">
+<div style="width:124px;height:120px;border:2px dashed #9AA3AE;border-radius:20px;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+<div style="width:84px;height:12px;background:#9AA3AE;border-radius:6px"></div>
+<div style="width:84px;height:6px"></div>
+<div style="width:84px;height:12px;background:#9AA3AE;border-radius:6px"></div>
+</div>
+<p style="font-size:24px;color:#4A5568">正常細胞</p>
+<p style="font-size:24px;color:#1F2A37;font-weight:700;font-family:'JetBrains Mono', 'Courier New', monospace">1−purity</p>
+</div>
+<div style="width:251px;display:flex;flex-direction:column;align-items:center;gap:8px">
+<div style="width:124px;height:120px;border:2px solid #4A5568;border-radius:20px;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+<div style="width:84px;height:12px;background:#9AA3AE;border-radius:6px"></div>
+<div style="width:84px;height:12px;background:#9AA3AE;border-radius:6px"></div>
+<div style="width:84px;height:12px;background:#9AA3AE;border-radius:6px"></div>
+<div style="width:84px;height:6px"></div>
+<div style="width:84px;height:12px;background:#9AA3AE;border-radius:6px"></div>
+</div>
+<p style="font-size:24px;color:#4A5568">沒帶突變的腫瘤細胞</p>
+<p style="font-size:24px;color:#1F2A37;font-weight:700;font-family:'JetBrains Mono', 'Courier New', monospace">purity×(1−CCF)</p>
+</div>
+<div style="width:251px;display:flex;flex-direction:column;align-items:center;gap:8px">
+<div style="width:124px;height:120px;border:2px solid #4A5568;border-radius:20px;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+<div style="width:84px;height:12px;background:#D23A2E;border-radius:6px"></div>
+<div style="width:84px;height:12px;background:#9AA3AE;border-radius:6px"></div>
+<div style="width:84px;height:12px;background:#9AA3AE;border-radius:6px"></div>
+<div style="width:84px;height:6px"></div>
+<div style="width:84px;height:12px;background:#9AA3AE;border-radius:6px"></div>
+</div>
+<p style="font-size:24px;color:#4A5568">帶突變的腫瘤細胞</p>
+<p style="font-size:24px;color:#1F2A37;font-weight:700;font-family:'JetBrains Mono', 'Courier New', monospace">purity×CCF</p>
+</div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<div style="background:#FDFDFB;border:2px solid #C96A1B;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;font-weight:700;color:#1F2A37">帶突變 read 比例</p>
+<p style="font-size:30px;font-family:'JetBrains Mono', 'Courier New', monospace;color:#1F2A37">＝ 帶突變份數 ÷ 全部份數</p>
+<p style="font-size:24px;color:#4A5568">每群依細胞比例加權；沒有突變份的細胞群以 <span style="color:#1F2A37">0.001</span> 計</p>
+</div>
+<div style="background:#FDFDFB;border:2px solid #C96A1B;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:30px;color:#1F2A37">突變 read 比例 → 隨機亂數產生 1000 條</p>
+<p style="font-size:24px;color:#4A5568;border:2px solid #9AA3AE;border-radius:8px;padding:0 12px">示意</p>
+</div>
+<div style="display:flex;width:640px;height:40px">
+<div style="width:120px;height:40px;background:#D23A2E"></div>
+<div style="width:520px;height:40px;background:#9AA3AE"></div>
+</div>
+<div style="display:flex;justify-content:space-between;width:640px">
+<p style="font-size:24px;color:#D23A2E;font-weight:700">帶突變 k 條</p>
+<p style="font-size:24px;color:#4A5568;font-weight:700">沒帶突變 1000−k 條</p>
+</div>
+</div>
+</div>
+</div>
+<p style="font-size:30px;font-weight:700;color:#1F2A37">每個位點各自隨機亂數產生 read 數。程式不產生 read 本身。</p>
+</div>
+<div style="position:absolute;left:128px;right:128px;bottom:64px;display:flex;justify-content:space-between">
+<p style="font-size:24px;color:#6B7480">2026-10-28 PhyClone 模擬資料生成流程</p>
+<p style="font-size:24px;color:#6B7480">7 / 13</p>
+</div>
+<aside>結論是：程式先算出帶突變 read 的比例，再為每個位點各自隨機亂數產生 read 數。左邊長條是一個位點的細胞組成，是示意。purity 是樣本中腫瘤細胞的比例。深色是正常細胞，佔 1 減 purity。灰色是沒帶突變的腫瘤細胞，佔 purity 乘 1 減 CCF。紅色是帶突變的腫瘤細胞，佔 purity 乘 CCF。下面是三群的份數，沿用上一頁的圖示。右上是公式：帶突變份數除以全部份數，每群要依細胞比例加權。兩群份數相同時，不加權也剛好對；兩群份數不同時，不加權就會算錯。0.001 是定序錯誤率，只套在完全沒有突變份的細胞群；反過來，每份都帶突變的細胞群以 1 減 0.001 計，但作者資料不會發生。產生方式是用二項分布隨機亂數產生，像擲 1000 次不公平的硬幣。右下是示意：得到突變 read 比例後隨機亂數產生 1000 條，k 條帶突變，其餘沒帶突變。我們用作者資料手算過，公式算出的比例和資料檔記錄的相同。重點是每個位點分開隨機亂數產生，所以位點之間沒有同一條 read 的關係。另外，purity 1 不合實際，真實腫瘤樣本都混有正常細胞。</aside>
+</section>

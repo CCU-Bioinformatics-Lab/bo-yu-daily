@@ -1,0 +1,8 @@
+arm	wrong_gt_0.5	c3_under_c4_max	c1c2_separated	full_4clone	segC_compat
+e0.01	0.0	0.001	9.0	2.0	0.728
+err0.004	1.0	0.0	11.0	4.0	0.856
+err0.004_hpu	1.0	0.0	10.0	3.0	0.85
+err0.03	3.0	0.001	6.0	0.0	0.79
+err0.03_hpu	5.0	0.18	4.0	0.0	0.729
+calibrated (no hpu)	1.0	0.0	10.0	3.0	0.943
+calibrated + hpu	2.0	0.001	9.0	2.0	0.936

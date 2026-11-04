@@ -1,0 +1,16 @@
+== truncal 0.5
+est. multiplicity (round(VAF*total))	ASCAT	diplosim
+0	0.030	0.192
+1	0.527	0.631
+2	0.360	0.176
+3	0.063	0.001
+4	0.014	0.000
+5	0.003	0.000
+== truncal 0.9
+est. multiplicity (round(VAF*total))	ASCAT	diplosim
+0	0.030	0.036
+1	0.527	0.701
+2	0.360	0.262
+3	0.063	0.001
+4	0.014	0.000
+5	0.003	0.000

@@ -1,0 +1,26 @@
+<section id="outline" style="background:#f7f6f2">
+  <div id="e1-f0fs8t" style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-10-28 CONIPHER 模擬資料生成流程</p>
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">1 / 11</p>
+  </div>
+  <p id="pc72bd12a5426r0-fa23af90" style="position:absolute; top:128px; left:128px; width:1664px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5">這週大綱</p>
+  <h2 id="pc72bd12a5426r1-fa23af90" style="position:absolute; top:202px; left:128px; width:1664px; font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">這週回答：CONIPHER 的模擬資料怎麼一步步產生？</h2>
+  <div id="pc72bd12a5426r2-fa23af90" style="position:absolute; top:315px; left:128px; width:1664px; height:605px; display:flex; flex-direction:column; gap:24px">
+    <div style="display:flex; flex-direction:row; gap:32px; align-items:center; padding:32px 40px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+      <h3 style="width:280px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:40px; font-weight:700; color:#1f2a37">生成流程</h3>
+      <p style="flex:1; font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; line-height:1.4; color:#1f2a37">五步：定參數、建樹、放事件、混合 clone、產生 read count</p>
+      <p style="width:160px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; text-align:right; color:#6b7480">第 2–6 頁</p>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:32px; align-items:center; padding:32px 40px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+      <h3 style="width:280px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:40px; font-weight:700; color:#1f2a37">輸出</h3>
+      <p style="flex:1; font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; line-height:1.4; color:#1f2a37">每個 SNV 一列 read count，加上真值樹與 SNV 所屬的 clone</p>
+      <p style="width:160px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; text-align:right; color:#6b7480">第 7 頁</p>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:32px; align-items:center; padding:32px 40px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+      <h3 style="width:280px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:40px; font-weight:700; color:#1f2a37">long read 版</h3>
+      <p style="flex:1; font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; line-height:1.4; color:#1f2a37">沿用五步骨架改成 long read 版，再用 HG008 佐證新事件</p>
+      <p style="width:160px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; text-align:right; color:#6b7480">第 8–11 頁</p>
+    </div>
+  </div>
+  <aside>這週要回答一個問題：CONIPHER 的模擬資料怎麼一步步產生。上次老師問模擬資料怎麼產生，今天用一個公開、能重現的生成器來回答，也就是 CONIPHER benchmark 用的生成器。它的程式公開，我們用記錄的種子重跑 150 份資料，輸出和原本的完全相同；但 coverage 沒有記錄，是我們搜尋出來的值。大綱分三段，從上往下講。第一段照程式的執行順序，走完生成流程的五步：定參數、建樹、放事件、混合 clone、產生 read count。第二段看程式最後交出哪些檔。第三段先用一張架構圖，說明怎麼沿用這五步改成 long read 版的模擬程式；再看我們的 long read 模擬樹，先介紹 HG008 的公開資料和推論出的真實 clone 樹，再看一件事：同一個 clone 的 SNV 會不會分在 HP1、HP2 兩條 haplotype，用 HG008 的真實 clone 樹對照我們的設計；最後看某條 HP 多一份時，SNV 份數怎麼跟著變。這些步驟是我自己讀生成程式整理的，不是只聽 AI 的說法。為了好講，全篇只用一位病人 SIM004 當例子，再用一棵只有 5 個節點的小樹走完全程。真實的模擬樹比這棵大很多，所以頁面上的例子都標「示意」，數字照程式的公式手算。真實產出的數字標「實際結果」，兩種不會混在一起。好，先看生成流程的全貌。</aside>
+</section>

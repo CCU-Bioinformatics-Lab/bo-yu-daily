@@ -1,0 +1,60 @@
+<section id="s1-output" style="display:flex; flex-direction:column; gap:40px; padding:128px 128px 160px; background:#f7f6f2">
+  <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5">1 · 生成流程</p>
+  <h2 style="font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">輸出：每個 SNV 一列 read count，加上真值樹與每個 SNV 所屬的 clone</h2>
+  <div style="display:flex; flex-direction:column; gap:16px; flex:1">
+    <div style="display:flex; flex-direction:row; gap:24px; flex:1">
+      <div style="width:1140px; display:flex; flex-direction:column; gap:16px; padding:20px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+        <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; font-weight:700; line-height:1.4; color:#1f2a37">給建樹工具的輸入</p>
+          <p style="padding:4px 16px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#4a5568; border:1px solid #d9dde3; border-radius:256px">示意</p>
+        </div>
+        <table style="width:1100px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; color:#1f2a37">
+          <tr style="background:#e3e8ef"><th style="padding:6px 8px">位置</th><th style="padding:6px 8px">alt</th><th style="padding:6px 8px">depth</th><th style="padding:6px 8px">爸份數</th><th style="padding:6px 8px">媽份數</th><th style="padding:6px 8px">purity</th></tr>
+          <tr><td style="padding:6px 8px; color:#d23a2e">SNV1</td><td style="padding:6px 8px">181</td><td style="padding:6px 8px">618</td><td style="padding:6px 8px">1</td><td style="padding:6px 8px">1</td><td style="padding:6px 8px">0.59</td></tr>
+          <tr><td style="padding:6px 8px; color:#d23a2e">SNV6</td><td style="padding:6px 8px">107</td><td style="padding:6px 8px">683</td><td style="padding:6px 8px">1.29</td><td style="padding:6px 8px">1</td><td style="padding:6px 8px">0.59</td></tr>
+          <tr><td style="padding:6px 8px; color:#d23a2e">SNV8</td><td style="padding:6px 8px">—</td><td style="padding:6px 8px">—</td><td style="padding:6px 8px">1.51</td><td style="padding:6px 8px">1</td><td style="padding:6px 8px">0.59</td></tr>
+          <tr><td style="padding:6px 8px; color:#d23a2e">SNV10</td><td style="padding:6px 8px">—</td><td style="padding:6px 8px">—</td><td style="padding:6px 8px">1</td><td style="padding:6px 8px">1</td><td style="padding:6px 8px">0.59</td></tr>
+        </table>
+      </div>
+      <div style="width:500px; display:flex; flex-direction:column; gap:12px; padding:20px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+        <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; font-weight:700; line-height:1.4; color:#1f2a37">藏起來的真值</p>
+          <p style="padding:4px 16px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#4a5568; border:1px solid #d9dde3; border-radius:256px">示意</p>
+        </div>
+        <div style="position:relative; width:460px; height:348px; display:flex; flex-direction:column; align-self:stretch">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-label="真值樹：枝旁是 SNV 所屬的 clone，節點旁是 clone 比例" viewBox="0 0 460 348" style="position:absolute; top:0; left:0; width:460px; height:348px"><line x1="215" y1="36" x2="215" y2="128" stroke="#4A5568" stroke-width="4"/><line x1="215" y1="128" x2="105" y2="220" stroke="#4A5568" stroke-width="4"/><line x1="215" y1="128" x2="325" y2="220" stroke="#4A5568" stroke-width="4"/><line x1="325" y1="220" x2="325" y2="312" stroke="#4A5568" stroke-width="4"/></svg>
+          <div style="position:absolute; top:0; left:155px; width:120px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#9aa3ae; border-radius:256px">
+            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#1f2a37">normal</p>
+          </div>
+          <div style="position:absolute; top:92px; left:179px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#3b5b7a; border-radius:256px">
+            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c1</p>
+          </div>
+          <div style="position:absolute; top:184px; left:69px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#7b5ea7; border-radius:256px">
+            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c2</p>
+          </div>
+          <div style="position:absolute; top:184px; left:289px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#2e8b8b; border-radius:256px">
+            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c3</p>
+          </div>
+          <div style="position:absolute; top:276px; left:289px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#b07d2b; border-radius:256px">
+            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c4</p>
+          </div>
+          <p style="position:absolute; top:65px; left:261px; width:100px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; color:#d23a2e">SNV1–5</p>
+          <p style="position:absolute; top:130px; left:45px; width:100px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; text-align:right; color:#d23a2e">SNV6–7</p>
+          <p style="position:absolute; top:130px; left:285px; width:100px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; color:#d23a2e">SNV8–9</p>
+          <p style="position:absolute; top:249px; left:371px; width:80px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; color:#d23a2e">SNV10</p>
+          <p style="position:absolute; top:19px; left:287px; width:60px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; color:#6b7480">41%</p>
+          <p style="position:absolute; top:203px; left:5px; width:60px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; text-align:right; color:#7b5ea7">17%</p>
+          <p style="position:absolute; top:203px; left:371px; width:60px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; color:#2e8b8b">13%</p>
+          <p style="position:absolute; top:295px; left:371px; width:60px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; color:#b07d2b">17%</p>
+          <p style="position:absolute; top:111px; left:109px; width:60px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; text-align:right; color:#3b5b7a">12%</p>
+          <p style="position:absolute; top:300px; left:0; width:200px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#4a5568">%＝clone 比例</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-10-28 CONIPHER 模擬資料生成流程</p>
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">7 / 11</p>
+  </div>
+  <aside>結論：建樹工具只該拿到左邊的 read count 與 copy number；右邊的樹和 SNV 歸屬是評分用的答案。左邊這張表用的是同一位病人 SIM004 的示意值，每個 SNV 一列：alt、depth、爸爸和媽媽的 copy number、purity。SNV6 那一列就是上一頁從罐子抽出來的 107 和 683。copy number 是腫瘤細胞的平均，所以 SNV6、SNV8 這種只有部分 clone 有 gain 的位置，會出現 1.29、1.51 這種小數。右邊是同一棵示意樹，枝旁是 SNV 屬於哪個 clone，節點旁是 clone 比例。要注意，程式輸出的表把 SNV 所屬 clone 欄，和 CCF 欄，也就是帶這個 SNV 的腫瘤細胞比例，也寫在同一個檔裡，給建樹工具前要先拿掉。實際輸出的檔裡，每個 SNV 有座標、REF 和 ALT、兩個 allele 的 copy number、purity。座標依染色體長度隨機撒在 chr1 到 chr22，REF 和 ALT 也是隨機選的，不對應參考序列。回到老師的問題：模擬資料就是最下面這五步產生的，定參數、建樹、放事件、混合 clone、產生 read count。每一步的程式位置我都核對過，也重跑出一樣的結果。CONIPHER 只產生 short read 的計數，沒有 haplotype。接下來看怎麼沿用這五步，改成 long read 版的模擬程式。</aside>
+</section>

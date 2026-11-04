@@ -1,0 +1,115 @@
+<section id="s1-params" style="display:flex; flex-direction:column; gap:40px; padding:128px 128px 160px; background:#f7f6f2">
+  <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5">1 · 生成流程</p>
+  <h2 style="font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">先隨機產生六個參數，每個參數各控制流程的一部分</h2>
+  <div style="display:flex; flex-direction:column; gap:12px; flex:1">
+    <div style="display:flex; flex-direction:row; gap:16px">
+      <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:14px 16px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+        <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; font-weight:700; line-height:1.4; color:#1f2a37">clone 數</p>
+          <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:40px; font-weight:700; line-height:1.4; color:#2f6db5">4</p>
+        </div>
+        <div style="height:48px; display:flex; flex-direction:row; gap:12px; align-items:center; justify-content:center">
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.67; text-align:center; color:#ffffff; background:#3b5b7a; border-radius:256px">c1</p>
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.67; text-align:center; color:#ffffff; background:#7b5ea7; border-radius:256px">c2</p>
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.67; text-align:center; color:#ffffff; background:#2e8b8b; border-radius:256px">c3</p>
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.67; text-align:center; color:#ffffff; background:#b07d2b; border-radius:256px">c4</p>
+        </div>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#1f2a37"><span style="color:#2f6db5">→</span> 樹的大小</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:14px 16px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+        <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; font-weight:700; line-height:1.4; color:#1f2a37">SNV 數</p>
+          <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:40px; font-weight:700; line-height:1.4; color:#2f6db5">1405</p>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="一段基因組上的 SNV（紅線），圖上畫 10 個" viewBox="0 0 286 48" style="width:286px; height:48px"><rect x="0" y="21" width="286" height="6" rx="3" fill="#C3CAD3"/><rect x="16" y="10" width="4" height="28" fill="#D23A2E"/><rect x="44" y="10" width="4" height="28" fill="#D23A2E"/><rect x="72" y="10" width="4" height="28" fill="#D23A2E"/><rect x="100" y="10" width="4" height="28" fill="#D23A2E"/><rect x="128" y="10" width="4" height="28" fill="#D23A2E"/><rect x="156" y="10" width="4" height="28" fill="#D23A2E"/><rect x="184" y="10" width="4" height="28" fill="#D23A2E"/><rect x="212" y="10" width="4" height="28" fill="#D23A2E"/><rect x="240" y="10" width="4" height="28" fill="#D23A2E"/><rect x="268" y="10" width="4" height="28" fill="#D23A2E"/></svg>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#1f2a37"><span style="color:#2f6db5">→</span> SNV 有幾個</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:14px 16px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+        <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; font-weight:700; line-height:1.4; color:#1f2a37">purity</p>
+          <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:40px; font-weight:700; line-height:1.4; color:#2f6db5">0.59</p>
+        </div>
+        <div style="position:relative; width:286px; height:48px; display:flex; flex-direction:column; align-self:stretch">
+          <div style="position:absolute; top:4px; left:0; width:117px; height:40px; display:flex; flex-direction:column; background:#9aa3ae; border-radius:8px 0 0 8px">
+          </div>
+          <div style="position:absolute; top:4px; left:117px; width:63px; height:40px; display:flex; flex-direction:column; background:#7b5ea7; border-radius:0">
+          </div>
+          <div style="position:absolute; top:4px; left:180px; width:43px; height:40px; display:flex; flex-direction:column; background:#2e8b8b; border-radius:0">
+          </div>
+          <div style="position:absolute; top:4px; left:223px; width:63px; height:40px; display:flex; flex-direction:column; background:#b07d2b; border-radius:0 8px 8px 0">
+          </div>
+          <p style="position:absolute; top:4px; left:0; width:117px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.67; text-align:center; color:#1f2a37">normal</p>
+          <p style="position:absolute; top:4px; left:117px; width:169px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.67; text-align:center; color:#ffffff">腫瘤</p>
+        </div>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#1f2a37"><span style="color:#2f6db5">→</span> 腫瘤細胞比例</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; gap:16px">
+      <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:14px 16px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+        <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; font-weight:700; line-height:1.4; color:#1f2a37">coverage</p>
+          <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:40px; font-weight:700; line-height:1.4; color:#2f6db5">625</p>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="一個位點上疊的 read；平均疊幾條由 coverage 決定" viewBox="0 0 286 48" style="width:286px; height:48px"><line x1="143" y1="0" x2="143" y2="48" stroke="#4A5568" stroke-width="2" stroke-dasharray="5 4"/><rect x="30" y="2" width="190" height="8" rx="4" fill="#C3CAD3"/><rect x="70" y="14" width="200" height="8" rx="4" fill="#C3CAD3"/><rect x="10" y="26" width="170" height="8" rx="4" fill="#C3CAD3"/><rect x="100" y="38" width="162" height="8" rx="4" fill="#C3CAD3"/></svg>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#1f2a37"><span style="color:#2f6db5">→</span> 平均 depth</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:14px 16px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+        <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; font-weight:700; line-height:1.4; color:#1f2a37">snv copy gain／copy loss 比例</p>
+          <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:40px; font-weight:700; line-height:1.4; color:#1f2a37"><span style="color:#2f6db5">40%</span>／<span style="color:#c96a1b">30%</span></p>
+        </div>
+        <div style="display:flex; flex-direction:row; gap:8px; align-items:center">
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.5; text-align:center; color:#ffffff; background:#2f6db5; border:2px solid #d23a2e; border-radius:8px">+</p>
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.5; text-align:center; color:#ffffff; background:#c96a1b; border:2px solid #d23a2e; border-radius:8px">−</p>
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.5; text-align:center; color:#ffffff; background:#2f6db5; border:2px solid #d23a2e; border-radius:8px">+</p>
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.5; text-align:center; color:#ffffff; background:#c96a1b; border:2px solid #d23a2e; border-radius:8px">−</p>
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.5; text-align:center; color:#ffffff; background:#2f6db5; border:2px solid #d23a2e; border-radius:8px">+</p>
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.5; text-align:center; color:#ffffff; background:#c96a1b; border:2px solid #d23a2e; border-radius:8px">−</p>
+          <p style="width:40px; height:40px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.5; text-align:center; color:#ffffff; background:#2f6db5; border:2px solid #d23a2e; border-radius:8px">+</p>
+        </div>
+        <div style="display:flex; flex-direction:row; gap:8px; align-items:center">
+          <p style="width:24px; height:24px; background:#2f6db5; border:2px solid #d23a2e; border-radius:6px"></p>
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#1f2a37">gain 4 個</p>
+          <div style="flex:0 1 12px"></div>
+          <p style="width:24px; height:24px; background:#c96a1b; border:2px solid #d23a2e; border-radius:6px"></p>
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#1f2a37">loss 3 個</p>
+        </div>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#1f2a37"><span style="color:#2f6db5">→</span> snv copy gain、loss</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:14px 16px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+        <div style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:30px; font-weight:700; line-height:1.4; color:#1f2a37">WGD</p>
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:40px; font-weight:700; line-height:1.4; color:#2f6db5">無</p>
+        </div>
+        <div style="height:48px; display:flex; flex-direction:row; gap:4px; align-items:center; justify-content:center">
+          <p style="height:36px; padding:0 8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.5; color:#ffffff; background:#2f6db5; border-radius:256px">無</p>
+          <p style="height:36px; padding:0 8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#4a5568; background:#fdfdfb; border:1px solid #9aa3ae; border-radius:256px">clonal</p>
+          <p style="height:36px; padding:0 8px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#4a5568; background:#fdfdfb; border:1px solid #9aa3ae; border-radius:256px">subclonal</p>
+        </div>
+        <div style="display:flex; flex-direction:row; gap:12px; align-items:center; justify-content:center">
+          <div style="display:flex; flex-direction:row; gap:4px">
+            <p style="width:54px; height:32px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.33; text-align:center; color:#ffffff; background:#5b6b7f; border-radius:4px">爸</p>
+            <p style="width:54px; height:32px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.33; text-align:center; color:#1f2a37; background:#c3cad3; border-radius:4px">媽</p>
+          </div>
+          <div style="width:80px; display:flex; flex-direction:column; gap:2px; align-items:center">
+            <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; color:#1f2a37">WGD</p>
+            <x-shape kind="arrow-right" style="width:40px; height:18px; background:#4a5568"></x-shape>
+          </div>
+          <div style="display:flex; flex-direction:row; gap:4px">
+            <p style="width:54px; height:32px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.33; text-align:center; color:#ffffff; background:#5b6b7f; border-radius:4px">爸</p>
+            <p style="width:54px; height:32px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.33; text-align:center; color:#ffffff; background:#5b6b7f; border-radius:4px">爸</p>
+            <p style="width:54px; height:32px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.33; text-align:center; color:#1f2a37; background:#c3cad3; border-radius:4px">媽</p>
+            <p style="width:54px; height:32px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.33; text-align:center; color:#1f2a37; background:#c3cad3; border-radius:4px">媽</p>
+          </div>
+        </div>
+        <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#1f2a37"><span style="color:#2f6db5">→</span> 在 main clone 或一個 subclone 放上 hp1,hp2 copy number乘2事件</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; top:128px; left:1672px; width:120px; padding:4px 16px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; text-align:center; color:#4a5568; border:1px solid #d9dde3; border-radius:256px">示意</p>
+  <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-10-28 CONIPHER 模擬資料生成流程</p>
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">3 / 11</p>
+  </div>
+  <aside>結論：先隨機產生六個參數，每個參數各控制流程的一部分，參數之間沒有先後順序。大家看這六張卡：每張寫例子的值，最下面寫它控制什麼。clone 數由程式直接隨機產生，依病人的 sample 數分三組。其他參數，程式各自從病人摘要表裡隨機選一個真實出現過的值，不一定來自同一位病人；程式只排除太小或太大的值，沒有固定的上下限。例子都用摘要表裡病人 SIM004 的值，clone 數用 4 個，圖只畫 10 個 SNV。程式附的摘要表是示範用的模擬版；作者產生 benchmark 時用的是另一份表，所以實際資料的數值會落在附表之外。purity 是先從表裡選兩個值當上下限，之後再在這兩個值之間平均隨機產生一個值。下排中間是 gain／loss 比例：例子是 40% 的位置放單點 gain、30% 放單點 loss，其餘不變。圖上的紅框方塊是有 copy number 事件的 SNV 位置：藍色加號 4 個是 gain，橘色減號 3 個是 loss；其餘位置 copy number 正常，也就是爸、媽各一份，圖上不畫。gain 有 81% 放在 c1，loss 有 6% 放在 c1，其他放在 subclone。loss 只丟媽媽那份，分成 copy number loss 和 copy-neutral LOH 兩種。最右邊的 WGD 只管整個基因組加倍，是 copy number gain，不會造成 loss；卡上的小圖是一個位置：本來爸、媽各一份，經過 WGD 後爸、媽各變兩份，總共四份；它有無、clonal、subclonal 三種，SIM004 是無。WGD 放在哪裡，到放事件時再講。sample 數和 truncal SNV 比例也從表裡選，簡報只講一個 sample，所以不展開。參數定好了，接著建樹。</aside>
+</section>

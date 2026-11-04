@@ -1,0 +1,72 @@
+<section id="s1-tree" style="display:flex; flex-direction:column; gap:40px; padding:128px 128px 160px; background:#f7f6f2">
+  <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; letter-spacing:2px; color:#2f6db5">1 · 生成流程</p>
+  <h2 style="font-family:'Noto Serif TC', Georgia, serif; font-size:64px; font-weight:700; line-height:1.15; color:#1f2a37">建樹與放 SNV：一部分 SNV 放在 truncal 枝，其餘分到各 subclone 枝</h2>
+  <div style="display:flex; flex-direction:row; gap:40px; flex:1">
+    <div style="display:flex; flex-direction:column; gap:16px; flex:1; padding:32px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+      <h3 style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:40px; font-weight:700; color:#1f2a37">建樹</h3>
+      <div style="display:flex; flex-direction:row; gap:16px; align-items:end">
+        <div style="width:240px; display:flex; flex-direction:column; gap:8px; align-items:center">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-label="隨機二分出的大樹，灰色 leaf 之後會被剪掉" viewBox="0 0 240 300" style="width:240px; height:300px"><line x1="120" y1="20" x2="120" y2="85" stroke="#4A5568" stroke-width="4"/><line x1="120" y1="85" x2="60" y2="150" stroke="#4A5568" stroke-width="4"/><line x1="120" y1="85" x2="180" y2="150" stroke="#4A5568" stroke-width="4"/><line x1="180" y1="150" x2="150" y2="215" stroke="#4A5568" stroke-width="4"/><line x1="60" y1="150" x2="30" y2="215" stroke="#C3CAD3" stroke-width="3"/><line x1="60" y1="150" x2="90" y2="215" stroke="#C3CAD3" stroke-width="3"/><line x1="180" y1="150" x2="210" y2="215" stroke="#C3CAD3" stroke-width="3"/><line x1="150" y1="215" x2="120" y2="280" stroke="#C3CAD3" stroke-width="3"/><line x1="150" y1="215" x2="180" y2="280" stroke="#C3CAD3" stroke-width="3"/><circle cx="120" cy="20" r="15" fill="#9AA3AE"/><circle cx="120" cy="85" r="15" fill="#3B5B7A"/><circle cx="60" cy="150" r="15" fill="#7B5EA7"/><circle cx="180" cy="150" r="15" fill="#2E8B8B"/><circle cx="150" cy="215" r="15" fill="#B07D2B"/><circle cx="30" cy="215" r="15" fill="#EEF0F3" stroke="#9AA3AE" stroke-width="3"/><circle cx="90" cy="215" r="15" fill="#EEF0F3" stroke="#9AA3AE" stroke-width="3"/><circle cx="210" cy="215" r="15" fill="#EEF0F3" stroke="#9AA3AE" stroke-width="3"/><circle cx="120" cy="280" r="15" fill="#EEF0F3" stroke="#9AA3AE" stroke-width="3"/><circle cx="180" cy="280" r="15" fill="#EEF0F3" stroke="#9AA3AE" stroke-width="3"/></svg>
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#4a5568">(a) 隨機二分出大樹</p>
+        </div>
+        <div style="width:48px; display:flex; flex-direction:row; padding:0 0 200px">
+          <x-shape kind="arrow-right" style="width:48px; height:24px; background:#4a5568"></x-shape>
+        </div>
+        <div style="width:300px; display:flex; flex-direction:column; gap:8px; align-items:center">
+          <div style="position:relative; width:300px; height:348px; display:flex; flex-direction:column">
+            <svg xmlns="http://www.w3.org/2000/svg" aria-label="剪完的樹：normal 到 c1，c1 分出 c2 與 c3，c3 再到 c4" viewBox="0 0 300 348" style="position:absolute; top:0; left:0; width:300px; height:348px"><line x1="150" y1="36" x2="150" y2="128" stroke="#4A5568" stroke-width="4"/><line x1="150" y1="128" x2="40" y2="220" stroke="#4A5568" stroke-width="4"/><line x1="150" y1="128" x2="260" y2="220" stroke="#4A5568" stroke-width="4"/><line x1="260" y1="220" x2="260" y2="312" stroke="#4A5568" stroke-width="4"/></svg>
+            <div style="position:absolute; top:0; left:90px; width:120px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#9aa3ae; border-radius:256px">
+              <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#1f2a37">normal</p>
+            </div>
+            <div style="position:absolute; top:92px; left:114px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#3b5b7a; border-radius:256px">
+              <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c1</p>
+            </div>
+            <div style="position:absolute; top:184px; left:4px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#7b5ea7; border-radius:256px">
+              <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c2</p>
+            </div>
+            <div style="position:absolute; top:184px; left:224px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#2e8b8b; border-radius:256px">
+              <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c3</p>
+            </div>
+            <div style="position:absolute; top:276px; left:224px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#b07d2b; border-radius:256px">
+              <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c4</p>
+            </div>
+          </div>
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; color:#4a5568">(b) 剪掉多的 leaf</p>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px; flex:1; padding:32px; background:#fdfdfb; border:1px solid #d9dde3; border-radius:16px">
+      <h3 style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:40px; font-weight:700; color:#1f2a37">放 SNV</h3>
+      <div style="position:relative; width:700px; height:348px; display:flex; flex-direction:column; align-self:stretch">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-label="同一棵樹，枝旁標 SNV：normal 到 c1 枝 SNV1–5 為 truncal；其他枝 SNV6–10 為 subclonal" viewBox="0 0 700 348" style="position:absolute; top:0; left:0; width:700px; height:348px"><line x1="240" y1="36" x2="240" y2="128" stroke="#4A5568" stroke-width="4"/><line x1="240" y1="128" x2="130" y2="220" stroke="#4A5568" stroke-width="4"/><line x1="240" y1="128" x2="350" y2="220" stroke="#4A5568" stroke-width="4"/><line x1="350" y1="220" x2="350" y2="312" stroke="#4A5568" stroke-width="4"/><path d="M512 60 L524 60 L524 104 L512 104" fill="none" stroke="#4A5568" stroke-width="3"/><path d="M512 136 L524 136 L524 300 L512 300" fill="none" stroke="#4A5568" stroke-width="3"/></svg>
+        <div style="position:absolute; top:0; left:180px; width:120px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#9aa3ae; border-radius:256px">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#1f2a37">normal</p>
+        </div>
+        <div style="position:absolute; top:92px; left:204px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#3b5b7a; border-radius:256px">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c1</p>
+        </div>
+        <div style="position:absolute; top:184px; left:94px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#7b5ea7; border-radius:256px">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c2</p>
+        </div>
+        <div style="position:absolute; top:184px; left:314px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#2e8b8b; border-radius:256px">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c3</p>
+        </div>
+        <div style="position:absolute; top:276px; left:314px; width:72px; height:72px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#b07d2b; border-radius:256px">
+          <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; font-weight:700; color:#ffffff">c4</p>
+        </div>
+        <p style="position:absolute; top:65px; left:286px; width:100px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; color:#d23a2e">SNV1–5</p>
+        <p style="position:absolute; top:130px; left:70px; width:100px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; text-align:right; color:#d23a2e">SNV6–7</p>
+        <p style="position:absolute; top:130px; left:310px; width:100px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; color:#d23a2e">SNV8–9</p>
+        <p style="position:absolute; top:249px; left:396px; width:100px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.42; color:#d23a2e">SNV10</p>
+        <p style="position:absolute; top:63px; left:540px; width:150px; padding:2px 0; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; text-align:center; color:#1f2a37; border:1px solid #4a5568; border-radius:256px">truncal</p>
+        <p style="position:absolute; top:199px; left:540px; width:150px; padding:2px 0; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; line-height:1.42; text-align:center; color:#1f2a37; border:1px solid #4a5568; border-radius:256px">subclonal</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; top:128px; left:1672px; width:120px; padding:4px 16px; font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; text-align:center; color:#4a5568; border:1px solid #d9dde3; border-radius:256px">示意</p>
+  <div style="position:absolute; right:128px; bottom:64px; left:128px; display:flex; flex-direction:row; justify-content:space-between">
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">2026-10-28 CONIPHER 模擬資料生成流程</p>
+    <p style="font-family:'Noto Sans TC', Arial, sans-serif; font-size:24px; color:#6b7480">4 / 11</p>
+  </div>
+  <aside>結論是：樹的形狀完全隨機，SNV 依 truncal 比例分成兩堆。這是舉例用的小樹。大家先看左邊。程式先隨機二分出一棵大樹，再剪掉多的 leaf，剩下右下這棵 5 個節點的樹。最上面灰色的 normal 是正常細胞，之後混樣時，它代表混進來的正常細胞。下面深藍的 c1 是第一個腫瘤 clone，叫 truncal clone。再看右邊，同一棵樹的枝旁標了 SNV。normal 到 c1 這條枝放 SNV1 到 SNV5，是 truncal SNV，所有腫瘤細胞都有。其他枝上的是 subclonal SNV，只有這一支和它的後代有。程式把 subclonal SNV 隨機切段，每條枝至少 1 個。truncal 比例依摘要表隨機亂數產生，上限 0.9。例子用一半。SNV 放好了，接著放 copy number。</aside>
+</section>
