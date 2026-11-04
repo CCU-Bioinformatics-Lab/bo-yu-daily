@@ -9,7 +9,7 @@
 | Pairtree（576 份） | `morrislab/pearsim` + `morrislab/pairtree/simulator/make_simulated_data.sh` | 是：從參數產生樹、read 數，並寫檔 | 否：記錄的種子沒有真的被使用。重跑 576 份，分布相同、數值不同〔實測〕 |
 | CONIPHER Noise／No-Noise（各 150 份） | `zaccaria-lab/TRACERx_simulation_tool` | 是：產生樹、拷貝數、mutation loss、noise、read 數，並寫檔 | **是**：用 commit `8c8d173` 與記錄的種子，300／300 份的讀數逐 byte 相同〔實測〕 |
 | Copy_Number_Error（450 份） | PhyClone 作者對 CONIPHER No-Noise 做的拷貝數擾動 | 否：擾動程式沒有公開 | 否 |
-| FS-CRP、TSSB | PhyClone 作者 | 否（見 `../../../lab_report/2026-10-21_phyclone_sim_rerun/README.md` 與 01 §7） | 否 |
+| FS-CRP、TSSB | PhyClone 作者 | 否（見 01 §7；原試跑 `lab_report/2026-10-21_phyclone_sim_rerun/` 已於 2026-11-04 刪除，取回：`git show 1208b27:lab_report/2026-10-21_phyclone_sim_rerun/README.md`） | 否 |
 
 本機副本：三個生成器 repo 已加為 submodule，放在 `../upstream/`，版本與要看的檔案見 [`../upstream/SOURCE.md`](../upstream/SOURCE.md)。
 

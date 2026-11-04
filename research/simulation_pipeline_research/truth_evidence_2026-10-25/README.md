@@ -16,7 +16,7 @@
 | [`05_tracerx_citation_check.md`](05_tracerx_citation_check.md) | TRACERx 相關數字逐篇核對：19 條，14 ✅、5 ⚠️ |
 | [`06_pcawg_other_citation_check.md`](06_pcawg_other_citation_check.md) | PCAWG 與其他文獻逐篇核對：50 條，38 ✅、12 ⚠️ |
 
-實驗（`lab_report/`）：`2026-10-25_hg008_truth_tree_plausibility`、`2026-10-25_seqc2_hcc1395_measured_purity`、`2026-10-25_tracerx_event_stats`、`2026-10-25_pcawg_event_stats`。
+實驗（`lab_report/`）：`2026-10-25_hg008_truth_tree_plausibility`、`2026-10-25_seqc2_hcc1395_measured_purity`、`2026-10-25_tracerx_event_stats`、`2026-10-25_pcawg_event_stats`（後兩個 2026-11-04 刪除：short read，已排除；取回用 `git show 1208b27:lab_report/<目錄>/README.md`）。
 
 ## 總判定（2026-10-25，文獻核對＋4 組資料實測後）
 

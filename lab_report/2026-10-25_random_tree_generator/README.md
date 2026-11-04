@@ -63,11 +63,13 @@
 
 - 藍圖：`longbulksim/longbulksim/data/tracerx421_region_trees.tsv`（1,426 棵區域樹、401 個 tumour）和 `tracerx421_cn_segments.tsv`（60,067 個 segment，32,383 個有 subclonal 改變）。由 `tools/tracerx_blueprints.py` 從 `/big8_disk/boyu114/benchmark_data/TRACERx/Frankell2023_zenodo7822002/derived_tsv` 產生。
 - CN segment 的規則：
-  - allele 的 raw CN 在區域間的範圍 ≥ 0.8 才算改變。這和 `tools/tracerx_event_stats.py` 的 strict 規則相同。
+  - allele 的 raw CN 在區域間的範圍 ≥ 0.8 才算改變。這和 `tools/tracerx_event_stats.py`（2026-11-04 刪除；取回：`git show 1208b27:tools/tracerx_event_stats.py`） 的 strict 規則相同。
   - 有兩種區域狀態時，標成 `neutral`（相對 ploidy）的那個當 trunk。兩個都不是或都是時，用比較常見的狀態（`rule` 欄）。
-- cohort 數字：`lab_report/2026-10-25_tracerx_event_stats/`、`lab_report/2026-10-25_pcawg_event_stats/`。
+- cohort 數字：`lab_report/2026-10-25_tracerx_event_stats/`、`lab_report/2026-10-25_pcawg_event_stats/`（2026-11-04 刪除；取回：`git show 1208b27:lab_report/<目錄>/README.md`）。
 
 ## 5. 做法
+
+`tools/tracerx_blueprints.py`（2026-11-04 刪除；取回：`git show 1208b27:tools/tracerx_blueprints.py`）：
 
 ```bash
 python3 tools/tracerx_blueprints.py \

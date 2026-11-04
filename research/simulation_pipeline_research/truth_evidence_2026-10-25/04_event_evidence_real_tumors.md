@@ -7,7 +7,7 @@
 等級標記：〔論文實測〕＝論文報告的量測數字；〔論文主張〕＝作者的解讀或沒有直接數字；〔推論〕＝本檔的推論。
 數字來源：PubMed metadata 或 PMC／期刊全文，查詢日期 2026-10-25。
 
-> **2026-10-25 修正：** 本檔數字已逐篇核對（`05_tracerx_citation_check.md`、`06_pcawg_other_citation_check.md`），並用 TRACERx 421 與 PCAWG 公開資料實測（`lab_report/2026-10-25_tracerx_event_stats/`、`lab_report/2026-10-25_pcawg_event_stats/`）。第 1、3 節的判定已依結果更新。其他段落的細節修正見 05／06。
+> **2026-10-25 修正：** 本檔數字已逐篇核對（`05_tracerx_citation_check.md`、`06_pcawg_other_citation_check.md`），並用 TRACERx 421 與 PCAWG 公開資料實測（`lab_report/2026-10-25_tracerx_event_stats/`、`lab_report/2026-10-25_pcawg_event_stats/`；兩者 2026-11-04 刪除，short read 已排除；取回：`git show 1208b27:lab_report/<目錄>/README.md`）。第 1、3 節的判定已依結果更新。其他段落的細節修正見 05／06。
 
 ## 1. 結論
 
