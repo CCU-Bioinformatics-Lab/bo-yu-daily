@@ -26,7 +26,7 @@ plt.rcParams["font.family"] = ["Noto Sans CJK JP", "DejaVu Sans"]
 
 ROOT = Path(__file__).resolve().parents[1]
 LAB = ROOT / "lab_report"
-REAL = LAB / "2026-10-30_diplosim_ppc_hcc1395" / "tables" / "real_per_snv.tsv"
+REAL = LAB / "2026-10-31_diplosim_ppc_hcc1395_lost045" / "tables" / "real_per_snv.tsv"  # same table as the deleted 2026-10-30 run
 ASCAT = LAB / "2026-10-30_ascat_hcc1395_5khz" / "tables" / "snv_cn.tsv"
 
 INK, MUTED, LINE, BG = "#17201D", "#5B6864", "#CDD5D2", "#F2F4F3"
@@ -34,7 +34,7 @@ REAL_C, POIS_C, NB_C = "#17201D", "#A3ADA9", "#2C7A4C"
 BETWEEN_C, WITHIN_C = "#2D5EA6", "#BF522E"
 
 STEPS = [  # (label, PPC directory)
-    ("預設", "2026-10-30_diplosim_ppc_hcc1395"),
+    ("預設", "2026-10-30_diplosim_ppc_hcc1395"),  # deleted 2026-11-04, never tracked: this panel can no longer be redrawn
     ("LOH 0.45", "2026-10-31_diplosim_ppc_hcc1395_lost045"),
     ("Beta tag", "2026-10-31_diplosim_ppc_hcc1395_tagbeta"),
     ("多次 CNA\n＋truncal 0.8", "2026-10-31_diplosim_ppc_hcc1395_mult_t0.8"),

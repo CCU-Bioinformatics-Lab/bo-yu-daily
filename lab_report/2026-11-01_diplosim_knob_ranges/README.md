@@ -58,7 +58,7 @@
 ```bash
 export OUT_ROOT=lab_report/2026-11-01_diplosim_knob_ranges DIPLOSIM_PPC_RANGES=tools/diplosim_knob_ranges_hcc1395.tsv
 export KNOBS="--prop-pos-lost 0.45 --loss-events cnloh_B --prop-pos-second-cna 0.5 --gain-events gain_A,gain_B,gain_B,gain_both --prop-truncal-snvs 0.8 --depth-dispersion 0.03 --base-error 0.001 --mistag-rate 0.01 --mistag-concentration 1 --prop-tagged 0.862 --tag-concentration 1"
-bash tools/diplosim_purity_holdout_v2.sh t50_n00 0.97   53 lab_report/2026-10-30_diplosim_ppc_hcc1395
+bash tools/diplosim_purity_holdout_v2.sh t50_n00 0.97   53 lab_report/2026-10-31_diplosim_ppc_hcc1395_lost045
 bash tools/diplosim_purity_holdout_v2.sh t40_n10 0.7016 52 lab_report/2026-10-31_diplosim_purity_holdout/t40_n10
 # t30_n20 0.4802、t20_n30 0.2944、t10_n40 0.1362 同上
 python3 -I tools/ppc_distance_score.py t50=$OUT_ROOT/t50_n00 ... > $OUT_ROOT/distance_all_purities.tsv

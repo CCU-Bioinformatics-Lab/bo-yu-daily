@@ -48,7 +48,7 @@ python3 -I tools/diplosim_estimate_knobs.py detect lab_report/2026-11-01_diplosi
   lab_report/2026-11-01_clairs_detection_curve lab_report/2026-10-31_diplosim_purity_holdout tools/clairs_detection_curve_hcc1395.tsv
 export OUT_ROOT=lab_report/2026-11-01_diplosim_detection_curve DIPLOSIM_PPC_RANGES=tools/diplosim_knob_ranges_hcc1395.tsv
 export KNOBS="（同 2026-11-01_diplosim_matched_normal）"
-bash tools/diplosim_purity_holdout_v2.sh t50_n00 0.97 53 lab_report/2026-10-30_diplosim_ppc_hcc1395
+bash tools/diplosim_purity_holdout_v2.sh t50_n00 0.97 53 lab_report/2026-10-31_diplosim_ppc_hcc1395_lost045
 bash tools/diplosim_purity_holdout_v2.sh t40_n10 0.7045:0.7055 52 lab_report/2026-10-31_diplosim_purity_holdout/t40_n10
 # t30_n20 0.4851:0.4867、t20_n30 0.3006:0.3026、t10_n40 0.1433:0.1456 同上
 ```

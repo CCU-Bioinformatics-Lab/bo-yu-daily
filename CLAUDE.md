@@ -12,7 +12,8 @@
 - `research/hcc1395_golden_tree_research/`：HCC1395 參考樹文獻，可作驗證參考。
 - `diplosim/`：**現行模擬器**，用 Rust 寫的雙套體 long read bulk 模擬器（2026-10-29 建立）。照 CONIPHER 模擬步驟逐步移植，每一步都要能說明「沿用哪個函式」或「新寫什麼、為什麼」。決策與現況先看 `DECISIONS.md`；CONIPHER 步驟對照見 `docs/conipher_steps.md`、`docs/porting_map.md`。測試：`cd diplosim && cargo test`。
 - haploclone（PhyClone 的 Rust 移植）：程式、golden、移植文件都在 `/bip8_disk/boyu114/haploclone/rust/`（branch `rust-port`）。現況與決策見 `rust/docs/PORTING.md`、`rust/docs/decisions.tsv`。改 haploclone 時，預設路徑的輸出要和原版保持 bit-identical。
-- `tools/`：分析與繪圖腳本。`lab_report/`：一個實驗一個目錄（`YYYY-MM-DD_<主題>/README.md`：結論、資料、做法、結果、限制），腳本放 `tools/`。
+- `tools/`：分析與繪圖腳本。**先看 `tools/README.md`**（共用核心、主流程指令、依主題分類），新寫腳本前先查有沒有能用的。
+- `lab_report/`：一個實驗一個目錄（`YYYY-MM-DD_<主題>/README.md`：結論、資料、做法、結果、限制），腳本放 `tools/`。**先看 `lab_report/INDEX.md`**（每個實驗的一句結論與狀態：現行、已整理、被取代）。新增或取代實驗時更新它。
 - `report/`：投影片輸出。`daily/`：工作日誌，只作導覽，不能當事實來源。
 - `meeting_record/`：每週會議紀錄（`YYYY_MM_DD_meeting_record.md` 原始紀錄、`_summary.md` 整理）。**找會議先看 `meeting_record/index.md`**（日期、會議目的、關鍵字、主要決議）。
 
