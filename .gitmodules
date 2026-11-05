@@ -1,6 +1,3 @@
-[submodule "research/phyclone_research/PhyClone"]
-	path = research/phyclone_research/PhyClone
-	url = https://github.com/Roth-Lab/PhyClone.git
 [submodule "research/simulation_pipeline_research/upstream/pearsim"]
 	path = research/simulation_pipeline_research/upstream/pearsim
 	url = https://github.com/morrislab/pearsim.git
