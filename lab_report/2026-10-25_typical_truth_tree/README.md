@@ -1,7 +1,7 @@
 # 典型 HP-aware 真值樹：壓力測試樹的對照組（2026-10-25）
 
 目的：設計一棵「每個參數都落在真實腫瘤典型範圍」的 HP-aware 真值樹，當作 [`hp_truth_tree.png`](../../research/simulation_pipeline_research/figures/hp_truth_tree.png)（壓力測試樹）的對照。
-依據：`research/simulation_pipeline_research/truth_evidence_2026-10-25/README.md` 的總判定，以及 TRACERx 421、PCAWG、HG008 的實測（`lab_report/2026-10-25_{tracerx,pcawg}_event_stats/`、`2026-10-25_hg008_truth_tree_plausibility/`）。
+依據：`research/simulation_pipeline_research/truth_evidence_2026-10-25/00_overview.md` 的總判定，以及 TRACERx 421、PCAWG、HG008 的實測（`lab_report/2026-10-25_{tracerx,pcawg}_event_stats/`、`2026-10-25_hg008_truth_tree_plausibility/`）。
 
 ## 結論
 

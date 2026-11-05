@@ -1,6 +1,6 @@
 # docs 索引：資料路徑與盤點
 
-本目錄放**資料在哪裡、長什麼樣**的盤點。設計文件不在這裡：HP 特徵設計在 `/bip8_disk/boyu114/haploclone/rust/docs/plan.md`，研究入口在 `research/INDEX.md`。
+本目錄放**資料在哪裡、長什麼樣**的盤點。設計文件不在這裡：HP 特徵設計在 `/bip8_disk/boyu114/haploclone/rust/docs/plan.md`，研究入口在 `research/index.md`。
 
 盤點有日期。路徑與檔案可能已經改變，用之前先 `ls` 確認。
 
@@ -38,5 +38,5 @@
 ## 不在本目錄的資料說明
 
 - 小檔 benchmark（SEQC2 HCC1395 真值與 CNV、GIAB HG002、T2T Q100、COLO829、CASTLE Wakhan）：`/big8_disk/boyu114/benchmark_data/README.md`。同目錄另有 `PCAWG/`、`TRACERx/`，README 表內沒有列。
-- GIAB HG008 的文獻與資料集調查（含公開的 119 個 PTA 單細胞）：`research/literature/surveys/sc_longread_datasets_2026-10-26/README.md`。本機副本見上表「HG008」。
+- GIAB HG008 的文獻與資料集調查（含公開的 119 個 PTA 單細胞）：`research/literature/surveys/sc_longread_datasets_2026-10-26/summary.md`。本機副本見上表「HG008」。
 - HCC1395 ASCAT CN：`lab_report/2026-10-30_ascat_hcc1395_5khz/`。

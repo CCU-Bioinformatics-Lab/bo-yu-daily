@@ -73,7 +73,7 @@ PCAWG 的 Dentro 2021 全文前 20 萬字沒有討論 mutation loss 的頻率（
 | Sakamoto 2022, Nat Commun（本地 B04） | 20 例 NSCLC，ONT＋Illumina；2 例有 10x scDNA | 每例平均 69 對可排序 pair（範圍 0–649）。S14 靠 long read 從 branched／linear 候選中選出 linear。scDNA 只能局部驗證（S8、S20 各 2、13 對） | 〔論文實測〕 | [10.1038/s41467-022-31133-6](https://doi.org/10.1038/s41467-022-31133-6) |
 | Keskus 2025, Nat Biotechnol（Severus） | ONT／PacBio 腫瘤-正常配對，細胞株面板與兒童白血病／淋巴瘤 | 產出 haplotype-specific somatic SV，建 phased breakpoint graph | 〔論文主張〕 | [10.1038/s41587-025-02618-8](https://doi.org/10.1038/s41587-025-02618-8) |
 | Ho 2025, bioRxiv（LongPhase-S） | 8 組 ONT 資料，6 株細胞株 | somatic haplotyping 後重新校正 variant。ClairS 的 SNV F1 平均升 4.5%，indel 升 7.1%。purity 估計「優於現有方法」，摘要沒有數字 | 〔論文實測＋主張〕，未同儕審查 | [10.1101/2025.11.20.689492](https://doi.org/10.1101/2025.11.20.689492) |
-| B01 黑色素瘤 sublines（本地） | 小鼠單細胞衍生 sublines，ONT | 用 ONT SNV 建樹，SV／甲基化事後放上樹；沒有用共現約束 topology | 〔論文實測〕 | 見本地 `papers/B01_melanoma_longread_2026/README.md` |
+| B01 黑色素瘤 sublines（本地） | 小鼠單細胞衍生 sublines，ONT | 用 ONT SNV 建樹，SV／甲基化事後放上樹；沒有用共現約束 topology | 〔論文實測〕 | 見本地 `papers/B01_melanoma_longread_2026/summary.md` |
 
 病人層級「long read 共現建樹＋完整 single-cell 真值」的論文：除 B04 外未查到。
 

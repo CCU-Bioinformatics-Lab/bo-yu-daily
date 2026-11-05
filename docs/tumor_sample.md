@@ -191,7 +191,7 @@ subsample 檔案命名規則：`<subsample path>/<purity label>/<line>_<purity l
 
 #### HGSOC `ground_truth/` 的來源（已確認）
 
-結論：這棵樹是**單細胞資料加 bulk 資料推論出來的 reference tree**。PhyClone 論文把它當真值用，但它不是觀測到的細胞譜系。來源是 McPherson 2016（PhyClone 主文 §2.4.1.5、Fig.6），只涵蓋病人 2、3、9。細節見 `research/literature/papers/R01_mcpherson_hgsoc_2016/README.md`。
+結論：這棵樹是**單細胞資料加 bulk 資料推論出來的 reference tree**。PhyClone 論文把它當真值用，但它不是觀測到的細胞譜系。來源是 McPherson 2016（PhyClone 主文 §2.4.1.5、Fig.6），只涵蓋病人 2、3、9。細節見 `research/literature/papers/R01_mcpherson_hgsoc_2016/summary.md`。
 
 **Single-nucleus targeted PCR 做了什麼**
 

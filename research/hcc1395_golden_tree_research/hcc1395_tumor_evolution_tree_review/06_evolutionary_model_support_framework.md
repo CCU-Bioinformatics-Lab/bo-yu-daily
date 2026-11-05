@@ -205,7 +205,7 @@ PhyloWGS tree inference
 CNV event → inferred clone / tree node
 ```
 
-因此，`branch-specific CNA pattern` 不是憑空假設，而是建立在 PhyloWGS 的事件配置語意上：若某個 CNA 被配置到 `S2`，它應該與 `S2` 及其 descendant populations 的 CCF、CNV prevalence 和相關 SNV group 相容；配置到 `S1` 的 CNA 則比較像 trunk/MRCA event。PhyloWGS 方法與輸入轉換的整理見 [`research/phylowgs_model_review.md`](../phylowgs_model_review.md)。
+因此，`branch-specific CNA pattern` 不是憑空假設，而是建立在 PhyloWGS 的事件配置語意上：若某個 CNA 被配置到 `S2`，它應該與 `S2` 及其 descendant populations 的 CCF、CNV prevalence 和相關 SNV group 相容；配置到 `S1` 的 CNA 則比較像 trunk/MRCA event。PhyloWGS 方法與輸入轉換的整理見 [`research/08_phylowgs_model_review.md`](08_phylowgs_model_review.md)。
 
 但這個方法層級事實不能反推 HCC1395 論文已公開完整的 CNA-to-node 結果。HCC1395 論文沒有提供本次 PhyloWGS 的完整 `cnv_data`、CNV event assignment、`CNA event → S1–S10 node` 表或 edge-level posterior；因此以下是「若取得 CNV-to-node output，應如何檢查」的 framework，不是已完成的 HCC1395 branch validation。
 

@@ -1,6 +1,6 @@
 # 有 single-cell 樹的論文：ONT 資料可得性查核
 
-查核日期：2026-10-16。範圍：`papers/` 中有 single-cell 樹的 9 篇（A01–A05、B03、B04、B05、B07）。方法：先讀本機 `paper.txt`／supplement 的 Data availability，再查 repository metadata（EGA metadata API、ENA filereport、GEO、NBDC/DDBJ Search）。**未下載任何資料檔，也未打開檔案驗證格式**；以下「格式」以 repository 頁面所列為準。
+查核日期：2026-10-16。範圍：`papers/` 中有 single-cell 樹的 9 篇（A01–A05、B03、B04、B05、B07）。方法：先讀本機 `fulltext.md`／supplement 的 Data availability，再查 repository metadata（EGA metadata API、ENA filereport、GEO、NBDC/DDBJ Search）。**未下載任何資料檔，也未打開檔案驗證格式**；以下「格式」以 repository 頁面所列為準。
 
 證據層級標記：**[論文]** 論文本身寫的；**[repo]** repository 頁面實際看到的；**[推論]** 分析推論。
 
@@ -39,16 +39,16 @@
   - 公開 metadata 無法逐筆確認 S8、S14、S20 各自有哪些 ONT 檔案。
 
 **scDNA 的實際用途：沒有建出 single-cell 演化樹**（2026-10-16 依本機全文補查）
-- [論文] 樹由 bulk 推得：先用 bulk short-read WGS 的 VAF 跑 PyClone-VI，再用 ClonEvol 排出 clonal ordering（paper.txt:1697）。S8、S20 的 PyClone 只有 2 個 cluster，C-1 為 "Major"、C-2 為 "Minor"，因此 topology 只有 C-1 → C-2 一條邊（supplement Fig. S10b–d）。
-- [論文] scDNA 為 10x Chromium 單細胞 CNV。用 Cell Ranger DNA 取得 20-kb CN profile 後，以 Manhattan 距離加 complete linkage 做階層式分群並畫成 heatmap（paper.txt:1700–1708）。這是 CN 相似度的 dendrogram，不是用演化模型推出的 phylogeny。
+- [論文] 樹由 bulk 推得：先用 bulk short-read WGS 的 VAF 跑 PyClone-VI，再用 ClonEvol 排出 clonal ordering（fulltext.md:1697）。S8、S20 的 PyClone 只有 2 個 cluster，C-1 為 "Major"、C-2 為 "Minor"，因此 topology 只有 C-1 → C-2 一條邊（supplement Fig. S10b–d）。
+- [論文] scDNA 為 10x Chromium 單細胞 CNV。用 Cell Ranger DNA 取得 20-kb CN profile 後，以 Manhattan 距離加 complete linkage 做階層式分群並畫成 heatmap（fulltext.md:1700–1708）。這是 CN 相似度的 dendrogram，不是用演化模型推出的 phylogeny。
 - [論文] 以 mpileup 檢查每顆細胞的 BAM 是否帶有突變，藉此佐證 "Minor" 突變只出現在部分細胞。long-read 能直接判定先後順序的 mutation pair 中，S8 只有 2 對、S20 只有 13 對在單細胞資料中有覆蓋；論文展示了 2 個例子（supplement Fig. S10e–f 與 Note）。
-- [論文] 作者自述的限制：單細胞 coverage 低，又有 allele drop-out，"Minor" 突變常偵測不到，需要合併多顆細胞分析；scDNA 只做了 2 例（paper.txt:1391；supplement p.26 Note）。
+- [論文] 作者自述的限制：單細胞 coverage 低，又有 allele drop-out，"Minor" 突變常偵測不到，需要合併多顆細胞分析；scDNA 只做了 2 例（fulltext.md:1391；supplement p.26 Note）。
 - [論文] 過濾 noisy cells 後的細胞數，Table S7 為 S8 138、S20 376；Fig. S10a 圖說寫成「138 and 376 cells in S20 and S8」，兩者順序相反。以 Table S7 為準。
 - [推論] 與 PhyClone 的 HGSOC 不同。PhyClone 論文的病人 2、3、9 有由 single-cell／targeted 驗證得到、topology 明確的 ground-truth 樹，可以計算 V-measure 與 AD F-score（`../phyclone_research/notes/03_EXPERIMENTS_RESULTS.md` E6）。B04 沒有這類可評分的樹，只能用來驗證 mutation pair 的先後順序與 CN 子群。
 - [推論] 若取得 JGA 資料，可以自行用 MEDICC2 等工具重新分析這 2 例的 10x scCNV 並建 CN tree。但這樣得到的仍是推論出來的樹，只有 2 例，SNV 層級的訊號也很稀疏。論文本身沒有做這一步。
 
 ### B03 — Funnell 2022（SIGNALS）
-- [論文] Methods（paper.txt 約 1984–2004 行）的流程：HMW DNA 上 PromethION 定序，Guppy v3 basecalling，minimap2 比對到 hg19+mm10 以去除小鼠 reads，再用 PEPPER-Margin-DeepVariant／WhatsHap 做 phasing。
+- [論文] Methods（fulltext.md 約 1984–2004 行）的流程：HMW DNA 上 PromethION 定序，Guppy v3 basecalling，minimap2 比對到 hg19+mm10 以去除小鼠 reads，再用 PEPPER-Margin-DeepVariant／WhatsHap 做 phasing。
 - [論文] Extended Data Fig.1 寫明「Long read sequencing, 5 genomes」。內文點名 SA1096（chr3–6 translocation）、SA530（CCNE1）、SA1184（MYC、5q）。ED Fig.9c 的 5q 圖標為 SA1181，與內文不一致；第 5 個 genome 是哪個樣本未寫明。
 - [論文] Data availability 沒有提到 ONT；原始資料可經 MTA 向 shahs3@mskcc.org 索取。
 - [repo] 以下 repository 都查不到 nanopore／PromethION dataset：

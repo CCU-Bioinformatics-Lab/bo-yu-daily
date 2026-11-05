@@ -11,9 +11,9 @@
 
 | 論文 | 病人／模型與 single cell | long feature 的實際角色 | 完整獨立 scDNA truth tree？ | 分類建議 |
 |---|---|---|---|---|
-| [B04 Lung 2022](../../papers/B04_lung_longread_phasing_2022/README.md) | 真實 NSCLC；2 病例 10x scDNA | ONT 跨 SNV reads 直接提供 partial order，S14 用以挑選 bulk tree 候選 | 否；scDNA 病例與最清楚 topology selection 病例不同 | 最優先交集，需限制語氣 |
-| [B01 Melanoma 2026](../../papers/B01_melanoma_longread_2026/README.md) | 小鼠 cell line；23 single-cell-derived cultures，bulk ONT | long-read SNV genotypes 建 ScisTree；SV／CNA／DMR 下游放置 | 否；非人類、非直接 scDNA，樹仍為 inferred reference | 第二類核心，公開方法開發資料 |
-| [B03 Funnell 2022](../../papers/B03_singlecell_mutational_processes_2022/README.md) | 真實／PDX scDNA＋isogenic cell lines | SIGNALS haplotype CN 映到 total-CN tree；ONT 驗證部分 complex SV | 否；PDX／tissue 混合，total CN inferred tree | 第一類／橋接；不能計作 direct long-read topology paper |
+| [B04 Lung 2022](../../papers/B04_lung_longread_phasing_2022/summary.md) | 真實 NSCLC；2 病例 10x scDNA | ONT 跨 SNV reads 直接提供 partial order，S14 用以挑選 bulk tree 候選 | 否；scDNA 病例與最清楚 topology selection 病例不同 | 最優先交集，需限制語氣 |
+| [B01 Melanoma 2026](../../papers/B01_melanoma_longread_2026/summary.md) | 小鼠 cell line；23 single-cell-derived cultures，bulk ONT | long-read SNV genotypes 建 ScisTree；SV／CNA／DMR 下游放置 | 否；非人類、非直接 scDNA，樹仍為 inferred reference | 第二類核心，公開方法開發資料 |
+| [B03 Funnell 2022](../../papers/B03_singlecell_mutational_processes_2022/summary.md) | 真實／PDX scDNA＋isogenic cell lines | SIGNALS haplotype CN 映到 total-CN tree；ONT 驗證部分 complex SV | 否；PDX／tissue 混合，total CN inferred tree | 第一類／橋接；不能計作 direct long-read topology paper |
 
 長分子產生 `11`／`10`／`01` 等 mutation pattern，對祖先／分支關係的證據比只看 marginal VAF 多；但這種證據仍受 haplotype copy number、mutation loss、coverage、mapping／tag errors 及 sample mixture 限制。germline HP1／HP2 是 homolog 身分，**不是 clone 身分**；PS block 也不是 somatic clone。這是四篇對本 repo 最一致的提醒。
 

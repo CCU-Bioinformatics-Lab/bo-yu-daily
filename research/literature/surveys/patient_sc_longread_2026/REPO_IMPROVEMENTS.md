@@ -24,7 +24,7 @@
 
 ### 優先一：先證明 read pairs 能排除哪種候選樹
 
-[B04 肺癌](../../papers/B04_lung_longread_phasing_2022/README.md) 的價值非常具體：long-read 局部突變順序可以在 bulk VAF 容許多種解時提供額外限制。這正對應 C4，而非只改善 SNV calling。
+[B04 肺癌](../../papers/B04_lung_longread_phasing_2022/summary.md) 的價值非常具體：long-read 局部突變順序可以在 bulk VAF 容許多種解時提供額外限制。這正對應 C4，而非只改善 SNV calling。
 
 先做一份 **held-out pair consistency report**：對 baseline trace 中每棵候選樹，檢查 pair 對 same／ancestor／descendant／branch 四種關係的支持；報告可辨識 pair 比例與衝突，而不是先挑最像文獻圖的樹。
 
@@ -41,7 +41,7 @@
 
 ### 優先二：用 allele-specific CN 限縮 multiplicity，保留不確定性
 
-[A04 Strand-seq](../../papers/A04_aml_strandseq_2024/README.md)、[B03 parallel CN evolution](../../papers/B03_singlecell_mutational_processes_2022/README.md)、[B05 MEDICC2](../../papers/B05_medicc2_2022/README.md)、[B07 Numbat](../../papers/B07_numbat_2022/README.md) 一起提示：total CN 與 major/minor 可能把不同親代染色體歷史壓成同一狀態。把 germline haplotype 對到 CN allele，才有機會將 multiplicity 的候選上限由 major CN 改為該 HP 的 `C_h`。
+[A04 Strand-seq](../../papers/A04_aml_strandseq_2024/summary.md)、[B03 parallel CN evolution](../../papers/B03_singlecell_mutational_processes_2022/summary.md)、[B05 MEDICC2](../../papers/B05_medicc2_2022/summary.md)、[B07 Numbat](../../papers/B07_numbat_2022/summary.md) 一起提示：total CN 與 major/minor 可能把不同親代染色體歷史壓成同一狀態。把 germline haplotype 對到 CN allele，才有機會將 multiplicity 的候選上限由 major CN 改為該 HP 的 `C_h`。
 
 對應 C2 的最低版本是 **soft phase-aware genotype prior**：對 mutation 所在 HP、major/minor orientation、CN uncertainty 做加權混合。只有高可信 segment 才使用 hard cap；不能用稀少或有 mapping bias 的 HP depth 直接宣告某 HP 就是 major。
 
@@ -49,7 +49,7 @@ C3 應保留 phased 與 unphased counts，且每個 read 在一個位點只進�
 
 ### 優先三：採兩層 benchmark，分開檢驗真實性與可識別性
 
-第一層用 [B01 23 個 ONT 單細胞衍生株](../../papers/B01_melanoma_longread_2026/README.md) 或完整 read simulator，建立可控制的 clone mixture、normal contamination、CN 與 read span。它最接近目前手上的 ONT cell-line workflow。B01 的參考樹仍由 SNV 推斷，phylogeny-constrained calls 不能反過來當獨立 topology 真值。
+第一層用 [B01 23 個 ONT 單細胞衍生株](../../papers/B01_melanoma_longread_2026/summary.md) 或完整 read simulator，建立可控制的 clone mixture、normal contamination、CN 與 read span。它最接近目前手上的 ONT cell-line workflow。B01 的參考樹仍由 SNV 推斷，phylogeny-constrained calls 不能反過來當獨立 topology 真值。
 
 第二層用 A01–A05 真實病人 scDNA/scWGS reference phylogeny 檢查泛化與錯誤模式。這些資料沒有同樣的 ONT reads 時，只能測 bulk/CN/tree 端或以受控模擬補 read-level observations；不能說已驗證真實病人 long-read pipeline。
 

@@ -20,7 +20,7 @@
 | # | 重複內容 | 出現位置 | 建議保留為單一來源 | 其餘處理 |
 |---|---|---|---|---|
 | D1 | PhyClone 八份筆記中英全文對照 | `phyclone_research/notes/*.md` 與 `notes/zh-TW/*.md`（8 對，內容逐段對應） | `zh-TW/`（CLAUDE.md 規定繁中為文件語言） | 英文版標為翻譯來源，不再雙邊更新；或只在 zh-TW 有修改時同步 |
-| D2 | 「B04：S14 用 long-read 選 linear，但 scDNA 是 S8／S20，不是全樹 truth」 | `literature/surveys/patient_sc_longread_2026/README.md`、`INTERSECTION_SUMMARY.md`、`B_SUMMARY.md`、`REPO_IMPROVEMENTS.md` §2、`B04/README.md` | `B04/README.md` | 綜整檔只留一句＋連結 |
+| D2 | 「B04：S14 用 long-read 選 linear，但 scDNA 是 S8／S20，不是全樹 truth」 | `literature/surveys/patient_sc_longread_2026/summary.md`、`INTERSECTION_SUMMARY.md`、`B_SUMMARY.md`、`REPO_IMPROVEMENTS.md` §2、`B04/README.md` | `B04/README.md` | 綜整檔只留一句＋連結 |
 | D3 | 「五篇 B 類不是五個 ONT clone-tree 方法」的篇數聲明 | `README.md`、`B_SUMMARY.md`、`INTERSECTION_SUMMARY.md` | `README.md` | 另兩份刪除重述 |
 | D4 | 未納入候選清單（LongSom、HATCHet2、ALPACA、SomaticHaplotype、RCK、Meltos、SAVANA…） | `INTERSECTION_SUMMARY.md` 擴展搜尋表、`B_SUMMARY.md` 暫未列入表、`SEARCH_LOG.md` | `SEARCH_LOG.md` | 兩張表合併進 SEARCH_LOG |
 | D6 | C0–C6 × 論文對照 | `plan.md` §4（設計）、`REPO_IMPROVEMENTS.md` §4（彙總表）、13 篇 README 末段 | 設計以 `plan.md` 為準；文獻對照以本文件 §3、§4 為準 | 各 README 末段保留「最小 benchmark」，C0–C6 逐條建議可縮短 |
@@ -92,4 +92,4 @@ HCC1395 目錄的過時內容已於 2026-10-16 刪除，分 6 個 commit（`8477
 1. **合併綜整檔**：把 `INTERSECTION_SUMMARY.md` 與 `B_SUMMARY.md` 的候選表併入 `SEARCH_LOG.md`；`README.md` 保留篇數聲明與閱讀路線；其餘重述改成連結（處理 D2–D5）。
 2. **PhyClone 筆記單語化**：確定以 `zh-TW/` 為主，英文版移到 `notes/en/` 或標記為翻譯來源（D1）。
 3. **回寫 `plan.md` 三個缺口**：K6 報告方式、K9 tagging 前 holdout、K10 是否允許重新分群。
-4. 把本文件加入 `research/INDEX.md`（已加）。
+4. 把本文件加入 `research/index.md`（已加）。

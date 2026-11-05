@@ -65,15 +65,15 @@ def main():
             errors.append(f"duplicate catalog {key}")
     for paper in papers:
         directory = PAPERS / paper["directory"]
-        for name in ("README.md", "paper.txt", "paper.pdf"):
+        for name in ("summary.md", "fulltext.md", "source.md", "paper.pdf"):
             if not (directory / name).is_file():
                 errors.append(f"{paper['id']}: missing {name}")
-        text_path = directory / "paper.txt"
+        text_path = directory / "fulltext.md"
         if text_path.is_file():
             extracted = text_path.read_text(encoding="utf-8", errors="replace")
             if len(extracted.strip()) < 3000:
                 errors.append(f"{paper['id']}: unexpectedly little extracted paper text")
-        notes = directory / "README.md"
+        notes = directory / "summary.md"
         if notes.is_file() and paper["doi"].lower() not in notes.read_text(encoding="utf-8").lower():
             errors.append(f"{paper['id']}: formal DOI missing from notes")
         for pdf in sorted(directory.glob("*.pdf")):

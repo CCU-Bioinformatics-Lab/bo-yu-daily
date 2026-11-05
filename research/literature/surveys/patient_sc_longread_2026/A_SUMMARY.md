@@ -6,11 +6,11 @@
 
 | ID | 論文／年份 | 真病人與樹範圍 | 推樹輸入與方法 | 長讀／phase 的實際角色 | 最值得本 repo 使用的內容 |
 |---|---|---|---|---|---|
-| [A01](../../papers/A01_ovarian_cfDNA_2025/README.md) | [Tracking clonal evolution during treatment in ovarian cancer using cell-free DNA](https://doi.org/10.1038/s41586-025-09580-0), 2025 | 24 HGSOC 病人有 scWGS；18 為多年追蹤分析；21,916 cells | SIGNALS allele-specific CN → MEDICC2 → 人工挑 clades；SV markers 追 cfDNA | 無 ONT/PacBio；haplotype-specific CN 實際進樹 | CN-aware CCF、WGD、pseudobulk benchmark |
-| [A02](../../papers/A02_sprinter_2025/README.md) | [SPRINTER](https://doi.org/10.1038/s41588-024-01989-z), 2024 online／2025 卷期 | 1 NSCLC 病人、10 部位、14,994 cells；另分析既有 breast/ovarian datasets | clone-pseudobulk SNV frequency → HUNTRESS topology → MEDICC2 固定該 topology → MACHINA | 無 long reads；不是 HP/PS likelihood 方法 | S-phase/CN 假訊號、clone 內 subclonal SNVs、分部位驗證 |
-| [A03](../../papers/A03_pancreatic_snDNA_2023/README.md) | [Application of high-throughput single-nucleus DNA sequencing in pancreatic cancer](https://doi.org/10.1038/s41467-023-36344-z), 2023 | 16 PDAC 病人；主要 Fig.6 樹來自 PA04 一人、3 samples、8,061 nuclei | 25 SNV＋8 SMAD4 deletion features → SCG 分群 → clone/event hierarchy | 無 long reads；HaplotypeCaller 名稱不代表 phasing | 正常細胞混入、ADO/doublets、CN 導致 mutation loss |
-| [A04](../../papers/A04_aml_strandseq_2024/README.md) | [Single-cell multiomics analysis… CK-AML](https://doi.org/10.1038/s41588-024-01999-x), 2024 | 8 primary 病人；542 初始 cells；加 PDX/縱向為855 genomes | Strand-seq chromosome-length haplotype＋depth＋orientation → scTRIP SV → 人工 clone trees | **75-bp Illumina Strand-seq**；OGM 為光學圖譜，均非 long-read sequencing | total CN 相同但 homolog/SV 不同的克隆；C2/C5/C6 |
-| [A05](../../papers/A05_mpal_multiome_2024/README.md) | [Multiomic single cell sequencing identifies stemlike nature of mixed phenotype acute leukemia](https://doi.org/10.1038/s41467-024-52317-2), 2024 | 14 MPAL 病人、58,807 DAb-seq cells；9 人可作多步 mutation/phenotype 分析 | targeted DNA genotypes → SCITE mutation tree | 無 long reads／genome-wide CN／PS | 少量公開 genotype 起步、FP/FN 與 rare-clone 敏感性 |
+| [A01](../../papers/A01_ovarian_cfDNA_2025/summary.md) | [Tracking clonal evolution during treatment in ovarian cancer using cell-free DNA](https://doi.org/10.1038/s41586-025-09580-0), 2025 | 24 HGSOC 病人有 scWGS；18 為多年追蹤分析；21,916 cells | SIGNALS allele-specific CN → MEDICC2 → 人工挑 clades；SV markers 追 cfDNA | 無 ONT/PacBio；haplotype-specific CN 實際進樹 | CN-aware CCF、WGD、pseudobulk benchmark |
+| [A02](../../papers/A02_sprinter_2025/summary.md) | [SPRINTER](https://doi.org/10.1038/s41588-024-01989-z), 2024 online／2025 卷期 | 1 NSCLC 病人、10 部位、14,994 cells；另分析既有 breast/ovarian datasets | clone-pseudobulk SNV frequency → HUNTRESS topology → MEDICC2 固定該 topology → MACHINA | 無 long reads；不是 HP/PS likelihood 方法 | S-phase/CN 假訊號、clone 內 subclonal SNVs、分部位驗證 |
+| [A03](../../papers/A03_pancreatic_snDNA_2023/summary.md) | [Application of high-throughput single-nucleus DNA sequencing in pancreatic cancer](https://doi.org/10.1038/s41467-023-36344-z), 2023 | 16 PDAC 病人；主要 Fig.6 樹來自 PA04 一人、3 samples、8,061 nuclei | 25 SNV＋8 SMAD4 deletion features → SCG 分群 → clone/event hierarchy | 無 long reads；HaplotypeCaller 名稱不代表 phasing | 正常細胞混入、ADO/doublets、CN 導致 mutation loss |
+| [A04](../../papers/A04_aml_strandseq_2024/summary.md) | [Single-cell multiomics analysis… CK-AML](https://doi.org/10.1038/s41588-024-01999-x), 2024 | 8 primary 病人；542 初始 cells；加 PDX/縱向為855 genomes | Strand-seq chromosome-length haplotype＋depth＋orientation → scTRIP SV → 人工 clone trees | **75-bp Illumina Strand-seq**；OGM 為光學圖譜，均非 long-read sequencing | total CN 相同但 homolog/SV 不同的克隆；C2/C5/C6 |
+| [A05](../../papers/A05_mpal_multiome_2024/summary.md) | [Multiomic single cell sequencing identifies stemlike nature of mixed phenotype acute leukemia](https://doi.org/10.1038/s41467-024-52317-2), 2024 | 14 MPAL 病人、58,807 DAb-seq cells；9 人可作多步 mutation/phenotype 分析 | targeted DNA genotypes → SCITE mutation tree | 無 long reads／genome-wide CN／PS | 少量公開 genotype 起步、FP/FN 與 rare-clone 敏感性 |
 
 建議起步資料順序：**A03 PA04 的公開 SCG_input → A05 genotype/source data → A01 clone CN/CCF → A02/A04 較複雜資料**。這是取得資料與驗證成本的排序，不代表論文品質排序；EGA/dbGaP raw data 大多仍需 DAC。
 
@@ -39,7 +39,7 @@
 
 ## PDF 下載與閱讀 manifest
 
-全部為 Nature 官方 final journal PDFs；每個目錄包含 `paper.pdf`、以 `pdftotext -layout` 產生的 `paper.txt`、已讀 Methods/Fig/Data availability 的繁中 README。已用 `file` 確認 PDF、`pdfinfo` 確認 metadata/physical pages 並成功抽全文。部分 PDF 的 `file` heuristic 頁數與 `pdfinfo` 不同，以下採解析 PDF page tree 的 **pdfinfo 實體頁數**；精讀頁碼也採此口徑。
+全部為 Nature 官方 final journal PDFs；每個目錄包含 `paper.pdf`、以 `pdftotext -layout` 產生的 `fulltext.md`、已讀 Methods/Fig/Data availability 的繁中 README。已用 `file` 確認 PDF、`pdfinfo` 確認 metadata/physical pages 並成功抽全文。部分 PDF 的 `file` heuristic 頁數與 `pdfinfo` 不同，以下採解析 PDF page tree 的 **pdfinfo 實體頁數**；精讀頁碼也採此口徑。
 
 | ID | 官方下載 URL | pdfinfo 頁數 | SHA-256 |
 |---|---|---:|---|

@@ -2,7 +2,7 @@
 
 11 篇論文是否公開程式碼，以及對應 GitHub repo 的星星數。
 
-- **連結來源**：各篇 `papers/*/paper.txt` 的 Code availability 段落（A01 的 duplex 連結被 PDF 雙欄切斷，改用 `pdftotext -raw` 重新抽取）。
+- **連結來源**：各篇 `papers/*/fulltext.md` 的 Code availability 段落（A01 的 duplex 連結被 PDF 雙欄切斷，改用 `pdftotext -raw` 重新抽取）。
 - **星星數**：2026-10-16 以 `gh api repos/<owner>/<repo>` 查詢的快照，會隨時間變動，引用前要重新查。
 - **分類**：「方法本體」指論文提出的方法實作；「pipeline／分析腳本」指資料處理或重現圖表的程式；「未發布」指論文只引用第三方工具。
 
@@ -18,7 +18,7 @@
 | B04 | Lung cancer long-read phasing (Nat Commun 2022) | **未發布** | 只引用第三方工具，例如 `friend1ws/nanomonsv`（99⭐）；資料在 JGA（JGAS000349），需申請 | — |
 | B05 | MEDICC2 (Genome Biol 2022) | **方法本體** | `schwarzlab-ccb/medicc2`（論文寫 Bitbucket `schwarzlab/medicc2`） | 10 |
 | B07 | Numbat (Nat Biotechnol 2022) | **方法本體** | `kharchenkolab/numbat`<br>`kharchenkolab/NumbatAnalysis`（重現論文結果） | **231**<br>10 |
-| B09 | PCDH methylation barcode (bioRxiv 2026) | **未發布** | 正文只寫「custom workflow and scripts」；正文與補充資料都沒有 code 或 data 連結（2026-10-20 讀 `papers/B09_*/README.md`） | — |
+| B09 | PCDH methylation barcode (bioRxiv 2026) | **未發布** | 正文只寫「custom workflow and scripts」；正文與補充資料都沒有 code 或 data 連結（2026-10-20 讀 `papers/B09_*/summary.md`） | — |
 
 ## 重點
 

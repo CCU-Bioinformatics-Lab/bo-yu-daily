@@ -12,11 +12,11 @@
 
 | 論文／層級 | 哪一層資料進入演化推理 | 是否重新估topology | single-cell與真值限制 | 最適合本repo的用途 |
 |---|---|---|---|---|
-| [B01 melanoma 2026](../../papers/B01_melanoma_longread_2026/README.md)，B1實測ONT | 每個single-cell-derived subline的long-read SNV genotype→ScisTree；SV/CNA/DMR後置 | SNV重新建樹；TreeHarmonizer固定輸入樹 | 23小鼠培養subline，非病人／直接scDNA；inbred致germline phase不足 | 分離clone的long-read mixing、mutation loss與placement QC；不適合作HP/PS benchmark首選 |
-| [B04 lung 2022](../../papers/B04_lung_longread_phasing_2022/README.md)，B1實測ONT | 同long read的somatic pair partial order；S14據此排除ClonEvol候選 | 有候選topology篩選，不是全基因組聯合HP likelihood | 20病人，S8/S20 scDNA驗證局部關係；不是S14全樹truth | 與現有C4最直接對照、PS範圍、CN影響及held-out pair驗證 |
-| [B07 Numbat 2022/2023](../../papers/B07_numbat_2022/README.md)，B3 haplotype/CN可移植方法 | population haplotype、allele counts、expression→CNV posterior→ScisTree | 迭代重新估single-cell tree | 病人scRNA；paired scDNA驗證為NCI-N87細胞株；非long-read實測 | phase uncertainty、soft genotype、cluster/tree迭代與CN-neutral LOH |
-| [B05 MEDICC2 2022](../../papers/B05_medicc2_2022/README.md)，B3比較 | haplotype-specific integer CN→LOH/WGD-aware minimum-event distance→NJ | 是；另重建祖先CN | TNBC真病人single cells；short-read CN／推phase；真實樹是reference | 獨立CN tree、parallel LOH/MSAI/WGD simulations，勿拿CN distance當SNV posterior |
-| [B03 mutational processes 2022](../../papers/B03_singlecell_mutational_processes_2022/README.md)，橋接 | scDNA/haplotype-specific CN揭露parallel evolution；longread主要作驗證 | 有single-cell phylogeny，但不能宣稱longread linkage入topology | 有真病人與PDX／模型材料，需逐組分開 | 跨資料層驗證與避免把upstream validation冒充tree inference |
+| [B01 melanoma 2026](../../papers/B01_melanoma_longread_2026/summary.md)，B1實測ONT | 每個single-cell-derived subline的long-read SNV genotype→ScisTree；SV/CNA/DMR後置 | SNV重新建樹；TreeHarmonizer固定輸入樹 | 23小鼠培養subline，非病人／直接scDNA；inbred致germline phase不足 | 分離clone的long-read mixing、mutation loss與placement QC；不適合作HP/PS benchmark首選 |
+| [B04 lung 2022](../../papers/B04_lung_longread_phasing_2022/summary.md)，B1實測ONT | 同long read的somatic pair partial order；S14據此排除ClonEvol候選 | 有候選topology篩選，不是全基因組聯合HP likelihood | 20病人，S8/S20 scDNA驗證局部關係；不是S14全樹truth | 與現有C4最直接對照、PS範圍、CN影響及held-out pair驗證 |
+| [B07 Numbat 2022/2023](../../papers/B07_numbat_2022/summary.md)，B3 haplotype/CN可移植方法 | population haplotype、allele counts、expression→CNV posterior→ScisTree | 迭代重新估single-cell tree | 病人scRNA；paired scDNA驗證為NCI-N87細胞株；非long-read實測 | phase uncertainty、soft genotype、cluster/tree迭代與CN-neutral LOH |
+| [B05 MEDICC2 2022](../../papers/B05_medicc2_2022/summary.md)，B3比較 | haplotype-specific integer CN→LOH/WGD-aware minimum-event distance→NJ | 是；另重建祖先CN | TNBC真病人single cells；short-read CN／推phase；真實樹是reference | 獨立CN tree、parallel LOH/MSAI/WGD simulations，勿拿CN distance當SNV posterior |
+| [B03 mutational processes 2022](../../papers/B03_singlecell_mutational_processes_2022/summary.md)，橋接 | scDNA/haplotype-specific CN揭露parallel evolution；longread主要作驗證 | 有single-cell phylogeny，但不能宣稱longread linkage入topology | 有真病人與PDX／模型材料，需逐組分開 | 跨資料層驗證與避免把upstream validation冒充tree inference |
 
 B1/B2/B3僅是此調查的技術證據分層，不是各方法官方命名。B01的long-read-derived SNV是直接輸入樹，但不是long-read獨有的co-read feature；B04才直接用單分子關係限制候選。這個區別對本repo聲稱「新增HP/co-read訊號」尤其重要。
 

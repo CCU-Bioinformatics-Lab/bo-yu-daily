@@ -1,7 +1,7 @@
 # HG008 真實腫瘤統計：檢查 HP-aware 真值樹的事件是否真實（2026-10-25）
 
 目的：用 GIAB HG008-T（胰臟癌 PDAC 細胞株）的 haplotype-resolved 真值，檢查 [`hp_truth_tree.png`](../../research/simulation_pipeline_research/figures/hp_truth_tree.png) 的事件在真實腫瘤中是否存在。
-這是「先證明真值樹合理」主線的第一個實驗（見 `research/simulation_pipeline_research/truth_evidence_2026-10-25/README.md`）。
+這是「先證明真值樹合理」主線的第一個實驗（見 `research/simulation_pipeline_research/truth_evidence_2026-10-25/00_overview.md`）。
 
 ## 結論
 

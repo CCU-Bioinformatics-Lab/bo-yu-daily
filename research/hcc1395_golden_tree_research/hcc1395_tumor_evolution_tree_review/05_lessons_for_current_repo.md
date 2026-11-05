@@ -2,7 +2,7 @@
 
 這一章只把論文的可移植原則，對照目前 repo 的 ASCAT + long-read/HP-count 架構；不把論文的資料介面假設成目前模型已經使用的介面。
 
-目前 repo 對 PhyloWGS 原始模型的補充整理可參考 [`phylowgs_model_review.md`](../phylowgs_model_review.md)；本章只保留這篇 HCC1395 resource paper 對資料可信度與驗證層級的啟示。
+目前 repo 對 PhyloWGS 原始模型的補充整理可參考 [`08_phylowgs_model_review.md`](08_phylowgs_model_review.md)；本章只保留這篇 HCC1395 resource paper 對資料可信度與驗證層級的啟示。
 
 ## 1. 可直接借用的研究原則
 

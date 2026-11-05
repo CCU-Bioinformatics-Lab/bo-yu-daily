@@ -12,7 +12,7 @@
 
 ## 去哪裡找
 
-先看 `research/INDEX.md`（研究總入口）。
+研究知識庫入口是 `research/index.md`（唯一索引，檢索順序寫在檔頭）。
 
 | 要找 | 先看 |
 |---|---|
@@ -20,12 +20,12 @@
 | 實驗結論與狀態 | `lab_report/INDEX.md` |
 | 腳本與主流程指令 | `tools/README.md` |
 | 會議需求、決議、待辦 | `meeting_record/index.md` → 最新一次 `_summary.md` |
-| 論文 | `research/literature/README.md`（分類只改 `paper_categories.tsv`，再跑 `python3 research/literature/tools/sync_paper_categories.py`，`--check` 查 drift） |
+| 論文 | `research/index.md`「論文」：路徑、一句話、關鍵字 |
 | 模擬器（現行） | `diplosim/DECISIONS.md`；CONIPHER 步驟對照 `diplosim/docs/conipher_steps.md`、`porting_map.md`；測試 `cd diplosim && cargo test` |
 | 樹重建（HP 擴充） | haploclone：`/bip8_disk/boyu114/haploclone/rust/`（branch `rust-port`）。現況 `rust/docs/PORTING.md`、`decisions.tsv`；HP 設計 `rust/docs/plan.md`（10-21 後未更新，先看檔頭「現況」）。改 haploclone 時，預設路徑的輸出要和原版 bit-identical |
 
 其他目錄：
-- `research/phyclone_research/`：PhyClone 原版的論文與程式分析，只當背景。HP 擴充的改動在 haploclone 做，不改 `PhyClone/` submodule。
+- `research/phyclone_research/`：PhyClone 原版的論文與程式分析，只當背景。HP 擴充的改動在 haploclone 做。原版程式的本機 submodule 已在 2026-11-05 刪除；要對照原版，看上游 GitHub `Roth-Lab/PhyClone` commit `2738324`。
 - `research/simulation_pipeline_research/`：模擬流程研究；`upstream/` 是 Pairtree、CONIPHER 的 submodule。`research/hcc1395_golden_tree_research/`：HCC1395 參考樹文獻。
 - `report/`：投影片。`daily/`：工作日誌，只作導覽，不能當事實來源。
 
@@ -35,7 +35,7 @@
 - 寫作採 ASD-STE100 風格，約做到 80%：先寫結論，一句一件事，句子短，主動語態，一詞一義。
 - 使用者問「是不是／是什麼」或說「簡單說」：先用 2–4 句白話回答，不用標題與表格。
 - **大型資料先找共用副本，不要重複下載。** 先查 `docs/index.md`，或問使用者實驗室成員是否已下載；有就引用路徑，只讀不寫。（使用者 2026-11-04：多人重複下載會把 server 硬碟用完）
-- **repo 是公開的**（GitHub `CCU-Bioinformatics-Lab/bo-yu-daily`）。不要 commit 論文 PDF、論文補充表格、金鑰或個人資料；`.gitignore` 已擋 `research/**/*.pdf`、`*.xlsx` 與 `lab_report` 的大型輸出。只在使用者要求時 commit 或 push。
+- **repo 是公開的**（GitHub `CCU-Bioinformatics-Lab/bo-yu-daily`）。不要 commit 論文 PDF、論文全文、論文補充表格、金鑰或個人資料；`.gitignore` 已擋 `research/**/*.pdf`、`*.xlsx`、`research/literature/papers/*/fulltext.md` 與 `lab_report` 的大型輸出。只在使用者要求時 commit 或 push。
 - 投影片：原始檔放 `report/<簡報名稱>/`。動手前先把新指令併入 `report/report_rule.md`「個人風格」，再讀並遵守該檔。報告講什麼、照什麼順序，以本檔「交付」為準；`report_rule.md` 只管投影片怎麼做。
 
 ## 決策點：先列方案，停下來讓使用者選（M1，最優先）
