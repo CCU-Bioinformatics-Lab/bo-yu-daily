@@ -97,8 +97,8 @@ pub fn write_all(sim: &Simulation, dir: &Path, name: &str) -> io::Result<()> {
     let og_header = [
         "PATIENT", "SAMPLE", "VAR_POS", "CHR", "POS", "REF", "ALT", "REF_COUNT", "VAR_COUNT", "DEPTH",
         "TRUE_VAF", "VAF_OBS", "TRUE_CCF", "TRUE_DCF", "CCF_OBS", "MUT_CN", "CN_A", "CN_B", "TOTAL_CN",
-        "CN_PREVALENCE", "PURITY", "PLOIDY", "CLUSTER", "NOISE", "ALLELE", "HP1_REF", "HP1_ALT",
-        "HP2_REF", "HP2_ALT", "HP0_REF", "HP0_ALT",
+        "CN_PREVALENCE", "PURITY", "PLOIDY", "CLUSTER", "ALLELE", "HP1_REF", "HP1_ALT",
+        "HP2_REF", "HP2_ALT",
     ];
     let og_rows = sim.rows.iter().zip(&converted).zip(&sim.hp).map(|((r, c), h)| {
         let l = &sim.loci[r.pos];
@@ -126,14 +126,11 @@ pub fn write_all(sim: &Simulation, dir: &Path, name: &str) -> io::Result<()> {
             r2(r.purity),
             r2(ploidy),
             r.child.to_string(),
-            py_bool(r.noise),
             sim.alleles[r.pos].name().to_string(),
             h.hp1_ref.to_string(),
             h.hp1_alt.to_string(),
             h.hp2_ref.to_string(),
             h.hp2_alt.to_string(),
-            h.hp0_ref.to_string(),
-            h.hp0_alt.to_string(),
         ]
     });
     write_tsv(&dir.join(format!("{name}.tsv")), &og_header, og_rows)?;
@@ -224,21 +221,12 @@ fn info_rows(sim: &Simulation, name: &str) -> Vec<Vec<String>> {
         ("n_subclonal_wgd", p.n_subclonal_wgd.to_string()),
         ("minimum_branch_length", p.minimum_branch_length.to_string()),
         ("coverage", py_float(p.coverage)),
-        ("depth_dispersion", p.depth_dispersion.map_or("None".to_string(), py_float)),
         ("min_tumour_purity", py_float(p.min_tumour_purity)),
         ("max_tumour_purity", py_float(p.max_tumour_purity)),
-        ("fract_noise", py_float(p.fract_noise)),
-        ("n_noise_clones", p.n_noise_clones.to_string()),
         ("prop_snv_on_b", py_float(p.prop_snv_on_b)),
-        ("prop_tagged", py_float(p.prop_tagged)),
-        ("tag_concentration", p.tag_concentration.map_or("None".to_string(), py_float)),
-        ("mistag_rate", py_float(p.mistag_rate)),
-        ("mistag_concentration", p.mistag_concentration.map_or("None".to_string(), py_float)),
-        ("base_error", py_float(p.base_error)),
         ("random_seed", sim.seed.to_string()),
         ("purity", py_float(sim.sample.purity)),
         ("prop_mut_lost", py_float(sim.evolution.prop_mutation_loss)),
-        ("noise_clones", join(&sim.noise_clones)),
         ("simulation_warnings", sim.warnings.join(" | ")),
     ];
     rows.into_iter().map(|(k, v)| vec![k.to_string(), v]).collect()

@@ -1,12 +1,10 @@
 //! diplosim extensions (新寫; DECISIONS 2026-10-30): which allele carries each SNV, and how the
-//! CONIPHER read counts split into HP1 (allele A), HP2 (allele B) and HP0 (untagged).
+//! CONIPHER read counts split into HP1 (allele A) and HP2 (allele B).
 use std::collections::BTreeMap;
 
 use rand::Rng as _;
-use rand_distr::{Beta, Distribution};
 
 use crate::evolution::{Evolution, Genotype};
-use crate::params::Params;
 use crate::sequencing::{binomial, Sample, VariantRow};
 use crate::topology::NodeId;
 use crate::Rng;
@@ -55,37 +53,23 @@ pub fn relabel(evo: &mut Evolution, alleles: &[Allele]) {
     }
 }
 
-/// Read counts per haplotag. Each `*_REF + *_ALT` summed over HP1, HP2 and HP0 gives REF_COUNT
-/// and VAR_COUNT (CONIPHER's, after `base_error`).
+/// Read counts per haplotype. `*_REF` sums to REF_COUNT and `*_ALT` to VAR_COUNT.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct HpCounts {
     pub hp1_ref: u64,
     pub hp1_alt: u64,
     pub hp2_ref: u64,
     pub hp2_alt: u64,
-    pub hp0_ref: u64,
-    pub hp0_alt: u64,
-}
-
-impl HpCounts {
-    pub fn alt(&self) -> u64 {
-        self.hp1_alt + self.hp2_alt + self.hp0_alt
-    }
 }
 
 /// Option ②: all alt reads go to the SNV's haplotype X. Ref reads split by the expected ref
 /// molecules on each allele over the mixture: X carries F_X - M of them, the other allele O
-/// carries F_O. Then (DECISIONS 2026-10-31) each read shows the other allele with probability
-/// `base_error` and carries the other haplotype's tag with probability `mistag_rate`, or with
-/// `mistag_concentration` k a per-site draw from Beta(k * mistag_rate, k * (1 - mistag_rate)). Last,
-/// every count loses Binomial(count, 1 - t) reads to HP0, where t is `prop_tagged`, or with
-/// `tag_concentration` k a per-site draw from Beta(k * prop_tagged, k * (1 - prop_tagged)).
+/// carries F_O.
 pub fn split_counts(
     rows: &[VariantRow],
     total: &BTreeMap<NodeId, Vec<Genotype>>,
     sample: &Sample,
     alleles: &[Allele],
-    p: &Params,
     rng: &mut Rng,
 ) -> Vec<HpCounts> {
     rows.iter()
@@ -105,51 +89,14 @@ pub fn split_counts(
             let alt = row.variant_reads;
             let ref_reads = row.total_reads - alt;
             let denom = f_x - m + f_o;
-            // No ref-carrying copy anywhere: any ref reads (noise SNVs) favour neither allele.
+            // No ref-carrying copy anywhere: the VAF is 1, so there are no ref reads to split.
             let p_other = if denom > 0.0 { f_o / denom } else { 0.5 };
             let ref_o = binomial(rng, ref_reads, p_other);
             let ref_x = ref_reads - ref_o;
-            let (mut hp1_ref, mut hp1_alt, mut hp2_ref, mut hp2_alt) = match x {
-                Allele::A => (ref_x, alt, ref_o, 0),
-                Allele::B => (ref_o, 0, ref_x, alt),
-            };
-            // Both moves are drawn from the counts before the move, so a read flips at most once.
-            if p.base_error > 0.0 {
-                (hp1_ref, hp1_alt) = swap_some(rng, hp1_ref, hp1_alt, p.base_error);
-                (hp2_ref, hp2_alt) = swap_some(rng, hp2_ref, hp2_alt, p.base_error);
+            match x {
+                Allele::A => HpCounts { hp1_ref: ref_x, hp1_alt: alt, hp2_ref: ref_o, hp2_alt: 0 },
+                Allele::B => HpCounts { hp1_ref: ref_o, hp1_alt: 0, hp2_ref: ref_x, hp2_alt: alt },
             }
-            if p.mistag_rate > 0.0 {
-                let mistag = site_rate(rng, p.mistag_rate, p.mistag_concentration);
-                (hp1_ref, hp2_ref) = swap_some(rng, hp1_ref, hp2_ref, mistag);
-                (hp1_alt, hp2_alt) = swap_some(rng, hp1_alt, hp2_alt, mistag);
-            }
-            let tag_rate = site_rate(rng, p.prop_tagged, p.tag_concentration);
-            let mut untag = |tagged: u64| {
-                let moved = binomial(rng, tagged, 1.0 - tag_rate);
-                (tagged - moved, moved)
-            };
-            let (hp1_ref, r1) = untag(hp1_ref);
-            let (hp1_alt, a1) = untag(hp1_alt);
-            let (hp2_ref, r2) = untag(hp2_ref);
-            let (hp2_alt, a2) = untag(hp2_alt);
-            HpCounts { hp1_ref, hp1_alt, hp2_ref, hp2_alt, hp0_ref: r1 + r2, hp0_alt: a1 + a2 }
         })
         .collect()
-}
-
-/// A site's own rate: Beta(k * mean, k * (1 - mean)) with concentration k, or `mean` itself
-/// when k is unset or mean is 0 or 1. Draws nothing in the fixed case, so unset k keeps the
-/// random stream of the fixed-rate model.
-fn site_rate(rng: &mut Rng, mean: f64, k: Option<f64>) -> f64 {
-    match k {
-        Some(k) if mean > 0.0 && mean < 1.0 => Beta::new(k * mean, k * (1.0 - mean)).unwrap().sample(rng),
-        _ => mean,
-    }
-}
-
-/// Moves Binomial(x, rate) reads from x to y and Binomial(y, rate) from y to x.
-fn swap_some(rng: &mut Rng, x: u64, y: u64, rate: f64) -> (u64, u64) {
-    let to_y = binomial(rng, x, rate);
-    let to_x = binomial(rng, y, rate);
-    (x - to_y + to_x, y - to_x + to_y)
 }

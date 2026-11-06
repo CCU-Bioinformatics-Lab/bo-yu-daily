@@ -22,7 +22,7 @@
 
 ## diplosim 驗證主流程
 
-> **2026-11-04 起暫停**（`diplosim/DECISIONS.md`）。以下只供重現既有結果，不要用來開新的 HCC1395 實驗。
+> **2026-11-04 起暫停**（`diplosim/DECISIONS.md`）。以下只供重現既有結果，不要用來開新的 HCC1395 實驗。2026-11-06 起 `diplosim` 已移除 HP0、`prop_tagged`、`tag_concentration`、`mistag_rate`、`mistag_concentration`、`base_error`、`fract_noise`、`n_noise_clones`、`depth_dispersion`；要重現，先切回移除前的 commit。
 
 1. **真實端（每個 subsample 一次）：** `bash tools/diplosim_purity_holdout_one.sh ...`：haplotag、ClairS HC 位點、pileup。
 2. **模擬＋比較：** 設定 `OUT_ROOT`、`DIPLOSIM_PPC_RANGES=tools/diplosim_knob_ranges_hcc1395.tsv`、`KNOBS`，再跑 `bash tools/diplosim_purity_holdout_v2.sh <purity> <purity 範圍> <coverage> <真實端目錄>`。

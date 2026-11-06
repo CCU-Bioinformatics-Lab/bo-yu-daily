@@ -3,7 +3,6 @@
 //! docs/porting_map.md.
 pub mod evolution;
 pub mod hp;
-pub mod noise;
 pub mod output;
 pub mod params;
 pub mod sequencing;
@@ -17,7 +16,7 @@ use hp::{Allele, HpCounts};
 use output::Locus;
 use params::Params;
 use sequencing::{Sample, VariantRow};
-use topology::{NodeId, Tree};
+use topology::Tree;
 
 pub type Rng = ChaCha8Rng;
 
@@ -58,7 +57,6 @@ pub struct Simulation {
     /// Aligned with `rows`.
     pub hp: Vec<HpCounts>,
     pub loci: Vec<Locus>,
-    pub noise_clones: Vec<NodeId>,
     pub warnings: Vec<String>,
 }
 
@@ -68,8 +66,7 @@ pub fn simulate(params: &Params, seed: u64) -> Result<Simulation, String> {
     params.validate()?;
     let p = params;
     let mut rng = Rng::seed_from_u64(seed);
-    let n_noise = p.n_noise();
-    let n_pos = p.n_snv + n_noise;
+    let n_pos = p.n_snv;
 
     let tree = topology::simulate_topology(p.n_clones, &mut rng);
     let mut evolution = evolution::tree_profiles(&tree, n_pos, p, &mut rng)?;
@@ -83,26 +80,16 @@ pub fn simulate(params: &Params, seed: u64) -> Result<Simulation, String> {
             snv_edge[pos] = edge;
         }
     }
-    let mut rows = sequencing::make_sequencing_data(
+    let rows = sequencing::make_sequencing_data(
         &evolution.total,
         &evolution.dcf,
         &sample,
         tree.root,
         &snv_edge,
         p.coverage,
-        p.depth_dispersion,
         &mut rng,
     );
-    let noise_clones = if p.fract_noise > 0.0 {
-        noise::add_noise(&mut rows, n_noise, p.n_noise_clones, &mut rng)
-    } else {
-        Vec::new()
-    };
-    let hp = hp::split_counts(&rows, &evolution.total, &sample, &alleles, p, &mut rng);
-    // base_error changes which allele a read shows; the observed alt count follows it.
-    for (row, h) in rows.iter_mut().zip(&hp) {
-        row.variant_reads = h.alt();
-    }
+    let hp = hp::split_counts(&rows, &evolution.total, &sample, &alleles, &mut rng);
     let loci = output::assign_loci(n_pos, &mut rng)?;
 
     let mut warnings = evolution.warnings.clone();
@@ -115,5 +102,5 @@ pub fn simulate(params: &Params, seed: u64) -> Result<Simulation, String> {
             py_float(prop_missing)
         ));
     }
-    Ok(Simulation { params: p.clone(), seed, tree, evolution, alleles, sample, rows, hp, loci, noise_clones, warnings })
+    Ok(Simulation { params: p.clone(), seed, tree, evolution, alleles, sample, rows, hp, loci, warnings })
 }

@@ -99,42 +99,23 @@ fn prop_snv_on_b_zero_puts_every_snv_on_hp1() {
 }
 
 #[test]
-fn prop_tagged_one_leaves_no_untagged_reads() {
-    let mut p = Params::new(4, 500);
-    p.prop_tagged = 1.0;
-    let rows = written_rows(&simulate(&p, 12).unwrap(), "tagged");
-    assert!(rows.iter().all(|r| n(r, "HP0_REF") == 0 && n(r, "HP0_ALT") == 0));
-
-    p.prop_tagged = 0.8;
-    let rows = written_rows(&simulate(&p, 12).unwrap(), "untagged");
-    let hp0: u64 = rows.iter().map(|r| n(r, "HP0_REF") + n(r, "HP0_ALT")).sum();
-    let depth: u64 = rows.iter().map(|r| n(r, "DEPTH")).sum();
-    let frac = hp0 as f64 / depth as f64;
-    assert!((frac - 0.2).abs() < 0.01, "untagged fraction {frac}, expected about 0.2");
-}
-
-#[test]
-fn tag_concentration_spreads_the_tag_fraction_across_sites_around_prop_tagged() {
-    let tag_fracs = |p: &Params, tag: &str| -> Vec<f64> {
-        written_rows(&simulate(p, 13).unwrap(), tag)
-            .iter()
-            .filter(|r| n(r, "DEPTH") >= 100)
-            .map(|r| 1.0 - (n(r, "HP0_REF") + n(r, "HP0_ALT")) as f64 / n(r, "DEPTH") as f64)
-            .collect()
-    };
-    let sd = |x: &[f64]| {
-        let m = x.iter().sum::<f64>() / x.len() as f64;
-        ((x.iter().map(|v| (v - m).powi(2)).sum::<f64>() / x.len() as f64).sqrt(), m)
-    };
-    let mut p = Params::new(4, 2000);
-    p.prop_tagged = 0.86;
-    let (sd_fixed, _) = sd(&tag_fracs(&p, "fixed"));
-    p.tag_concentration = Some(1.0);
-    let (sd_beta, mean_beta) = sd(&tag_fracs(&p, "beta"));
-    assert!(sd_fixed < 0.06 && sd_beta > 0.2, "SD fixed {sd_fixed}, Beta {sd_beta}");
-    assert!((mean_beta - 0.86).abs() < 0.03, "mean tag fraction {mean_beta}");
-    p.tag_concentration = Some(0.0);
-    assert!(p.validate().is_err());
+fn output_has_no_untagged_reads_and_cli_has_no_read_noise_flags() {
+    let dir = scratch("nohp0");
+    output::write_all(&simulate(&Params::new(4, 100), 12).unwrap(), &dir, "T").unwrap();
+    let header = fs::read_to_string(dir.join("T.tsv")).unwrap();
+    let header = header.lines().next().unwrap();
+    assert!(!header.contains("HP0") && !header.contains("NOISE"), "{header}");
+    fs::remove_dir_all(&dir).unwrap();
+    for flag in ["--prop-tagged", "--tag-concentration", "--mistag-rate", "--mistag-concentration", "--base-error", "--fract-noise", "--n-noise-clones", "--depth-dispersion"] {
+        let status = Command::new(env!("CARGO_BIN_EXE_diplosim"))
+            .args(["--n-clones", "4", "--n-snv", "100", "--out"])
+            .arg(scratch("flag"))
+            .args([flag, "0.5"])
+            .stderr(std::process::Stdio::null())
+            .status()
+            .unwrap();
+        assert!(!status.success(), "{flag} should be rejected");
+    }
 }
 
 #[test]
@@ -146,75 +127,21 @@ fn hp_counts_add_up_to_conipher_counts() {
     wgd.prop_mutloss_positions = 0.1;
     wgd.prop_lost_truncal = 0.5;
     cases.push(wgd);
-    let mut noisy = Params::new(4, 400);
-    noisy.fract_noise = 0.1;
-    noisy.n_noise_clones = 2;
-    cases.push(noisy);
     for (i, p) in cases.iter().enumerate() {
         let rows = written_rows(&simulate(p, 100 + i as u64).unwrap(), &format!("sum{i}"));
         for r in &rows {
-            assert_eq!(n(r, "HP1_REF") + n(r, "HP2_REF") + n(r, "HP0_REF"), n(r, "REF_COUNT"), "case {i}");
-            assert_eq!(n(r, "HP1_ALT") + n(r, "HP2_ALT") + n(r, "HP0_ALT"), n(r, "VAR_COUNT"), "case {i}");
+            assert_eq!(n(r, "HP1_REF") + n(r, "HP2_REF"), n(r, "REF_COUNT"), "case {i}");
+            assert_eq!(n(r, "HP1_ALT") + n(r, "HP2_ALT"), n(r, "VAR_COUNT"), "case {i}");
             assert_eq!(n(r, "REF_COUNT") + n(r, "VAR_COUNT"), n(r, "DEPTH"));
             let wrong_hp_alt = if r["ALLELE"] == "A" { "HP2_ALT" } else { "HP1_ALT" };
-            assert_eq!(n(r, wrong_hp_alt), 0, "case {i}: alt only on the SNV's haplotype or HP0");
+            assert_eq!(n(r, wrong_hp_alt), 0, "case {i}: alt only on the SNV's haplotype");
         }
     }
-}
-
-#[test]
-fn read_errors_keep_counts_consistent_and_put_reads_on_the_other_side() {
-    let mut p = Params::new(5, 3000);
-    p.prop_tagged = 1.0;
-    p.min_tumour_purity = 1.0;
-    p.max_tumour_purity = 1.0;
-    let clean = written_rows(&simulate(&p, 71).unwrap(), "clean");
-    p.mistag_rate = 0.02;
-    p.base_error = 0.02;
-    let noisy = written_rows(&simulate(&p, 71).unwrap(), "noisy");
-    let wrong_hp_alt = |r: &HashMap<String, String>| n(r, if r["ALLELE"] == "A" { "HP2_ALT" } else { "HP1_ALT" });
-    for (c, r) in clean.iter().zip(&noisy) {
-        assert_eq!(n(r, "DEPTH"), n(c, "DEPTH"), "errors move reads, they do not add or drop them");
-        assert_eq!(n(r, "HP1_REF") + n(r, "HP2_REF") + n(r, "HP0_REF"), n(r, "REF_COUNT"));
-        assert_eq!(n(r, "HP1_ALT") + n(r, "HP2_ALT") + n(r, "HP0_ALT"), n(r, "VAR_COUNT"));
-    }
-    assert!(noisy.iter().any(|r| wrong_hp_alt(r) > 0), "mistagged alt reads land on the other haplotype");
-    // A clonal LOH SNV on every copy has no ref read without errors.
-    let full = |r: &&HashMap<String, String>| r["REF_COUNT"] == "0" && n(r, "DEPTH") > 20;
-    let full_clean: Vec<usize> = clean.iter().enumerate().filter(|(_, r)| full(r)).map(|(i, _)| i).collect();
-    assert!(!full_clean.is_empty());
-    assert!(full_clean.iter().any(|&i| n(&noisy[i], "REF_COUNT") > 0), "base errors show ref reads at VAF-1 sites");
-}
-
-#[test]
-fn mistag_concentration_keeps_the_mean_and_concentrates_errors_on_few_sites() {
-    let mut p = Params::new(5, 3000);
-    p.prop_tagged = 1.0;
-    p.mistag_rate = 0.02;
-    // Alt reads on the haplotype without the SNV: zero without mistag, so every one is an error.
-    let wrong_alt = |rows: &[HashMap<String, String>]| -> (f64, f64) {
-        let (mut wrong, mut alt, mut hit) = (0u64, 0u64, 0usize);
-        for r in rows {
-            let w = n(r, if r["ALLELE"] == "A" { "HP2_ALT" } else { "HP1_ALT" });
-            wrong += w;
-            alt += n(r, "HP1_ALT") + n(r, "HP2_ALT");
-            hit += usize::from(w > 0);
-        }
-        (wrong as f64 / alt as f64, hit as f64 / rows.len() as f64)
-    };
-    let (rate_fixed, sites_fixed) = wrong_alt(&written_rows(&simulate(&p, 31).unwrap(), "mfixed"));
-    p.mistag_concentration = Some(1.0);
-    let (rate_beta, sites_beta) = wrong_alt(&written_rows(&simulate(&p, 31).unwrap(), "mbeta"));
-    assert!((rate_fixed - 0.02).abs() < 0.004 && (rate_beta - 0.02).abs() < 0.006, "rates {rate_fixed} {rate_beta}");
-    assert!(sites_beta < 0.6 * sites_fixed, "sites with a mistagged alt: fixed {sites_fixed}, Beta {sites_beta}");
-    p.mistag_concentration = Some(-1.0);
-    assert!(p.validate().is_err());
 }
 
 #[test]
 fn without_cn_events_both_haplotypes_get_equal_depth() {
-    let mut p = no_cn(4, 3000);
-    p.prop_tagged = 1.0;
+    let p = no_cn(4, 3000);
     let rows = written_rows(&simulate(&p, 21).unwrap(), "balanced");
     for allele in ["A", "B"] {
         let on: Vec<_> = rows.iter().filter(|r| r["ALLELE"] == allele).collect();
@@ -305,34 +232,6 @@ fn second_cnas_give_loh_with_gains_and_never_lose_the_last_copy() {
     assert!(trunk.iter().all(|g| g.a + g.b >= 1), "the last copy is never lost");
     // (3, 0) with 2 mutated copies needs the SNV between cnloh and the gain that follows it.
     assert!(trunk.iter().any(|g| g.a.max(g.b) == 3 && g.a.min(g.b) == 0 && g.mutated == 2));
-}
-
-#[test]
-fn depth_dispersion_adds_phi_mean_squared_to_the_depth_variance() {
-    let vmr = |p: &Params| {
-        let d: Vec<f64> = simulate(p, 92).unwrap().rows.iter().map(|r| r.total_reads as f64).collect();
-        let m = d.iter().sum::<f64>() / d.len() as f64;
-        (d.iter().map(|x| (x - m).powi(2)).sum::<f64>() / d.len() as f64) / m
-    };
-    let mut p = no_cn(4, 5000);
-    p.coverage = 50.0;
-    assert!((vmr(&p) - 1.0).abs() < 0.1, "Poisson without CN");
-    p.depth_dispersion = Some(0.02);
-    let v = vmr(&p);
-    assert!((v - 2.0).abs() < 0.2, "VMR {v}, expected 1 + 0.02 * 50 = 2");
-}
-
-#[test]
-fn noise_snvs_go_to_new_clusters_off_the_tree() {
-    let mut p = Params::new(4, 300);
-    p.fract_noise = 0.1;
-    p.n_noise_clones = 2;
-    let sim = simulate(&p, 51).unwrap();
-    assert_eq!(sim.rows.len(), 330);
-    let noise: Vec<_> = sim.rows.iter().filter(|r| r.noise).collect();
-    assert_eq!(noise.len(), 30);
-    let max_node = *sim.tree.nodes.iter().max().unwrap();
-    assert!(noise.iter().all(|r| r.child > max_node && sim.noise_clones.contains(&r.child)));
 }
 
 #[test]

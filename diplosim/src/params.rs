@@ -1,4 +1,4 @@
-//! Simulation parameters (CONIPHER `tx_simulation`, simulate.py:13-46, plus seven diplosim ones).
+//! Simulation parameters (CONIPHER `tx_simulation`, simulate.py:13-46, plus two diplosim ones).
 //! Defaults are CONIPHER's; `validate` is the one boundary check every entry point passes.
 use clap::{ArgAction, Args};
 
@@ -46,40 +46,13 @@ pub struct Params {
     pub minimum_branch_length: usize,
     #[arg(long, default_value_t = 400.0)]
     pub coverage: f64,
-    /// diplosim: depth overdispersion phi. Each site's expected depth is scaled by a
-    /// Gamma(1/phi, phi) factor, so depth variance = mean + phi * mean^2. Unset = Poisson.
-    #[arg(long)]
-    pub depth_dispersion: Option<f64>,
     #[arg(long, default_value_t = 0.7)]
     pub min_tumour_purity: f64,
     #[arg(long, default_value_t = 0.9)]
     pub max_tumour_purity: f64,
-    #[arg(long, default_value_t = 0.0)]
-    pub fract_noise: f64,
-    #[arg(long, default_value_t = 0)]
-    pub n_noise_clones: usize,
     /// diplosim: probability that a position's SNV sits on allele B (HP2).
     #[arg(long, default_value_t = 0.5)]
     pub prop_snv_on_b: f64,
-    /// diplosim: probability that a read keeps its HP tag; the rest become HP0.
-    #[arg(long, default_value_t = 0.8)]
-    pub prop_tagged: f64,
-    /// diplosim: each site draws its own tag probability from Beta(k * prop_tagged,
-    /// k * (1 - prop_tagged)) with k = this value; smaller k spreads sites more. Unset = every
-    /// site uses prop_tagged.
-    #[arg(long)]
-    pub tag_concentration: Option<f64>,
-    /// diplosim: probability that a read carries the other haplotype's tag (phasing error).
-    #[arg(long, default_value_t = 0.0)]
-    pub mistag_rate: f64,
-    /// diplosim: each site draws its own mistag probability from Beta(k * mistag_rate,
-    /// k * (1 - mistag_rate)) with k = this value (local phasing errors). Unset = every site
-    /// uses mistag_rate.
-    #[arg(long)]
-    pub mistag_concentration: Option<f64>,
-    /// diplosim: probability that a read shows the other allele at the SNV (ref <-> alt).
-    #[arg(long, default_value_t = 0.0)]
-    pub base_error: f64,
 }
 
 impl Params {
@@ -104,17 +77,9 @@ impl Params {
             n_subclonal_wgd: 1,
             minimum_branch_length: 1,
             coverage: 400.0,
-            depth_dispersion: None,
             min_tumour_purity: 0.7,
             max_tumour_purity: 0.9,
-            fract_noise: 0.0,
-            n_noise_clones: 0,
             prop_snv_on_b: 0.5,
-            prop_tagged: 0.8,
-            tag_concentration: None,
-            mistag_rate: 0.0,
-            mistag_concentration: None,
-            base_error: 0.0,
         }
     }
 
@@ -136,24 +101,10 @@ impl Params {
             ("prop_pos_second_cna", self.prop_pos_second_cna),
             ("prop_mutloss_positions", self.prop_mutloss_positions),
             ("prop_snv_on_b", self.prop_snv_on_b),
-            ("prop_tagged", self.prop_tagged),
-            ("mistag_rate", self.mistag_rate),
-            ("base_error", self.base_error),
         ];
         for (name, p) in probs {
             if !(0.0..=1.0).contains(&p) {
                 return Err(format!("{name} must be in [0, 1], got {p}"));
-            }
-        }
-        for (name, k) in [
-            ("tag_concentration", self.tag_concentration),
-            ("mistag_concentration", self.mistag_concentration),
-            ("depth_dispersion", self.depth_dispersion),
-        ] {
-            if let Some(k) = k {
-                if !(k > 0.0 && k.is_finite()) {
-                    return Err(format!("{name} must be > 0, got {k}"));
-                }
             }
         }
         // CCF and Fract_a divide by purity (sequencing.py:71, 112), so 0 is excluded.
@@ -166,12 +117,6 @@ impl Params {
         if !(self.coverage >= 0.0 && self.coverage.is_finite()) {
             return Err("coverage must be >= 0".into());
         }
-        if !(self.fract_noise >= 0.0 && self.fract_noise.is_finite()) {
-            return Err("fract_noise must be >= 0".into());
-        }
-        if self.fract_noise > 0.0 && self.n_noise_clones == 0 {
-            return Err("fract_noise > 0 needs n_noise_clones > 0 (simulate.py:68)".into());
-        }
         if self.minimum_branch_length == 0 {
             return Err("minimum_branch_length must be >= 1".into());
         }
@@ -182,9 +127,8 @@ impl Params {
             return Err("loss_events must be a non-empty subset of loss_A,loss_B,cnloh_A,cnloh_B".into());
         }
         // partition asserts this when minimum_branch_length == 1 (evolution.py:37); the edge
-        // count equals n_clones. n_snv grows by the noise SNVs first (simulate.py:59-60).
-        let n_pos = self.n_snv + self.n_noise();
-        let n_subclonal = (n_pos as f64 * (1.0 - self.prop_truncal_snvs)) as usize;
+        // count equals n_clones.
+        let n_subclonal = (self.n_snv as f64 * (1.0 - self.prop_truncal_snvs)) as usize;
         if self.minimum_branch_length == 1 && n_subclonal < self.n_clones {
             return Err(format!(
                 "{n_subclonal} subclonal SNVs for {} edges: CONIPHER needs subclonal SNVs >= edges (evolution.py:37)",
@@ -192,10 +136,5 @@ impl Params {
             ));
         }
         Ok(())
-    }
-
-    /// simulate.py:59 `n_noise = round(n_positions * fract_noise)`.
-    pub fn n_noise(&self) -> usize {
-        (self.n_snv as f64 * self.fract_noise).round_ties_even() as usize
     }
 }

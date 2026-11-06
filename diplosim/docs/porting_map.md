@@ -6,7 +6,7 @@
 
 ## 1. 結論
 
-- 每個 CONIPHER 檔案對應一個 Rust 模組：`topology.py` → `topology.rs`，`evolution.py` → `evolution.rs`，`sequencing.py` → `sequencing.rs`，`noise.py` → `noise.rs`，`conversion.py` 與存檔 → `output.rs`，`tx_simulation` → `lib.rs::simulate`。
+- 每個 CONIPHER 檔案對應一個 Rust 模組：`topology.py` → `topology.rs`，`evolution.py` → `evolution.rs`，`sequencing.py` → `sequencing.rs`，`conversion.py` 與存檔 → `output.rs`，`tx_simulation` → `lib.rs::simulate`。
 - 新寫的只有 `hp.rs`（兩個 HP 擴展）、`params.rs` 的輸入檢查、`main.rs` 的 CLI。
 - 亂數無法和 numpy 逐位元相同。目標是「同分佈」。同一個 seed 的輸出逐位元相同。〔實測〕
 - `prop_snv_on_b = 0` 時，diplosim 和 CONIPHER（1 個 sample、所有 clone 都在）的輸出分佈一致（見第 6 節）。〔實測〕
@@ -24,7 +24,7 @@
 | `enum Allele { A, B }` | 每個 position 的 SNV 在哪條 allele；A = HP1，B = HP2 | 新寫（CONIPHER 一律在 A） |
 | `Sample { purity, proportions }`（`sequencing.rs`） | 一個 bulk sample；proportions 含 normal | `sample_clone_proportions`（`sequencing.py:28-39`） |
 | `VariantRow`（`sequencing.rs`） | 一個 position 一列 | `variant_df` 的一列（`sequencing.py:134-146`） |
-| `HpCounts`（`hp.rs`） | HP1／HP2／HP0 的 ref、alt | 新寫 |
+| `HpCounts`（`hp.rs`） | HP1／HP2 的 ref、alt | 新寫 |
 
 用 `BTreeMap` 的理由：走訪順序固定，同 seed 才會得到相同輸出。
 
@@ -75,13 +75,7 @@
 | `make_sequencing_data`（`sequencing.rs:134`） | `make_sequencing_data`（`sequencing.py:7`）、`get_total_reads`（`:95`）、`get_variant_reads`（`:102`）、合併 SNV 邊（`simulate.py:157`） | 沿用 | depth ~ Poisson(coverage × cn ÷ 平均 cn)；alt ~ Binomial(depth, VAF) |
 | `VariantRow::est_vaf`（`sequencing.rs:40`） | `Est_VAF`（`sequencing.py:145`） | 沿用 | |
 
-### 3.4 `noise.rs`
-
-| Rust | CONIPHER | 標記 | 說明 |
-|---|---|---|---|
-| `add_noise`（`noise.rs:10`） | `add_noise`（`noise.py:5`） | 沿用 | 假 cluster 編號 = 最大節點編號 + 1, 2, …；CCF = randint(1,100)/100；alt 重抽。和原版一樣，所有列的 `True_VAF` 都重算（`noise.py:17`） |
-
-### 3.5 `output.rs`
+### 3.4 `output.rs`
 
 | Rust | CONIPHER | 標記 | 說明 |
 |---|---|---|---|
@@ -91,14 +85,14 @@
 | `write_truth`（`output.rs:241`） | `create_edge_snv_df`（`simulio.py:59`）、`_events.tsv`（`simulate.py:106`） | 沿用＋新寫 | `truth/genotypes.tsv`（每個 position、每個 clone 的 A、B、MUT、MUT_DCF）、`truth/snv_edges.tsv`、`truth/events.tsv` |
 | `np_round2`、`py_round`、`py_float`（`lib.rs:25-35`） | `df.round(2)`、Python `round()`、pandas `to_csv` 的數字格式 | 沿用 | |
 
-### 3.6 新寫
+### 3.5 新寫
 
 | Rust | 標記 | 為什麼 |
 |---|---|---|
 | `Params::validate`（`params.rs:92`） | 新寫 | CONIPHER 不檢查輸入。這裡在入口擋掉 CONIPHER 會當掉或沒有意義的值（第 4 節） |
 | `hp::draw_alleles`（`hp.rs:28`） | 新寫 | 擴展 1：每個 position 以 `prop_snv_on_b` 的機率選 B（DECISIONS 2026-10-30「對稱改名」） |
 | `hp::relabel`（`hp.rs:37`） | 新寫 | 擴展 1：B position 的所有 clone 基因型（total、dcf）A、B 對調；事件名稱同步改名 |
-| `hp::split_counts`（`hp.rs:71`） | 新寫 | 擴展 2：把 CONIPHER 的 ref／alt 拆成 HP1／HP2／HP0（DECISIONS 2026-10-30 方案 ②） |
+| `hp::split_counts`（`hp.rs:68`） | 新寫 | 擴展 2：把 CONIPHER 的 ref／alt 拆成 HP1／HP2（DECISIONS 2026-10-30 方案 ②；2026-11-06 移除 HP0） |
 | `main.rs` | 新寫 | CLI（clap），參數名稱照 CONIPHER，只有 `n_clones`、`n_snv` 改名 |
 
 ## 4. 刻意的差異
@@ -120,7 +114,7 @@
 | 擴展 1：SNV 在 B | 照 CONIPHER 模擬（SNV 在 A），再對 B position 的 A、B 對調 | DECISIONS 2026-10-30。等於把該 position 的 `gain_A↔gain_B`、`loss_A↔loss_B`、`cnloh_A↔cnloh_B` 改名 |
 | 擴展 2：HP 拆分 | 見下 | DECISIONS 2026-10-30 方案 ② |
 
-擴展 2 的步驟（`hp.rs:71`）：
+擴展 2 的步驟（`hp.rs:68`）：
 
 1. depth、alt 照 CONIPHER 抽，不改。
 2. X = SNV 所在 allele，O = 另一條。對 sample 中每個 clone（含 normal `[1,1,0]`）加權：F_X = Σ p·cn_X，F_O = Σ p·cn_O，M = Σ p·mut。
@@ -128,10 +122,7 @@
 4. ref = depth − alt。ref_O ~ Binomial(ref, F_O ÷ (F_X − M + F_O))，ref_X = ref − ref_O。
 5. 分母 ≤ 0（沒有任何帶 ref 的 copy，只會在 purity = 1 時發生）時用 0.5，兩條 HP 不偏。
 6. HP1 = allele A，HP2 = allele B。
-7. 四個數（HP1 ref、HP1 alt、HP2 ref、HP2 alt）各有 Binomial(count, 1 − `prop_tagged`) 條變成 HP0。
-8. 結果：HP1＋HP2＋HP0 的 ref = CONIPHER 的 REF_COUNT，alt 同理。
-
-noise SNV（`fract_noise > 0`）：用 noise 重抽後的 alt 拆分。copy 數用原本那個 position 的基因型（noise 只改 cluster、CCF、alt，不改基因型）。
+7. 結果：HP1＋HP2 的 ref = CONIPHER 的 REF_COUNT，alt 同理。
 
 `draw_alleles` 每個 position 固定抽一個 uniform。所以同一個 seed，不同 `prop_snv_on_b` 會得到相同的樹、depth、alt，只差 allele 標籤（測試 `putting_every_snv_on_b_swaps_the_alleles_of_the_conipher_genotypes`）。〔實測〕
 
@@ -147,18 +138,17 @@ noise SNV（`fract_noise > 0`）：用 noise 重抽後的 alt 拆分。copy 數�
 | `prop_mutloss_positions` 太大時自動調低 `prop_lost_truncal` | `evolution.py:217-222` | 照搬，warning 寫進 `_info.tsv` |
 | 每個（節點, position）的事件獨立洗牌，WGD 沒有時間點 | `evolution.py:101-103` | 照搬（S5 待決） |
 | dcf profile：`loss_A`、`cnloh_A` 不減突變 copy | `evolution.py:135-140` | 照搬 |
-| 加 noise 時所有列的 `True_VAF` 重算並 cap 在 1 | `noise.py:17` | 照搬 |
 | 少於 1% 的 SNV `TRUE_CCF = 0` 時不發 warning | `simulate.py:77-81` | 照搬 |
 
 ## 6. 驗證
 
-測試：`cd diplosim && cargo test --release`（`tests/behaviour.rs`，14 個）。〔實測〕
+測試：`cd diplosim && cargo test --release`（`tests/behaviour.rs`，15 個）。〔實測〕
 
 - 樹有 `n_clones + 1` 個節點且連通；每個 SNV 恰在一條邊上；`minimum_branch_length = 1` 時每條邊 ≥ 1 個 SNV。
 - `prop_snv_on_b = 0` → `ALLELE` 全是 A，`HP2_ALT` 全是 0。
-- `prop_tagged = 1` → HP0 全是 0；`prop_tagged = 0.8` → HP0 約占 20%。
-- 每一列 HP1＋HP2＋HP0 = REF_COUNT／VAR_COUNT（含 CN、WGD、mutation loss、noise）。
-- 沒有 CN 時，SNV 在 A 與在 B 的兩組各自 HP1 depth ≈ HP2 depth（差 < 2%）；alt 只在 SNV 所在 HP 或 HP0。
+- 輸出沒有 HP0 和 NOISE 欄；CLI 拒絕 `--prop-tagged`、`--tag-concentration`、`--mistag-rate`、`--mistag-concentration`、`--base-error`、`--fract-noise`、`--n-noise-clones`、`--depth-dispersion`。
+- 每一列 HP1＋HP2 = REF_COUNT／VAR_COUNT（含 CN、WGD、mutation loss）。
+- 沒有 CN 時，SNV 在 A 與在 B 的兩組各自 HP1 depth ≈ HP2 depth（差 < 2%）；alt 只在 SNV 所在 HP。
 - 沒有 CN、沒有 mutation loss 時，truncal SNV 的 `TRUE_CCF = 1`。
 - 同 seed 兩次執行，所有輸出檔逐位元相同。
 
@@ -168,7 +158,7 @@ noise SNV（`fract_noise > 0`）：用 noise 重抽後的 alt 拆分。copy 數�
 |---|---|
 | 預設 | 全部 \|z\| < 1.4 |
 | clonal＋subclonal WGD、`prop_mutloss_positions` 0.1、truncal 比例 0.5 | 全部 \|z\| < 1.9 |
-| `fract_noise` 0.1、`n_noise_clones` 2 | 全部 \|z\| < 1.2 |
+| `fract_noise` 0.1、`n_noise_clones` 2（2026-11-06 已移除） | 全部 \|z\| < 1.2 |
 | `minimum_branch_length` 10 | 非空邊數平均：CONIPHER 3.487、diplosim 3.485（各 6000 seed，se 0.010） |
 
 限制：比的是平均值，不是完整分佈形狀。比較腳本放在 session scratchpad，沒有放進 repo。

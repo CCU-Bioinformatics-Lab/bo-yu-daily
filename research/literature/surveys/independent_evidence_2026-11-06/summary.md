@@ -20,8 +20,8 @@
 |---|---|---|---|---|
 | NIST small variant v0.4、SV／CNV v0.6 | truncal SNV、單倍型拷貝數 | 觀測特徵；部分 CN 事件先後 | 符合（以 long read 組裝為主），但只是 draft | 有 |
 | 8 株 clone（2D6、2E6、3E4、SC14、SC24、SC28、SC6、SC9） | 每株 PacBio Revio、DeepSomatic、PURPLE、Severus | 克隆結構；部分分枝順序 | 符合 | 沒有 |
-| 119 顆 PTA 單細胞（UG100，中位 23×） | 逐細胞 SNV | 克隆結構；巢狀關係 | **不符合 long read**，見「要決定的事」 | 沒有（VCF 64 GB、CRAM 4.8 TB） |
-| 120 顆低深度 CNV（Ginkgo） | 「8 個」CNV 型態，README 的初步描述 | 克隆結構（只有 CN） | 不符合 long read | 沒有 |
+| 119 顆 PTA 單細胞（UG100，中位 23×） | 逐細胞 SNV | 克隆結構；巢狀關係 | 符合（單細胞例外，2026-11-06） | 沒有（VCF 64 GB、CRAM 4.8 TB） |
+| 120 顆低深度 CNV（Ginkgo） | 「8 個」CNV 型態，README 的初步描述 | 克隆結構（只有 CN） | 符合（單細胞例外，2026-11-06） | 沒有 |
 | dGH 影像（p21、p53、p101） | WGD 細胞比例：9／40、28／40、20／20 | 演化路徑的局部時間序列（只有 WGD） | 不是定序資料 | 只有論文數字 |
 | 其他 passage（例如 p2 ONT） | 不同代的 bulk | 可能看時間變化，還沒查 | 符合 | 沒有 |
 
@@ -47,7 +47,7 @@
 | 證據 | 量了什麼 | 支持哪一層（N3） | 需求表 |
 |---|---|---|---|
 | Fig. 4a PhyloWGS 樹 | bulk 推論的 S1–S10 | 不是獨立證據；它本身是推論 | 不符合 long read |
-| 10x scCNV（1,270 顆） | 細胞的 CNV 分群 | 克隆結構（只有 CN），不是 SNV 樹 | 不符合 long read |
+| 10x scCNV（1,270 顆） | 細胞的 CNV 分群 | 克隆結構（只有 CN），不是 SNV 樹 | 符合單細胞例外，但 HCC1395 新實驗暫停 |
 | AmpliSeq、WES、PacBio 驗證 | 突變是否真實 | 觀測特徵（call set） | 只有 PacBio 符合 |
 | purity titration | VAF 和 purity 的關係 | 觀測特徵 | 不符合 long read |
 
@@ -69,7 +69,7 @@
 
 ## 要決定的事
 
-1. **單細胞能不能當驗證參考？** `CLAUDE.md` 要求驗證參考只用 long read，但 11-04 會議老師重視單細胞分群，所以有衝突。最新會議優先，但沒有明說可以用 short read 單細胞。建議問老師。
+1. **單細胞能不能當驗證參考？** 已決定：可以（使用者 2026-11-06）。short read 的 bulk 和 cohort 統計仍然排除。
 2. **HG008 的克隆結構，能不能當 `diplosim` 的驗證目標？** 這要先定義「像」是什麼，還有比較的單位。還沒有方案，屬於未決事項 3。
 
 ## 來源
