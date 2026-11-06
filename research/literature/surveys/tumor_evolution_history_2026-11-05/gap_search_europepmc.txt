@@ -1,0 +1,98 @@
+H1_parental http=200
+  hits 130
+   2026 10.64898/2026.09.02.748867  Parent-of-origin phasing of somatic mutations shows equal mutation burden between parental genomes in hum
+   2026 10.1093/nargab/lqag072 PMC13326645 asms: finding allele-specific methylation in human genomes without phasing.
+   2026 10.1002/advs.202519314 PMC13088286 cuteHap: Haplotype-Aware Structural Variant Detection in Phased Long-Read Sequencing Data.
+   2026 10.64898/2026.04.09.26350474  Mutation timing, accumulation and selection in the male germline shape inheritance risk for developmental
+   2026 10.1186/s12870-026-08212-7 PMC12918644 A complex reciprocal translocation is linked to reduced gamete viability in a loose-bunch grapevine somat
+   2026 10.1016/j.xhgg.2026.100599 PMC13125195 Advancing risk gene discovery across the allele frequency spectrum.
+   2026 10.3390/ijms27104377 PMC13208037 From Spatial Epigenomes to Clinical Diagnostics: Integrative Methylomics Across Scales and Modalities.
+   2024 10.1093/genetics/iyae166 PMC11631438 A maternal germline mutator phenotype in a family affected by heritable colorectal cancer.
+   2026  PMC13642928 Telomere variant sequences encode the genetic blueprint for allele-specific telomere length
+   2025 10.1101/gr.278407.123 PMC12047278 Evolution of genome-wide methylation profiling technologies.
+   2026 10.1016/j.cell.2026.06.016 PMC13456413 A complete diploid human genome benchmark for personalized genomics.
+   2026 10.1038/s41431-026-02078-x PMC13550574 Sequencing approaches in hereditary cancer testing: strengths, limitations and future directions.
+H2_homolog http=200
+  hits 2453
+   2026 10.1038/s12276-026-01791-3 PMC13538360 Somatic mutations and genome mosaicism in aging and disease.
+   2026 10.1038/s12276-026-01846-5 PMC13633253 Immune pathway activation in gastric cancers with LINE-1 retrotransposon overexpression and homologous re
+   2026 10.1186/s12885-026-16327-1 PMC13501732 Sex differences in gastric cancer mutational burden reflect MLH1-associated epigenetic regulation.
+   2026 10.1530/erc-26-0207 PMC13452026 Whole genome and exome sequencing of pancreatic neuroendocrine tumour to investigate PRRT response.
+   2026 10.1016/j.gore.2026.102180 PMC13471219 Interpreting homologous recombination deficiency in rare gynecological cancers: A case of primary mucinou
+   2026 10.1371/journal.pgen.1012355 PMC13712742 Multi-omics analysis of high-grade serous ovarian cancers reveals heterogeneity and distinct immunologica
+   2026 10.1038/s41467-026-74384-3 PMC13408353 Clonal evolution and mutational trajectories of metastatic colorectal cancer shaped by anticancer therapi
+   2026 10.1016/j.molmet.2026.102449 PMC13676476 Genetics of type 2 diabetes: Beyond single nucleotide variant studies.
+   2026 10.3389/fonc.2026.1899836 PMC13595197 Prognostic and therapeutic implications of BRCA1 and BRCA2 mutations in ovarian cancer.
+   2026 10.1016/j.cell.2026.09.033 PMC13722029 A telomere-to-telomere map of somatic mutation burden and functional impact in a cancer.
+   2026 10.3390/biology15201899 PMC13701827 Software Choice Matters in Mutational Signature Refitting.
+   2026 10.1016/j.esmoop.2026.106305 PMC12995489 Somatic and germline genomic variation in thymic carcinomas.
+H3_longread http=200
+  hits 19
+   2026 10.1016/j.cell.2026.09.033 PMC13722029 A telomere-to-telomere map of somatic mutation burden and functional impact in a cancer.
+   2026 10.1016/j.xhgg.2026.100636 PMC13356607 Clustered monoallelic mosaicism in twins suggests previously unrecognized path of mutagenesis.
+   2026 10.1038/s41467-026-75399-6 PMC13376730 Multiomic profiling links L1 retrotransposition to genomic instability and ecDNA in bladder cancer.
+   2026 10.1159/000552262 PMC13322703 Broken and Reassembled: The Molecular Mechanisms and Clinical Consequences of Structural Genomic Variatio
+   2026  PMC13639856 APOBEC3-driven neoantigen-rich cancers co-opt 1q23.3 amplification for tumor-intrinsic immune cloaking
+   2022 10.1038/s41467-022-31133-6 PMC9203510 Phasing analysis of lung cancer genomes using a long read sequencer.
+   2022 10.1038/s43018-022-00404-y PMC11077613 Starfish infers signatures of complex genomic rearrangements across human cancers.
+   2021 10.1186/s13073-021-00929-4 PMC8281718 Haplotype-resolved germline and somatic alterations in renal medullary carcinomas.
+   2021 10.1016/j.ccell.2020.12.011 PMC7884056 Exploration of Coding and Non-coding Variants in Cancer Using GenomePaint.
+   2019 10.1016/j.cell.2019.01.045 PMC6438178 Megabase Length Hypermutation Accompanies Human Structural Variation at 17p11.2.
+   2020 10.1038/s41586-020-1969-6 PMC7025898 Pan-cancer analysis of whole genomes.
+   2012 10.1016/j.cell.2012.04.023 PMC3428864 The life history of 21 breast cancers.
+H4_cis http=200
+  hits 851
+   2026 10.1002/advs.76856 PMC13410810 A Personalized Haplotype-Resolved Near-Gapless Genome Framework for Somatic Variant Discovery in Hepatoce
+   2026 10.1186/s40348-026-00225-4 PMC13100077 Diagnoses of double heterozygous NF1 variants and dual RASopathy.
+   2026 10.21203/rs.3.rs-8406555/v1  Somatic and germline mutational processes across the tree of life
+   2026 10.1038/s41592-026-03219-2 PMC13645633 SVPG: a pangenome-based structural variant detection approach and rapid augmentation of pangenome graphs 
+   2026  PMC13301505 Resolving the Haplotype Complexity of Colorectal Cancer Genomes with Droplet Barcode Sequencing
+   2026 10.1038/s41586-025-09886-z PMC12935551 Insights into DNA repeat expansions among 900,000 biobank participants.
+   2026 10.1038/s41588-026-02592-0 PMC13263154 Patterns and drivers of 43,617 mosaic chromosomal alterations in blood.
+   2026 10.18699/vjgb-26-80 PMC13627159 Inherited and somatic components in the pathogenetics of common diseases.
+   2026 10.1186/s13059-026-04184-x PMC13352677 A dual genome-methylome map of clonal evolution in grapevine.
+   2026 10.1038/s41588-026-02570-6 PMC13175891 Somatic mosaicism in ALS and FTD identifies focal mutations associated with widespread degeneration.
+   2026 10.1016/j.ajhg.2026.08.014 PMC13641683 Functional characterization of the 9q34.13 locus identifies RAPGEF1 as a candidate gene modulating risk f
+   2026 10.1073/pnas.2532794123 PMC13214039 Layer-specific genetic variation unlocks secondary metabolite diversity in long-lived clonal peppermint.
+H5_tcr http=200
+  hits 5563
+   2026 10.1371/journal.pbio.3004063 PMC13712754 Non-adaptive evolutionary forces predominantly shape nucleotide composition near human transcription star
+   2026 10.1021/acschembio.6c00605 PMC13633561 Ultramutagenesis through Combined Msh2 Depletion and Proofreading-Deficient DNA Polymerase ε Expression E
+   2026  PMC13651497 Roles of meiotic and mitotic cohesin in stem cell gene regulation and genome stability
+   2026 10.1093/g3journal/jkag207 PMC13643795 Sequence effects on mutation rates investigated in whole-genome sequenced UK Biobank participants.
+   2026 10.3389/fgene.2026.1779147 PMC13110866 Preliminary examination of noncoding mutations of esophageal squamous cell carcinoma in African Americans
+   2026 10.3390/ijms27135655 PMC13362399 The Genetic Jigsaw of Endometrial Polyps.
+   2026 10.3390/cimb48101045 PMC13702977 Understanding Aging Genes and Pathways: Insight from Yeast.
+   2026 10.1186/s12915-026-02661-0 PMC13371695 Dissecting cancer in a non-mammalian model: genomic insights from lemon frost geckos.
+   2026 10.1093/procel/pwag033 PMC13626738 Epigenetic dynamics of human spermatogenesis and their dysregulation in non-obstructive azoospermia.
+   2026 10.3390/cancers18193079 PMC13664604 Tumour Mutation Burden Does Not Predict Immune Cell Frequency or Risk of Recurrence After Surgery in Hepa
+   2026 10.3390/cells15191809 PMC13664500 Antigen-Presentation Competence in Gynecologic Cancers: Mechanisms, Evidence and Translational Priorities
+   2026 10.1186/s13073-026-01706-x PMC13579925 Multi-modal data integration reveals functionally credible predictive biomarkers in ovarian cancer.
+P1_lr_parent http=200
+  hits 64
+   2026 10.1038/s41467-026-76240-w PMC13522577 Nanopore sequencing identifies parent-of-origin specific age-associated methylation changes at imprinted 
+   2026 10.3390/ijms27209175 PMC13705466 Nanopore Sequencing for Epigenetic Decoding: Applications, Analytical Constraints, and Translational Pros
+   2026 10.1093/nargab/lqag072 PMC13326645 asms: finding allele-specific methylation in human genomes without phasing.
+   2026 10.3390/ijms27104377 PMC13208037 From Spatial Epigenomes to Clinical Diagnostics: Integrative Methylomics Across Scales and Modalities.
+   2026 10.3389/bjbs.2026.16709 PMC13286860 Challenges and emerging strategies for genome-wide evaluation of loss of imprinting in cancer.
+   2026 10.1038/s41467-026-76890-w PMC13538652 Reciprocal, methylation-dependent binding of Zfp57 and Gzf1 safeguards Dlk1-Dio3 imprinting during develo
+   2026 10.3390/ijms27146262 PMC13410931 Monoallelic Gene Expression: Stochastic or Clonal? From Detection to Mechanisms and Clinical Significance
+   2025 10.1186/s13059-025-03851-9 PMC12673772 CRISPR-Cas9-induced double-strand breaks disrupt maintenance of epigenetic information.
+   2025 10.1101/gr.278407.123 PMC12047278 Evolution of genome-wide methylation profiling technologies.
+   2026 10.1186/s12711-026-01031-2 PMC12969872 A comprehensive genome-wide scan for parent-of-origin expressed genes in the pig clarifies the conservati
+   2026 10.1186/s12967-026-08396-4 PMC13471473 Long-read sequencing technologies and bioinformatics: a new perspective for decoding DNA methylation modi
+   2025 10.1101/gr.280120.124 PMC12047236 The impact of long-read sequencing on human population-scale genomics.
+P2_cna_parent http=200
+  hits 167
+   2026 10.1530/erc-26-0061 PMC13192690 Convergent IGF2 overexpression in pheochromocytoma/paraganglioma: insights from Beckwith-Wiedemann syndro
+   2026 10.1111/acel.70778 PMC13685063 Genome Aging in Women: Hematopoietic Loss of X Chromosome as An Exemplar.
+   2026 10.1159/000552262 PMC13322703 Broken and Reassembled: The Molecular Mechanisms and Clinical Consequences of Structural Genomic Variatio
+   2025 10.3390/diagnostics15202579 PMC12564191 Advancements in Prenatal Genetic Screening and Testing: Emerging Technologies and Evolving Applications.
+   2025 10.1007/s00428-025-04193-4 PMC12748313 Diagnosing the silent: the molecular landscape of non-functional parathyroid carcinoma.
+   2024 10.1016/j.isci.2024.110918 PMC11615189 Copy-number dosage regulates telomere maintenance and disease-associated pathways in neuroblastoma.
+   2026 10.1002/1878-0261.70318 PMC13500139 Special Issue: EACR 2026 Congress: Innovative Cancer Science, 8-11 June 2026.
+   2024 10.1177/17588359231220511 PMC10826407 The role of aberrant DNA methylation in cancer initiation and clinical impacts.
+   2025 10.1038/s41431-025-01934-6 PMC12588389 Abstracts from the 58&lt;sup&gt;th&lt;/sup&gt; European Society of Human Genetics (ESHG) Conference: ePos
+   2025 10.1038/s41431-025-01935-5 PMC12588390 Abstracts from the 58&lt;sup&gt;th&lt;/sup&gt; European Society of Human Genetics (ESHG) Conference: Hybr
+   2023 10.3389/fonc.2023.1148861 PMC10411627 Molecular mechanisms of multi-omic regulation in breast cancer.
+   2025  PMC11771725 Proceedings of the 27th Annual Meeting of the Portuguese Society of Human Genetics (SPGH – Sociedade Port

@@ -12,6 +12,7 @@
 | [`surveys/methods_survey/`](surveys/methods_survey/summary.md) | 腫瘤演化樹重建方法調查（2019–2026） |
 | [`surveys/longread_tree_search_2026-10-19/`](surveys/longread_tree_search_2026-10-19/summary.md) | long-read 建樹文獻補搜 |
 | [`surveys/sc_longread_datasets_2026-10-26/`](surveys/sc_longread_datasets_2026-10-26/summary.md) | bulk long read＋single-cell 公開資料調查 |
+| [`surveys/tumor_evolution_history_2026-11-05/`](surveys/tumor_evolution_history_2026-11-05/summary.md) | 腫瘤演化假說、真實結論與 diplosim 差距（8 個主題） |
 
 HCC1395 golden tree（H01）的筆記不在本目錄，見 [`../hcc1395_golden_tree_research/`](../hcc1395_golden_tree_research/hcc1395_tumor_evolution_tree_review/summary.md)。
 

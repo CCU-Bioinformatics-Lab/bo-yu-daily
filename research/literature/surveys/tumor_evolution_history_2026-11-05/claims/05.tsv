@@ -1,0 +1,100 @@
+paper_id	doi	source_file	category	claim_zh	quote
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	結論	代表性腫瘤有 772 個細胞，樹中位深度 12、最大深度 15	consisting of 772 cells. The resulting tree revealed a rich subclonal structure and deep lineage relationships, with a median depth of 12 and maximum depth of 15
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	結論	29 個原發腫瘤中 21 個進入高品質分析子集	Using this method on a high-quality subset (21/29) of primary tumors
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	結論	同一批腫瘤中既有看似中性演化者，也有明確正選擇者	we found examples of tumors that appeared to be neutrally evolving (i.e., with no evidence for positive selection) and tumors with subclones showing clear signs of positive selection
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	結論	腫瘤通常只有一或兩個擴張 subclone，擴張細胞比例分布很寬	Tumors predominantly had one or sometimes two subclones undergoing expansion, and across tumors there was a broad distribution in the proportion of cells within expansions
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	結論	換用 Neighbor Joining 重建，擴張比例相關係數 0.87	revealed consistent subclonal expansion proportions
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	結論	21 個腫瘤中有 20 個的 subclonal CNV 關係與 Cas9 樹顯著相似	in the majority of tumors (20/21) the relationships from subclonal CNVs were significantly similar to the relationships inferred from our Cas9 lineage-tracing trees
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	觀點	作者把樹形擴張解讀為 subclonal selection，與無 selective sweep 的模型對立	The expansions identified by tree topology argue for subclonal selection, distinct from evolutionary models lacking selective sweeps observed in other cancer types
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	結論	高可塑期之後接著出現侵略性 subclone 的 clonal sweep	This period of high plasticity is followed by clonal sweeps of subclones with aggressive cell states
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	結論	轉移一致源自原發腫瘤內的擴張 subclone	metastases generally originated from subclonal expansions within primary tumors
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	假設	fitness 推論假設演化由小效應突變驅動，可能忽略 CNV 等大效應事件	our fitness-inference approach assumes that evolution occurs via small effect size mutations
+E5-01	10.1016/j.cell.2022.04.015	E5-01.txt	假設	GEMM 腫瘤突變負荷低，天然突變提供的 lineage 解析度不足，所以要用 Cas9 記錄器	This limitation is in large part due to the low mutational burden in GEMM tumors, thus offering little lineage resolution
+E5-02	10.1016/j.ccell.2021.05.005	E5-02.txt	結論	macsGESTALT 回收約 380,000 個 target site，重建約 28,000 個細胞的擴散	we recover ~380,000 CRISPR target sites and reconstruct dissemination of ~28,000 single cells across multiple metastatic sites
+E5-02	10.1016/j.ccell.2021.05.005	E5-02.txt	結論	兩隻小鼠共重建出 95 個 clone	Clonal reconstruction revealed 95 distinct clones across the two mice
+E5-02	10.1016/j.ccell.2021.05.005	E5-02.txt	結論	注入的 clone 中不到 1% 成功移植存活	indicating that less than 1% of all injected clones successfully engraft
+E5-02	10.1016/j.ccell.2021.05.005	E5-02.txt	結論	原發腫瘤中超過一半細胞來自少數 clone（M1 兩個、M2 六個）	In the primary tumor, the majority (>50%) of cells came from a minority of clones (two clones in M1; six clones in M2)
+E5-02	10.1016/j.ccell.2021.05.005	E5-02.txt	結論	轉移部位 80%–90% 的細胞通常來自單一 clone	80%–90% of cells typically came from a single clone
+E5-02	10.1016/j.ccell.2021.05.005	E5-02.txt	結論	95 個 clone 中有 48 個（51%）完全沒有轉移	51% of clones (48/95) failed to metastasize at all
+E5-02	10.1016/j.ccell.2021.05.005	E5-02.txt	結論	同批細胞在體外幾乎都能存活成群落，體內卻有嚴重瓶頸	in vitro experiments using the same cells and a similar time course revealed that most cells (clones) survive and form colonies on plates
+E5-02	10.1016/j.ccell.2021.05.005	E5-02.txt	觀點	作者認為轉移潛力集中在罕見的 late-hybrid EMT 狀態，並被強烈選擇	Metastatic potential peaks in rare, late-hybrid EMT states, which are aggressively selected from a predominately epithelial ancestral pool
+E5-03	10.1126/science.abc1944	E5-03.txt	結論	植入的 5,000 個細胞中估計含 2,150 個可分辨 clone	the implanted pool of 5,000 cells initially contained 2,150 distinguishable clones
+E5-03	10.1126/science.abc1944	E5-03.txt	結論	97.7% 的腫瘤細胞被指派到 100 個 clonal population	we assigned most of the cancer cells collected from the mouse (97.7%) to 100 clonal populations
+E5-03	10.1126/science.abc1944	E5-03.txt	結論	雖然植入約 2,150 個 clone，只有約 100 個成功移植並增生	despite initially implanting ~2,150 distinct clones, only ~100 clones successfully engrafted and proliferated
+E5-03	10.1126/science.abc1944	E5-03.txt	結論	植入前與犧牲後的 clone 大小幾乎不相關	we find minimal correlation between initial (pre-implantation) and final (post-sacrifice) clonal population size
+E5-03	10.1126/science.abc1944	E5-03.txt	結論	代表性 clone 有 5,616 個細胞、99.0% 細胞 lineage 狀態唯一，平均樹深 10.0、最大 20	5,616 cells (CP003; ) with 99.0% (5,560) unique cell lineage states, mean tree depth of 10.0, and maximum tree depth of 20
+E5-03	10.1126/science.abc1944	E5-03.txt	結論	17 個 clone（佔 7.3% 細胞）記錄品質不足被排除	17 clones, 7.3% of total cells in mouse M5k
+E5-03	10.1126/science.abc1944	E5-03.txt	結論	clone 的轉移表型涵蓋從不轉移到高度轉移的連續分布	we observe a distribution of clonal populations that spans the full spectrum of metastatic phenotypes between low (non-metastatic) and high (very metastatic) TreeMetRates
+E5-03	10.1126/science.abc1944	E5-03.txt	限制	作者說明本研究只用單一轉移模型	As a first report, this work by necessity focuses on a single model of metastasis
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	DLP+ 產生 51,926 個單細胞基因體	we have generated a resource of 51,926 single-cell genomes
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	卵巢癌細胞株 9 個 clone，每 clone 62–145 個細胞，中位覆蓋 15x	The 9 clones ranged in size from 62 to 145 cells with a median coverage depth of 15x
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	14,068 個 SNV 中 84% 完全符合推得的樹	A total of 14,068 SNVs passed thresholding of which 84% fit perfectly with the inferred phylogenetic tree
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	SNV 分布：28% 祖先、9% clone 專屬、63% clade 專屬	28% predicted as ancestral, 9% clone specific and the remaining 63% clade specific
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	538 個 breakpoint 中 88% 完全符合樹	A total of 538 passed thresholding of which 88% fit perfectly with the inferred phylogeny
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	breakpoint 樹與 SNV 樹拓樸完全相同	The topology of the breakpoint phylogeny was identical to the SNV phylogeny
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	in-silico 混合測試中 bulk deconvolution 在 clone 比例、clone 數、CN 結構上表現都差	Bulk deconvolution exhibited poor performance in predicting: (1) clonal fraction
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	作者結論：單細胞 DLP+ 比 bulk 方法更能解出 CN clone	establishing that single-cell DLP+ is more effective in deconvolving copy number clones than bulk methods
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	由 germline 多型位點推 haplotype block，92%–94% 的 bin 有高品質 allele 量測	high-quality allelic measurements were available for 92%–94% of the genomic bins
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	結論	未轉型二倍體細胞中不到 5% 帶整條染色體的分離錯誤	identified a minority (< 5%) of cells with a mostly diploid genome
+E5-04	10.1016/j.cell.2019.10.026	E5-04.txt	觀點	作者認為 bulk 計算式 deconvolution 繁瑣且易錯，單細胞可取代	thereby obviating cumbersome and error-prone bulk tissue computational deconvolution methods
+E5-06	10.1101/gr.220707.117	E5-06.txt	結論	12 個單細胞資料集中有 11 個有強證據顯示同一位點被多次突變影響	strong evidence for the same genomic position being mutationally affected multiple times in individual tumors for 11 of 12 single-cell sequencing data sets
+E5-06	10.1101/gr.220707.117	E5-06.txt	結論	7 例是早期突變流失，其中 5 例位點沒有大片段缺失	Seven cases involved the loss of earlier mutations, five of which occurred at sites unaffected by large-scale genomic deletions
+E5-06	10.1101/gr.220707.117	E5-06.txt	結論	4 例出現 parallel mutation，可能是鹼基層級的趨同演化	Four cases exhibited a parallel mutation, potentially indicating convergent evolution at the base pair level
+E5-06	10.1101/gr.220707.117	E5-06.txt	觀點	作者主張 infinite sites assumption 的普遍有效性被否證	Our results refute the general validity of the infinite sites assumption
+E5-06	10.1101/gr.220707.117	E5-06.txt	假設	bulk 把細胞混合後，ISA 違反會被掩蓋	For bulk studies of admixed samples of cell, violations of the ISA may be obscured since mutational profiles are amalgamated before sequencing
+E5-06	10.1101/gr.220707.117	E5-06.txt	結論	檢定在模擬資料上特異度 90%–95%	our test has a high specificity of 90%–95% using a BF cutoff of 1
+E5-06	10.1101/gr.220707.117	E5-06.txt	結論	每個突變只有 2–3 個細胞時，靈敏度只有 50%–60%	With 2–3 cells per mutation, we find a moderate sensitivity of 50%–60% with the same BF cutoff
+E5-06	10.1101/gr.220707.117	E5-06.txt	限制	單細胞 doublet 比例在某些平台高達 40%	doublets, the inadvertent sequencing of more than one cell together, with some platforms having rates as high as 40%
+E5-06	10.1101/gr.220707.117	E5-06.txt	結論	白血病資料中 16 個 bulk LOH 事件有 13 個是祖先且出現在所有 clone	the large majority (13 of 16) appeared in all clones and were ancestral
+E5-06	10.1101/gr.220707.117	E5-06.txt	結論	5 個流失突變都不落在該病人的 LOH 區域	None of the five lost mutations we identified appeared in any of the LOH regions
+E5-06	10.1101/gr.220707.117	E5-06.txt	結論	三名病人流失的突變正是樹中最早發生的那一個	for three patients, the lost mutation is actually the first one that happened in their trees
+E5-06	10.1101/gr.220707.117	E5-06.txt	結論	卵巢癌 panel 為 43 或 84 個突變，定序 420–672 個細胞	For targeted panels of 43 or 84 mutations, between 420 and 672 cells were sequenced
+E5-06	10.1101/gr.220707.117	E5-06.txt	假設	同位點兩次點突變的先驗機率估計假設突變均勻分布、無選擇、全部被觀察到	assuming a uniform distribution of mutations with no selection and that all mutations are observed
+E5-06	10.1101/gr.220707.117	E5-06.txt	觀點	作者認為在 CNA 這類大範圍事件上，允許 recurrent 事件更加重要	Looking at larger-scale lesions in cancer, such as copy number alterations, the importance of allowing recurrent mutations becomes even more pron
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	結論	時序 scWGS 產生 42,000 個基因體，來自乳腺上皮與 TNBC PDX	we generated 42,000 genomes from multi-year time series single cell whole genome sequencing (scWGS) of breast epithelium and primary triple negative breast cancer (TNBC) patient derived xenografts (PDX)
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	結論	分析保留 42,000 個基因體、113 個 library，平均每細胞 995,000 reads、覆蓋 0.022x	we retained >42,000 genomes from 113 libraries across cell lines and PDX transplants for analysis (average 995,000 reads/cell, 0.022x coverage)
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	結論	四個 PDX 系列分別追蹤 927、619、381、353 天	sampled over 927, 619, 381 and 353 days, respectively
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	結論	TNBC-SA1035 偵測到 11 個 clone	For TNBC-SA1035, 11 clones were detected
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	結論	參考 Clone A 起始比例 20%，最後時間點已偵測不到	the reference Clone A had initial prevalence of 20% but was not detectable by the last timepoint
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	結論	Clone E 從起始的極低比例擴張到 X8 代的 69%	Clone E, expanding to 69% at passage X8 from minor prevalence at the initial timepoint
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	結論	停藥後 clone 組成回復為前驅 Clone B 佔 90%	clonal composition reverted to consist predominantly of precursor Clone B with 90% abundance
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	結論	p53 缺失細胞的 aneuploid clone 擴張速率顯著較高，二倍體細胞快速消失	rates of expansion of both p53−/−a and p53−/−b aneuploid clones were significantly higher, leading to rapid depletion of diploid cells
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	結論	每細胞 CN breakpoint 數隨 fitness 升高，但點突變率相對穩定	Copy number breakpoints per cell increased as a function of fitness
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	假設	以 CNA genotype 定義 clone，假設 genotype 或與其連動的遺傳因子決定 fitness	implies that either the genotype or a factor heritably linked to the genotype (such as SNVs or epigenetic states), is a determinant of fitness
+E5-05	10.1038/s41586-021-03648-3	E5-05.txt	限制	作者說 SNV、SV 與罕見 CNA 會另外加成影響 fitness，本模型未納入	We expect additional variation due to SNVs, structural variations from genomic rearrangements, or rare CNAs beyond first approximation estimates will additively impact fitness
+E5-10	10.1038/s41559-018-0642-z	E5-10.txt	結論	24 個良性與惡性大腸腫瘤的多區域 genome／exome 定序	multi-region genome/exome sequencing of 24 benign and malignant colorectal tumours
+E5-10	10.1038/s41559-018-0642-z	E5-10.txt	結論	腺瘤的 SNA 有中位 56% 是 sub-clonal	a median 56% [53-70%] of all CRA SNAs were
+E5-10	10.1038/s41559-018-0642-z	E5-10.txt	結論	MSS 癌的 sub-clonal SNA 比例顯著較低（45%）	MSS CRCs had a significantly lower proportion of sub-clonal SNAs (45% [23-77%]; p=0.04
+E5-10	10.1038/s41559-018-0642-z	E5-10.txt	結論	所有癌中生理距離與系統發生距離強相關（R2=0.81-0.93）	In all CRCs, physical and phylogenetic distances between biopsies were strongly correlated (R2=0.81-0.93
+E5-10	10.1038/s41559-018-0642-z	E5-10.txt	結論	癌的 sub-clonal CNA 比全腫瘤共有的 CNA 小	In CRCs, sub-clonal CNAs were smaller than ubiquitous CNAs (p<0.001
+E5-10	10.1038/s41559-018-0642-z	E5-10.txt	結論	每個腫瘤的每個區域都至少帶一個 CNA，包含 cnLOH	Every region of every tumour carried at least one CNA, including cnLOH
+E5-10	10.1038/s41559-018-0642-z	E5-10.txt	結論	MSS 癌的樹幹比分支長，腺瘤相反	MSS CRCs have longer phylogenetic tree trunks than branches/leaves as compared to CRAs
+E5-10	10.1038/s41559-018-0642-z	E5-10.txt	結論	三個癌的 CNA 時序集中在 MRCA 之前，呈 punctuated 模式	showed a clustering of CNA timings shortly before the MRCA
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	結論	27 個大腸癌、297 個 single-gland 樣本（每腫瘤平均 11 個）	297 samples from 27 CRCs (mean, 11 samples per tumour; range, 1–38)
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	結論	deep WGS 中位深度 35x，每病人 3–15 個樣本	deep WGS, median depth 35×, between 3 and 15 samples per patient (median, 8)
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	結論	ABC 模型在 27 個腫瘤中有 7 個找到 subclonal selection 的強證據	we found strong evidence of subclonal selection in 7 out of 27 tumours
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	結論	其餘 15 個腫瘤的最佳模型是中性生長	In the remaining 15 out of 27 tumours the preferred subclonal growth model was neutral
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	結論	七個有選擇的腫瘤中，四個在被選 clade 內找到表現中的 subclonal driver	In four of these seven tumours, a putative subclonal driver mutation was present in the selected clade
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	結論	被選 subclone 的生長速率推估最高是背景 clone 的 20 倍，且多半很早出現	as much as 20 times higher than that of the background clone, and most selected clones originated relatively early during tumour expansion
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	結論	分支長度相近的平衡樹常見，與有效中性演化一致	trees, in which similar branch lengths are found across tumour samples and regions, are consistent with effectively neutral evolution
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	結論	38 個 subclonal driver 候選中有 14 個（37%）是良性或未表現	14 out of 38 (37%) variants were either benign or not expressed in the cancer
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	觀點	作者認為 CRC driver 突變常缺乏可偵測的 subclonal selection，與廣泛中性演化的報告一致	The lack of detectable selection on CRC driver mutations is consistent with previous reports of widespread neutral subclonal evolution within CRCs
+E5-11	10.1038/s41586-022-05311-x	E5-11.txt	結論	3,705 個可測 subclonal 突變中只有 2.4%（89 個）影響 cis 基因表現	only 2.4% (89 out of 3,705) of subclonal mutations in which eQTL status could be investigated were associated with detectable changes in cis gene expression
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	結論	41 名 HGSOC 病人、70 個樣本、30,260 個腫瘤單細胞基因體	we analysed 70 high-grade serous ovarian cancer samples from 41 patients (30,260 tumour genomes)
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	結論	共定序 100,054 個單細胞基因體，中位每病人 1,720 個，覆蓋深度中位 0.060	Sequencing yielded 100,054 single-cell whole genomes (median, 1,720 per patient) with a median coverage depth of 0.060
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	結論	41 名病人中 40 名體內同時存在不同 WGD 倍數的細胞	with 40 of 41 patients exhibiting coexisting WGD multiplicities
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	結論	比主族群多一次 WGD 的細胞在 37/41 名病人中被偵測到	were detected in 37 out of 41 patients, further exemplifying that WGD is ongoing
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	結論	全 cohort 有 4% 的腫瘤細胞屬於 additional-WGD	In total, 4% of all tumour cells across the cohort
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	結論	樹的分支長度用年齡相關的 CpG C>T 突變數表示	Branch length shows the number of age-associated SNVs (C-to-T at CpG sites) assigned to each branch
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	結論	WGD 多半發生在演化早期，但有一條晚期事件的長尾	Although WGD events generally occurred early in tumour evolution
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	結論	truncal WGD clone 的改變顯著多於 subclonal WGD clone，整染色體與臂的流失多三倍	Truncal WGD clones harboured significantly more alterations than subclonal WGD clones
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	結論	細胞間 CN 距離隨 WGD 倍數上升，additional-WGD 細胞最高	Mean NND increased with WGD multiplicity and was highest for additional-WGD cells
+E5-13	10.1038/s41586-025-09240-3	E5-13.txt	觀點	作者主張 WGD 是持續進行的過程，會提高 CIN 與基因體多樣化	firmly linking WGD to increased CIN and cellular genomic diversification in HGSOC
+E5-09	10.1038/s41586-018-0409-3	E5-09.txt	結論	兩個實驗室培養的 106 個細胞株有廣泛的 clonal 多樣性	genomic analyses of 106 cell lines grown in two laboratories revealed extensive clonal diversity
+E5-09	10.1038/s41586-018-0409-3	E5-09.txt	結論	27 個 MCF7 strain 兩兩比較中，10 條染色體臂（基因體的 25%）有增減差異	Ten chromosome arms (25% of the genome) were differentially gained or lost in a pairwise comparison of strains
+E5-09	10.1038/s41586-018-0409-3	E5-09.txt	結論	95 個編碼區 SNV／indel 中只有 35% 為所有 strain 共有，29% 只出現在單一 strain	Only 35% of 95 non-synonymous single nucleotide variants (SNVs) and indels affecting coding sequence or splicing were shared by all strains
+E5-09	10.1038/s41586-018-0409-3	E5-09.txt	結論	27 個 strain 都帶同一個 PIK3CA 突變，但 allele fraction 從 0.21 到 0.70	all 27 strains harbored the PIK3CA-activating mutation c.1633G>A, but the AF varied from 0.21 to 0.70
+E5-09	10.1038/s41586-018-0409-3	E5-09.txt	結論	依 AF 與 CN 判定，45% 的突變是 subclonal	45% of all observed mutations were determined to be subclonal
+E5-09	10.1038/s41586-018-0409-3	E5-09.txt	結論	同一母族群衍生的單細胞 clone 之間突變圖譜就不同	Clones derived from the same parental population differed in their mutational landscapes
+E5-09	10.1038/s41586-018-0409-3	E5-09.txt	結論	單細胞衍生 clone 培養 8–14 個月後，中位 13% 的非沉默 SNV 在時間點之間不共有	A median of 13% of the non-silent SNVs (range, 8% to 16%) were not shared between time points
+E5-09	10.1038/s41586-018-0409-3	E5-09.txt	假設	以條碼比例在五種培養條件、各五個重複中的變化，區分隨機漂移與選擇	We barcoded MCF7 cells (strain D) and evaluated the change in barcode representation over time under five culture conditions, each in five replicates

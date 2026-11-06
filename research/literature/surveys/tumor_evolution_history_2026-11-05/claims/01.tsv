@@ -1,0 +1,105 @@
+paper_id	doi	source_file	category	claim_zh	quote
+E1-01	10.1038/ng.3489	E1-01.txt	結論	904 例中 323 例符合中性 power-law，14 種癌別	We find that the neutral power-law fits with high precision 323 of 904 cancers from 14 types
+E1-01	10.1038/ng.3489	E1-01.txt	假設	中性擴張預測累積 VAF 呈 1/f	The model predicts that mutations arising during a neutral expansion of a cancer accumulate following a 1/f power-law distribution.
+E1-01	10.1038/ng.3489	E1-01.txt	結論	CRC 7 例加 TCGA 101 例中 38/108（35.1%）R2≥0.98	with 38/108 (35.1%) of the cases reporting a high R2≥0.98
+E1-01	10.1038/ng.3489	E1-01.txt	假設	只在 VAF 0.12–0.24 視窗檢定	For all samples we used a boundary of [0.12-0.24] to account only for reliably called subclonal mutations
+E1-01	10.1038/ng.3489	E1-01.txt	觀點	作者把高 R2 解讀為中性動態	these data precisely follow the distribution predicted by the model, indicating that this tumor grew under neutral evolutionary dynamics
+E1-01	10.1038/ng.3489	E1-01.txt	結論	胃、肺、膀胱、子宮頸、大腸較常符合	neutral evolution was more prominent in some tumor types, such as stomach (validating the WGS analysis), lung, bladder, cervical, and colon
+E1-01	10.1038/ng.3489	E1-01.txt	結論	腎、黑色素瘤、胰、甲狀腺、GBM 擬合差	such as in renal, melanoma, pancreatic, thyroid, and glioblastoma
+E1-01	10.1038/ng.3489	E1-01.txt	結論	819 例 exome TCGA、14 癌別	a large pan-cancer cohort of 819 exome-sequenced cancers from 14 tumor types
+E1-02	10.1038/s41588-018-0258-x	E1-02.txt	結論	Williams 法只在約 11% 模擬中正確拒絕中性	true rejection of neutrality in ~11% of simulations
+E1-02	10.1038/s41588-018-0258-x	E1-02.txt	結論	非中性腫瘤有 53.5% 被誤判為中性，AUC 0.42，各 1,919 例模擬	with 53.5% false positive neutral calls in non-neutral tumors () and an area under the ROC curve of 0.42 for the classification of 1,919 neutral and 1,919 non-neutral tumors
+E1-02	10.1038/s41588-018-0258-x	E1-02.txt	結論	R2>0.98 既非必要也非充分（branching process 模擬）	R2 > 0.98 for M(f)∝1f is neither a necessary nor a sufficient property of neutrally evolving tumors
+E1-02	10.1038/s41588-018-0258-x	E1-02.txt	觀點	未拒絕虛無假設不等於中性	Failure to reject the null hypothesis is not the same as proving it true
+E1-02	10.1038/s41588-018-0258-x	E1-02.txt	結論	dN/dS 在被判為中性的腫瘤中也測到 subclonal 正選擇	dN/dS ratio analysis revealed significant positive selection in subclonal mutations of tumors classified as neutral
+E1-02	10.1038/s41588-018-0258-x	E1-02.txt	結論	資料集中 37% 有 WGD，其 clonal 峰落在 VAF 0.25 或以下	in tumors with whole genome duplications, i.e. 37% of tumors in the analyzed dataset, the peak of clonal mutations acquired after the whole genome doubling event is at or below VAF = 0.25
+E1-02	10.1038/s41588-018-0258-x	E1-02.txt	假設	原模型假設同步分裂、固定死亡率與突變率	relies on strong biological assumptions, among which are synchronous cell divisions, constant cell death and constant mutation and division rates
+E1-03	10.1038/ng.3214	E1-03.txt	假設	Big Bang：單次擴張、不受嚴格選擇，大多數可測 private 變異早期發生	tumors grow predominantly as a single expansion producing numerous intermixed sub-clones that are not subject to stringent selection
+E1-03	10.1038/ng.3214	E1-03.txt	結論	15 個腫瘤、349 個 gland	Genomic profiling of 349 individual glands from 15 colorectal tumors revealed the absence of selective sweeps
+E1-03	10.1038/ng.3214	E1-03.txt	結論	99% non-unique CNA 也在 bulk 測到	We found that 99% of non-unique CNAs present in the glands were also detected in the bulk tumor
+E1-03	10.1038/ng.3214	E1-03.txt	結論	49/55 樣本同一 gland 內有多個 mitotic sub-clone	numerous mitotic sub-clones within the same gland were found in the majority (49/55) of samples
+E1-03	10.1038/ng.3214	E1-03.txt	觀點	部分腫瘤 born-to-be-bad	some tumors appear born-to-be-bad, with sub-clone mixing indicative of early malignant potential
+E1-04	10.1038/s41588-018-0128-6	E1-04.txt	結論	可測到的受選 subclone 早期出現，適應度優勢 >20%	detectable subclones under selection, when present, consistently emerged early during tumour growth and had a large fitness advantage (>20%)
+E1-04	10.1038/s41588-018-0128-6	E1-04.txt	假設	有受選 subclone 時 1/f 尾巴依然存在	as neutral mutations continue to accumulate within each subclone, the 1/f tail is also present in tumours with selected subclones
+E1-04	10.1038/s41588-018-0128-6	E1-04.txt	假設	累積 1/f 等於非累積約 1/f2	in the non-cumulative VAF distribution such as Figure 1b, this shows as ~1/f2
+E1-04	10.1038/s41588-018-0128-6	E1-04.txt	結論	胃 29%（5/17）、大腸 21%（15/70）有受選 subclone	Differentially selected subclones were detected in 29% (5/17 cases) of the gastric cancers and 21% (15/70 cases) of the colon cancers
+E1-04	10.1038/s41588-018-0128-6	E1-04.txt	結論	MET500 51%（58/113）	the MET500 (51%, 58/113) data had a higher proportion of tumours with selected subclones
+E1-04	10.1038/s41588-018-0128-6	E1-04.txt	結論	TRACERx 97%（36/37）非中性	97% of cases (36 out of the 37 cases suitable for our analysis) were characterised by non-neutral dynamics
+E1-04	10.1038/s41588-018-0128-6	E1-04.txt	結論	同一肺腫瘤 5 區只有 1 區有強選擇證據	only 1/5 regions of a single lung tumour showed strong evidence of subclonal selection
+E1-04	10.1038/s41588-018-0128-6	E1-04.txt	觀點	作者承認舊頻率法只能拒絕虛無假設	only allows for the rejection of the null hypothesis (which is not necessarily evidence for the null itself)
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	101 病人、1,206 區域	We analyzed 1,206 primary tumor regions from 101 patients
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	每腫瘤區域數中位 7（3–75）	across 106 primary tumors (median 7 [range, 3–75] regions per tumor) from 101 patients
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	clone 數中位 4（1–23）	The median number of clones detected was 4 per tumor (range, 1–23).
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	七種演化亞型	ccRCC can be grouped into seven evolutionary subtypes
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	clone 數約 10 cm 後持平	plateauing at ∼10 cm beyond which clone number began to marginally reduce with increasing size
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	VHL 突變 clonal 於 77/106	VHL mutations were the only consistently clonal event, present in 77/106 tumors
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	PBRM1→SETD2 亞型高度分支，>10 clones	a group characterized by highly branched trees (>10 clones per tumor; range [3–23])
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	VHL mono-driver 亞型分支少	which displayed limited branching and a monoclonal structure
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	13% 未治療原發腫瘤有平行演化	13% of untreated primary tumors had evidence of parallel evolution
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	MSAI 見於 15/41 腫瘤（平行 SCNA，涉及兩條 homolog）	observed MSAI events in 15/41 tumors
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	觀點	作者解讀為 deterministic	we show the deterministic nature of clonal evolution
+E1-06	10.1038/nature14971	E1-06.txt	假設	短距離擴散與細胞更替能解釋快速混合	short-range dispersal and cell turnover can account for rapid cell mixing inside the tumour
+E1-06	10.1038/nature14971	E1-06.txt	假設	無擴散時體積約 T3；有擴散時趨向指數	increases with time (T) from initiation as ∼T3 without dispersal (), it grows much faster (∼exp(const × T) for large T) when M>0
+E1-06	10.1038/nature14971	E1-06.txt	假設	細胞更替是限制異質性的前提	an important prerequisite for limiting heterogeneity is cell turnover in the tumour
+E1-06	10.1038/nature14971	E1-06.txt	觀點	作者引述：核心變異幾乎每個細胞都有	virtually every neoplastic cell within a large tumour often contains the same core set of genetic alterations
+E1-07	10.1038/s41559-021-01615-9	E1-07.txt	假設	空間結構可生成四種模式	different spatial structures can generate four tumour evolutionary modes: rapid clonal expansion, progressive diversification, branching evolution and effectively almost neutral evolution
+E1-07	10.1038/s41559-021-01615-9	E1-07.txt	假設	Gland fission 導致高度分支的扇形 driver 樹	this process leads to a highly branched, fan-like driver phylogenetic tree
+E1-07	10.1038/s41559-021-01615-9	E1-07.txt	假設	邊界生長接近中性，靠 surfing 擴散	tumour evolution in this case is effectively almost neutral
+E1-07	10.1038/s41559-021-01615-9	E1-07.txt	結論	實體瘤資料對應少數主分支的 branching	corresponding to branching evolution with a small number of main branches
+E1-07	10.1038/s41559-021-01615-9	E1-07.txt	結論	中性模型的 tree balance 與實體瘤資料不合	neutral models and models that do not account for glandular structure predict smaller or more variable tree balance values than the data for solid tumours
+E1-07	10.1038/s41559-021-01615-9	E1-07.txt	結論	多區域定序低估 subclonal driver 約 25%	underestimate the number of subclonal, locally abundant driver mutations by approximately 25%
+E1-07	10.1038/s41559-021-01615-9	E1-07.txt	結論	Gland 約數百到數千細胞	each gland contains between a few hundred and a few thousand cells
+E1-08	10.1371/journal.pcbi.1007243	E1-08.txt	結論	空間結構大幅影響選擇與 drift 的偵測	the spatial structure of a solid cancer has a major impact on the detection of clonal selection and genetic drift from both bulk and single-cell sequencing data
+E1-08	10.1371/journal.pcbi.1007243	E1-08.txt	假設	中性邊界生長在 f>5% 呈 1/f2	is expected to follow a 1/f2 scaling form within most of the detectable frequency range (f>5%)
+E1-08	10.1371/journal.pcbi.1007243	E1-08.txt	結論	Punch 取樣下純 spatial drift 也能造成突變群	there is an overrepresentation of a cluster of mutations that is only due to spatial drift and not selection
+E1-08	10.1371/journal.pcbi.1007243	E1-08.txt	結論	單細胞定序明顯降低 bulk 的取樣偏差	single-cell sequencing significantly reduces the sampling bias that we found in bulk samples
+E1-08	10.1371/journal.pcbi.1007243	E1-08.txt	結論	取樣偏差是主要干擾	such bias becomes a major confounding factor for the measurement of the evolutionary dynamics of human tumours
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	2,606 樣本 WGS	Using public whole-genome sequencing data from 2,606 samples from different cohorts
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	<60x 不足以可靠偵測尾巴	lower depth sequencing (e.g. <60x) is insufficient to detect tails reliably
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	低於 90x/100x 與低 purity 阻礙可靠重建	sequencing depth below 90x/100x and low purity prevents reliable subclonal reconstruction
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	假設	尾巴內的突變不是單系	mutations in neutral tails are not monophyletic
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	只用 Binomial 混合會把尾巴切成假 subclone	will detect several clusters within the neutral tail that are erroneously identified as subclones
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	重建一例 3 subclones 改為 2 加尾巴	Compared to the original analysis, which found 3 subclones, MOBSTER fits two subclones (k=3) and places a neutral tail
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	尾巴只在高 coverage 與高 purity 樣本穩定出現	we consistently found neutral tails only in samples with higher coverage and purity
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	驗證用 150 例分支過程模擬	We used a stochastic branching process to simulate the growth of n=150 tumors
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	95.1% informative 樣本有 subclonal 擴張	Nearly all informative samples (95.1%) contain evidence of distinct subclonal expansions
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	2,658 癌症	Consensus-based characterization of ITH in 2,658 cancers
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	1,705 基因組有力測到 >30% 的 subclone	focused on 1,705 genomes where our approach is powered to detect subclones encompassing more than 30% of tumor cells
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	單樣本、中位約 46× 是保守下限，測不到罕見族群	based on single-sample reconstruction and a median ∼46× read coverage, provide a conservative lower bound because we are not powered to detect rare populations
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	Sibling 比 parent-child 多 3.11 倍	two subclones are 3.11-fold more likely to have sibling than parent-child relationships (bootstrapped 95% confidence interval [1.71; 7.50]
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	Subclone 內平均 14% SNV 低於偵測極限	On average, 14% of SNVs in observable subclones fall below the detection limit
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	CCF<30% 的 subclone 平均漏 21%	In subclones with a CCF of less than 30%, an average 21% of SNVs are missed.
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	黑色素瘤例外，31/62	cutaneous melanoma, where subclones were detectable by our approach in only 31 of 62 samples
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	85% 有 subclone 的樣本無已知 subclonal driver	85% of samples with at least one subclone (1,381 of 1,621) contain no identified subclonal driver SNVs or indels
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	3,933 個 driver 中 9.0% subclonal	Of 3,933 SNV and indel driver mutations in 355 genes, we found 357 (9.0%) subclonal events
+E1-11	10.1038/ng.3641	E1-11.txt	結論	12 名 TNBC 1000 單細胞，每腫瘤 1–3 個主克隆	We sequenced 1000 single cells from 12 patients and identified 1–3 major clonal subpopulations in each tumor
+E1-11	10.1038/ng.3641	E1-11.txt	假設	PCNE：CNA 短暫爆發，隨後穩定擴張	CNAs are acquired in short bursts of crisis, followed by stable clonal expansions that form the tumor mass
+E1-11	10.1038/ng.3641	E1-11.txt	結論	未見漸進中間態	Evidence of gradual intermediate branching was not observed as cells progressed from diploid to aneuploid genomes.
+E1-11	10.1038/ng.3641	E1-11.txt	結論	非克隆 CN 譜：aneuploid 7.4%、diploid 7.9%、鄰近正常 5.9%	occurred at 7.4 ± 0.8% (SEM) in the aneuploid fractions, 7.9 ± 1.4% (SEM) in the diploid fractions and 5.9 ± 1.0% (SEM) in the adjacent normal tissue cells
+E1-12	10.1038/s41586-021-03357-x	E1-12.txt	結論	16,178 單細胞、8 TNBC、4 細胞株	copy number analysis of 16,178 single cells from 8 triple-negative breast cancers (TNBCs) and 4 cell lines
+E1-12	10.1038/s41586-021-03357-x	E1-12.txt	結論	8 腫瘤 9,765 細胞	We applied ACT to sequence 9,765 cells from 8 TNBC tumors
+E1-12	10.1038/s41586-021-03357-x	E1-12.txt	結論	7–22 subclones，組成 3–5 superclones	Clustering of the ACT data identified 7–22 subclones (c1-c22) that were organized into 3–5 superclones (s1-s5) across the 8 tumors
+E1-12	10.1038/s41586-021-03357-x	E1-12.txt	觀點	TNBC 在原發生長期持續演化	TNBCs continue to evolve chromosome aberrations and maintain a reservoir of subclonal diversity during primary tumor growth
+E1-13	10.1038/ng.3891	E1-13.txt	結論	強 subclonal 選擇可和中性或弱選擇分開	it is feasible to distinguish tumors driven by strong positive subclonal selection from those evolving neutrally or under weak selection
+E1-13	10.1038/ng.3891	E1-13.txt	結論	各模式 >70% subclonal SSNV 是區域專屬	In each of the modes, over 70% of subclonal SSNVs were region-specific due to spatial constraints
+E1-13	10.1038/ng.3891	E1-13.txt	結論	COAD、ESCA 分歧較低；肺與腦較高	The primary COADs and ESCAs tended to exhibit lower detectable divergence than lung and brain cancers
+E1-13	10.1038/ng.3891	E1-13.txt	結論	肺與腦傾向有較強選擇訊號	lung and brain tumors tended to show stronger signals of selection
+E1-13	10.1038/ng.3891	E1-13.txt	結論	加入區域後 subclonal cluster 溶解	consistently resulted in the dissolution of subclonal clusters when data from additional regions were included
+E1-13	10.1038/ng.3891	E1-13.txt	結論	相似 VAF 可以是不同 lineage	suggesting that distinct lineages can have similar VAFs in the bulk tumor
+E1-13	10.1038/ng.3891	E1-13.txt	假設	虛擬腫瘤 7 模式共 1400 個	200 tumors under each of the 7 evolutionary modes, totaling 1400 virtual tumors
+E1-14	10.1038/s41467-020-19119-8	E1-14.txt	結論	AML：68（55%）linear、55（45%）branching	Among the 123 AML patients analyzed, 68 (55%) showed linear clonal evolution, whereas 55 (45%) exhibited branching clonal evolution
+E1-14	10.1038/s41467-020-19119-8	E1-14.txt	結論	154 樣本 123 病人	we conducted scDNA-seq in 154 AML samples from 123 patients
+E1-14	10.1038/s41467-020-19119-8	E1-14.txt	結論	Panel 只有 19 或 37 基因	predesigned 19 genes panel [90 samples, Supplementary Table 1] or by a custom-designed panel interrogating 37 genes
+E1-14	10.1038/s41467-020-19119-8	E1-14.txt	結論	每樣本中位 6102 細胞，ADO 5.8%	The estimated median allele dropout (ADO) rate was 5.8%
+E1-14	10.1038/s41467-020-19119-8	E1-14.txt	結論	每樣本中位細胞數	A median of 6102 BMMCs (IQR: 4066–7790) per sample were sequenced
+E1-23	10.1371/journal.pcbi.1008701	E1-23.txt	結論	兩型模型的數學結果：足夠資料下 SFS 可分辨中性與特定選擇	given enough sequence data the site frequency spectrum can be used to distinguish neutral evolution from one specific type of selection
+E1-23	10.1371/journal.pcbi.1008701	E1-23.txt	假設	兩型模型中，各自族群內突變都遵循 1/f	Mutations within the growing type 0 and type 1 populations follow the 1/f law.
+E1-23	10.1371/journal.pcbi.1008701	E1-23.txt	觀點	引述 McDonald 等：線性關係不代表中性	does not imply … the presence of neutral evolution
+E1-23	10.1371/journal.pcbi.1008701	E1-23.txt	觀點	Tung 與 Durrett 不同意已發表的批評	in contrast to published criticisms, neutral evolution in an exponentially growing tumor can be distinguished from the two-type model
+E1-17	10.1101/274142	WEB:https://www.biorxiv.org/content/10.1101/274142v1.full-text	觀點	Heide 等回覆：多數癌症並非中性（WebFetch 擷取，未逐字核對）	the majority of cancers we analysed were not neutral
+E1-01	10.1038/ng.3489	E1-01.txt	結論	CRC 7 例與 TCGA 大腸 101 例	our cohort of 7 multi-sampling CRCs and 101 TCGA colon adenocarcinomas
+E1-04	10.1038/s41588-018-0128-6	E1-04.txt	結論	原作者改用貝氏模型	we implemented a Bayesian statistical inference framework
+E1-07	10.1038/s41559-021-01615-9	E1-07.txt	假設	模型結論依賴參數值	For our parameter values, this process leads to a highly branched
+E1-10	10.1016/j.cell.2021.03.009	E1-10.txt	結論	11 種重建方法	served as input to 11 subclonal reconstructing methods
+E1-11	10.1038/ng.3641	E1-11.txt	結論	Illumina 76 cycles，short read	sequenced on the Illumina platform at 76 single-end cycles
+E1-13	10.1038/ng.3891	E1-13.txt	結論	中性與弱選擇（s=0.01）的 subclonal 組成都被保留	or weak selection (s=0.01), subclonal composition is preserved in the final tumor

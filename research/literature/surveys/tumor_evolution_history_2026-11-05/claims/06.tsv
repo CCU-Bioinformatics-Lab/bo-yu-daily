@@ -1,0 +1,133 @@
+paper_id	doi	source_file	category	claim_zh	quote
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	20 例 NSCLC 的 phase block N50 為 834 kb，一致率 >99%	834 kb in N50 length with >99% concordance rate
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	43% 的 point mutation 能指派到 HP1 或 HP2（每例平均 38%）	we could find that 43% of the point mutations were mapped to either haplotype #1 (HP1) or haplotype #2 (HP2)
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	4 例指派成功率低於 15%，這些例的 VAF 較低	the haplotype assignment was successful for less than 15% of the mutations
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	VAF ≥ 0.2 時，指派成功率升到整體 71%、平均 50%	the total and average success rates of the assignment improved to 71% and 50%
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	SV 最多 70% 能指派到單一 haplotype（inversion 除外）	up to 70% of SVs, except for the inversion type, were successfully assigned to a single haplotype
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	Tumor 與 normal 的兩 SNP 相位不一致率（含 switch、flip）0.59%（S21）	switch and flip errors, appeared to be only 0.59%
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	假設	作者檢驗突變是否在兩條 haplotype 上真的隨機分布	we wondered whether the mutations distribute truly randomly across the haplotypes
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	15 例有 834 個突變富集且顯著偏向一條 haplotype 的區域；其餘 5 例沒有	We analyzed 834 of such mutation-enriched regions from the phased block regions of 15 cases
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	富集 block 數和 TMB 的相關：r = 0.78	Spearman's r = 0.78, p = 4.4e−5
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	190 個區域有 >80% 的突變集中在一條 haplotype（每例 1–75 個）	190 regions (1–75 region(s) per case) were identified to harbor more than 80% of the mutations preferentially in one of the haplotypes
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	偏向比例依癌別而異：典型肺腺癌傾向集中一條；其他 NSCLC 隨機分布	they were randomly distributed to both haplotypes in other types of non-small cell lung
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	S2：20 個局部富集 SNV 中，14 個可解析者全在 HP1，block 2.8 Mb	All 14 haplotype-resolved SNVs were assigned to HP1 (block#116042803, 2.8 Mb in length
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	S2 這些突變的型態對應 APOBEC SBS02，cosine 0.946	APOBEC mutational signature (SBS02; cosine similarity = 0.946
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	S20：chr5 一個 3.75 Mb block 內所有 SV 和 SNV 都在 HP1	all SVs and SNVs in a large phased block (length: 3,746,985 bp) in chromosome 5 were detected in HP1
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	觀點	作者解讀：可能是一次染色體層級的破碎事件，而不是逐步累積	which has only happened once during the cancer history, rather than the accumulation of a series of individual mutational events
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	至少 5 例有類似 chromothripsis 痕跡	similar traces of possible chromothripsis events from at least five specimens
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	其中 4 例是肺腺癌，都帶 EGFR driver	four of these cases were lung adenocarcinoma cases, and all of them bared EGFR mutations
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	S21：EGFR L858R 與 R776S 在同一 haplotype 同一 block，12 條 read 同時覆蓋	12 reads covered both mutations
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	觀點	作者把 HP 寫成母系／父系兩條，但實際只是標籤，沒有 parent-of-origin 資訊	classified the somatic mutations into either of the two maternal/paternal haplotypes
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	距離超過 read 長的 somatic mutation 關係未分析	The relationship between somatic mutations with a distance longer than the reads were not analyzed
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	189 腫瘤、41 normal，ONT PromethION	a cohort of 189 patient tumors and 41 matched normal samples
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	中位 coverage normal 17.5×、tumor 26×	median of 17.5- and 26-fold haploid genome coverage for normal and tumor samples
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	read N50 中位 31.3 kb	median N50 length of 31.3 kb
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	phase block 大小和 read 長相關 rho 0.72	phase block size was strongly correlated with read length (Spearman's rho 0.72
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	每例中位 85% 基因（含 promoter）可完整 phase	(median 85%, interquartile range [IQR] 79.1%–89.1%)
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	30 例有 TSG 雙 somatic 變異	There were 30 cases identified with double somatic variants in at least one TSG
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	33 對中 19 對（18 例）可 phase	Among 33 pairs of variants (with three variants in one case), 19 across 18 cases could be phased by long reads
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	17 對 in trans，2 對 in cis	The majority (n = 17) of pairs were found to occur in trans, while two were found to occur in cis
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	假設	短讀常假設同基因雙突變為 in trans	it is often assumed that they are in trans
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	每例平均 84% CpG 可 phase	an average of 84% of the CpG sites within each sample could be phased
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	aDMR 共 446 萬；腫瘤約為 matched normal 的 5 倍	We detected 4.46 million (mean = 23.61K, SD = 14.64K) aDMRs across all tumor samples, with around 5-fold more
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	79% aDMR 落在雜合 CNV 或 LOH 區	The majority (79%) of the aDMRs mapped to heterozygous copy number variant (CNV) and LOH regions
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	每例平均 26.5% phased 基因有 ASE	We found ASE in an average of 26.5% of the phased genes within each sample
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	DUSP22 ASE：122/135 例，GTEx 只有 9.12%	in 122/135 samples in which it was expressed and could be phased
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	觀點	作者推測：tissue-specific imprinting 重新活化可能參與腫瘤發生（parent-of-origin 線索，未驗證）	reactivation of tissue-specific imprinting of DUSP22 may play a role in tumorigenesis
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	觀點	作者認為 SV／LOH 對腫瘤 phasing 的影響不大，可能因 biopsy 的非腫瘤細胞保留兩條 haplotype	most likely due to the presence of both haplotypes in reads derived from the non-tumor cells present in a typical biopsy
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	樣本入選條件含表觀修飾基因突變、SV 負荷或 HRD（選樣偏差）	The criteria used to select samples for long-read analysis included mutations in epigenetic modifiers, SV burden or homologous recombination deficiency
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	20 例 phased block 數平均 normal 9027、tumor 6536	An average of 9027 and 6536 phased blocks were generated in the normal and tumor genomes
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	phased block 中位 N50：normal 665,168 bp、tumor 1,002,105 bp	the median N50 lengths of the phased blocks were 665,168 and 1,002,105 bp
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	平均 78% 基因體落在 phased block	an average of 78% of the genomic regions
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	結論	SV 中 inversion 最多只有 30% 能 phase	only up to 30% were phased
+B04	10.1038/s41467-022-31133-6	E6-B04.txt	假設	EGFR 雙突變的兩種解釋：幾乎同時發生，或雙突變 clone 後來取得優勢	either (i) these mutations have been acquired almost simultaneously or (ii) the doublemutant clones had somehow become more dominant
+E6-B01	10.1038/s41467-026-75172-9	E6-B01.txt	結論	小鼠株高度近交，germline phasing 無法提供有用資訊	our mouse strain is highly inbred and thus germline variant phasing
+E6-B01	10.1038/s41467-026-75172-9	E6-B01.txt	結論	Wakhan 以 unphased 模式執行	We used Wakhan29 in unphased mode to call copy number aberrations
+E6-B01	10.1038/s41467-026-75172-9	E6-B01.txt	結論	建樹用 10,862 個高信心 SNV；樹有 4 個主要 clade	in a final set of 10,862 high-confidence, informative SNVs
+E6-01	10.1038/s41587-025-02618-8	E6-01b.txt	觀點	Severus 明講：phasing 只分兩條 germline haplotype，每條可含多個 tumor allele 和 clone	each germline haplotype may contain somatic mutations representing multiple tumor alleles and clones
+E6-01	10.1038/s41587-025-02618-8	E6-01b.txt	結論	相鄰 phased SV 中 75–85% 為 cis	Among phased SVs, 75–85% of them were in the cis direction
+E6-01	10.1038/s41587-025-02618-8	E6-01b.txt	結論	多數細胞株 SV 的 VAF 在 0–0.5 平均分布	the VAF of SV calls was evenly distributed between 0 and 0.5, suggesting the presence of subclonal variants and aneuploidy
+E6-01	10.1038/s41587-025-02618-8	E6-01b.txt	結論	COLO829 benchmark 可能漏掉真實 subclonal 事件	the current version of the COLO829 cell benchmark might miss real subclonal events
+E6-01	10.1038/s41587-025-02618-8	E6-01b.txt	結論	COLO829 評估只算 VAF ≥ 10% 的 call	only considered calls with at least a 10% variant allele frequency
+E6-01	10.1038/s41587-025-02618-8	E6-01b.txt	結論	Severus 在三個 long read 資料的 F1 為 0.77–0.83	Severus had the highest F1 score (ranging from 0.77 to 0.83)
+E6-01	10.1038/s41587-025-02618-8	E6-01b.txt	結論	H1437 最大 cluster 為 chr9 的 chromothripsis-like 事件	largest cluster in H1437 consisted of a chromothripsis-like event in chr9
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	CNA allelic ratio 和主要表現 allele 頻率正相關 r = 0.63	correlation between the CNA allelic ratio and the major expressed allele frequency (Pearson r = 0.63
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	資料放在 EGA	have been deposited at the European Genome-Phenome Archive
+E6-03	10.1016/j.xgen.2022.100139	E6-03.txt	結論	COLO829 truth set 為 68 個驗證過的 somatic SV	the compiled set of 68 validated somatic SVs in COLO829
+E6-03	10.1016/j.xgen.2022.100139	E6-03.txt	結論	頻率 <5% 的 subclonal 事件可能漏掉	subclonal events with a frequency below 5% are likely missed in our analyses
+E6-03	10.1016/j.xgen.2022.100139	E6-03.txt	結論	50 個 SV（74%）同時以 capture 和 PCR 驗證	most of the SVs were validated by capture-based enrichment and by PCR (50; 74%)
+E6-04	10.1038/s41592-023-01993-x	E6-04.txt	結論	非腫瘤細胞株 switch error 0.04–0.09%	Switch error (ratio of adjacent SNPs in a wrong phase) was 0.04–0.09%
+E6-04	10.1038/s41592-023-01993-x	E6-04.txt	結論	Hamming error 2.1–2.6%	was also low (2.1–2.6%)
+E6-04	10.1038/s41592-023-01993-x	E6-04.txt	結論	只用 small variant 時 switch error 0.17–0.21%	substantially higher switch error rates (0.17–0.21%
+E6-04	10.1038/s41592-023-01993-x	E6-04.txt	結論	SV 邊界 100 bp 內 switch error 1–1.26%	The switch error around SVs (within 100 bp from boundaries) was 1–1.26%
+E6-04	10.1038/s41592-023-01993-x	E6-04.txt	結論	腦組織樣本 phase block NG50 平均 1.08 Mb	Mean phase block NG50 was 1.08 Mb among the brain samples
+E6-05	10.1186/s13073-021-00883-1	E6-05.txt	結論	11 對肝癌與 normal 以 MinION 定序	We performed whole-genome sequencing of 11 liver cancer and matched normal pairs with MinION
+E6-05	10.1186/s13073-021-00883-1	E6-05.txt	結論	919 個 somatic SV	our analysis detected somatic 919 SVs
+E6-05	10.1186/s13073-021-00883-1	E6-05.txt	結論	long read 找回短讀 SV 的 68.4%	The long reads identified 68.4% of SVs detected by short reads
+E6-05	10.1186/s13073-021-00883-1	E6-05.txt	結論	VAF ≥ 0.4 的 SV 有 80% 被偵測	80% of SVs with VAF ≥ 0.4 were detected
+E6-05	10.1186/s13073-021-00883-1	E6-05.txt	結論	含 ≥2 個斷點的 read 只有 21 條	We collected reads with ≥2 breakpoints, and 21 reads were obtained
+E6-05	10.1186/s13073-021-00883-1	E6-05.txt	觀點	作者認為 clustered SV 可能涉及多種修復機制	various repair mechanisms are involved in the generation of clustered SVs
+E6-07	10.1038/s41592-025-02708-0	E6-07.txt	結論	99 對 tumor-normal：57 軟組織肉瘤、28 骨肉瘤、14 GBM	99 tumor-normal pairs (57 diverse soft-tissue sarcomas, 28 osteosarcomas and 14 glioblastomas)
+E6-07	10.1038/s41592-025-02708-0	E6-07.txt	結論	ONT 中位深度 tumor 51×、normal 34×	median sequencing depth of 51× and 34× for tumor and normal samples
+E6-07	10.1038/s41592-025-02708-0	E6-07.txt	結論	read N50 中位 tumor 15 kbp、normal 21 kbp	median N50 of 15 and 21 kbp for tumor and normal nanopore sequencing reads
+E6-07	10.1038/s41592-025-02708-0	E6-07.txt	結論	QC 後留 92 個腫瘤	92 tumors were considered for further analysis
+E6-07	10.1038/s41592-025-02708-0	E6-07.txt	假設	真 somatic SV 的支持 read 應 phase 到單一 haplotype；假訊號常跨兩條	the reads supporting a somatic SV should be phased to a single haplotype, whereas artifactual SVs are likely to be supported by sequencing reads from both parental alleles
+E6-07	10.1038/s41592-025-02708-0	E6-07.txt	結論	和短讀 PURPLE 比，purity r = 0.97、ploidy r = 0.9（短讀比較，不是 diplosim 目標）	Pearson's correlation coefficient of 0.97 and 0.9, respectively
+E6-08	10.1101/2024.02.26.582089	E6-08.txt	結論	LOH 時失去的 allele 只來自正常細胞，取決於 purity	the evidence of the lost allele will only come from the normal cells within a sample
+E6-08	10.1101/2024.02.26.582089	E6-08.txt	結論	smrest 不推論 subclonal 的 CCF 分布	we do not attempt to infer a cancer cell fraction distribution for subclonal mutations
+E6-08	10.1101/2024.02.26.582089	E6-08.txt	結論	WhatsHap 不是為癌症 allele-specific CN 設計	this is not designed to account for allele specific copy number changes in cancer
+E6-08	10.1101/2024.02.26.582089	E6-08.txt	結論	評估排除 VAF < 10% 的突變	with predicted VAF < 10%
+E6-10	10.1101/2025.11.20.689492	E6-10.txt	結論	傳統 germline phasing 在 LOH 區會誤指派 somatic read	conventional germline phasing tools would misassign somatic reads either to the remaining haplotype (HP1) or to the deleted haplotype (HP2) in LOH regions
+E6-10	10.1101/2025.11.20.689492	E6-10.txt	結論	8 組資料中 6 組 HP1-1／HP2-1 tagging F1 ≥ 0.98	The F1-scores were ≥0.98 in six of eight datasets
+E6-10	10.1101/2025.11.20.689492	E6-10.txt	結論	無 germline 錨定的 HP3 明顯較低：F1 0.746 對 0.929	F1 = 0.746 for HP3 v.s. 0.929 for HP1-1 in HCC1937_UCSC
+E6-10	10.1101/2025.11.20.689492	E6-10.txt	結論	HP3 recall 0.596 對 HP1-1 的 0.871	recall = 0.596 for HP3 v.s. 0.871 for HP1-1 in HCC1937_UCSC
+E6-10	10.1101/2025.11.20.689492	E6-10.txt	結論	資料是 8 組公開 ONT tumor-normal，6 株細胞株	Eight publicly available tumor-normal paired ONT sequencing data
+E6-10	10.1101/2025.11.20.689492	E6-10.txt	觀點	作者承認 subclonal CNA、LOH、aneuploidy 造成 allelic skew	Subclonal CNAs, LOH, and aneuploidy can create chromosome- or clone-specific allelic skews that partially mimic purity effects
+E6-10	10.1101/2025.11.20.689492	E6-10.txt	假設	真突變應只在一條 parental haplotype，錯誤則隨機跨兩條（單一位點層級）	True emerging mutations tend to reside on the same parental haplotype, whereas spurious sequencing errors are haplotype-incoherent
+E6-10	10.1101/2025.11.20.689492	E6-10.txt	觀點	細胞株可能低估原發腫瘤的複雜度	may underrepresent the genomic complexity, stromal admixture, and spatial heterogeneity of primary tumors
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	Wakhan 的 haplotype 標 A／B，因為真正父母來源未知	haplotypes A and B (since the true parental state is unknown)
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	CNA segment 的父系／母系指派一開始是任意的	The assignment of CNA segment haplotypes into paternal and maternal is initially arbitrary
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	Long read 要到染色體尺度需額外資料	to achieve chromosome-scale phasing, additional data, such as Hi-C, poreC, or pedigree information, is required
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	延伸後 N50 增加一個數量級，switch、hamming error 相近或更低	both switch and hamming errors remained similar or lower, while phasing N50 increased by an order of magnitude
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	assembly 參考的相位仍有平均每基因體 2 個大尺度 switch	We observed on average two potential large-scale phase switches per genome
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	觀點	作者提出：部分 switch 可能是腫瘤基因體早期 homologous recombination	phase switches are explained by early homologous recombination in tumor genomes and need to be further explored
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	Wakhan 不建模 clone 混合	Wakhan does not explicitly model clonal mixtures
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	複雜擴增多半只影響一條染色體 haplotype	in most cases such patterns affected only one chromosome haplotype, suggesting that the corresponding rearrangements were acquired in a single burst
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	normal 細胞株的 LOH 可能在建株後才發生（細胞株偏差）	suggesting that they occurred exclusively in normal cell lines after they were established
+E6-HG008	10.1038/s41597-025-05438-2	E6-HG008.txt	結論	資料由 17 種全基因體量測技術組成	seventeen distinct state-of-the-art whole genome measurement technologies
+E6-HG008	10.1038/s41597-025-05438-2	E6-HG008.txt	結論	細胞株一部分細胞發生 WGD	a subpopulation of the cell line has undergone whole genome doubling
+E6-HG008	10.1038/s41597-025-05438-2	E6-HG008.txt	結論	NIST p18：17/20 spread 34–36 條染色體	representative of 17 of 20 spreads that had 34 to 36 chromosomes
+E6-HG008	10.1038/s41597-025-05438-2	E6-HG008.txt	結論	3/20 spread 有 WGD，68–70 條	three out of twenty spreads showed whole genome doubling, with counts ranging from 68 to 70 chromosomes
+E6-HG008	10.1038/s41597-025-05438-2	E6-HG008.txt	結論	許多大 deletion 造成 LOH	appears to have many large deletions that cause loss of heterozygosity
+E6-HG008	10.1038/s41597-025-05438-2	E6-HG008.txt	結論	germline phasing 用 PacBio 加 Hi-C（HiPhase、HapCUT2）	we phased the germline variants with PacBio long-read
+E6-HG008	10.1038/s41597-025-05438-2	E6-HG008.txt	觀點	部分變異可能是建株期間新增，不代表原發腫瘤	may be new variants that occurred during cell line development
+E6-HG008	10.1038/s41597-025-05438-2	E6-HG008.txt	結論	資料公開於 GIAB FTP	The data and alignments are publicly available on the GIAB FTP site
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	黑色素瘤：16% somatic 變異落在 GRCh38 沒有的序列	16% of somatic variants localize to sequences absent from GRCh38
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	satellite repeat 是 UV 相關突變熱點	with satellite repeats acting as hotspots for UV-associated mutagenesis
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	haplotype-resolved chromatin map 顯示廣泛 somatic epimutation	haplotype-resolved chromatin maps reveal widespread somatic epimutations
+E6-13	10.1002/advs.76856	E6-13.txt	結論	一名 HCC 病人：PacBio HiFi、超長 ONT、Hi-C 的 haplotype-resolved 組裝	from paired hepatocellular carcinoma (HCC) tumor and matched normal tissues using PacBio HiFi, ultra‐long Oxford Nanopore, and Hi‐C sequencing
+E6-13	10.1002/advs.76856	E6-13.txt	結論	Tumor SV allele 在 haplotype 1、2 為 6,472 和 6,779	13,251 haplotype‐level SV alleles assigned to haplotypes 1 and 2 (6,472 and 6,779)
+E6-13	10.1002/advs.76856	E6-13.txt	觀點	作者明寫單一病人，只能產生假說	this is a single‐patient proof‐of‐concept, so the biological observations reported here should be interpreted as patient‐specific and hypothesis‐generating
+E6-14	10.1016/j.xgen.2023.100484	E6-14.txt	結論	5 個 EAC organoid，chromothripsis 完全 clonal 且只影響單一親本 copy（依此挑選）	chromothripsis was fully clonal and affected single parental copies of the chromosome
+E6-14	10.1016/j.xgen.2023.100484	E6-14.txt	觀點	作者敘述：chromothripsis 通常只影響兩條親本染色體中的一條	chromothripsis typically affects only one of the two parental chromosomes
+E6-14	10.1016/j.xgen.2023.100484	E6-14.txt	結論	重排達 900 個仍可組裝	producing accurate assemblies even with up to 900 structural rearrangements
+E6-14	10.1016/j.xgen.2023.100484	E6-14.txt	結論	組裝只代表 dominant clone 的兩條 haplotype	represent the maternal and paternal haplotypes in the dominant clone of the organoid
+E6-14	10.1016/j.xgen.2023.100484	E6-14.txt	結論	Subclonal 區常被組裝器壓成 dominant clone	most commonly these regions get collapsed by the assembler to resemble the dominant clone
+E6-14	10.1016/j.xgen.2023.100484	E6-14.txt	結論	CN 不對稱時方法最有效（read depth 可用於指派）	most effective when the two alleles had an asymmetric copy number
+E6-02	10.1016/j.xgen.2024.100674	E6-02.txt	結論	BRCA1、NF1、RB1 只有約一半腫瘤可完整 phase	including BRCA1, NF1, and RB1, could be phased completely in only around half of tumors
+E6-04	10.1038/s41592-023-01993-x	E6-04.txt	結論	17 個人類基因體，含 3 株細胞株與 14 個腦組織	we sequenced 17 human genomes, including three cell lines
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	另加 5 株，共 8 株乳癌細胞株	we sequenced 5 more breast cancer cell lines
+E6-11	10.64898/2025.12.11.25342098	E6-11.txt	結論	3 例兒童腫瘤	Three pediatric tumor samples were selected from Children's Mercy Hospital
+E6-14	10.1016/j.xgen.2023.100484	E6-14.txt	結論	5 個 organoid 中 2 個來自同一病人	Two of these organoids were derived from the same patient
+E6-B01	10.1038/s41467-026-75172-9	E6-B01.txt	結論	建樹得到 4 個主要 clade	The constructed tree consisted of 4 clades
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	44,795 個 sSNV 與 828 個 sDNV，UL-ONT 驗證 99.9%	this approach revealed 44,795 sSNVs, and 828 somatic double nucleotide variants
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	多數 sSNV 的 hVAF 約 1，固定在兩條單倍型之一	the vast majority of sSNVs have a haploid variant allele fraction (hVAF) consistent with being fixed along one of the two haplotypes
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	chr1q hap1 有 38% sSNV 的 hVAF 約 0.5，用來定早晚	38% of sSNVs along the q-arm of chromosome 1 haplotype 1
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	29,189 個變異落在保留兩條單倍型的區域	Of the 29,189 COLO829 sSNVs and sDNVs that localize to loci that retain both haplotypes
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	78.05% 基因組有 sCNV	As 78.05% of the COLO829 genome contains a sCNV relative to COLO829BL
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	作者用另一條單倍型當染色質內部對照	we can use the opposite haplotype as an internal control of baseline chromatin accessibility
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	只有 3.9% 位於有單倍型選擇性的調控元件	only 3.9% (11/280) of these somatic variants were present within regulatory elements with significant haplotype-selective chromatin accessibility
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	衛星重複 sSNV 比非重複區高 3.79 倍	satellite elements harboring the highest abundance of sSNVs (3.79-fold higher than non-repeat elements)
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	t(1;3) 斷點 23 個 clustered 突變，73.91% 在 TpC	the majority (17/23, 73.91%) of these present at TpC dinucleotides
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	多次 WGD，推得 1n 覆蓋	which has undergone multiple whole-genome duplication events
+E6-12	10.1016/j.cell.2026.09.033	E6-12.txt	結論	變異刪除區的 SNV 被排除	we removed SNV calls overlapped with deleted segments

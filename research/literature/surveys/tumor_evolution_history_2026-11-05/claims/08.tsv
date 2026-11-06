@@ -1,0 +1,113 @@
+paper_id	doi	source_file	category	claim_zh	quote
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	PCAWG 2,645 人中只有 21 人可用	This yielded 21 informative individuals among the 2,645 PCAWG patients
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	可判定父母的片段平均只占基因組約 30.25%	spanning on average roughly a third (30.25%) of the genome
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	每人 SNV 1,086–91,690，中位數 5,882	the number of SNVs ranged from 1,086 to 91,690 (median 5,882)
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	讀長為 paired-end 100 bp，約 55X；平均 32.77% SNV 可定相	Given paired-end 100 bp reads covering ∼400 bp at ∼55X coverage, a mean of 32.77% of SNVs per sample could be non-ambiguously phased
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	balanced 區 21 人全部落在對稱虛無假設的預期範圍	with all patients falling within the expected range under the null hypothesis of symmetric mutation accumulation
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	不對稱上限：最佳病人 4%，全 cohort 5.7%（12,839 SNV，p=0.329）	and 5.7% when combining evidence across the entire cohort (12,839 assignable SNVs; binomial tests, Fisher’s method, p = 0.329)
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	摘要寫上限 4-5%（和 Results 的 5.7% 不完全一致）	bounding any asymmetry to within 4-5%
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	cohort 對 5% 以上系統性不對稱有 90% power	the cohort had 90% power to detect a systematic asymmetry of 5% or greater
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	10 人方向性檢定：加權效應 −0.03%，95% CI −7.25% 到 2.22%，p=0.34	weighted effect: −0.03%, 95% CI: −7.25% to 2.22%; sign test, p = 0.34
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	clonal／subclonal 兩段時間沒有顯著差異	accumulate mutations in similar proportions across timing categories, with no statistically significant differences
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	(C>T)pG（SBS1）沒有等位偏差	we observed no allelic bias in (C>T)pG transitions genome-wide
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	imprinted 區只有 2 個可定相突變，無法分析	only 2 mutations were detected and phaseable in these regions across the 21 patients
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	陽性對照：11 位女性中 8 位 Xi 突變較多，4 位顯著	In 8 out of 11 patients, a higher number of mutations was observed on the inactive X chromosome, with 4 patients showing a statistically significant difference
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	個別病人的個別區域有顯著差異，作者視為孤立觀察	A small number of patients showed statistically significant differences in particular regions, but these were isolated observations
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	親代 ancestry 分類準確率：chrX 98–100%、chrY 94–98%	accuracy was uniformly high on chrX (98–100%) and chrY (94–98%)
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	SNV 定相與 allelic imbalance 區一致率 95.93%	we observed a high overall agreement of 95.93%
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	假設	多數癌症基因體分析隱含父母基因組突變率相同的假設	This assumption is implicit in almost all cancer genomics analyses
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	觀點	作者認為這驗證了癌症演化分析的關鍵假設	validating a key assumption of cancer evolutionary analyses
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	觀點	作者稱這是首次活體量化父母突變量對稱性	This provides the first quantification of parental mutation-burden symmetry in vivo
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	限制：只能定相 admixed 個體	PhaSoMix can only phase admixed individuals, a small fraction of the population
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	限制：不同 ancestry 也會加大局部突變率差異，可能遮蔽微小訊號	this genetic distance also increases the local differences in mutation rates
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	結論	LOH 區被移除後才比較（以 F1 病人範例為證）	After correcting for copy number and removing loss of heterozygosity (LOH) regions
+E8-02	10.1038/338156a0	E8-02.txt	結論	13 個散發 osteosarcoma，12 例第一個突變在父系	We have now examined 13 sporadic osteosarcomas and find evidence which indicates that in 12 cases the initial mutation was in the paternal gene
+E8-02	10.1038/338156a0	E8-02.txt	觀點	作者解讀為 germinal imprinting 造成易突變差異	suggesting the involvement of germinal imprinting in producing the differential susceptibility of the two genes to mutation
+E8-03	10.1038/339556a0	E8-03.txt	結論	retinoblastoma 的第一個體細胞突變沒有父母偏好	in which we find no such predilection for initial somatic mutations
+E8-03	10.1038/339556a0	E8-03.txt	結論	新生 germline 突變來自父親	when an initial mutation was a new germline mutation, it was derived from the father
+E8-03	10.1038/339556a0	E8-03.txt	觀點	作者解讀：新生 germline 突變主要發生在精子生成	consistent with new germline mutations arising primarily during spermatogenesis
+E8-04	10.1038/340312a0	E8-04.txt	結論	9 個腫瘤：6 留父系、3 留母系	Six tumours retained the paternal allele and three retained the maternal allele
+E8-04	10.1038/340312a0	E8-04.txt	結論	3 個單側腫瘤只有 1 個留父系	Of the three unilateral tumours, only one retained the paternal RB1 allele
+E8-04	10.1038/340312a0	E8-04.txt	結論	5 位雙側病人中 4 位留父系	tumours from four of the five bilateral patients retained the paternal RB1 allele
+E8-05	PMC1684136	E8-05.txt	結論	5 位 Wilms 病人的親子比對：流失等位基因來自母系	five patients with Wilms tumor in whom the tumors showed loss of chromosome 11 alleles and their parents indicate that alleles lost in the tumors are of maternal origin
+E8-06	10.1038/ng0693-187	E8-06.txt	結論	53 個 neuroblastoma，15 個有 1p36 LOH	We analysed 53 neuroblastomas
+E8-06	10.1038/ng0693-187	E8-06.txt	結論	13/15 流失母系	In 13/15 tumours with LOH of 1 p36 the lost allele was of maternal origin
+E8-06	10.1038/ng0693-187	E8-06.txt	觀點	作者解讀為 1p 上 imprinting 的第一個證據	This is the first evidence as far as we know for genomic imprinting on chromosome 1p
+E8-07	10.1038/ng0693-191	E8-07.txt	結論	分析 22 個 N-myc 擴增 neuroblastoma	We have analysed 22 neuroblastomas with N–myc amplification
+E8-07	10.1038/ng0693-191	E8-07.txt	結論	N-myc 擴增偏父系：12/13，P=0.002	the paternal allele of N–myc was preferentially amplified (12 out of 13 cases; P = 0.002)
+E8-07	10.1038/ng0693-191	E8-07.txt	結論	1p 流失：10 例中 6 例父系，符合隨機（反駁 Caron）	the paternal allele was lost from 1 p in six out of ten cases, consistent with a random distribution (P > 0.2)
+E8-08	10.1038/s41467-017-00388-9	E8-08.txt	結論	160 個 germline BRCA1/2 腫瘤	Herein we report analyses of 160 BRCA1 and BRCA2 germline mutation-associated breast and ovarian tumors
+E8-08	10.1038/s41467-017-00388-9	E8-08.txt	結論	野生型保留比例：BRCA1 卵巢 7%、BRCA2 卵巢 16%、BRCA1 乳癌 10%、BRCA2 乳癌 46%	is observed in 7% of BRCA1 ovarian, 16% of BRCA2 ovarian, 10% of BRCA1 breast, and 46% of BRCA2 breast tumors
+E8-08	10.1038/s41467-017-00388-9	E8-08.txt	結論	定序是 WES	We performed WES on nascent DNA from 60 primary untreated breast (n = 39) and ovarian (n = 21) tumors
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	5 個 trio 驗證；mismatch SNV 0.31%、indel 1.89%	The parent of origin was correctly inferred for all autosomes with an average mismatch error rate of 0.31% for SNVs and 1.89% for insertions or deletions
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	220 條同源染色體全部判對	All 220 homologs were correctly assigned a PofO
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	iDMR 只占體染色體約 0.014%	iDMRs cover only a small fraction of the autosomal human genome (estimated in this study to be 0.014%)
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	只靠 nanopore 的 phase block N50 4.85 ± 3.66 Mb，不跨全染色體	the resulting phase blocks are relatively short (N50 M ± SD = 4.85 ± 3.66 Mb), do not span full chromosomes
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	用 192 個 iDMR：144 母系、48 父系	all 144 maternal iDMRs used in this study (methylated on the maternal homolog) and all 48 paternal iDMRs
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	nanopore 24–38×，Strand-seq 42–220 libraries	nanopore sequencing data at 24–38× depth of coverage (Figure S1) and 42–220 Strand-seq libraries
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	每條染色體平均 5.7 個 iDMR（範圍 1–29），信心分數 95.7%（57.5–100%）	each chromosome was assigned to its parental origin with an average of 95.7% confidence score (median: 99%, SD: 7.2%, range: 57.5%–100%
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	平均 5.7 個 iDMR，範圍 1–29	On average, 5.7 iDMRs (median: 5, SD: 5.2, range: 1–29)
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	X 染色體未納入	Chromosome X was ignored as it is not generally thought to have iDMRs
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	輸入是新鮮全血或可培養的活細胞	The only input required is a sample of fresh whole blood or other viable cells that can be cultured
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	HP1／HP2 指派對父母來源是隨機的	the assignment of each homolog (i.e., chromosome-length haplotype) to haplotype 1 or haplotype 2 (HP1 or HP2) is random with respect to its PofO
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	作者承認其他組織或細胞型的 iDMR 可能不同，可能無法指派	other tissues or cell types that have fewer or different somatic iDMRs than the cell lines used in this study
+E8-10	10.1038/s41588-018-0232-7	E8-10.txt	結論	285 個甲基化體與 11,617 個轉錄體，來自周邊血	Here we combine 285 methylomes and 11,617 transcriptomes from peripheral blood samples with parent-of-origin phased haplotypes
+E8-10	10.1038/s41588-018-0232-7	E8-10.txt	結論	imprinted 甲基化是連續特徵，不是二元	imprinted methylation is a continuous rather than a binary characteristic
+E8-11	10.1016/j.cell.2013.09.042	E8-11.txt	結論	402 個腫瘤基因體	we performed a cross-cancer comparison of 402 whole genomes
+E8-11	10.1016/j.cell.2013.09.042	E8-11.txt	結論	Xi 平均 2 倍、最高 4 倍突變密度	accumulates on average twice and up to four times as many somatic mutations per megabase
+E8-11	10.1016/j.cell.2013.09.042	E8-11.txt	結論	HSPC 與 MDS 沒有 X 超突變	a premalignant myelodysplastic syndrome (MDS) sample revealed no X chromosome hypermutation
+E8-11	10.1016/j.cell.2013.09.042	E8-11.txt	結論	定相：MB101 46 Xi、12 Xa	of which 46 unambiguously mapped to Xi and 12 to Xa
+E8-11	10.1016/j.cell.2013.09.042	E8-11.txt	結論	定相：淋巴瘤 389/444 Xi	389/444 SNVs unambiguously mapped to Xi and 55/444 mapped to Xa
+E8-11	10.1016/j.cell.2013.09.042	E8-11.txt	結論	放寬定義後 83/191（43%）女性受影響	then 83/191 (43%) females are affected
+E8-11	10.1016/j.cell.2013.09.042	E8-11.txt	觀點	作者解讀：Xi 超突變來自 DNA replication stress	resulting from DNA replication stress in aberrantly proliferating cells
+E8-12	10.1038/s41467-017-00639-9	E8-12.txt	結論	超過 280 個 cancer cell line	we have characterized copy-number and methylation in over 280 cancer cell lines
+E8-12	10.1038/s41467-017-00639-9	E8-12.txt	結論	imprinted DMR 甲基化常反映 CNA 累積，不是真正 epigenetic 變化	often not represent genuine epigenetic changes but simply the accumulation of underlying copy-number aberrations
+E8-12	10.1038/s41467-017-00639-9	E8-12.txt	結論	11p15.5 cnLOH：乳癌與肺癌 cell line 父母各半，大腸癌全父系	involves both the maternally and paternally derived chromosomes equally in breast and lung cancer-derived cell lines, but is exclusively paternal in colon cancer cell lines
+E8-12	10.1038/s41467-017-00639-9	E8-12.txt	結論	280 中 258 個至少一段 cnLOH 碰到 imprinted locus	Of the 280 cell lines analyzed, 258 had at least one region of cnnLOH affecting an imprinted loci
+E8-12	10.1038/s41467-017-00639-9	E8-12.txt	結論	帶同型突變時，突變的影響大於 cnLOH 的父母來源	the presence of the genetic variant is more influential than the parent-of-origin of the cnnLOH
+E8-13	10.1038/s41408-020-0317-2	E8-13.txt	結論	7 位病人加 2 個 cell line	comprised seven patient samples and the two near-haploid cell lines
+E8-13	10.1038/s41408-020-0317-2	E8-13.txt	結論	chr 6、7、14、15 沒有父母偏差	Monosomies/UPIDs of chromosomes 6, 7, 14, and 15 did not display any significant parent-of-origin skewness
+E8-13	10.1038/s41408-020-0317-2	E8-13.txt	結論	chr 11 8/9 留母系（P=0.039，未校正多重檢定）	of maternal origin, in eight of the nine cases (P = 0.039, uncorrected for multiple testing
+E8-13	10.1038/s41408-020-0317-2	E8-13.txt	結論	作者回顧：adrenocortical 11p15 cnLOH 絕大多數重複父系	the duplicated allele is of paternal origin in the vast majority of cases
+E8-13	10.1038/s41408-020-0317-2	E8-13.txt	結論	作者回顧：AML 與 leiomyosarcoma 的 11p15 cnLOH 沒偏差	no parental skewness for CN-LOH of 11p15 has been observed in acute myeloid leukemias or inflammatory leiomyosarcomas
+E8-13	10.1038/s41408-020-0317-2	E8-13.txt	觀點	作者稱只知道少數研究看 cnLOH 的父母來源	we know of only a handful of studies focusing on which maternal or paternal homologs are involved in segments with acquired CN-LOH
+E8-14	10.1182/blood-2003-05-1444	E8-14.txt	結論	10 位 ALL 病人，38 個 microsatellite	We evaluated 10 patients with ALL using 38 microsatellite markers
+E8-14	10.1182/blood-2003-05-1444	E8-14.txt	結論	多數 trisomy 無父母偏差	revealed no preferential duplication of maternally or paternally inherited copies of X, 4, 6, 9, 10, 17, 18, and 21
+E8-14	10.1182/blood-2003-05-1444	E8-14.txt	結論	+8 4/4 父系（P=.125），+14 7/8 母系（P=.0703）	Trisomy 8 was of paternal origin in 4 of 4 patients (P =.125), and +14 was of maternal origin in 7 of 8 patients (P =.0703)
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	血液 DNA，targeted long read，家族 7、新生 9	in participants with familial (n = 7) and de novo (n = 9) retinoblastoma
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	DMR 在 RB1 intron 2：母系甲基化	It is methylated on the maternal allele and unmethylated on the paternal allele
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	germline 變異和 DMR 相距最多 154 kb 仍可定相	despite the regions being separated by up to a 154 kb distance
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	6 位母系、9 位父系	There were 6 patients whose altered RB1 gene was found on the maternal allele
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	9 位父系病人	Of the 9 patients whose altered RB1 gene was found on the unmethylated paternal allele
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	較晚分期：父系 8/18 眼、母系 2/12 眼	in 44% of cases (8 of 18 eyes, Figure 5A) while eyes from maternal cases presented with later stage disease in 17% of cases (2 of 12 eyes
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	早晚分期的 Fisher 檢定無統計差異	showed no statistical difference in this small cohort
+E8-16	10.1038/leu.2015.130	E8-16.txt	結論	29 例 aUPD14q	We identified 29 cases with aUPD14q
+E8-16	10.1038/leu.2015.130	E8-16.txt	結論	MEG3-DLK1 甲基化顯示流失母系、得到父系（P<0.0001）	demonstrated loss of maternal chromosome 14 and gain of paternal chromosome 14 (P<0.0001)
+E8-16	10.1038/leu.2015.130	E8-16.txt	結論	22 例中 21 例父系	Of the 22 aUPD14q cases analysed for MEG3 methylation in our study, 21 had positive values indicative of paternal aUPD
+E8-16	10.1038/leu.2015.130	E8-16.txt	結論	aUPD22q：母系 2、父系 3，作者判定沒有偏差	Methylation analysis indicated maternal aUPD22q in two cases and paternal aUPD22q in three cases
+E8-16	10.1038/leu.2015.130	E8-16.txt	觀點	作者解讀：aUPD14q 的目標是 imprinted locus	aUPD14q is a recurrent abnormality that targets an imprinted locus
+E8-17	10.1038/ng.334	E8-17.txt	結論	V617F 多數發生在 46/1 上	JAK2V617F specifically arises on the 46/1 allele in most cases
+E8-17	10.1038/ng.334	E8-17.txt	結論	142 個帶 V617F 的等位基因，109（77%）是同一 haplotype	of the 142 alleles that harbored V617F, 109 (77%) had an identical haplotype
+E8-17	10.1038/ng.334	E8-17.txt	結論	OR 3.7（3.1–4.3）	predisposes to the development of JAK2V617F-associated MPNs (OR = 3.7; 95% CI = 3.1–4.3)
+E8-17	10.1038/ng.334	E8-17.txt	結論	族群頻率 0.24	had a combined frequency of 0.24
+E8-17	10.1038/ng.334	E8-17.txt	觀點	作者保留 46/1 也許 hypermutable 的可能	does not exclude the possibility that JAK2 on 46/1 allele might be also be hypermutable
+E8-G1	10.1038/nature11396	E8-G1.txt	結論	78 個冰島 trio	sequencing the entire genomes of 78 Icelandic parent-offspring trios
+E8-G1	10.1038/nature11396	E8-G1.txt	結論	每年約多 2 個 de novo 突變（germline）	The effect is an increase of about 2 mutations per year
+E8-G1	10.1038/nature11396	E8-G1.txt	結論	5 個可定親源的 trio：父系 55.4、母系 14.2（germline）	the average number of paternal and maternal mutations is 55.4 and 14.2 respectively
+E8-12	10.1038/s41467-017-00639-9	E8-12.txt	觀點	本文說散發 RB 的 chr13 母系優先流失，引 Dryja 1989；但 Dryja 摘要說第一個體細胞突變沒有偏好（引用和原文不合）	the maternal chromosome 13 is preferentially lost
+E8-09	10.1016/j.xgen.2022.100233	E8-09.txt	結論	本文引述 SDHD／SDHAF2 為有父母效應的遺傳癌症基因	hereditary paraganglioma-pheochromocytoma syndrome due to pathogenic variants in SDHD or SDHAF2
+E8-12	10.1038/s41467-017-00639-9	E8-12.txt	結論	7/7 肺癌 cell line 有 RB1 imprinted DMR 高甲基化	all lung cancer cell lines (7/7) are associated with hypermethylation at the RB1 imprinted DMR
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	父系平均 8.5 月、母系 2.6 月才就診（P=0.03）	older in paternal cases (mean = 8.5 months) compared with maternal cases (mean = 2.6 months, P = 0.03)
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	化療失敗：父系顯著較多（P=0.02）	significantly more evidence of chemotherapy failure in eyes that exhibit paternal inheritance (P = 0.02)
+E8-13	10.1038/s41408-020-0317-2	E8-13.txt	觀點	作者推論 NH ALL 父母同源染色體隨機流失	the maternal and paternal chromosome homologs are randomly lost in this leukemia type
+E8-14	10.1182/blood-2003-05-1444	E8-14.txt	觀點	作者推論 imprinting 在此病不重要，+8、+14 可能例外	imprinting is not pathogenetically important in hyperdiploid childhood ALL
+E8-17	10.1038/ng.334	E8-17.txt	結論	樣本：PV 192、ET 78、MF 41	polycythemia vera, n = 192
+E8-17	10.1038/ng.334	E8-17.txt	結論	樣本：ET 78	essential thrombocythemia, n = 78
+E8-17	10.1038/ng.334	E8-17.txt	結論	樣本：MF 41	myelofibrosis, n = 41
+E8-15	10.1172/jci.insight.188216	E8-15.txt	結論	分析 15 位 probands 的臨床結果	we analyzed the clinical outcomes of the 15 probands
+E8-08	10.1038/s41467-017-00388-9	E8-08.txt	結論	TCGA 100 個	identified 100 breast and ovarian tumors
+E8-08	10.1038/s41467-017-00388-9	E8-08.txt	結論	Penn 60 個	and 60 tumors underwent whole exome sequencing
+E8-04	10.1038/340312a0	E8-04.txt	結論	8 位病人 9 個腫瘤	nine retinoblastoma tumours from eight unrelated non-familial cases
+E8-16	10.1038/leu.2015.130	E8-16.txt	結論	7 例 exome	Exome sequencing (n=7) did not identify recurrently mutated genes
+E8-11	10.1016/j.cell.2013.09.042	E8-11.txt	結論	兩位女性 CLL 沒有 X 超突變	In the two female cases of CLL, no X hypermutation was detected
+E8-01	10.64898/2026.09.02.748867	E8-01.txt	觀點	作者列 long read 等為未來方向	adoption of long-read sequencing, coupled with large genotype reference sets

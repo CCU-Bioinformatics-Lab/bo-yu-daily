@@ -1,0 +1,135 @@
+paper_id	doi	source_file	category	claim_zh	quote
+E3-01	10.1038/ng.3441	E3-01.txt	假設	模型：clock-like process 的突變數和實足年齡成正比	Some processes generate mutations throughout life at a constant rate in all individuals
+E3-01	10.1038/ng.3441	E3-01.txt	結論	33 個 signature 中只有 signature 1 和 5 和診斷年齡相關	Of the 33 signatures examined, signatures 1 and 5 showed a correlation between numbers of mutations and age of diagnosis
+E3-01	10.1038/ng.3441	E3-01.txt	結論	Spearman：signature 1 為 0.34	signature 1, Spearman rank correlation 0.34
+E3-01	10.1038/ng.3441	E3-01.txt	結論	Spearman：signature 5 為 0.13	signature 5, Spearman rank correlation 0.13
+E3-01	10.1038/ng.3441	E3-01.txt	結論	36 癌別中 26 個對 signature 1 或 5 有年齡相關	26 out of 36 cancer types individually showed correlations with age
+E3-01	10.1038/ng.3441	E3-01.txt	結論	Signature 1 相關 17 癌別，signature 5 相關 12 癌別	Mutations associated with signature 1 were correlated with age of diagnosis in 17 of the cancer types, while mutations associated with signature 5 in 12 of the cancer types
+E3-01	10.1038/ng.3441	E3-01.txt	結論	Signature 1 速率高端：胃 23.7、大腸 23.4 /Gb/年	being high in stomach (23.7 mutations per gigabase per year), colorectum (23.4)
+E3-01	10.1038/ng.3441	E3-01.txt	結論	Signature 1 速率低端：pilocytic astrocytoma 0.65 /Gb/年	myeloma (3.1) and pilocytic astrocytoma (0.65)
+E3-01	10.1038/ng.3441	E3-01.txt	結論	Signature 5 速率高端：kidney papillary 31.8 /Gb/年	It was high in kidney papillary cell (31.8 mutations per gigabase per year)
+E3-01	10.1038/ng.3441	E3-01.txt	結論	Signature 5 速率低端：AML 2.8 /Gb/年	medulloblastoma (3.0) and acute myeloid leukaemia (2.8)
+E3-01	10.1038/ng.3441	E3-01.txt	結論	Signature 1 與 5 的速率跨癌別不相關（-0.08）	signature 1 and 5 mutation rates do not closely correlate with each other (Spearman rank correlation −0.08; p-value = 0.63)
+E3-01	10.1038/ng.3441	E3-01.txt	觀點	作者解讀：signature 1 可當有絲分裂次數的時鐘（條件式）	the signature 1 mutation rate can serve as a clock registering the number of mitoses
+E3-01	10.1038/ng.3441	E3-01.txt	觀點	作者解讀：細胞增殖可能不是 signature 5 的主要因素	cell proliferation rate may not be a major factor for signature 5
+E3-01	10.1038/ng.3441	E3-01.txt	結論	部分癌別 signature 5 量多但與年齡不相關（頭頸、大腸、肺鱗）	a correlation with age was not observed, despite substantial numbers of signature 5 mutations
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	4700 萬點突變：22% early clonal、7% late clonal、53% unspecified clonal、17% subclonal	22% were early clonal, 7% late clonal, 53% unspecified clonal and 17% subclonal
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	Driver 點突變：29% early、5% late、56% unspecified、8% subclonal	of which 29% were early clonal, 5% late clonal, 56% unspecified clonal and 8% subclonal
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	Clonal 到 subclonal 的突變譜改變：30% informative 樣本	30% of informative samples (729 out of 2,387) displayed changes of their mutation spectrum between the clonal and subclonal state
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	Early 到 late clonal 譜改變 29%（530/1,852）	changing mutational spectrum between early and late clonal time points in 29% (530 out of 1,852) of informative samples
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	合計 40% 樣本的突變譜隨演化改變	the mutation spectrum changes throughout tumour evolution in 40% of samples (1,069 out of 2,688)
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	SBS4 吸菸隨時間下降，中位 fold change 0.43	tobacco smoking in lung adenocarcinoma (signature SBS4, median fold change 0.43, IQR 0.31–0.72)
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	SBS7 UV 隨時間下降，中位 fold change 0.16	ultraviolet light exposure in melanoma (SBS7; median fold change 0.16, IQR 0.09–0.43)
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	APOBEC 上升，中位 fold 2.0	APOBEC mutagenesis (SBS2 and SBS13) increases in many cancer types from the early to late clonal stages (median fold change 2.0, IQR 0.8–3.6)
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	MMR 缺失 signature 由 clonal 到 subclonal 上升 1.8 倍	increase from clonal to subclonal stages (median fold 1.8, IQR 1.2–3.0)
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	假設	若每年突變率固定，實足時間等於 molecular time 乘診斷年齡；速率改變時為非線性	this relation will be nonlinear if the mutation rate changes over time
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	癌症 CpG>TpG 速率比正常細胞中度上升 1–10 倍，增加 20–40% 突變	a moderate increase (1–10 times, adding between 20 and 40% of mutations) in cancers
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	假設	模型選用典型加速 5 倍（腦癌 2.5 倍、卵巢癌 7.5 倍）	a typical increase of 5× for most cancer types was chosen, with a lower value of 2.5× for brain cancers and a value of 7.5× for ovarian cancer
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	假設	Monte Carlo 假設加速時間跨度為診斷前 15 年	Monte Carlo simulations of rate accelerations spanning an interval of 15 years before diagnosis
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	WGD 在部分癌別比診斷早數年到十年以上（模型推估）	they occur several years and possibly even a decade or more before diagnosis in some cancer types
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	卵巢癌 WGD 中位 latency 超過 10 年（模型推估）	ovarian adenocarcinoma, which appears to have a median latency of more than 10 years
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	MRCA 到最後可測 subclone 通常數月到數年（模型推估）	The latency between the MRCA and the last detectable subclone is shorter, typically several months to years
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	觀點	作者自述：molecular timing 會受突變率改變影響	molecular timing is based on point mutations and is therefore subject to changes in mutation rate
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	假設	Subclone 分攤 subclonal 突變，假設 branching	thus conservatively assuming branching evolution
+E3-05	10.1038/s41586-018-0497-0	E3-05.txt	結論	140 colonies，59 歲男性，平均 1023 個替換	with a mean of 1023 substitutions (range, 815-1210)
+E3-05	10.1038/s41586-018-0497-0	E3-05.txt	結論	胚胎期 1–2 個突變／分裂	mutation rates in embryonic cells that ultimately contribute to somatogenesis fall in the range 1-2 per cell division
+E3-05	10.1038/s41586-018-0497-0	E3-05.txt	結論	HSC 對稱分裂間隔 2–20 個月（模型推估）	the estimated time between successive self-renewal stem cell divisions is most credibly in the range of 2-20 months
+E3-05	10.1038/s41586-018-0497-0	E3-05.txt	結論	活躍 HSC 44,000–215,000（90% CrI）	the number of stem cells actively contributing to circulating granulocytes at one time was 44,000-215,000
+E3-08	10.1038/s41586-022-04618-z	E3-08.txt	結論	人類結腸 crypt 47 替換／年，小鼠 796	ranged from 47 substitutions per year in humans to 796 substitutions per year in mice
+E3-08	10.1038/s41586-022-04618-z	E3-08.txt	結論	五個物種線性累積且截距不顯著	linear regression confirmed a clear accumulation of somatic mutations with age
+E3-08	10.1038/s41586-022-04618-z	E3-08.txt	結論	208 crypts，56 個體，16 物種	208 individual intestinal crypts from 56 individuals across 16 species
+E3-18	10.1038/s41467-020-14844-6	E3-18.txt	假設	模型假設突變率固定且無爆發事件	we assume a constant mutation rate and do not consider more punctuated catastrophic events or mutational bursts
+E3-18	10.1038/s41467-020-14844-6	E3-18.txt	結論	單一 lineage 的突變量無法分開每分裂突變率和分裂數	The mutational burden of a single sample is insufficient to disentangle per-cell mutation and per-cell survival/death rates
+E3-18	10.1038/s41467-020-14844-6	E3-18.txt	結論	Lee-Six 資料重分析：1.14 突變／基因組／分裂	which corresponds to a mutation rate of μ = 3.9 × 10–10 base pairs/division
+E3-18	10.1038/s41467-020-14844-6	E3-18.txt	結論	胎兒神經元：1.37 突變／基因組／分裂之換算	corresponding to a mutation rate of μ = 4.6 × 10–10 base pair/division
+E3-18	10.1038/s41467-020-14844-6	E3-18.txt	結論	16 個腫瘤 131 biopsy，每分裂突變率高 4–100 倍	mutation rates per cell division were 4–100 times higher in tumours compared to healthy tissue
+E3-18	10.1038/s41467-020-14844-6	E3-18.txt	結論	範圍：adenoma 2.91e-9 到肺鱗癌 53e-9 bp/division	ranging from 2.91 × 10–9 (bp/division) in the colon adenoma to 53 × 10–9 (bp/division) in one lung squamous cell carcinoma
+E3-18	10.1038/s41467-020-14844-6	E3-18.txt	結論	病人間突變率不同，同病人的染色體間無顯著差異	Mutation rates differ significantly between patients but not across chromosomes of the same patient
+E3-18	10.1038/s41467-020-14844-6	E3-18.txt	結論	資料組成：1 adenoma、7 colon、5 ccRCC、2 lung SCC 等	131 biopsies from 16 tumours comprised of 1 colon adenoma, 7 colon carcinomas, 5 clear cell renal carcinomas and 2 lung squamous cell carcinomas
+E3-17	10.1038/ng.3489	E3-17.txt	結論	Power-law 擬合 904 癌中的 323 個	power-law fits with high precision 323 of 904 cancers from 14 types
+E3-17	10.1038/ng.3489	E3-17.txt	假設	中性模型：subclonal 累積突變數隨 1/f 線性	neutral tumor evolution results in a power-law distribution of the mutant allele frequencies
+E3-17	10.1038/ng.3489	E3-17.txt	結論	MSI 的有效突變率中位 3.65e-6；CIN 2.31e-7；超過 15 倍	more than 15-fold higher in the MSI group
+E3-17	10.1038/ng.3489	E3-17.txt	結論	有效突變率被未知的 β 縮放，β=0.01 時 μ 低 100 倍	the mutation rate estimate is scaled by the (unknown) effective division rate
+E3-17	10.1038/ng.3489	E3-17.txt	結論	非中性病例無法估計突變率	mutation rates of non-neutral cases
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	結論	ccRCC 33 病人 95 biopsy 全基因組	We analyzed whole genomes from 95 biopsies across 33 patients
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	結論	ccRCC 突變量與年齡線性，87 突變／年（CI 80–94）	estimated at 87 mutations/year (95% confidence interval [CI]: 80–94; p < 0.001)
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	結論	病人間標準差 17 突變／年	the between-patient standard deviation in mutation rate estimated at 17 mutations/year
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	結論	同腫瘤不同 subclone 的突變量大致相同	different subclones have broadly similar mutation burdens
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	觀點	作者解讀：各 subclone 自分歧後以相同穩定速率累積	each subclone has been accumulating mutations at the same steady rate since clonal divergence
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	假設	時間估計依賴一生固定突變率	These estimates depend on the assumption of a constant mutation rate throughout life
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	結論	加入年齡平方項未顯著改善擬合	Not only did this model fail to significantly improve the correlation between age and mutational burden
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	結論	t(3;5) 事件在診斷前 30–50 年（模型推估）	30–50 years before the kidney cancer was diagnosed
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	結論	雙等位 VHL 失活到診斷 15–30 年（模型推估）	The waiting time from biallelic VHL inactivation to cancer diagnosis ranged from 15 to 30 years
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	1,705 個 powered 樣本中 95.1% 至少一個 subclonal expansion	One or more subclonal expansions were evident in 1,621 tumors (95.1%)
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	Subclonal SNV 比例：肺鱗 6.1%±6.7%，頭頸 9.7%±11.9%	head and neck, 9.7% ± 11.9%; lung, 6.1% ± 6.7%; cervix, 20.6% ± 19.6%
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	高端：chromophobe 45.2%、PanNET 46%、pilocytic astrocytoma 61.3%	chromophobe renal cell carcinomas (45.2% ± 22.7%), pancreatic neuroendocrine tumors (46% ± 24.7%), and pilocytic astrocytomas (61.3% ± 14.8%)
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	可偵測 subclone 內平均漏掉 14% SNV	On average, 14% of SNVs in observable subclones fall below the detection limit
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	CCF<30% 的 subclone 平均漏掉 21%	In subclones with a CCF of less than 30%, an average 21% of SNVs are missed
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	CCF 降低時偵測力降低，造成 CCF 高估、突變量低估	This leads to overestimation of the subclone's CCF
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	觀點	作者：單樣本、中位約 46× 的估計是保守下限	based on single-sample reconstruction and a median ∼46× read coverage, provide a conservative lower bound
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	5 個前列腺腫瘤：單樣本漏 44% 變異，26% subclonal 看似 clonal	44% of variants are missed, and 26% of subclonal mutations appear to be clonal
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	Signature 活性在 clone 與 subclone 間穩定	mutation signature activity is remarkably stable between the clone and subclones
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	SBS12 在肝癌約 60% 活躍病例中改變	active in 198 of 326 [61%] liver cancers
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	兩個 subclone 是手足關係的機率是親子關係的 3.11 倍	two subclones are 3.11-fold more likely to have sibling than parent-child relationships
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	Linear／branching 比和 mutation burden 無關（p=0.594）	we do not observe a difference in mutation burden between callable samples reporting linear versus branching read pairs
+E3-11	10.1038/s41586-023-05783-5	E3-11.txt	結論	421 病人 1,644 區域	we analysed 1,644 tumour regions sampled at surgery or during follow-up from the first 421 patients
+E3-11	10.1038/s41586-023-05783-5	E3-11.txt	結論	LUAD 的 truncal SBS4 比例隨 pack-years 上升，r=0.31	LUAD: Pearson's r = 0.31, P < 0.001; LUSC: Pearson's r = –0.14, P = 0.11
+E3-11	10.1038/s41586-023-05783-5	E3-11.txt	結論	曾吸菸 LUAD 中 75% 有吸菸 signature	161 out of 215 ever-smoker LUADs (75%) exhibited evidence of a clear smoking-mediated mutagenesis signature
+E3-11	10.1038/s41586-023-05783-5	E3-11.txt	結論	8% 曾吸菸 LUAD 沒有吸菸突變證據	8% of LUADs lacked evidence of smoking-mediated mutagenesis in ever-smokers
+E3-11	10.1038/s41586-023-05783-5	E3-11.txt	結論	Illusion of clonality 中 89% 為 ancestral	subclonal expansions that resulted in an illusion of clonality were 'ancestral' (89%)
+E3-11	10.1038/s41586-023-05783-5	E3-11.txt	結論	26% 腫瘤至少一個 recent subclonal expansion	in 26% of tumours, we observed at least one 'recent' subclonal expansion
+E3-11	10.1038/s41586-023-05783-5	E3-11.txt	結論	多數基因 truncal 選擇訊號強於 subclonal	Signals of selection were stronger for truncal than for subclonal mutations in most cancer genes
+E3-16	10.1038/s41586-024-07532-8	E3-16.txt	結論	HiDEF-seq 精子 dsDNA burden 和 NanoSeq 一致	Sperm dsDNA mutation burdens measured by HiDEF-seq were concordant with a prior study of de novo mutations and with NanoSeq profiling
+E3-16	10.1038/s41586-024-07532-8	E3-16.txt	結論	HiDEF-seq 測到正常組織 dsDNA burden 隨年齡線性	linear increase in dsDNA mutation burdens with age in other human tissues (liver, kidney, blood, and cerebral cortex neurons)
+E3-16	10.1038/s41586-024-07532-8	E3-16.txt	結論	POLE PPAP ssDNA 增 2.6 倍	a 2.6-fold increase (95% confidence interval: 2.3-3.0) in POLE polymerase proofreading-associated polyposis syndrome samples
+E3-16	10.1038/s41586-024-07532-8	E3-16.txt	結論	CMMRD ssDNA 增 1.6 倍	a 1.6-fold increase (95% confidence interval: 1.4-1.9) in congenital mismatch repair deficiency syndrome samples
+E3-16	10.1038/s41586-024-07532-8	E3-16.txt	觀點	dsDNA 所需準確度低於 10^-9 每鹼基	requires single-molecule fidelity of < 1 error per 1 billion bases
+E3-08	10.1038/s41586-022-04618-z	E3-08.txt	觀點	SBS1 被認為來自 5-甲基胞嘧啶脫胺	SBS1, which is believed to result from the spontaneous deamination of 5-methylcytosine
+E3-08	10.1038/s41586-022-04618-z	E3-08.txt	結論	人類 crypt 的 APOBEC 見於 2%	We detected APOBEC signatures in 2% (n = 9) of human crypts
+E3-12	10.1126/scitranslmed.aaa1408	E3-12.txt	結論	九癌別中 10 個 robust signature，多數隨發展改變盛行度	we identified 10 robust mutational signatures, most of which were found to change in prevalence during the course of a tumor's development
+E3-12	10.1126/scitranslmed.aaa1408	E3-12.txt	結論	Signature 2 APOBEC 隨時間增加	was found to increase over time in most of the tumor types in which it was detected
+E3-12	10.1126/scitranslmed.aaa1408	E3-12.txt	結論	Signature 13 在 BLCA 反而早期多	significantly more prevalent in early compared to late mutations in BLCA (P= 6.67 × 10−7)
+E3-12	10.1126/scitranslmed.aaa1408	E3-12.txt	結論	Signature 7 UV 早期多	elevated in early compared to late mutations in SKCM (P= 5.67 × 10−11)
+E3-12	10.1126/scitranslmed.aaa1408	E3-12.txt	結論	Signature 4 吸菸早期多（LUAD）	significantly more prevalent in early compared to late mutations in LUAD (P= 4.56 × 10−17)
+E3-12	10.1126/scitranslmed.aaa1408	E3-12.txt	結論	Clonal driver 21% 屬 APOBEC context，subclonal driver 超過 45%	on average only 21% (range, 19 to 24%) of clonal mutations in cancer driver genes occurred in an APOBEC context
+E3-12	10.1126/scitranslmed.aaa1408	E3-12.txt	結論	Subclonal driver 45% 以上可由 APOBEC 解釋	more than 45% (range, 35 to 59%) of subclonal mutations in cancer genes could be explained by APOBEC
+E3-14	10.1016/j.cell.2017.09.048	E3-14.txt	結論	Hypermutation 門檻 10 Mut/Mb	we use 10 Mut/Mb to define hypermutation in both cohorts
+E3-14	10.1016/j.cell.2017.09.048	E3-14.txt	結論	78,452 成人癌：17% hypermutation、0.6% ultra-hypermutation	Hypermutation and ultra-hypermutation were observed in 17% and 0.6%, respectively
+E3-14	10.1016/j.cell.2017.09.048	E3-14.txt	結論	兒童癌 2,885 例中位 2.50 Mut/Mb，範圍 0–864	Mutation frequency ranged from 0–864 Mut/Mb
+E3-14	10.1016/j.cell.2017.09.048	E3-14.txt	結論	第一型累積緩慢穩定（吸菸、UV、MMR clusters）	In the first model, one sees a slow and steady accumulation of mutations
+E3-14	10.1016/j.cell.2017.09.048	E3-14.txt	結論	POLE 驅動腫瘤中段爆發	Cluster 3 tumors featured a mid-burst of mutations, presumably after the polymerase mutation was acquired
+E3-14	10.1016/j.cell.2017.09.048	E3-14.txt	結論	第三型晚期爆發	in the third model of evolution, one sees a late and explosive burst of mutations
+E3-20	10.1038/s41588-018-0258-x	E3-20.txt	觀點	Williams 法會把非中性判成中性，也會反過來	will often identify individual tumors as neutral when they are non-neutral and non-neutral when they are neutral
+E3-20	10.1038/s41588-018-0258-x	E3-20.txt	結論	含 selected subclone 的模擬中，真實拒絕中性只約 11%	true rejection of neutrality in ~11% of simulations
+E3-20	10.1038/s41588-018-0258-x	E3-20.txt	假設	Williams 模型假設同步分裂與固定死亡、突變、分裂率	synchronous cell divisions, constant cell death and constant mutation and division rates
+E3-21	10.1038/nature19768	E3-21.txt	結論	小腸、結腸、肝 ASC 約每年 40 突變	at a rate of approximately 40 novel mutations per year
+E3-21	10.1038/nature19768	E3-21.txt	結論	捐贈者 3–87 歲	human donors with ages ranging from 3 to 87 years
+E3-21	10.1038/nature19768	E3-21.txt	結論	癌症發生率不同的器官，突變累積速率相似	organs with different cancer incidences gradually accumulate mutations at similar rates
+E3-21	10.1038/nature19768	E3-21.txt	結論	肝 ASC 的突變譜和腸不同	Liver ASCs, however, have different mutation spectra compared to those of the colon and small intestine
+E3-21	10.1038/nature19768	E3-21.txt	觀點	作者：腸的突變主要是增殖相關的 CpG 脫胺加上另一 process	proliferation-dependent mutation incorporation following spontaneous deamination of methylated cytosine residues
+E3-05	10.1038/s41586-018-0497-0	E3-05.txt	觀點	作者引文獻：血液幹細胞突變隨年齡線性，暗示準確時鐘	the burden of somatic mutations increases linearly with age, suggesting that they represent an accurate molecular clock
+E3-17	10.1038/ng.3489	E3-17.txt	假設	Williams：中性癌中所有 clonal selection 都發生在癌生長前	all clonal selection occurred prior to the
+E3-07	10.1038/s41586-021-03477-4	E3-07.txt	結論	NanoSeq 錯誤率每十億鹼基低於 5 個	error rates of less than five errors per billion base pairs in single DNA molecules
+E3-07	10.1038/s41586-021-03477-4	E3-07.txt	結論	血液、結腸的分化細胞與幹細胞突變量和 signature 相似	Differentiated cells in blood and colon displayed remarkably similar mutation loads and signatures to their corresponding stem cells
+E3-07	10.1038/s41586-021-03477-4	E3-07.txt	結論	神經元不分裂仍以固定速率累積	neurons accumulate somatic mutations at a constant rate throughout life without cell division
+E3-07	10.1038/s41586-021-03477-4	E3-07.txt	觀點	作者：獨立於分裂的 process 是重要來源	mutational processes that are independent of cell division are important contributors
+E3-16	10.1038/s41586-024-07532-8	E3-16.txt	結論	HiDEF-seq 中位 32 passes、中位分子 1.7 kb	median 32 passes with median 1.7 kilobase (kb) molecules
+E3-16	10.1038/s41586-024-07532-8	E3-16.txt	結論	和父系定相 de novo 比較（生殖細胞，非腫瘤）	Paternally-phased de novo mutation (DNM) burdens were calculated
+E3-01	10.1038/ng.3441	E3-01.txt	結論	10,250 癌基因組、36 癌別	Using mutations from 10,250 cancer genomes across 36 cancer types
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	2,778 樣本、2,658 捐贈者、38 癌別	2,778 cancer samples from 2,658 unique donors across 38 cancer types
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	結論	最低平均覆蓋 30×	minimum average coverage 30× in the tumour
+E3-03	10.1038/s41586-019-1907-7	E3-03.txt	假設	基線 CpG>TpG 被提議為時鐘，並模型化速率上升	which have been proposed as a molecular clock
+E3-05	10.1038/s41586-018-0497-0	E3-05.txt	結論	資料：140 colonies、59 歲男性	140 single-cell–derived haematopoietic stem and progenitor colonies from a normal 59 year-old man
+E3-18	10.1038/s41467-020-14844-6	E3-18.txt	結論	每基因組 1.14 與 1.37 個突變／分裂	mutation rates of 1.14 and 1.37 mutations per whole-genome per cell division
+E3-12	10.1126/scitranslmed.aaa1408	E3-12.txt	結論	2694 腫瘤、九癌別，TCGA	a pan-cancer data set representing 2694 tumors from nine major cancer types
+E3-04	10.1016/j.cell.2018.02.020	E3-04.txt	結論	WGS 平均 67x，HiSeq X Ten	Average coverage was 67x for tumor samples and 36x for normal samples
+E3-11	10.1038/s41586-023-05783-5	E3-11.txt	結論	多區域 whole-exome 建庫	whole-exome capture was performed using a custom Human All Exon V5 Plus capture library
+E3-16	10.1038/s41586-024-07532-8	E3-16.txt	觀點	作者：PacBio 單 pass 替換準確度可能比先前估計高	This suggests that PacBio sequencing can achieve a higher per-pass fidelity
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	Subclone 偵測力取決於 purity、ploidy、深度	the power to identify subclones depends on sample purity, tumor ploidy, and sequencing depth
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	前列腺修正來自 5 個多區域腫瘤	Analysis of five distinct multi-region sequenced primary prostate tumors
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	1,705 個 powered 樣本，可測 CCF 超過 30%	focused on 1,705 genomes where our approach is powered to detect subclones encompassing more than 30% of tumor cells
+E3-13	10.1016/j.cell.2021.03.009	E3-13.txt	結論	Linear／branching 與 burden 檢定 p=0.594	Wilcoxon rank sum test, p = 0.594
+E3-14	10.1016/j.cell.2017.09.048	E3-14.txt	結論	78,452 成人癌與 2,885 兒童癌	we examined 78,452 adult and 2,885 childhood cancers for hypermutation
+E3-14	10.1016/j.cell.2017.09.048	E3-14.txt	結論	Panel 1.1 與 3.25 Mb	covering 1.1 and 3.25 Mb
+E3-11	10.1038/s41586-023-05783-5	E3-11.txt	觀點	作者推論：造成 illusion of clonality 的 subclone 可能帶正選擇訊號	might exhibit a signal of positive selection
+E3-08	10.1038/s41586-022-04618-z	E3-08.txt	假設	突變率與壽命成反比，所以壽命終點負擔相近	such that the number of somatic mutations per cell at the end of the lifespan

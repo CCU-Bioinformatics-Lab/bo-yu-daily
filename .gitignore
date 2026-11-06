@@ -15,3 +15,4 @@ lab_report/**/*.log
 research/**/*.pdf
 research/**/*.xlsx
 research/literature/papers/*/fulltext.md
+research/literature/surveys/*/fulltext_cache/

@@ -1,0 +1,159 @@
+paper_id	doi	source_file	category	claim_zh	quote
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	資料規模：7,664 個腫瘤、29 癌別	applied them to 7,664 tumors across 29 cancer types
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	全基因 dN/dS 接近但略高於 1	dN/dS ratios are close to, but slightly above, 1
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	觀點	作者解讀：整體接近中性	the overall picture is close to neutrality
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	每個腫瘤因負選擇損失 0.55 個 coding 突變，CI 0.31–1.16	less than one coding substitution per tumor (0.55/patient; CI95% = 0.31–1.16) has been lost by negative selection
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	約 2.2% 基因 dN/dS ≥ 1.5	A small fraction of genes (∼2.2%; confidence interval (CI)95% = 1.0%–3.9%) show dN/dS ≥1.5
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	約 0.14% 基因 dN/dS ≤ 0.75	Only a tiny fraction of genes (∼0.14%; CI95% = 0.02%–0.51%)
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	約 99% coding 突變以中性累積（driver 除外）	nearly all coding substitutions (∼99%) appear to accumulate neutrally
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	平均約 4 個 coding driver，癌別間 1–10	typically around 4/tumor and ranging from 1–10/tumor across tumor types
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	單一病人可能偏離癌別平均	the actual number for individual patients might vary extensively around this average
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	約一半 driver 在未知癌症基因	about half of driver mutations occur in cancer genes yet to be discovered
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	非 hypermutator 定義 <500 coding 突變，佔 92%	samples with <500 coding mutations, accounting for 92% of all TCGA samples
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	頭頸癌非同義突變只有 5.0% 是 driver	only 5.0% (CI95%: 3.0%–6.9%) of non-synonymous coding point mutations in head and neck cancers are predicted to be drivers
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	CN=1 區的必需基因 nonsense dN/dS = 0.66	nonsense substitutions do exhibit significantly reduced dN/dS, with approximately one-third of such variants lost through negative selection (dN/dS = 0.66
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	假設	兩套拷貝緩衝負選擇	cancer cells typically carry two (or more) copies of most genes, reducing the impact of mutations inactivating a single gene copy
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	結論	功效限制：負選擇要低於偵測極限才看不到	negative selection would be weaker than these detection limits
+E2-27	10.1186/s13059-018-1434-0	E2-27.txt	結論	資料規模：7546 個外顯子、26 癌別	7546 individual exomes from 26 tumor types
+E2-27	10.1186/s13059-018-1434-0	E2-27.txt	結論	多數基因仍中性，但必需基因與免疫暴露區有負選擇	we identify essential cancer genes and immune-exposed protein regions under significant negative selection
+E2-27	10.1186/s13059-018-1434-0	E2-27.txt	假設	模擬顯示負選擇被低估	our simulations suggest that the amount of negative selection is underestimated
+E2-27	10.1186/s13059-018-1434-0	E2-27.txt	結論	39 個顯著基因：14 正選擇、25 負選擇	we found 14 to be under positive selection and 25 to be under negative selection
+E2-27	10.1186/s13059-018-1434-0	E2-27.txt	結論	全基因 dN/dS 仍接近 1	global dN/dS) was close to one for every type of tumor
+E2-17	10.1038/s41588-019-0532-6	E2-17.txt	結論	資料規模：8,683 樣本、32 癌別	1,836,369 mutations from 8,683 different samples and spanning 32 cancer types
+E2-17	10.1038/s41588-019-0532-6	E2-17.txt	結論	12/19 癌別表面上有 HBMR < 1	significantly below 1 for 12 out of 19 analyzed cancer types
+E2-17	10.1038/s41588-019-0532-6	E2-17.txt	結論	訊號在只保留 signature 的中性模擬裡仍存在，HBMR = 0.83	a strong signal of apparent negative selection and hence neoantigen depletion, similar to the real mutation data, was still present (HBMR = 0.83
+E2-17	10.1038/s41588-019-0532-6	E2-17.txt	結論	考慮 signature 後訊號可忽略	Apparent neoantigen depletion signals became negligible when considering trinucleotide-based mutational signatures
+E2-17	10.1038/s41588-019-0532-6	E2-17.txt	觀點	作者保留兩種解釋：功效不足或早期免疫逃脫	either due to lack of power or efficient immune evasion mechanisms active early during tumor evolution
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	假設	模型預測：沒有免疫逃脫時 neoantigen 不是 clonal 就是低頻	without immune escape, tumor neoantigens are either clonal or at low frequency
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	假設	模型預測：負選擇越強 SFS 越像中性	appears more neutral as the strength of negative selection increases
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	結論	資料：879 個 colon、stomach、endometrial 癌	exome and RNA sequencing data from 879 colon, stomach and endometrial cancers
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	結論	57% 腫瘤有至少一種免疫逃脫機制	57% of all cancers showed evidence of at least one escape mechanism
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	結論	MMR 71%、POLE 98% 有逃脫	increased prevalence of escape in MMR (71%) and POLE (98%) cases
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	結論	多區域 CRC：HLA LOH 在 5/10 癌、1/6 腺瘤	found in 5/10 (50%) carcinomas and 1/6 (17%) adenomas
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	結論	HLA LOH 在 4/6 病例為 subclonal	HLA-LOH was subclonal in at least one allele in 4/6 cases
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	結論	中度 T 細胞且無逃脫的群體有 neoantigen depletion	In cancers with medium T-cell score and no evidence of immune escape, there was a depletion of all neoantigens
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	結論	單一腫瘤很難用 VAF 量負選擇	severely hindering the power to quantify negative selection strength directly from neoantigen VAF distributions
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	1,705 個有足夠功效的腫瘤中 1,621（95.1%）有 subclone	One or more subclonal expansions were evident in 1,621 tumors (95.1%)
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	偵測門檻：nrpcc ≥ 10 時才能測到 CCF ≥ 30%	We control for this effect by including only tumors with nrpcc ≥ 10
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	CCF 超過 30% 的 subclone 才有功效	powered to detect subclones encompassing more than 30% of tumor cells
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	約 46× 單樣本是保守下限，看不到稀有族群	provide a conservative lower bound because we are not powered to detect rare populations
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	subclone 內平均 14% SNV 低於偵測極限	On average, 14% of SNVs in observable subclones fall below the detection limit
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	CCF < 30% 的 subclone 平均漏 21% SNV	In subclones with a CCF of less than 30%, an average 21% of SNVs are missed
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	低 CCF 造成 CCF 高估、突變數低估	This leads to overestimation of the subclone’s CCF () and underestimation of its mutation burden
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	五個多區域前列腺癌：單樣本漏 44% 變異，26% subclonal 看似 clonal	44% of variants are missed, and 26% of subclonal mutations appear to be clonal
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	3,933 個 driver SNV／indel 中 357（9.0%）subclonal	Of 3,933 SNV and indel driver mutations in 355 genes, we found 357 (9.0%) subclonal events
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	85% 有 subclone 的樣本沒有已知 subclonal driver	85% of samples with at least one subclone (1,381 of 1,621) contain no identified subclonal driver SNVs or indels
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	只有 11% subclone 有已知 driver	only 11% of subclones (265 of 2,329) were annotated with a driver SNV or indel
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	76% 樣本有 clonal driver SNV／indel	clonal driver SNVs or indels were detected in 76% of samples (1,295 of 1,705)
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	subclonal dN/dS > 1	we observe a dN/dS ratio of more than 1 for nonsense, missense, and splice-site SNVs
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	觀點	作者解讀：選擇而非中性形塑 subclone	frequent selection for driver mutations, rather than neutral evolutionary dynamics (), shapes subclonal expansions
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	觀點	作者保留：不排除部分腫瘤弱選擇或無選擇	do not exclude the possibility that a fraction of tumors evolve under weak or no subclonal selection
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	同 read 定相：兩 subclone 為手足是親子的 3.11 倍	two subclones are 3.11-fold more likely to have sibling than parent-child relationships (bootstrapped 95% confidence interval [1.71; 7.50]
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	TRACERx 肺癌 odds 2.86	where the odds are 2.86 (bootstrapped 95% confidence interval [1.93; 5.07]
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	subclonal SNV 比例依癌別差很大：肺鱗癌 6.1%	lung, 6.1% ± 6.7%
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	subclonal SNV 比例：pilocytic astrocytoma 61.3%	pilocytic astrocytomas (61.3% ± 14.8%)
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	黑色素瘤只有 31/62 測得 subclone	cutaneous melanoma, where subclones were detectable by our approach in only 31 of 62 samples
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	突變 signature 在 clone 與 subclone 間大致穩定	mutation signature activity is remarkably stable between the clone and subclones
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	34.5%–54.7% clone–subclone 邊界與 signature 變化點重合	34.5%–54.7% of clone-subclone boundaries
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	全體點突變：22% 早 clonal、7% 晚 clonal、53% 未定 clonal、17% subclonal	22% were early clonal, 7% late clonal, 53% unspecified clonal and 17% subclonal
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	5,913 個 driver 點突變：29%、5%、56%、8%	5,913 oncogenic point mutations were identified, of which 29% were early clonal, 5% late clonal, 56% unspecified clonal and 8% subclonal
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	TP53、KRAS 早期富集 12 與 8 倍	driver mutations in TP53 and KRAS are 12 and 8 times enriched in early clonal stages
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	早期 driver 的 50% 集中在 9 個基因	50% of all early clonal driver mutations occur in just 9 genes
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	晚期與 subclonal driver 的 50% 分散在約 35 個基因	50% of late and subclonal mutations occur in approximately 35 different genes each
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	CRC 排序符合 APC→KRAS→TP53	APC mutations to have the highest odds of occurring early, followed by KRAS, loss of 17p and TP53, and SMAD4
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	跨癌別：常見 driver 先於罕見 driver	common drivers typically occur before rare drivers
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	觀點	作者解讀：晚期 driver 多樣化	a more diverse array of drivers is involved in late tumour development
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	限制：分子時間依賴點突變，會受突變率改變影響	molecular timing is based on point mutations and is therefore subject to changes in mutation rate
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	資料：2,658 cancers（≥30× 腫瘤）	minimum average coverage 30× in the tumour, 25× in the matched normal samples
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	資料：2694 腫瘤、九癌別（TCGA exome）	a pan-cancer data set representing 2694 tumors from nine major cancer types
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	driver 基因突變傾向 clonal（KIRC 例外）	In every cancer type, with the exception of KIRC, mutations in driver genes (considered in aggregate) were enriched to a statistically significant degree for clonal mutations
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	PI3K-AKT-mTOR 超過 15% subclonal	more than 15% of mutations in genes in the PI3K-AKT-mTOR pathway overall were subclonal
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	GBM 超過 20% IDH1 突變 subclonal	More than 20% of IDH1 mutations in glioblastomas
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	TP53 在基因組加倍前發生超過 90%	almost invariably (>90% cases), these mutations occurred before doubling
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	超過 30 例平行 subclonal 事件	In more than 30 cases, we identified multiple subclonal mutations occurring in the same cancer gene
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	深度 70 時 VAF 0.05 只有 0.69 偵測機率	the probability is reduced to 0.69 when attempting to detect a variant with a VAF of 0.05
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	深度 70 時 VAF 0.1 為 0.98	At a sequencing depth of 70, the probability of detecting mutations at a variant allele frequency (VAF) of 0.1 is estimated to be 0.98
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	APOBEC 在 subclonal driver 佔比上升：21% vs >45%	on average only 21% (range, 19 to 24%) of clonal mutations in cancer driver genes occurred in an APOBEC context
+E2-06	10.1126/scitranslmed.aaa1408	E2-06.txt	結論	subclonal driver 超過 45% 可用 APOBEC 解釋	more than 45% (range, 35 to 59%) of subclonal mutations in cancer genes could be explained by APOBEC-mediated mutagenesis
+E2-12	10.1038/ng.3489	E2-12.txt	假設	中性假設預測 VAF 呈 power law	neutral tumor evolution results in a power-law distribution of the mutant allele frequencies
+E2-12	10.1038/ng.3489	E2-12.txt	結論	323/904 符合 power law（模型擬合，不等於證明中性）	power-law fits with high precision 323 of 904 cancers from 14 types
+E2-12	10.1038/ng.3489	E2-12.txt	觀點	作者解讀：中性腫瘤選擇都發生在生長前	all clonal selection occurred prior to the onset of cancer growth and not in later-arising subclones
+E2-12	10.1038/ng.3489	E2-12.txt	結論	門檻 R2≥0.98；38/108 colon 符合	38/108 (35.1%) of the
+E2-13	10.1038/s41588-018-0258-x	E2-13.txt	結論	Williams 方法分析窗 VAF 0.12–0.24	restricting their analyses to variants with VAF between 0.12 and 0.24
+E2-13	10.1038/s41588-018-0258-x	E2-13.txt	結論	WGD 佔 37%，會造成假性偏離	in tumors with whole genome duplications, i.e. 37% of tumors in the analyzed dataset
+E2-13	10.1038/s41588-018-0258-x	E2-13.txt	結論	模擬：只有約 11% 模擬正確拒絕中性	true rejection of neutrality in ~11% of simulations
+E2-13	10.1038/s41588-018-0258-x	E2-13.txt	結論	模擬：非中性中 53.5% 判為中性，AUC 0.42	53.5% false positive neutral calls in non-neutral tumors () and an area under the ROC curve of 0.42
+E2-13	10.1038/s41588-018-0258-x	E2-13.txt	結論	判為中性的腫瘤 subclonal 仍有正選擇	dN/dS ratio analysis revealed significant positive selection in subclonal mutations of tumors classified as neutral
+E2-13	10.1038/s41588-018-0258-x	E2-13.txt	觀點	作者觀點：VAF 分布資訊不足以排除選擇	variant abundance distributions do not contain enough information to exclude selection
+E2-14	10.1038/s41588-018-0128-6	E2-14.txt	結論	需要 >100X 才能量 subclone 動態	accurate measurement of subclonal evolutionary dynamics required high depth (>100X)
+E2-14	10.1038/s41588-018-0128-6	E2-14.txt	結論	低深度時模型選擇偏向中性，即使中性是錯的	the neutral model is preferred by our Bayesian model selection framework, even when it is false
+E2-14	10.1038/s41588-018-0128-6	E2-14.txt	結論	gastric 29%（5/17）、colon 21%（15/70）有被選擇 subclone	selected subclones were detected in 29% (5/17 cases) of the gastric cancers and 21% (15/70 cases) of the colon cancers
+E2-14	10.1038/s41588-018-0128-6	E2-14.txt	結論	MET500 51%（58/113）	the MET500 (51%, 58/113) data had a higher proportion of tumours with selected subclones
+E2-14	10.1038/s41588-018-0128-6	E2-14.txt	結論	測到的 subclone：優勢 >20%，且很早出現（可能是偵測偏差）	consistently emerged early during tumour growth and had a large fitness advantage (>20%)
+E2-14	10.1038/s41588-018-0128-6	E2-14.txt	結論	AML 與乳癌 subclone 出現於前 15 次族群倍增	emerged within the first 15 population doublings
+E2-14	10.1038/s41588-018-0128-6	E2-14.txt	結論	篩選門檻：purity >40%、subclonal 突變 ≥25	purity >40% and number of subclonal mutations ≥25
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	深度低於 90–100x 且低 purity 無法可靠重建	sequencing depth below 90x/100x and low purity prevents reliable subclonal reconstruction
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	PCAWG 中位深度 45x、purity 65%	The median depth of coverage in this dataset was 45x, with median purity of 65%
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	觀點	作者解讀：PCAWG 解析度不足以可靠重建	data at this resolution are not suitable for reliable subclonal reconstruction
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	低深度時 neutral tail 可能被誤認成 subclone	cause neutral tails to be under-sampled and likely to be mistaken for subclones
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	AML 320x 重分析移除一個假低頻 subclone	MOBSTER simplified the clonal architecture by removing one spurious low-frequency “subclone”
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	298 個二倍體案例只有 9（3%）有持續 subclonal 選擇	We found evidence of ongoing subclonal selection only in n = 9 (3% of total
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	tail 門檻敏感度：2.7%–3.7%	5% tail = 2.7% non-neutral cases; 2% tail = 3.7% non-neutral cases
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	902 例：tail 突變 dN/dS 約 1，非 tail >1	mutations in tails were likely neutral (dN/dS~1), aside from the caveats of interpreting dN/dS values in growing tumours
+E1-09	10.1038/s41588-020-0675-5	E1-09.txt	結論	非 tail 突變顯示選擇	non-tail mutations indicated selection (dN/dS>1)
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	TRACERx Renal：101 病人、1,206 區域	1,206 primary tumor regions from 101 patients
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	每腫瘤最多 30 個 driver 事件	up to 30 driver events per tumor
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	每腫瘤中位 4 個 clone，範圍 1–23	The median number of clones detected was 4 per tumor (range, 1–23)
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	只有 VHL 時 MRCA 到診斷中位 28 年	was 28 years (min = 4, max = 49)
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	多一個 clonal driver 時縮短到 5 年	shortening of time to diagnosis, to 5 years (min = 1, max = 34)
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	觀點	作者解讀：多 clonal driver 亞型符合 clonal sweep	consistent with a clonal sweep and accelerated tumor growth
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	subclonal 平行演化基因：BAP1、SETD2、PTEN	BAP1, SETD2, and PTEN were found to show significant evidence of parallel evolution
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	單細胞：146 樣本、123 病人、740,529 細胞	We sequenced 740,529 cells from 146 samples from 123 MM patients
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	AML 由少數 clone 主導	We found AML is dominated by a small number of clones
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	bulk 無法分辨同 clone 或量 clone 複雜度	it cannot distinguish which mutations occur in the same clone(s), accurately measure clonal complexity
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	單細胞找到 bulk 沒有的稀有突變	ScDNA-seq further identified rare mutations not present in bulk sequencing
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	clone 定義：至少 10 細胞	identify clones that were observed in at least 10 cells
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	4/6 MPN→AML 轉化有 clonal sweep	In 4/6 patients that transformed from MPN to AML, we observed a significant alteration in clonal architecture, or a “clonal sweep”
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	gilteritinib：3/3 FLT3 clone 下降	All patients (3/3) showed a decrease in FLT3-mutant clones in response to gilteritinib
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	多個 signaling 突變出現在不同 clone	mutations in signaling genes often occur more than once in distinct subclones
+E2-16	10.1038/s41586-021-03357-x	E2-16.txt	結論	16,178 細胞、8 TNBC、4 細胞株	16,178 single cells from 8 triple-negative breast cancers (TNBCs) and 4 cell lines
+E2-16	10.1038/s41586-021-03357-x	E2-16.txt	結論	7–22 subclone、3–5 superclone	large milieu of subclones (7–22) that are organized into a few (3–5) major superclones
+E2-16	10.1038/s41586-021-03357-x	E2-16.txt	結論	subclone 數量依定序細胞數而定，可能低估	dependent on the total number of cells that are sequenced, therefore likely representing an underestimate of clonal diversity
+E2-16	10.1038/s41586-021-03357-x	E2-16.txt	結論	體外每 4 次分裂約 1 個新 CNA	at a rate of ~1 new CNA per 4 cell divisions
+E2-16	10.1038/s41586-021-03357-x	E2-16.txt	觀點	作者解讀：CN 持續演化形成 subclone 儲庫	continue to evolve chromosome aberrations and maintain a reservoir of subclonal diversity
+E2-25	10.1038/s41467-026-69363-7	E2-25.txt	假設	模型預測 sweep 除早期外罕見（模型，非量測）	our model predicts that selective sweeps are rare except during early solid tumour growth
+E2-25	10.1038/s41467-026-69363-7	E2-25.txt	假設	模型：sweep 機率與突變率無關	which are independent of mutation rate
+E2-25	10.1038/s41467-026-69363-7	E2-25.txt	假設	模型：晚期 driver 局部變多但不易固定	Late-arising drivers can become locally abundant but are unlikely to become fixed
+E2-25	10.1038/s41467-026-69363-7	E2-25.txt	假設	模型：最後生長期超過兩次 sweep 極不可能	highly unlikely that more than two selective sweeps will occur during a tumour’s final growth phase
+E2-25	10.1038/s41467-026-69363-7	E2-25.txt	觀點	多 clonal driver 用多階段停滯解釋	better explained by multi-stage models of tumour initiation and progression
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	42,000 基因組時間序列 scWGS（PDX）	we generated 42,000 genomes from multi-year time series single cell whole genome sequencing
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	TNBC-SA1035：11 clone；Clone A 從 20% 到測不到	the reference Clone A had initial prevalence of 20% but was not detectable by the last timepoint
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	Clone E 由少數擴張到 69%，1+s = 1.06	expanding to 69% at passage X8 from minor prevalence at the initial timepoint (1 + s = 1.06 ± 0.03)
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	fitness 係數能預測實驗混合競爭	inferred fitness coefficients from CNA-based genotypes accurately forecast experimentally enforced clonal competition dynamics
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	cisplatin 反轉 fitness：抗藥 clone 來自低 fitness 譜系	cisplatin resistant clones emerging from low fitness phylogenetic lineages in the untreated setting
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	未治療高 fitness clone 被消滅	high fitness clones from treatment naive controls were eradicated
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	停藥後動態反轉（代價）	upon release of drug selective pressure dynamics were reversed
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	停藥回復不一定：X5 回到 Clone B 90%，X6/X7 維持 >99% Clone A	clonal composition reverted to consist predominantly of precursor Clone B with 90% abundance
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	HER2+SA532 與 TNBC 不同：TNBC 才有明確 clone 動態	In contrast with HER2+SA532, all TNBC PDX models exhibited evidence of clonal dynamics
+E2-12	10.1038/ng.3489	E2-12.txt	結論	Williams 門檻 R2≥0.98	cases reporting a high R2≥0.98
+E2-26	10.1038/s41586-021-03648-3	E2-26.txt	結論	後續點 X6、X7 維持 >99% Clone A	X6-UTTU and X7-UTTTU consisted of >99% Clone A
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	同 read pair 上的 SNV 對可判親子	examine pairs of SNVs that are covered by the same read pairs
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	Parental alleles 只用來著色，未指明父母	Parental alleles are colored consistently (red and blue) within each sample pair
+E2-16	10.1038/s41586-021-03357-x	E2-16.txt	結論	parental-allele CN 由 major allele 定相，未指明父母	Phasing of heterozygous SNPs to the major allele
+E2-09	10.1038/s41588-023-01313-1	E2-09.txt	結論	資料：>10,000 原發、356 轉移	we analyzed >10,000 primary tumors and 356 immune-checkpoint-treated metastases
+E2-09	10.1038/s41588-023-01313-1	E2-09.txt	假設	分類：edited 被移除、escaped 被遮蔽	immune edited when antigenic mutations were removed by negative selection and immune escaped when antigenicity was covered up
+E2-09	10.1038/s41588-023-01313-1	E2-09.txt	結論	escaped− 無反應者 immune dN/dS 中位 0.69	escaped− nonresponders (NR−, median = 0.69, P = 0.0012)
+E2-09	10.1038/s41588-023-01313-1	E2-09.txt	結論	6,858 個未治療 TCGA 腫瘤做個體層級	a subset of 6,858 primary untreated tumors from TCGA
+E2-09	10.1038/s41588-023-01313-1	E2-09.txt	結論	縱向：nivolumab 只在非 edited 病人移除 neoantigen	nivolumab treatment removes neoantigens exclusively in the immunopeptidome of nonimmune-edited patients
+E2-09	10.1038/s41588-023-01313-1	E2-09.txt	結論	縱向隊列 48 人	A clinically annotated cohort of 48 patients with sequencing data before (Pre) and after (On) receiving ICIs
+E1-05	10.1016/j.cell.2018.03.043	E1-05.txt	結論	clone 數在約 10 cm 後高原化	plateauing at ∼10 cm beyond which clone number began to marginally reduce
+E2-09	10.1038/s41588-023-01313-1	E2-09.txt	假設	混合 edited 與 escaped 會讓 cohort dN/dS 趨近 1	mixing escaped with edited tumors leads to loss of immune selection signals
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	資料規模：2,658 樣本、38 癌別	2,658 cancer samples spanning 38 cancer types
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	1,705 個基因組有足夠功效	focused on 1,705 genomes
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	中位約 46× 單樣本	a median ∼46× read coverage
+E2-03	10.1016/j.cell.2021.03.009	E2-03.txt	結論	五個多區域前列腺癌對照	five distinct multi-region sequenced primary prostate tumors
+E2-04	10.1038/s41586-019-1907-7	E2-04.txt	結論	資料：2,658 癌	whole-genome sequencing analysis of 2,658 cancers
+E2-01	10.1016/j.cell.2017.09.042	E2-01.txt	假設	192 參數的突變模型	a model with 192 rate parameters
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	amplicon panel 31 基因	a custom amplicon panel covering 31 frequently mutated genes
+E2-15	10.1038/s41586-020-2864-x	E2-15.txt	結論	多為復發／難治	the majority being from patients with relapsed/refractory disease
+E2-08	10.1038/s41588-020-0687-1	E2-08.txt	結論	整體 neoantigen 比例無組別差異，符合無 depletion 報告	consistent with the lack of neoantigen depletion signal reported in ref

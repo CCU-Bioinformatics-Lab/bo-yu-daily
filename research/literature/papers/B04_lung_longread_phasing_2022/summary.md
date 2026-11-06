@@ -57,3 +57,18 @@ SNV 指派 haplotype 的門檻為某一 HP 至少 3 條 mutant reads、另一 HP
 | [supplement.pdf](supplement.pdf) | [官方 MOESM1](https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-022-31133-6/MediaObjects/41467_2022_31133_MOESM1_ESM.pdf)，58 頁 | `d30f94ed901c5f886dd89d50ea264866c5b221498610c43effa51dc807e053de` |
 
 [fulltext.md](fulltext.md)、[supplement.txt](supplement.txt) 均以 `pdftotext -layout` 產生，保留 form-feed page breaks。已用 `file`／`pdfinfo` 驗真，並實際渲染核對 Fig. S9 p19、Fig. S10 p21。上述頁碼均為 PDF physical page，從 1 起算。
+
+## 突變偏向一條 HP 的細節（2026-11-05 補讀 Results、Fig. 5、Methods、Discussion）
+
+- **HP 和親代的關係：** 同一個 phase block 內，HP1、HP2 就是兩條親代染色體，只是不知道哪條是爸爸。所以區域內的偏向，等於「其中一位親代的那條較多」。跨 block 的 HP 標籤沒有固定對應，所以不能累加成全基因組比例。〔推論〕
+- **挑選流程：** 先挑突變率高於該腫瘤平均的 100 kb 視窗，再挑統計上顯著偏向一條 HP 的區域，得到 15 例、834 個區域。其中 190 個有超過 80% 的突變在一條 HP（每例 1–75 個）。另 5 例沒有富集區，作者認為可能是突變太少；區域數和 TMB 的 Spearman r = 0.78。〔論文〕
+- **占全部突變的比例：** Fig. 5d：LUAD 272／66,104（0.41%）；hypermutator 與非 LUAD 2,259／648,041（0.35%）。比例是本檔計算，且假設分母是可比較的全部突變。〔論文〕〔推論〕
+- **集中在少數病例：** 從 Fig. 5a 目測，S3、S11、S16 約占 190 個中的 139 個；其餘 LUAD 每例約 1–9 個。數字是讀圖估計，精確值要看 Source Data。〔推論〕
+- **具體案例：** S2 的 2.8 Mb block：HP1 26、HP2 0、HPunk 12；其中 100 kb 視窗 20 個 SNV，14 個可指派，全在 HP1，APOBEC（SBS2，cosine 0.946）。S20 的 3.75 Mb block：SV 和 SNV 全在 HP1，同時有 CN oscillation，作者推測是一次 chromothripsis-like 事件。〔論文〕
+- **作者對機制的看法：** 可能是一次性的染色體破碎事件，不是長期累積；低甲基化是原因還是結果，作者說無法判斷。〔論文〕
+- **限制：**
+  - 只測富集區，沒有比較全基因組兩條 HP 的突變數。〔論文〕
+  - 本文 Methods 與補充圖說中，沒找到偏向檢定的方法名稱（關鍵字 binom、poisson、Fisher）；Supplementary Methods 全文未逐段讀。
+  - 指派規則：一條 HP ≥ 3 條帶突變 read，另一條 ≤ 1 條。read 較少的一側較難過門檻，所以 CN 不平衡或低 VAF 可能把另一條的突變變成 HPunk，高估偏向。S2 的 HPunk 占 12／38。〔推論〕
+  - LUAD 與非 LUAD 的差異（p = 0.0029）可能混入視窗數的影響：多個 LUAD 病例只有 1–3 個視窗，比例容易是 1.0；LUAD 的 hypermutator S3 反而很低。〔推論〕
+  - 作者提醒：距離超過 read 長度時，分到同一 HP 不保證是同一分子上的同一事件。〔論文〕Discussion

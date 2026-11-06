@@ -1,0 +1,149 @@
+paper_id	doi	source_file	category	claim_zh	quote
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	假設	gain 前已在該 allele 的點突變會變成兩份，gain 後的不會；這是定時原理	any point mutation on this allele preceding the gain will subsequently be present on the two resulting allelic copies
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	2,116 個樣本可定時	we applied this analysis to the 2,116 samples with copy number gains suitable for timing
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	gain 的 molecular time 中位 0.60，IQR 0.10–0.87	median molecular time 0.60, interquartile range (IQR) 0.10–0.87
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	4,700 萬點突變的時期比例：early clonal 22%、late clonal 7%、unspecified clonal 53%、subclonal 17%	22% were early clonal, 7% late clonal, 53% unspecified clonal and 17% subclonal
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	4,700 萬點突變來自 2,583 個樣本	Out of the 47 million point mutations in 2,583 unique samples
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	driver 點突變的時期比例：29%、5%、56%、8%	of which 29% were early clonal, 5% late clonal, 56% unspecified clonal and 8% subclonal
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	near-diploid 腫瘤中 57%（468／815）有同步 gain	occurring in 57% (468 out of 815) of informative near-diploid tumours
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	共同 gain 的 segment 只有 6% 有直接的染色體間 SV 連結	only 6% of co-amplified chromosomal segments were linked by a direct inter-chromosomal structural variant
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	arm-level gain 有 80–90% 只讓 allele-specific CN 加 1	most arm-level gains increment the allele-specific copy number by 1 (80–90%
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	同 allele 兩次 gain 的 segment 中，約 85% 第二次有明顯延遲	in about 85% of segments with two gains of the same allele, the second gain appears with noticeable latency
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	觀點	作者解讀：gain 來自 anaphase 單份 mis-segregation	it seems that these gains arise through mis-segregation of single copies during anaphase
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	glioblastoma 90% 有 7、19 或 20 號單份 gain	in which 90% of tumours contain single copy gains of chromosome 7, 19 or 20
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	這些 gain 落在前 10% molecular time	these gains are consistently timed within the first 10% of molecular time
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	肺癌、黑色素瘤、乳突狀腎癌的 gain 偏晚	in lung cancers, melanomas and papillary kidney cancers, gains arise towards the end of the molecular timescale
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	觀點	WGD 的絕對時間估計依賴突變率情境	under a range of scenarios of mutation rate increase
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	9,692 例 advanced cancer 有 28.2% 發生 WGD	In total, 28.2% of cancer patients had tumors that underwent WGD
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	TCGA 6,184 例的 WGD 比例 31%	whole-exome sequencing data from 6,184 primary untreated tumors
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	WGD 比例因癌別差異大：germ cell 58%，部分癌別 ≤5%	affecting 58% of germ cell tumors versus only 5% or fewer non-hodgkin lymphomas
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	可定時病例中 97.3% 的 WGD 在功能性 TP53 突變之後（1142／1174）	WGD arose after functional TP53 mutations in 97.3% of the patients
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	可定時病例數 1142／1174	1142 of 1174 in total
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	其他 oncogenic driver 有 81.1% 先於 WGD，非 hotspot 未知意義突變 57.8%	other known oncogenic driver mutations similarly preceded WGD in 81.1% of such cases, but this was only true 57.8% of the time
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	46% 的 WGD 在 TP53 野生型腫瘤	46% of all WGD arose in TP53-wildtype tumors
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	73,545 個 arm／染色體長度 loss 中約 70% 在 WGD 之後	Of 73,545 total arm- and chromosome-length heterozygous losses in WGD-positive tumors, ~70% arose after the WGD event
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	WGD 腫瘤中位 ploidy 3.3，無 WGD 2.1	The median ploidy of tumors having undergone WGD was 3.3
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	假設	定時法採最簡解釋，不考慮獨立相同突變	using the most parsimonious explanation of an observed copy number state
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	CCF 模糊的 TCN=3 突變被排除	were classified as ambiguous and excluded from timing analyses
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	資料是 targeted panel（幾百個基因）	We inferred WGD status from targeted clinical sequencing of several hundred cancer-associated genes
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	觀點	WGD 由 allele-specific CN 判定；maternal／paternal 只是統計兩個 allele 的稱呼，沒有實測親源	which counts maternal and parental alleles based on the sequencing coverage and genotypes of germline single-nucleotide polymorphisms
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	NSCLC 的 WGD 頻率：LUAD 64.45%、LUSC 66.12%	64.45% in LUAD, 66.12% in LUSC tumors
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	subclonal WGD 比例：LUSC 6.25%、LUAD 1.63%	6.25% in LUSC and 1.63% in LUAD
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	haploid 基因組：WGD 平均 1.32%，非 WGD 9.55%	on average only 1.32% of the genome was haploid in WGD tumors, compared to 9.55% in nWGD cases
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	clonal LOH 平均 25.85%，subclonal LOH 5.96%	Clonal LOH was significantly more common than subclonal LOH (average of 25.85% vs 5.96%
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	細胞模型驗證定時：WGD 前突變 90.19% 正確，tetraploid 專屬突變 94.70% 正確	90.19% of pre-genome doubled mutations were correctly timed as such. Conversely, 94.70% tetraploid private mutations
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	NSCLC 大部分可偵測的 clonal 突變在 WGD 之前累積	the majority of detectable clonal mutations in NSCLC accumulate prior to WGD
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	假設	WGD 可緩衝 LOH 區的有害變異累積	WGD can be selected to mitigate the irreversible, ratchet-like, accumulation of deleterious somatic alterations
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	必要基因在 WGD 前的 LOH 區有 purifying selection，WGD 後沒有	negative selection against homozygous loss of essential genes prior to, but not after, WGD
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	全 exome 層級沒有偏離中性	Analyses at the whole exome level (all genes) showed no deviations from neutrality
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	觀點	作者也說：WGD 不能只靠緩衝必要基因 nonsense 突變被選擇	WGD cannot be selected solely to buffer against nonsense mutations in essential genes
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	cell line 假設此前未經實驗驗證	this assumption has not been subject to experimental validation
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	1,421 樣本、394 腫瘤、22 癌別	1,421 samples from 394 tumours across 22 tumour types
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	parallel 事件 37% 腫瘤（146／394）	was observed in 146 out of 394 (37%) tumours
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	clonal WGD 49% 腫瘤	was found as a clonal event in 49% of tumours
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	99% 腫瘤至少一個 subclonal SCNA	99% of tumours (390 out of 394) had at least one subclonal SCNA
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	中位 26% 基因組 clonal SCNA、18% subclonal	A median of 26% of the genome was subject to clonal SCNAs and 18% to subclonal SCNAs
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	45% 腫瘤超過 20% 基因組有 subclonal SCNA	In 45% of tumours, more than 20% of the genome was subject to subclonal SCNAs
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	subclonal 比例受取樣數影響，作者認為被低估	this is probably an underestimate of CIN as only a small proportion of each tumour is sequenced
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	purity 可能干擾 clonality 估計	tumour purity may interfere with the estimation of SCNA clonality
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	假設	MSAI 定義：不同 subclone 的不同親代 allele 受影響	affect different parental alleles within separate tumour subclones
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	WGD 腫瘤的 MSAI 較多	WGD tumours were enriched in mirrored subclonal allelic imbalance events compared with non-WGD tumours
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	與 clonal loss peak 重疊的事件有 94% 是 LOH，暗示先於 WGD	94% of clonal losses that overlapped early loss peaks involved LOH
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	TP53 LOH 在 92% WGD 腫瘤是 clonal	TP53 LOH was clonal rather than subclonal in 92% of WGD tumours
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	CCNE1 擴增 9／20 clonal WGD 腫瘤為 subclonal	CCNE1 amplification was subclonal in 9 out of 20 tumours with clonal WGD
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	HLA subclonal LOH 影響 22% 隊列	which affected 22% of the cohort
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	parallel gain 比非 parallel subclonal gain 更 focal	parallel gains were significantly more focal than non-parallel subclonal gains
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	allele-specific expression 追蹤不同 haplotype 的 parallel 事件	Allele-specific expression tracked parallel evolutionary events that originated from distinct haplotypes
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	Allele-specific expression 相關 ρ = 0.89	ρ = 0.89
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	觀點	loss 先於 WGD 時會造成完全 LOH，是推論規則	a genomic loss that occurred before WGD must lead to LOH with complete loss of the minor allele
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	中位每腫瘤 3 個樣本（範圍 2–16）	median 3 samples per tumour; range 2–16 samples per tumour
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	結論	3p loss+5q gain 同時發生，36% 病人，常經 chromothripsis	generates simultaneous 3p loss and 5q gain (36% patients), typically through chromothripsis
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	結論	事件發生在兒童或青少年，先於 MRCA 數年到數十年	This event occurs in childhood or adolescence
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	結論	13／30 腫瘤有 3p–5q 重排	affecting 13 (43%) of the 30 tumors with known 3p LOH breakpoints
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	結論	單一事件同時失去 3p、獲得 5q	lose one copy of chromosome 3p and gain an extra copy of chromosome 5q in the same event
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	結論	chromothripsis 的重排定相到單一 haplotype	phasing of rearrangements to one haplotype
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	假設	用 5q 兩份與一份突變比例和突變率推實際年齡	From the fraction of mutations present on two versus one copy of 5q
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	結論	34 個腫瘤來自 33 位病人	Mutation burden for 34 independent tumors derived from 33 patients
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	結論	不連 3p 的 5q gain 發生年齡範圍更廣	appeared to have occurred at a much wider range of ages than the t(3;5) events
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	觀點	作者解讀 3p loss 是早期定時的 driver	the key driver for the early timing of t(3;5) events is chromosome 3p loss
+E7-07	10.1158/2159-8290.CD-13-0285	E7-07.txt	結論	Tetraploid 每條染色體的 CIN 頻率沒有升高	Tetraploid cells do not exhibit increased frequencies of structural or numerical CIN per chromosome
+E7-07	10.1158/2159-8290.CD-13-0285	E7-07.txt	結論	cloning 效率 2N 63%、4N 6%	2N= 63%, 4N= 6%
+E7-07	10.1158/2159-8290.CD-13-0285	E7-07.txt	結論	tetraploid 群落細胞間變異：passage 5 為 7% 對 28%	passage 5 diploid mean=7% (0-23%); tetraploid mean=28% (5-57%)
+E7-07	10.1158/2159-8290.CD-13-0285	E7-07.txt	結論	passage 50 為 13% 對 33%	passage 50 diploid mean=13% (3-34%); tetraploid mean=33%, (7-68%)
+E7-07	10.1158/2159-8290.CD-13-0285	E7-07.txt	結論	TCGA 404 例 CRC	SNP6.0 data available for 404 Stage 1-4 CRC tumours
+E7-07	10.1158/2159-8290.CD-13-0285	E7-07.txt	結論	多癌別 polyploid 有較高 wGII	Significantly higher wGIIs were found in polyploid (ploidy ≥3) compared to diploid tumours
+E7-07	10.1158/2159-8290.CD-13-0285	E7-07.txt	觀點	作者解讀：tolerance 讓異常累積	coupled with a doubling of chromosome aberrations per cell
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	6,091 例單樣本 bulk WGS	By applying GRITIC to 6,091 tumors
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	164,062 個 clonal gain 區域	164,062 clonally gained regions across 6,091 tumors
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	WGD 腫瘤 gain 段有 29.8% 後驗在非 parsimony 路徑	29.8% of the total posterior probability on gained segments in WGD tumors was on non-parsimonious route histories
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	5.6% 在多兩個以上事件的路徑	with 5.6% on routes with two or more additional events
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	未懲罰前模型在全 parsimony 模擬給非 parsimony 56.2%，因此要校正	average posterior probability of 56.2% to non-parsimonious routes
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	懲罰校到約 5%	average posterior probability of non-parsimonious routes was ∼5%
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	complex 佔 gain 基因組 27.8%	27.8% of the gained genome having three or more copies of one parental allele
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	WGD 比例：轉移 55.3%、原發 31.2%	55.3% for Hartwig metastases compared to 31.2% for PCAWG primary tumors
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	multiple WGD 約 5.8%，方法無法定時	we are unable to time events in tumors with multiple WGDs, which we estimate to be 5.8%
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	late WGD 之後 gain 速率上升	late genome doubling was followed by an increase in the rate of copy number gain
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	early WGD 前 gain 速率較高，之後下降	early WGDs were preceded by an elevated gain rate, which then decreased post-WGD
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	98.5% WGD 腫瘤有 post-WGD gain，對照 78.0%	The proportion of WGD tumors that had a gain post-WGD (98.5%)
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	非 WGD 對照 78.0%	realistic pseudo-WGD timing (78.0%
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	16.9% 非 WGD 樣本 gain 集中發生	gains in 16.9% of informative non-WGD samples
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	33.3% WGD 腫瘤 gain 集中發生，88.7% 在 WGD 後	gains in 33.3% of informative WGD tumors occurred significantly closer in time than expected
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	88.7% 的 burst 在 WGD 之後	Most of these (88.7%) occurred post-WGD
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	多樣本驗證：共有 gain 較早，78.9%（142／180）	in 78.9% (142/180) of cases
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	clear cell RCC：52／54 WGD 腫瘤有 3p LOH	52/54 of the genome-doubled clear cell renal cell carcinomas had LOH loss of 3p
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	假設	定時基礎：每個鹼基最多突變一次	each base pair in the genome is mutated at most once
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	觀點	單切片的 non-parsimony 可能在全腫瘤是 parsimonious	may be parsimonious when the full heterogeneity of copy number in the tumor is considered
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	觀點	把 SNV 定相到 haplotype 或 copy 會降低路徑模糊	phasing SNVs either to haplotypes or ideally to specific copies will substantially reduce this ambiguity
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	clonal loss 無法定量定時	we are unable to quantitatively time clonal copy number losses
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	每段至少 20 個 SNV、最多 500 條路徑的限制	no more than 500 possible routes and at least 20 SNVs
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	非 WGD 中 gain 影響 48.6% 基因組	copy number gains affected an average of 48.6% of the tumor genomes
+E7-10	10.1101/gr.220707.117	E7-10.txt	結論	12 個單細胞資料集中 11 個有同位點多次事件	11 of 12 single-cell sequencing data sets
+E7-10	10.1101/gr.220707.117	E7-10.txt	結論	7 例突變流失，其中 5 例沒有大段 deletion	Seven cases involved the loss of earlier mutations, five of which occurred at sites unaffected by large-scale genomic deletions
+E7-10	10.1101/gr.220707.117	E7-10.txt	結論	specificity 90–95%	high specificity of 90%–95% using a BF cutoff of 1
+E7-10	10.1101/gr.220707.117	E7-10.txt	結論	3 個 exome、9 個 targeted	three from whole-exome sequencing () and nine from targeted sequencing
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	189 tumor 樣本、181 病人	189 tumor samples from 181 patients
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	有 matched normal 的 43 樣本／41 病人	43 tumor samples from 41 patients have matched normal nanopore sequencing
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	read N50 中位 31.3 kb	median N50 length of 31.3 kb
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	中位覆蓋 tumor 26×、normal 17.5×	median of 17.5- and 26-fold haploid genome coverage for normal and tumor samples
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	基因完全定相比例中位 85%	median 85%, interquartile range [IQR] 79.1%–89.1%
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	30 例 TSG 雙 somatic 變異	There were 30 cases identified with double somatic variants in at least one TSG
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	17 對 trans、2 對 cis	The majority (n = 17) of pairs were found to occur in trans, while two were found to occur in cis
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	PTEN 雙突變在 deletion 的對面 allele	on the opposite allele from a heterozygous somatic PTEN deletion
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	ASE 基因與 LOH、CN 不平衡重疊	ASE genes tended to overlap regions of LOH
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	第二次 gain 分析的 segment 數	Proportion of copy number segments (n = 90,387) with secondary gains
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	trisomy 7：全染色體通常不到 3／600 SNV 先於 gain	typically less than 3 out of 600 single nucleotide variants (SNVs) on the whole chromosome precede the gain
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	WGD 在時序上通常居中排名	WGD events usually have an intermediate ranking
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	WGD 發生在累積數個 driver 之後	Whole-genome duplications occur after tumours have accumulated several driver mutations
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	卵巢腺癌 WGD 到最後 subclone 的中位 latency 超過 10 年（情境估計）	appears to have a median latency of more than 10 years
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	9,692 例 advanced cancer	nearly 30% of 9,692 prospectively sequenced advanced cancer patients
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	TCGA WGD 31%	The overall rate of WGD in this cohort was 31%
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	結論	無 WGD 腫瘤中位 ploidy 2.1	compared to 2.1 in tumors lacking WGD
+E7-02	10.1038/s41588-018-0165-1	E7-02.txt	假設	作者模型：WGD 早發生、在 driver 之後	WGD emerges early in the pathogenesis of affected cancers, but after a preceding oncogenic driver mutation
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	結論	t(3;5) 多在診斷前 30–50 年	30–50 years before the kidney cancer was diagnosed
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	結論	3p loss 超過 90% 病人	found in >90% patients
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	13,448 例 advanced solid cancer、53 癌別	a prospectively sequenced cohort of 13,448 advanced solid cancers from 53 cancer types
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	69 個 oncogene 的 1,229 driver、17,352 passenger	1,229 unique driver mutations and 17,352 likely passenger mutations across 69 oncogenes
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	targeted 中位覆蓋約 650×	high median tumor sequencing coverage (~650-fold)
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	55% driver 為 heterozygous，45% 有 allelic imbalance	55% of all oncogenic driver mutations in the 69 oncogenes examined were heterozygous, while 45% exhibited allelic imbalance
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	41% 腫瘤有 mutant allele imbalance	Among all tumors, 41% exhibited mutant allele imbalance
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	focal amplification 只佔 12%	focal amplifications accounted for only 12% of mutant allele imbalance
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	WT allele 的 LOH／CN-LOH 佔 33%	accounted for 33% of all mutant oncogene allelic imbalance
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	hitchhiking 只佔 4%	only 4% of all oncogenic mutant allele imbalance observed in this cohort could be attributed to “hitchhiking”
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	TSG 84% 來自 WT allele 流失	where 84% of allelic imbalance could be attributed to loss of the WT allele
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	檢定樣本 36 位病人	We addressed this question in 36 patients with tumors harboring
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	中性 germline allele 保留或流失機率相等	the reference and non-reference alleles of germline polymorphisms were retained or lost with equal frequency
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	結論	oncogene loss 幾乎總是保留帶突變 allele	almost invariably retained the gain-of-function allele
+E7-08	10.1016/j.ccell.2018.10.003	E7-08.txt	觀點	作者解讀：多數 oncogene 突變伴隨約單份劑量 gain	single copy dosage gains are associated with many oncogenic mutations
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	每段分開處理	GRITIC considers the gains in different segments separately
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	突變時間軸不是實際時間的線性映射	it does not have a linear mapping to real-time
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	觀點	loss 可能讓先前 gain 無法觀測	losses may affect these results, as they can make previously occurring gains unobservable
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	觀點	作者推論 WGD 主要影響 loss 景觀	genome duplications typically affect the landscape of copy number losses, while only minimally impacting copy number gains
+E7-10	10.1101/gr.220707.117	E7-10.txt	結論	作者以 LOH 作為 back mutation 的替代解釋	tested loss of heterozygosity (LOH) as an alternative explanation to back mutation
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	parallel 定義為不同 subclone 內的事件	events that occurred in distinct subclones within individual tumours
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	資料含 WES 與 SNP array	Whole-exome sequencing All whole-exome sequencing (WES) data were processed from FASTQ
+E7-04	10.1038/s41586-020-2698-6	E7-04.txt	結論	多樣本 phasing 靠 SCNA 造成的 allelic imbalance，不是親源	uses the allelic imbalance that results from SCNAs causing an unequal copy number of homologous chromosomes
+E7-09	10.1158/2159-8290.CD-23-1249	E7-09.txt	結論	complex 狀態以親代 allele 份數定義，parental 是稱呼	three or more copies of one parental allele
+E7-11	10.1016/j.xgen.2024.100674	E7-11.txt	結論	76% 樣本來自轉移位點	The majority of the tumors (n = 144, 76%) were from biopsies of metastatic sites
+E7-03	10.1038/s41588-020-0584-7	E7-03.txt	結論	擴展到 33 癌別	apply this approach to 33 different cancer types
+E7-01	10.1038/s41586-019-1907-7	E7-01.txt	結論	PCAWG 2,658 例	whole-genome sequencing data from 2,658 cancers
+E7-06	10.1016/j.cell.2018.02.020	E7-06.txt	假設	恆定突變率的依據	somatic mutations in kidney cells accumulate at a constant rate throughout life
