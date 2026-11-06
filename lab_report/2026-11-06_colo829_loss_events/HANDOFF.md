@@ -1,5 +1,7 @@
 # 交接：COLO829 的突變比例與事件驗證
 
+> **狀態：已結案（使用者 2026-11-06 決定）。** 再查也不能推廣到其他腫瘤，不再追 LOH 真假和 2:1 區那 10% 的差距。下方「還沒做」只留作紀錄，不要主動提議。結論已收進學習網站圖 7.8。
+
 日期：2026-11-06。接手前先讀 `CLAUDE.md`、`meeting_record/2026_11_04_meeting_summary.md`，再讀本檔與同目錄 `README.md`。
 
 ## 使用者要回答的問題
@@ -79,8 +81,8 @@
 
 ## Git 狀態
 
-- 分支 `diplosim-v1`。`a4e7828`、`7b5ddb0`、`5b74edc` 已 commit，**沒有 push**。
-- 「早晚分開比較」的改動（`README.md`、本檔、`tools/colo829_major_minor_timing.py` 等）**還沒 commit**，等使用者要求。
+- 分支 `diplosim-v1`。`a4e7828`、`7b5ddb0`、`5b74edc`、`503ead9`（早晚分開比較）已 commit，**沒有 push**。
+- 圖 7.8 和結案標記**還沒 commit**，等使用者要求。
 - `daily/`、`report/2026_11_04_slides/`、`diplosim/docs/figs/diplosim_features_igv.png` 的變更不屬於這項工作，不要一起 commit。
 
 ## 網頁

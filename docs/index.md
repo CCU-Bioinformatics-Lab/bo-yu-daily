@@ -40,4 +40,5 @@
 - 小檔 benchmark（SEQC2 HCC1395 真值與 CNV、GIAB HG002、T2T Q100、COLO829、CASTLE Wakhan）：`/big8_disk/boyu114/benchmark_data/README.md`。同目錄另有 `PCAWG/`、`TRACERx/`，README 表內沒有列。
 - GIAB HG008 的文獻與資料集調查（含公開的 119 個 PTA 單細胞）：`research/literature/surveys/sc_longread_datasets_2026-10-26/summary.md`。本機副本見上表「HG008」。
 - COLO829 公開體細胞 SNV（Sohn 2026，near-T2T 二倍體座標）：`/big8_disk/boyu114/benchmark_data/colo829_t2t_sohn2026/somatic_snvs.vcf.gz`；來源與用途見 `lab_report/2026-11-06_colo829_hap_snv_ratio/`、`lab_report/2026-11-06_colo829_loss_events/`。衍生資料在同目錄的 `derived/`。
+- PRCGAP 公開結果（Sakamoto 2026；COLO829、HG008、H1437、H2009、H209、H2126、HCC1937、HCC1954 的逐突變單倍型）：`/big8_disk/boyu114/benchmark_data/prcgap_sakamoto2026/`，壓縮檔加 `extracted/`（Zenodo 21271691，只解出部分目錄）；用法見 `lab_report/2026-11-06_prcgap_hap_snv_ratio/`。
 - HCC1395 ASCAT CN：`lab_report/2026-10-30_ascat_hcc1395_5khz/`。

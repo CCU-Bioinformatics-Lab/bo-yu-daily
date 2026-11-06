@@ -1,0 +1,6 @@
+group	hap1_snv	hap1_mb	hap1_per_mb	hap2_snv	hap2_mb	hap2_per_mb	ratio	ci_low	ci_high	p
+raw_all	4933			6378						
+retained_all	4733	2039	2.32	6181	2503	2.47	0.940	0.905	0.976	0.0013
+retained_autosomes	4351	1884	2.31	5610	2349	2.39	0.967	0.930	1.006	0.097
+retained_chrX	382	155	2.46	571	154	3.71	0.663	0.583	0.755	5.2e-10
+retained_both_haps_autosomes	3926	1698	2.31	4747	1979	2.40	0.964	0.924	1.006	0.091

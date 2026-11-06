@@ -70,7 +70,9 @@
 
 | 目錄 | 結論 | 狀態 |
 |---|---|---|
-| `2026-11-06_colo829_loss_events/` | 用 ONT 深度、雜合位點和同 read 定相驗證：61:39 主要來自 LOH（約 765 Mb 只剩一條，多為多份）；2:1 區分早晚後，1 份那條仍比對稱預測少約 10%（原因未定，不等於爸媽偏向）；三批 COLO829 的 chr1p 拷貝數不同。含 `HANDOFF.md` | 現行 |
+| `2026-11-06_prcgap_hap_snv_ratio/` | PRCGAP 公開結果 8 株：兩條拷貝數相同的 229 個 20 Mb 區段只有 7 個校正後顯著，沒有明顯全面偏向，但差異比純隨機大；逐染色體受拷貝數影響；過濾在 HG008 對 GIAB 吻合 99.9%；不知親源 | 現行 |
+| `2026-11-06_hg008_hap_snv_ratio/` | HG008 long read 組裝的 truncal SNV：原始 hap1:hap2 44:56，有 LOH 的影響；體染色體留著的片段 2.31 比 2.39 個／Mb（比值 0.97，CI 0.93–1.01）；chrX 比值 0.66（inactive X）、chr5 比值 1.32；不知親源，只有一個細胞株 | 現行 |
+| `2026-11-06_colo829_loss_events/` | 用 ONT 深度、雜合位點和同 read 定相驗證：61:39 主要來自 LOH（約 765 Mb 只剩一條，多為多份）；2:1 區分早晚後，1 份那條仍比對稱預測少約 10%（原因未定，不等於爸媽偏向）；三批 COLO829 的 chr1p 拷貝數不同。含 `HANDOFF.md` | 已結案（2026-11-06，不再追查） |
 | `2026-11-06_colo829_hap_snv_ratio/` | COLO829 long read 的 hap1:hap2 原始 61:39，主要因一條流失；扣掉無突變片段後 9.34 比 9.31 個／Mb（比值 1.004），不知親源，只有一個細胞株 | 現行 |
 | `2026-10-30_ascat_hcc1395_5khz` | HCC1395 ONT 5kHz 的 ASCAT：purity 0.97、ploidy 3.06；diplosim 的驗證目標，不當輸入 | 現行 |
 | `2026-10-25_seqc2_hcc1395_measured_purity` | `tX_nY` 是 tumor DNA 比例；實測細胞 purity 較低（例：t20 0.32） | 現行（`docs/tumor_sample.md` 引用） |

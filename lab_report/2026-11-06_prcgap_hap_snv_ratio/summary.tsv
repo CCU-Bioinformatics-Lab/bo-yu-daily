@@ -1,0 +1,9 @@
+sample	all_rows	base_snv	strict_snv	strict_retained	strict_outside	chroms_compared	autosomes_compared	median_abs_log2_ratio	chi2_per_df	pooled_autosome_ratio	single_hap_chroms	cn_density_corr	chrom_significant	windows_with_both	balanced_windows	balanced_snv	balanced_chi2_per_df	balanced_median_abs_log2	balanced_larger_side_share	balanced_significant
+COLO829	59876	40686	27471	27174	294	16	16	0.227	8.63	1.135	7	0.08	chr2(1.13) chr3(1.22) chr4(1.17) chr6(1.15) chr7(1.17) chr8(1.24) chr9(1.26) chr20(0.75)	77	33	7762	2.44	0.214	0.545	1
+HG008	28267	10340	6699	6585	111	17	16	0.189	2.94	1.121	6	0.09	chr13(1.66) chrX(1.51)	56	43	2520	1.21	0.276	0.558	0
+H1437	91680	61410	40083	39448	601	17	17	0.24	22.65	0.915	6	0.23	chr1(0.73) chr2(0.69) chr3(1.26) chr5(0.88) chr8(1.21) chr10(1.18) chr11(1.26) chr16(0.61)	68	15	4795	2.32	0.203	0.536	1
+H2009	205226	143819	112957	111807	1144	17	17	0.165	70.2	1.132	6	0.55	chr1(0.89) chr2(1.21) chr3(1.83) chr4(1.37) chr5(1.08) chr7(0.91) chr8(1.42) chr9(0.90) chr10(1.10) chr11(1.36) chr13(1.69) chr16(0.52) chr20(1.49)	68	36	31617	1.82	0.103	0.519	0
+H209	61839	32771	22947	22289	647	20	20	0.125	17.08	1.078	3	0.41	chr1(2.00) chr3(0.83) chr5(1.38) chr6(0.77) chr7(1.32) chr8(1.53)	95	75	11983	2.31	0.205	0.546	2
+H2126	182075	135043	108853	108102	751	15	15	0.496	95.58	1.126	8	0.71	chr2(1.06) chr3(1.49) chr6(0.67) chr7(1.64) chr11(0.89) chr12(1.41) chr16(1.38) chr17(1.70) chr18(0.71) chr19(0.60) chr20(1.76)	66	6	6761	4.38	0.134	0.525	1
+HCC1937	66992	18850	9893	9795	98	15	15	0.326	7.13	1.106	8	0.95	chr8(0.75) chr10(1.47) chr11(1.94) chr12(0.58) chr20(1.55)	38	5	434	2.03	0.185	0.558	1
+HCC1954	35965	18471	13888	13672	215	23	22	0.733	50.55	0.762	0	0.9	chr1(0.35) chr2(1.29) chr4(0.66) chr5(2.47) chr6(0.38) chr7(0.71) chr9(0.31) chr10(0.38) chr12(0.71) chr13(1.70) chr14(0.40) chr16(0.69) chr17(0.39) chr18(0.60) chr21(0.60) chr22(2.64)	100	16	1609	3.34	0.465	0.583	1
