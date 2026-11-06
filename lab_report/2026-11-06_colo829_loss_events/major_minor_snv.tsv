@@ -1,0 +1,16 @@
+region	used	major	minor	balanced	minor_share	p
+chr1p	True	488	470	24	0.491	0.5829
+chr2	True	147	111	14	0.43	0.0291
+chr6	True	138	118	10	0.461	0.235
+chr10	True	159	112	7	0.413	0.0051
+chr12	True	134	121	7	0.475	0.4524
+chr17	True	157	117	5	0.427	0.0183
+chr18	True	145	116	6	0.444	0.0829
+chr19	True	144	126	6	0.467	0.3009
+chr21	True	127	134	13	0.513	0.7104
+chr1	False	13	10	0	0.435	0.6776
+chr7	False	13	0	0	0.0	0.0002
+chr13	False	3	0	29	0.0	0.25
+chr14	False	108	0	2	0.0	0.0
+chr16	False	14	9	42	0.391	0.4049
+chr20	False	0	0	23		

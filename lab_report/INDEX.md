@@ -70,6 +70,7 @@
 
 | 目錄 | 結論 | 狀態 |
 |---|---|---|
+| `2026-11-06_colo829_loss_events/` | 用 ONT 深度、雜合位點和同 read 定相驗證：61:39 主要來自 LOH（約 765 Mb 只剩一條，多為多份）；2:1 區 1,639 比 1,425，不能解讀成偏向；三批 COLO829 的 chr1p 拷貝數不同。含 `HANDOFF.md` | 現行 |
 | `2026-11-06_colo829_hap_snv_ratio/` | COLO829 long read 的 hap1:hap2 原始 61:39，主要因一條流失；扣掉無突變片段後 9.34 比 9.31 個／Mb（比值 1.004），不知親源，只有一個細胞株 | 現行 |
 | `2026-10-30_ascat_hcc1395_5khz` | HCC1395 ONT 5kHz 的 ASCAT：purity 0.97、ploidy 3.06；diplosim 的驗證目標，不當輸入 | 現行 |
 | `2026-10-25_seqc2_hcc1395_measured_purity` | `tX_nY` 是 tumor DNA 比例；實測細胞 purity 較低（例：t20 0.32） | 現行（`docs/tumor_sample.md` 引用） |

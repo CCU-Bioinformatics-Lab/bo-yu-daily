@@ -122,7 +122,7 @@ def main():
 <p class="lead">用 COLO829 的公開突變資料，比較腫瘤裡兩條單倍型的突變。</p>
 <figure style="margin:0"><div class="draw">{svg}</div>
 <figcaption>看起來 hap1 的突變多很多，主要是因為腫瘤丟掉了部分 hap2。只算還留著的片段，兩條每 Mb 的突變數幾乎相同。</figcaption></figure>
-<p class="note">資料：Sohn 2026, Cell 公開的 VCF，long read。比例是本 repo 計算的，不是論文結論。「留著的片段」是扣掉連續超過 5 Mb 沒有突變的部分，這個定義本身來自突變位置，所以這是密度比較，不是獨立證明。兩條都保留的 11 對中，chr14、chr16 偏離預期較多。細節見 lab_report/2026-11-06_colo829_hap_snv_ratio/。</p></div>"""
+<p class="note">資料：Sohn 2026, Cell 公開的 VCF，long read。比例是本 repo 計算的，不是論文結論。「留著的片段」是扣掉連續超過 5 Mb 沒有突變的部分，這個定義本身來自突變位置，所以這是密度比較，不是獨立證明。兩條都保留的 11 對中，chr14、chr16 偏離預期較多。不同批的 COLO829 不完全一樣：實驗室另一批的 chr1p 還留著另一條，所以這張圖只代表 Sohn 那批。細節見 lab_report/2026-11-06_colo829_loss_events/。</p></div>"""
     Path(sys.argv[2]).write_text(html, encoding="utf-8")
     print("height", s.h, "problems", len(PROBLEMS))
 
