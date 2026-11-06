@@ -10,7 +10,7 @@
 
 ## 目前的答案
 
-**COLO829 沒有證據顯示真的偏向。** 61:39 主要來自 LOH。
+**61:39 主要來自 LOH，不是整體偏向。** 但兩條都在的 2:1 區，還有約 10% 的差距沒解釋（見下方「早晚分開比較」）。
 
 | 比法 | 結果 | 位置 |
 |---|---|---|
@@ -19,7 +19,19 @@
 | 2:1 區，read 直接判斷（ONT R10，獨立資料） | 1,639 比 1,425（minor 46.5%） | 本目錄 |
 | chr1p | 488 比 470 | 本目錄 |
 
-2:1 區的小差距不能解讀成偏向：2 份那條在複製後目標多一倍，1 份那條的 VAF 也較低。
+### 早晚分開比較（2:1 區，2026-11-06 補做）
+
+**結論：我原本用「複製後目標多一倍」解釋差距，這個解釋不夠。** 1 份那條比對稱預測少約 10%，原因未定。
+
+| 2 份那條：早期（VAF ≥ 0.5） | 2 份那條：晚期 | 1 份那條（實際） | 對稱預測（早期 + 晚期 ÷ 2） | 實際／預測 | p |
+|---:|---:|---:|---:|---:|---:|
+| 1,536 | 103 | 1,425 | 1,587.5 | 0.90 | 0.003 |
+
+- 門檻 0.45、0.55 結果相同（0.90、0.91）。
+- 各區比值：chr1p 0.99、chr2 0.78、chr6 0.89、chr10 0.72、chr12 0.93、chr17 0.78、chr18 0.81、chr19 0.89、chr21 1.10。校正後沒有單一染色體顯著。
+- 候選解釋都沒驗證：低 VAF 偵測較差（但 chr1p 同樣 VAF 0.33，比值 0.99）、2:1 視窗混入 LOH 片段（但 chr2 沒有鄰近 LOH，比值也低）、真實差異。
+- 這不等於爸媽偏向：2 份、1 份是後來的拷貝狀態，各染色體不一定對應同一位親代。
+- 細節、圖和指令：`README.md` 第 8 節、`early_late_major_minor.tsv`、`vaf_major_minor.png`。
 
 ## 已確認的事件
 
@@ -44,8 +56,8 @@
 
 1. **補讀圖 S3–S12。** 尤其 S3D、S3E（chr1 的突變和拷貝）、S4（各區 VAF）。bioRxiv 連結格式：`https://www.biorxiv.org/content/biorxiv/early/2025/10/13/2025.10.10.681725/DC<n>/embed/media-<n>.pdf`。
 2. **查「7 條零 SNV contig 全在 hap2」。** 看 Verkko 怎麼定 hap 標籤；機率約 1.6%。
-3. **分開 2:1 區的早期和晚期突變，再比兩條。** 這才能回答 53.5% 比 46.5% 有多少來自複製後的目標差異。可以用 VAF：早期突變在 2 份那條的 VAF 應接近 0.67。
-4. **用 2:2 區比同一 phase block 內的兩條。** 目前 2:2 區只判斷「接近各半」，沒有比較 block 內的計數。
+3. **查 2:1 區那 10% 差距的原因。** 先做兩件便宜的事：① 用 Sohn 的 VCF 或其他 caller（DeepSomatic、ClairS-TO）比對，估 VAF 0.33 的偵測率；② 把 2:1 視窗改成連續分段，排除鄰近 LOH 的污染，再算一次。
+4. **用 2:2 區比同一 phase block 內的兩條。** 這裡兩條 VAF 相同，沒有偵測偏差，是最乾淨的對照。 目前 2:2 區只判斷「接近各半」，沒有比較 block 內的計數。
 5. **換樣本。** COLO829 只有一個細胞株。候選：HG008（共用副本 `/big8_disk/yungjen114/data/HG008`，還沒查親代資料）、CASTLE 細胞株。
 
 先和使用者確認要不要做，不要一次全做。
@@ -61,14 +73,14 @@
 | SV、CN 真值（hg19 座標） | `/big8_disk/boyu114/benchmark_data/COLO829/zenodo_3988185/` |
 | 作者程式 | GitHub `StergachisLab/T2T-COLO829BLT-Manuscript`（`hCN/CBS_DNAcopy.qmd`、`hCN/plot_log2hcn.py`） |
 | 論文全文（本機） | `research/literature/surveys/tumor_evolution_history_2026-11-05/fulltext_cache/E6-12.txt` |
-| 工具 | `tools/colo829_event_evidence.py`、`colo829_junction_reads.py`、`colo829_event_summary.py`、`colo829_hap_snv_ratio.py` |
+| 工具 | `tools/colo829_event_evidence.py`、`colo829_junction_reads.py`、`colo829_event_summary.py`、`colo829_major_minor_timing.py`、`colo829_hap_snv_ratio.py` |
 
 外部下載的檔案用 `python3 -I` 讀。腳本不要放在資料目錄。
 
 ## Git 狀態
 
-- 分支 `diplosim-v1`。`a4e7828`、`7b5ddb0` 已 commit，**沒有 push**。
-- 本次新增與修改（本目錄、舊紀錄的更正、工具、索引、網站）**還沒 commit**，等使用者要求。
+- 分支 `diplosim-v1`。`a4e7828`、`7b5ddb0`、`5b74edc` 已 commit，**沒有 push**。
+- 「早晚分開比較」的改動（`README.md`、本檔、`tools/colo829_major_minor_timing.py` 等）**還沒 commit**，等使用者要求。
 - `daily/`、`report/2026_11_04_slides/`、`diplosim/docs/figs/diplosim_features_igv.png` 的變更不屬於這項工作，不要一起 commit。
 
 ## 網頁

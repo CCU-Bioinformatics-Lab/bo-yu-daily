@@ -120,3 +120,4 @@ HG008 的 bulk 資料用共用副本 `/big8_disk/yungjen114/data/HG008/`（`docs
 | `colo829_event_evidence.py` | COLO829 不靠 SNV 數的證據：覆蓋度抽樣、ONT 雜合位點、同 read 定相 | `lab_report/2026-11-06_colo829_loss_events/` |
 | `colo829_junction_reads.py` | 找連接 chr1 和 chr10 的 read，看它帶哪條等位基因 | 同上 |
 | `colo829_event_summary.py` | 上兩支的彙總表與圖 | 同上 |
+| `colo829_major_minor_timing.py` | 2:1 區把 2 份那條的突變分早晚，檢驗「1 份那條 = 早期 + 晚期 ÷ 2」 | 同上 |
