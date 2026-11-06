@@ -70,6 +70,7 @@
 
 | 目錄 | 結論 | 狀態 |
 |---|---|---|
+| `2026-11-06_colo829_hap_snv_ratio/` | COLO829 long read 的 hap1:hap2 原始 61:39，主要因一條流失；扣掉無突變片段後 9.34 比 9.31 個／Mb（比值 1.004），不知親源，只有一個細胞株 | 現行 |
 | `2026-10-30_ascat_hcc1395_5khz` | HCC1395 ONT 5kHz 的 ASCAT：purity 0.97、ploidy 3.06；diplosim 的驗證目標，不當輸入 | 現行 |
 | `2026-10-25_seqc2_hcc1395_measured_purity` | `tX_nY` 是 tumor DNA 比例；實測細胞 purity 較低（例：t20 0.32） | 現行（`docs/tumor_sample.md` 引用） |
 | `2026-10-25_hcc1395_hp_split` | 92.2% 的 somatic SNV 的 alt read 集中在同一條 HP | 現行 |

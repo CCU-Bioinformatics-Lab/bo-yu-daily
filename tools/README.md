@@ -107,3 +107,13 @@ HG008 的 bulk 資料用共用副本 `/big8_disk/yungjen114/data/HG008/`（`docs
 |---|---|
 | `draw_claude_md_workflow.py` | 把 `CLAUDE.md` 的工作流程畫成泳道圖 |
 | `remote_zip_extract.py` | 用 HTTP Range 只解壓遠端 zip 的部分檔案 |
+
+## 文獻調查
+
+| 腳本 | 做什麼 | 被誰用 |
+|---|---|---|
+| `lit_fetch_paper.py` | 依 DOI 抓 PMC 全文或 PubMed 摘要，核對 DOI 後存成文字檔（NCBI 不穩時會失敗） | `research/literature/surveys/tumor_evolution_history_2026-11-05/` |
+| `lit_check_quotes.py` | 檢查引文表的每段引文是否逐字出現在抓下來的文字 | 同上 |
+| `colo829_hap_snv_ratio.py` | COLO829 公開 VCF：兩條單倍型的 SNV 數、密度、同源配對比較 | `lab_report/2026-11-06_colo829_hap_snv_ratio/` |
+| `plot_colo829_hap_snv_ratio.py` | 上一支的圖 | 同上 |
+| `draw_colo829_hap_explainer.py` | 上一個實驗的白話圖解（真實突變位置），輸出 HTML | 同上 |
