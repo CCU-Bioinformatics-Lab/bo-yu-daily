@@ -320,6 +320,47 @@ def compete(bk):
            "樹上的祖先節點不代表已經消失，它們可能還活著。clone 的切法也不是天生的：subclone 數會隨定序的細胞數改變。",
            "TNBC 單細胞：每腫瘤 7–22 個 subclone，可併成 3–5 個 superclone。", None, ("E1-12",))
 
+    s = S("3.6", 800, 474)
+    def family(x0, title, branch_stars, tips, marks, caption):
+        """A small family tree. tips says which of the four tip cells carry the star."""
+        cx = x0 + 122
+        s.rect(x0, 14, 244, 292, "panel", r=8)
+        s.text(cx, 38, title, "h", "middle")
+        mids = [cx - 56, cx + 56]
+        leaves = [cx - 82, cx - 30, cx + 30, cx + 82]
+        for m in mids:
+            s.line(cx, 66, m, 124, "line2", 2.5)
+        for i, x in enumerate(leaves):
+            s.line(mids[i // 2], 124, x, 190, "line2", 2)
+        s.cell(cx, 66, 10, "normal")
+        for m in mids:
+            s.cell(m, 124, 10, "c1")
+        for i, x in enumerate(leaves):
+            s.cell(x, 190, 15, "c1", ("mut",) if tips[i] else ())
+        for x, y in branch_stars:
+            s.star(x + x0, y, 9)
+        for x, y in marks:
+            s.xmark(x + x0, y, 7, "ink")
+        s.lines(cx, 232, caption, "s", "middle", 22)
+    # Offsets inside a panel: root edge left 94,95; right edge 150,95; lower edges run from y 124 to 190.
+    family(20, "ISA：只突變一次", [(94, 95)], (1, 1, 0, 0), [], ["同一位置只有一顆星。", "帶星的細胞都是同一家族，", "所以星星能定出樹枝。"])
+    family(278, "例外一：平行突變", [(94, 95), (165, 157)], (1, 1, 1, 0), [], ["同一位置在兩條樹枝", "各突變一次。帶星的細胞", "不一定是同一家族。"])
+    family(536, "例外二：突變丟失", [(94, 95)], (1, 0, 0, 0), [(79, 157)], ["突變後來不見了，", "例如那段 DNA 丟失。", "沒星的細胞不一定沒發生過。"])
+    s.rect(20, 318, 760, 92, "panel", r=8)
+    s.text(44, 344, "單細胞：12 組資料中，11 組看到例外", "s")
+    for i in range(12):
+        s.rect(44 + i * 26, 356, 22, 22, "ink2" if i < 11 else "panel3", r=3)
+    s.text(430, 344, "Bulk：21% 的樣本（559 例）有同一位置在兩條都突變", "s")
+    s.rect(430, 356, 320, 22, "panel3", r=3)
+    s.rect(430, 356, 320 * .21, 22, "ink2", r=3)
+    s.text(430, 398, "PCAWG，全部 2,658 例", "s")
+    s.rect(30, 422, 740, 42, "paper", "line")
+    s.text(400, 449, "ISA 是好用的近似，不是定律：突變很多時，分群通常還能用。", "t", "middle")
+    bk.fig(s, "畫樹的基本假設：無限位點（ISA）", "基因組很長，所以常假設同一個位置一生只突變一次。這樣帶同一個突變的細胞，就屬於同一個家族，才能用突變畫出樹。現實有例外，所以這是近似，不是定律。",
+           "「有例外」不代表不能用，但例外多少依腫瘤而定：UV、MSI、高突變負荷的腫瘤特別要小心。用同一段 read 上的兩個突變判斷先後時也要小心：PCAWG 黑色素瘤裡，看起來有先後的這類突變對，中位 67% 其實是平行突變。",
+           "單細胞 12 組資料中有 11 組看到例外：7 組有突變丟失，其中 5 組不在大片段缺失的位置；4 組有平行突變。PCAWG 找到 18,495 個同一位置在兩條都突變的例子，但作者預期分群在這個程度下仍穩定。另一篇綜述也認為，例外少到不太影響數百到數千個 SNV 的分群。這些都不是 long read 資料。",
+           "還在爭論", ("E5-06", "E9-01", "E9-02"))
+
 
 def after(bk):
     bk.chapter("after", "治療和轉移", "演化不會停。藥物和移動到新器官，都是新的篩選。")

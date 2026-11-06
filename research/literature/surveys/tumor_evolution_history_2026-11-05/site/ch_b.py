@@ -506,12 +506,122 @@ def parents(bk):
            "Sohn 2026（Cell）公開的 long read 突變表，由本 repo 計算，不是論文結論。獨立 ONT 資料用同一條 read 判斷，兩條都在的 2:1 區是 1,639 比 1,425。分早晚後，1 份那條仍比預測少約 10%，原因還不清楚，也不等於爸媽偏向。細節見 lab_report/2026-11-06_colo829_loss_events/。", "還不知道", ("E6-12",))
 
 
+    s = S("7.8", 800, 732)
+    bx, bw = 130, 230
+    tx = 400
+    def stars(y, xs):
+        for x in xs:
+            s.star(bx + x, y, 7)
+    s.text(30, 28, "看整體：扣掉流失的片段，兩條幾乎一樣", "h")
+    s.rect(30, 42, 740, 92, "panel", r=8)
+    s.text(tx, 62, "COLO829（黑色素瘤）", "s")
+    s.text(tx + 180, 62, "HG008（胰臟癌，體染色體）", "s")
+    for y, name, c, xs, d1, d2 in [(84, "hap1", "hap1", (15, 50, 85, 120, 155, 190, 222), "9.34 個／Mb", "2.31 個／Mb"), (116, "hap2", "hap2", (30, 65, 100, 135, 170, 205), "9.31 個／Mb", "2.39 個／Mb")]:
+        s.text(bx - 12, y + 5, name, "s", "end")
+        s.bar(bx, y, bw, c, 14)
+        stars(y, xs)
+        s.text(tx, y + 5, d1, "b")
+        s.text(tx + 180, y + 5, d2, "b")
+    top = s
+    # Every balanced window from lab_report/2026-11-06_prcgap_hap_snv_ratio/summary.tsv.
+    panel8 = S("7.8", 800, 322)
+    panel8.text(30, 24, "再看 8 個細胞株：逐段比，明顯不同的段很少", "h")
+    panel8.rect(30, 36, 740, 270, "panel", r=8)
+    panel8.text(50, 58, "每一格是一段 20 Mb，這一段兩條都在，拷貝數也相同。格子順序不代表位置。", "s")
+    panel8.rect(50, 69, 9, 9, "ink", r=1)
+    panel8.text(64, 78, "校正後顯著", "s")
+    panel8.rect(150, 69, 9, 9, "panel3", r=1)
+    panel8.text(164, 78, "沒有顯著差異", "s")
+    panel8.text(756, 78, "顯著／全部", "s", "end")
+    for i, (name, n, k) in enumerate([("COLO829", 33, 1), ("HG008", 43, 0), ("H1437", 15, 1), ("H2009", 36, 0),
+                                      ("H209", 75, 2), ("H2126", 6, 1), ("HCC1937", 5, 1), ("HCC1954", 16, 1)]):
+        y = 90 + i * 20
+        panel8.text(50, y + 10, name, "s")
+        for j in range(n):
+            panel8.rect(120 + j * 7.5, y, 6, 11, "ink" if j < k else "panel3", r=1)
+        panel8.text(756, y + 10, f"{k}／{n}", "s", "end")
+    panel8.text(50, 268, "合計 7／229。最明顯的一段：H209 chr8 120–140 Mb，182 比 92。", "b")
+    panel8.text(50, 290, "7 株的段間差異仍比純隨機大（卡方／自由度 1.8–4.4），原因沒有查。", "s")
+    s = S("7.8", 800, 732)
+    s.text(30, 170, "看區域：有四種不同的偏向", "h")
+    rows = [
+        (184, "LOH 區", "COLO829 實測", "一條不見了", ["186／189 個突變在留下的那條。", "另一條的突變已經看不到，", "所以這不代表突變率偏向。"]),
+        (306, "2:1 區", "COLO829 實測", "兩條都在，接近各半", ["2 份那條 1,639 個，1 份那條 1,425 個（46.5%）。", "各染色體的 1 份那條占 41%–51%。", "1 份那條仍比預測少約 10%，原因未定。"]),
+        (428, "Kataegis", "論文，其他腫瘤", "一串突變擠在同一條", ["這才是突變真的集中在一條。", "但只占很小一部分：", "clustered 突變占全部的 3.7%（PCAWG）。"]),
+        (550, "chrX", "HG008 實測", "inactive X 那條突變較多", ["2.46 比 3.71 個／Mb，比值 0.66。", "論文也寫 inactive 那條的 SNV 較多。", "這是 X 不活化的差異，不是爸媽差異。"]),
+    ]
+    for y, name, where, title, body in rows:
+        s.rect(30, y, 740, 112, "panel", r=8)
+        s.text(44, y + 26, name, "b")
+        s.text(44, y + 46, where, "s")
+        s.text(tx, y + 28, title, "h")
+        s.lines(tx, y + 52, body, "s", "start", 20)
+    # LOH: the second copy is gone
+    s.bar(bx + 40, 216, bw - 40, "hap1", 14)
+    stars(216, (55, 90, 125, 160, 195, 222))
+    s.bar(bx + 40, 256, bw - 40, "hap2", 14, dash=True)
+    s.text(bx + 135, 280, "這條已丟失", "s", "middle")
+    # 2:1: two copies against one
+    for y in (330, 356):
+        s.bar(bx + 40, y, bw - 40, "hap1", 14)
+        stars(y, (60, 105, 150, 195))
+    s.star(bx + 222, 330, 7)
+    s.bar(bx + 40, 390, bw - 40, "hap2", 14)
+    stars(390, (75, 120, 165, 210))
+    # Kataegis: a tight cluster on one copy
+    s.bar(bx + 40, 462, bw - 40, "hap1", 14)
+    stars(462, (108, 120, 132, 144, 156, 168))
+    s.bar(bx + 40, 506, bw - 40, "hap2", 14)
+    stars(506, (70, 205))
+    # chrX: the inactive copy carries more
+    s.bar(bx + 40, 584, bw - 40, "hap1", 14)
+    stars(584, (60, 100, 140, 180, 218))
+    s.bar(bx + 40, 628, bw - 40, "hap2", 14)
+    stars(628, (52, 80, 108, 136, 164, 192, 220))
+    s.text(bx + 135, 652, "inactive X", "s", "middle")
+    s.rect(30, 674, 740, 46, "paper", "line")
+    s.text(400, 703, "整體接近各半，不代表每一段都各半；某一段偏向，也不代表爸爸或媽媽較多。", "t", "middle")
+    region = s
+    body = S("7.8", 800, 1054)
+    for part, dy in ((top, 0), (panel8, 146), (region, 322)):
+        place(body, part, dy)
+    # Unit strip above the comparison. The chr1 bar is to scale: 680 px for about 250 Mb.
+    offset = 206
+    s = S("7.8", 800, body.h + offset)
+    s.text(30, 24, "先看單位：個／Mb", "h")
+    s.rect(30, 36, 740, 158, "panel", r=8)
+    s.text(60, 60, "chr1：約 250 Mb（長度照比例）", "s")
+    s.text(400, 60, "這一小格是 1 Mb", "s", "middle")
+    s.bar(60, 76, 680, "hap1", 14)
+    s.rect(398, 66, 3, 20, "ink", r=1)
+    s.line(398, 86, 170, 108, "line2", 1.5, dash=True)
+    s.line(401, 86, 630, 108, "line2", 1.5, dash=True)
+    s.bar(170, 118, 460, "hap1", 18)
+    s.star(300, 118, 8)
+    s.star(500, 118, 8)
+    s.text(160, 123, "1 Mb", "b", "end")
+    s.text(640, 123, "1,000,000 個鹼基", "s")
+    s.text(400, 150, "放大這一格：HG008 平均每格約 2.3 個突變（紅星位置只是示意）", "s", "middle")
+    s.text(400, 179, "4,351 個突變 ÷ 1,884 Mb = 2.31 個／Mb（HG008 體染色體的 hap1）", "b", "middle")
+    place(s, body, offset)
+    bk.fig(s, "看整體和看區域，答案不同", "兩個細胞株的體染色體，留著的片段兩條都接近一樣多。8 個細胞株逐段比，兩條拷貝數相同的 229 段中，只有 7 段校正後顯著。區域上仍可能偏向一邊，但原因不同：可能是一條不見了、一串突變擠在同一條，或是 X 不活化。",
+           "區域偏向沒有固定方向。2 份那條在各染色體不一定來自同一位親代，這裡也沒有量親源，所以不能說成「偏向爸爸」或「偏向媽媽」。這 8 株的 hap1、hap2 也不能加總成全基因組比例：和 GIAB 比對時，HG008 約一半染色體的標籤是對調的。那 7 段的原因沒有查，圖上的 4 種類型不是它們的解釋。",
+           "COLO829 和 HG008 都是本 repo 用公開突變表算的，不是論文結論。HG008 體染色體的比值是 0.97（95% CI 0.93–1.01），只含 truncal 突變，原始比例 44:56 也有 LOH 的影響；它的 chr5 比值 1.32，校正後仍顯著，原因沒有查。COLO829 的調查到此結束，再查細節也不能推廣到其他腫瘤。B04（肺癌，long read）也找到超過 80% 突變集中在一條 HP 的區域，但這些突變只占全部約 0.35–0.41%，而且是否超過偶然還沒有核對。8 株的格子圖用 PRCGAP 公開結果（Sakamoto 2026，未經同儕審查的預印本）由本 repo 計算，不是論文結論，所以 COLO829、HG008 的來源和最上面那格不同。校正是因為每株同時比很多段（Bonferroni）。過濾後幾乎只看高 VAF 的突變，subclonal 的情況看不到；這個過濾只在 HG008 用 GIAB 驗證過（吻合 99.9%，涵蓋 64.5%）。H2126、HCC1937 的段數很少，證據較弱。細節見 lab_report/2026-11-06_colo829_loss_events/、lab_report/2026-11-06_hg008_hap_snv_ratio/、lab_report/2026-11-06_prcgap_hap_snv_ratio/。",
+           "還不知道", ("E6-12", "E6-HG008", "E6-15", "E6-16", "E4-02", "E4-20", "B04"))
+
+
+def place(target, part, dy):
+    """Draw part inside target, shifted down by dy, and keep its labels in the overlap check."""
+    target.raw(f'<g transform="translate(0,{dy})">' + "".join(part.items) + "</g>")
+    target.boxes += [(x0, y0 + dy, x1, y1 + dy, t) for x0, y0, x1, y1, t in part.boxes]
+
+
 def closing(bk):
     bk.chapter("map", "目前知道多少", "到這裡，你已經看過整個故事。這一章把重要結論分成三堆：確定的、還在爭論的、還不知道的。")
     s = S("8.1", 800, 590)
     cols = [("比較確定", "ok", ["癌症是一步步累積的", "基因裡的突變，大多數|對癌細胞沒有明顯影響", "多數腫瘤測得到 subclone", "沒有一種樹形|適用所有癌別", "1/f 尾巴不能單獨證明中性", "Driver 在兩條上不是隨機的", "HP1 不等於爸爸", "CN 事件以一段為單位發生"]),
             ("還在爭論", "dis", ["有多少腫瘤有效中性", "Subclone 是選擇還是漂變", "負選擇有多強", "腫瘤內突變率是否固定", "突變量能不能當分裂時鐘", "WGD 算不算早期事件", "低頻尾巴代表什麼", "Big Bang 適用多少癌別"]),
-            ("還不知道", "gap", ["long read 的全基因組 HP 比例|（目前只算過一個細胞株）", "其餘突變是否互相獨立", "未治療實體瘤的|clone 比例分布", "實體瘤的 linear／branching|比例", "Sweep 在實體瘤多常發生", "單一 bulk 能重建|多少真實的樹", "腫瘤的親源能否|用 long read 定", "LOH、gain 的|全基因組親源偏差"])]
+            ("還不知道", "gap", ["long read 的 HP 比例|（目前只算過 8 個細胞株）", "其餘突變是否互相獨立", "未治療實體瘤的|clone 比例分布", "實體瘤的 linear／branching|比例", "Sweep 在實體瘤多常發生", "單一 bulk 能重建|多少真實的樹", "腫瘤的親源能否|用 long read 定", "LOH、gain 的|全基因組親源偏差"])]
     fills = {"ok": "stok", "dis": "stdis", "gap": "stgap"}
     for i, (t, k, items) in enumerate(cols):
         x = 20 + i * 258

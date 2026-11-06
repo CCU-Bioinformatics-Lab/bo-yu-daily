@@ -11,7 +11,7 @@
    - **比例約 50%：** 是合理的零假設，有初步支持，但沒有被證實。直接證據只有一篇未經同儕審查的 preprint：PCAWG 2,645 人中有 21 人可用，short read，不對稱上限 4–5%（cohort 合併 5.7%），imprinted 區無法分析。〔論文〕E4-26
    - **互相獨立：** 局部已被反駁，整體沒有人檢驗。Kataegis 的突變在同一條親代染色體上（E4-02）。B04 用 long read 找到有突變偏向一條 HP 的區域（下面「限制」有說明）。但全部 substitution 只有 3.7% 屬 clustered（E4-20）。〔論文〕
 3. **爸爸和媽媽：在單點突變階段，現有證據沒有要求加父／母標籤。** 上述 preprint 沒有偵測到父母基因組之間的 SNV 總量差異。父母偏差的證據集中在特定基因座和癌別的 CN／LOH，例如 14q aUPD 有 21/22 例是父系（E8-16）。〔論文〕HP1／HP2 只是任意標籤，不等於父或母（E6-11、E8-09）。這是「沒有證據要求」，不是「證明不需要」。〔推論〕
-4. **直接支持 long read 的證據很少。** 8 個主題中，只有主題 06 專收 long read。在本次範圍內沒找到用 long read 量全基因組 HP 間突變比例、邊長或 truncal 比例的研究。 2026-11-06 用 COLO829 公開 VCF 自行算出一個細胞株的比例（lab_report），但這不是論文結論。其他主題的數字幾乎都來自 short read，只能當生物假說，不能當 `diplosim` 的驗證目標或預設值。
+4. **直接支持 long read 的證據很少。** 8 個主題中，只有主題 06 專收 long read。在本次範圍內沒找到用 long read 量全基因組 HP 間突變比例、邊長或 truncal 比例的研究。 2026-11-06 用 COLO829 和 HG008 的公開資料自行算出兩個細胞株的比例（lab_report），體染色體都接近各半。再用 PRCGAP 的公開結果逐段比較 8 個細胞株：兩條拷貝數相同的 229 個 20 Mb 區段，有 7 個校正後顯著，7 株的段間差異比純隨機大，原因沒有查。這些都不是論文結論。其他主題的數字幾乎都來自 short read，只能當生物假說，不能當 `diplosim` 的驗證目標或預設值。
 
 ## 流程對照（真實腫瘤 vs `diplosim`）
 
@@ -115,12 +115,13 @@ CNA、LOH、WGD 依 N4 排在單點突變之後，放在[主題 07](07_cn_wgd_ti
 
 ## 學習網站
 
-`site/index.html` 是給使用者補基礎知識的白話入門網站：37 張原創示意圖加 1 張真實資料圖（圖 7.7，COLO829），照「腫瘤的一生」的順序排列，不放模擬器決策。圖的構圖參考外部網路圖片（`來源` 頁列出），沒有複製。圖下「真實資料」的數字來自本調查。重建：在 `site/` 執行 `python3 build_site.py`；圖的來源是 `ch_a.py`、`ch_b.py`。
+`site/index.html` 是給使用者補基礎知識的白話入門網站：39 張原創示意圖加 1 張真實資料圖（圖 7.7，COLO829；圖 7.8 整理 COLO829、HG008 的整體差別、8 個細胞株的逐段比較與區域差別），照「腫瘤的一生」的順序排列，不放模擬器決策。圖的構圖參考外部網路圖片（`來源` 頁列出），沒有複製。圖下「真實資料」的數字來自本調查。重建：在 `site/` 執行 `python3 build_site.py`；圖的來源是 `ch_a.py`、`ch_b.py`。
 
 ## 全文層
 
 | 筆記 | 主題 | 階段 |
 |---|---|---|
+| [`09_core_hypotheses.md`](09_core_hypotheses.md) | 核心假說分級（ISA、克隆演化、時序）：哪些能當主要論證 | 單點突變 |
 | [`04_haplotype_distribution.md`](04_haplotype_distribution.md) | 突變在兩條 HP 的分布（最優先，回答 11-04 未決問題） | 單點突變 |
 | [`08_parent_of_origin.md`](08_parent_of_origin.md) | 爸爸和媽媽（parent-of-origin） | 單點突變；CNA 後 |
 | [`01_evolution_modes.md`](01_evolution_modes.md) | 演化模式與樹形（linear、branching、中性、big bang） | 單點突變 |

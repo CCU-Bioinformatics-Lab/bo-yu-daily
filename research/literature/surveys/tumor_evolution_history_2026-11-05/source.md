@@ -96,6 +96,10 @@
 | E6-14 | Ijaz 2024, Cell Genomics | 全文 | https://doi.org/10.1016/j.xgen.2023.100484 |
 | E6-B01 | Liu 2026, Nat Commun（既有 B01） | 全文 | https://doi.org/10.1038/s41467-026-75172-9 |
 | E6-HG008 | McDaniel 2025, Sci Data（HG008）— 10.1038/s41597-025-05438-2 | 全文 | https://doi.org/10.1038/s41597-025-05438-2 |
+| E9-01 | Demeulemeester 2022, Nat Genet | 全文 | https://doi.org/10.1038/s41588-021-01005-8 |
+| E9-02 | Tarabichi 2021, Nat Methods | 全文 | https://doi.org/10.1038/s41592-020-01013-2 |
+| E6-15 | A complete human pancreatic cancer genome, bioRxiv 2026 preprint（HG008）— 10.64898/2026.05.01.722316 | 全文 | https://doi.org/10.64898/2026.05.01.722316 |
+| E6-16 | Sakamoto 2026, bioRxiv preprint（PRCGAP）— 10.64898/2026.05.28.728591 | 全文 | https://doi.org/10.64898/2026.05.28.728591 |
 | E7-02 | Bielski 2018, Nat Genet | 全文 | https://doi.org/10.1038/s41588-018-0165-1 |
 | E7-03 | López 2020, Nat Genet | 全文 | https://doi.org/10.1038/s41588-020-0584-7 |
 | E7-04 | Watkins 2020, Nature | 全文 | https://doi.org/10.1038/s41586-020-2698-6 |
