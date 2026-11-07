@@ -79,6 +79,9 @@ HG008 的 bulk 資料用共用副本 `/big8_disk/yungjen114/data/HG008/`（`docs
 | `hg008_clone_hp_orient.py` | 每個 clone 樹 SNV 的 assembly haplotype |
 | `hg008_sc_tree_check.py` | 用 119 顆 PTA 單細胞檢查 clone 樹 |
 | `draw_hg008_clone_tree.py` | 畫 clone 樹與事件 |
+| `download_hg008_clones_sc.py` | 下載 8 株 clone 分析結果和 119 個單細胞 VCF，可續傳，連線太慢會換新連線 |
+| `hg008_tree_rebuild.py` | 用 QUAL 和拷貝數過濾後的 SNV，找出最大相容分枝組合，附 bootstrap |
+| `hg008_vs_diplosim.py` | 比較 HG008 樹和 8 葉的 `diplosim` 樹的樹形與枝長 |
 
 ### 樹重建（PhyClone 的 Python 版擴充；已移植到 haploclone）
 

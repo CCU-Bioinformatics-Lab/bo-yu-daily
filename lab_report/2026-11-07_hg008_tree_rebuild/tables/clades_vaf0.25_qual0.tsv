@@ -1,0 +1,7 @@
+clade	n_clones	n_cn_clean	n_chromosomes	bootstrap	above_conflict_ceiling
+2D6,2E6,SC14,SC24,SC28,SC6,SC9	7	134	17	1.000	1
+2D6,2E6,SC14,SC24,SC28,SC9	6	4	2	0.831	0
+SC14,SC24,SC28,SC9	4	15	8	1.000	1
+SC14,SC28	2	69	13	1.000	1
+2D6,2E6	2	31	10	1.000	1
+SC24,SC9	2	18	11	1.000	1

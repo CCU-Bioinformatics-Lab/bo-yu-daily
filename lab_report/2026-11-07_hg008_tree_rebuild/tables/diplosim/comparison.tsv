@@ -1,0 +1,9 @@
+scenario	statistic	hg008	hg008_vaf0.35	diplosim_p2.5	diplosim_median	diplosim_p97.5	hg008_percentile	n_runs
+exactly_8_leaves	colless	13.000	13.000	0.000	9.000	18.000	82.9	514
+exactly_8_leaves	terminal_share	0.847	0.845	0.416	0.666	0.862	94.9	514
+exactly_8_leaves	internal_per_terminal	0.241	0.244	0.214	0.664	1.815	5.1	514
+exactly_8_leaves	terminal_cv	0.383	0.392	0.422	0.776	1.301	1.2	514
+sample_8_of_more	colless	13.000	13.000	3.000	9.000	17.000	87.4	1104
+sample_8_of_more	terminal_share	0.847	0.845	0.455	0.708	0.881	94.1	1104
+sample_8_of_more	internal_per_terminal	0.241	0.244	0.178	0.550	1.589	5.9	1104
+sample_8_of_more	terminal_cv	0.383	0.392	0.373	0.696	1.177	2.9	1104

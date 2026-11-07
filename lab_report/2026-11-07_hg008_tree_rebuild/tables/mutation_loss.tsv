@@ -1,0 +1,30 @@
+missing_clone	cn_change_in_missing_clone	n_snv
+2D6	deletion	26
+2D6	loss (other)	1
+2D6	no CN	21
+2D6	same CN as other clones	25
+2E6	deletion	72
+2E6	other	1
+2E6	same CN as other clones	9
+3E4	deletion	109
+3E4	hap-specific gain	7
+3E4	het kept (LOH in other clones)	3
+3E4	loss (other)	4
+3E4	same CN as other clones	288
+SC14	deletion	1
+SC14	hap-specific gain	1
+SC14	no CN	1
+SC14	same CN as other clones	10
+SC24	deletion	1
+SC24	no CN	1
+SC24	same CN as other clones	12
+SC28	no CN	2
+SC28	same CN as other clones	13
+SC6	cnLOH	205
+SC6	deletion	168
+SC6	loss (other)	2
+SC6	no CN	1
+SC6	same CN as other clones	5
+SC9	deletion	2
+SC9	no CN	1
+SC9	same CN as other clones	4

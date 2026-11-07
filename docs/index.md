@@ -31,7 +31,7 @@
 | SNV pair co-read 計數 | `data_input.md` §3 | 有 20,470 對，但只涵蓋 CNV 區域、沒依 read 的 HP／PS 篩選，不能直接用 |
 | `tX_nY` subsample 有沒有 HP tag | `data_input.md` §1、§5 | 沒有。subsample 都還沒跑 `somatic_haplotag` |
 | HG008 在哪、有什麼 | `tumor_sample.md`「HG008」 | `/big8_disk/yungjen114/data/HG008/`（共用，只讀）：ONT、ONT-UL、PacBio 的 tumor 與兩個 normal，NIST somatic SNV 與 SV／CNV draft benchmark，ONT purity 系列 subsample 加 ClairS-TO 結果 |
-| HG008 有沒有單細胞 | `tumor_sample.md`「HG008」 | 沒有。PTA 單細胞與 8 株 clone 沒下載；需要時先和 yungjen114 確認 |
+| HG008 有沒有單細胞 | `lab_report/2026-11-07_hg008_tree_rebuild/README.md` | 共用副本沒有。8 株 clone 分析結果和 119 個單細胞 VCF 在 `/big8_disk/boyu114/benchmark_data/GIAB/HG008/`（2026-11-07 下載，單細胞尚未下載完）；CRAM 沒下載 |
 | 讀 HG008 BAM 用的 reference | `tumor_sample.md`「HG008」 | 用它自帶的 `reference/GRCh38-GIABv3/`，不能換成實驗室常用的 GRCh38 no-alt |
 | PhyClone benchmark、SMC-Het | `tumor_sample.md` 最後兩節 | 本機已刪除；都是 short read，依 2026-10-21 會議不當輸入或真值；只留結構說明 |
 
