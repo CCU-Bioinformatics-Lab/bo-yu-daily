@@ -1,0 +1,15 @@
+branch	kind	n_sites	carrier	uncertain	non_carrier	median_rel_carrier	median_rel_non
+2D6,2E6,SC14,SC24,SC28,SC6,SC9	clade	127	111	0	8	0.966	0.000
+2D6,2E6,SC14,SC24,SC28,SC9	clade	4	NA	NA	NA	NA	NA
+SC14,SC24,SC28,SC9	clade	14	48	3	68	0.933	0.000
+SC14,SC28	clade	68	16	1	102	0.987	0.000
+2D6,2E6	clade	31	0	14	105	nan	0.038
+SC24,SC9	clade	17	0	1	118	nan	0.000
+2D6	private	386	0	0	119	nan	0.000
+2E6	private	516	0	0	119	nan	0.013
+3E4	private	792	1	8	110	0.622	0.012
+SC14	private	316	0	1	118	nan	0.022
+SC24	private	344	0	0	119	nan	0.013
+SC28	private	394	0	0	119	nan	0.003
+SC6	private	620	0	0	119	nan	0.007
+SC9	private	225	0	0	119	nan	0.028

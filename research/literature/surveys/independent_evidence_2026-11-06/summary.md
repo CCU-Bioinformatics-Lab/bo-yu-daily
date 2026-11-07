@@ -25,7 +25,7 @@
 | dGH 影像（p21、p53、p101） | WGD 細胞比例：9／40、28／40、20／20 | 演化路徑的局部時間序列（只有 WGD） | 不是定序資料 | 只有論文數字 |
 | 其他 passage（例如 p2 ONT） | 不同代的 bulk | 可能看時間變化，還沒查 | 符合 | 沒有 |
 
-**已有的結果，不必重算才知道方向。** `lab_report/2026-10-27_hg008_sc_tree_check/`（結果表還在，輸入的 clone 樹已刪）：〔實測〕
+**已有的結果，不必重算才知道方向。** `lab_report/2026-10-27_hg008_sc_tree_check/`（2026-11-07 已刪，由 `lab_report/2026-11-07_hg008_sc_check/` 取代；取回見新報告）：〔實測〕
 
 - truncal 枝：119／119 顆都帶。
 - {SC9, SC14, SC24, SC28}：48 顆帶；{SC14, SC28}：16 顆帶，而且全在那 48 顆內。
@@ -75,7 +75,7 @@
 ## 來源
 
 - `research/literature/surveys/sc_longread_datasets_2026-10-26/fulltext.md` §1、§4
-- `lab_report/2026-10-25_hg008_truth_tree_plausibility/`、`lab_report/2026-10-27_hg008_sc_tree_check/`
+- `lab_report/2026-10-25_hg008_truth_tree_plausibility/`、`lab_report/2026-11-07_hg008_sc_check/`
 - `research/hcc1395_golden_tree_research/`（`02_tree_reconstruction.md`、`03_validation_evidence.md`、`07_branching_topology_paper_check_20260825.md`、PDF）
 - HG008 組裝預印本：DOI 10.64898/2026.05.01.722316（WebFetch 摘錄）
 - NCBI FTP `HG008/NIST/HG008-T_clones/`：2026-11-06 看到 `20240718p14/`、`20240805p19/` 兩個目錄

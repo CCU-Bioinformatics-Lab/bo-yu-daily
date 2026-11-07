@@ -73,7 +73,8 @@
 | `2026-11-06_prcgap_hap_snv_ratio/` | PRCGAP 公開結果 8 株：兩條拷貝數相同的 229 個 20 Mb 區段只有 7 個校正後顯著，沒有明顯全面偏向，但差異比純隨機大；逐染色體受拷貝數影響；過濾在 HG008 對 GIAB 吻合 99.9%；不知親源 | 現行 |
 | `2026-11-07_snv_hp_independence/` | COLO829、HG008：1 kb 以上相鄰 SNV 沒有否定 HP 獨立；1 kb 內局部偏向同一條 HP（配對約占 2.5–4.5%）。COLO829 未通過事先定的對照，事後診斷見報告 | 現行 |
 | `2026-11-07_hg008_giab_hap_concordance/` | HG008：PRCGAP 和 GIAB 的單倍型對調後 97.41% 一致（6,139／6,302），14／23 條染色體編號相反；兩份組裝互相吻合，不是絕對真值，也沒有親源 | 現行 |
-| `2026-11-07_hg008_tree_rebuild/` | 8 株重建出候選二元樹，和 `diplosim` 的樹形不矛盾；單細胞驗證未完成，拷貝數有不符合樹的區段 | 進行中 |
+| `2026-11-07_hg008_tree_rebuild/` | 8 株重建出二元樹，和 `diplosim` 的樹形不矛盾；主架構有單細胞支持，末端未驗證；拷貝數有不符合樹的區段 | 現行 |
+| `2026-11-07_hg008_sc_check/` | 119 顆單細胞支持 3 層巢狀分枝（111、48、16 顆），事先定的巢狀檢查無違反；{2D6, 2E6} 部分支持，{SC24, SC9} 和多數 private 枝未驗證；少數細胞訊號混合 | 現行 |
 | `2026-11-06_hg008_hap_snv_ratio/` | HG008 long read 組裝的 truncal SNV：原始 hap1:hap2 44:56，有 LOH 的影響；體染色體留著的片段 2.31 比 2.39 個／Mb（比值 0.97，CI 0.93–1.01）；chrX 比值 0.66（inactive X）、chr5 比值 1.32；不知親源，只有一個細胞株 | 現行 |
 | `2026-11-06_colo829_loss_events/` | 用 ONT 深度、雜合位點和同 read 定相驗證：61:39 主要來自 LOH（約 765 Mb 只剩一條，多為多份）；2:1 區分早晚後，1 份那條仍比對稱預測少約 10%（原因未定，不等於爸媽偏向）；三批 COLO829 的 chr1p 拷貝數不同。含 `HANDOFF.md` | 已結案（2026-11-06，不再追查） |
 | `2026-11-06_colo829_hap_snv_ratio/` | COLO829 long read 的 hap1:hap2 原始 61:39，主要因一條流失；扣掉無突變片段後 9.34 比 9.31 個／Mb（比值 1.004），不知親源，只有一個細胞株 | 現行 |
@@ -81,7 +82,6 @@
 | `2026-10-25_seqc2_hcc1395_measured_purity` | `tX_nY` 是 tumor DNA 比例；實測細胞 purity 較低（例：t20 0.32） | 現行（`docs/tumor_sample.md` 引用） |
 | `2026-10-25_hcc1395_hp_split` | 92.2% 的 somatic SNV 的 alt read 集中在同一條 HP | 現行 |
 | `2026-10-25_hg008_truth_tree_plausibility` | HG008 有 haplotype-specific gain 與 CN timing 的真實實例 | 現行（證據） |
-| `2026-10-27_hg008_sc_tree_check` | 119 顆 PTA 單細胞支持 truncal → {SC9, SC14, SC24, SC28} → {SC14, SC28} | 依賴已刪（clone 樹輸入） |
 
 ## 樹重建方法（PhyClone／haploclone 的依據）
 

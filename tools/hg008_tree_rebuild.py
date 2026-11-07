@@ -19,6 +19,7 @@ Output (OUT_DIR):
   clades_<SET>.tsv           chosen clades, CN-clean SNVs, bootstrap support
   tree_summary.tsv           SNV classes and share compatible with the chosen clades, per setting
   SET = vaf<MIN_VAF>_qual<MIN_QUAL>; the main setting is vaf0.25_qual20
+  snv_classes_vaf0.25_qual20.tsv  every SNV of the main setting with its pattern and class
 
 Usage: python3 -I tools/hg008_tree_rebuild.py HG008_DIR OUT_DIR
 """
@@ -147,13 +148,15 @@ def analyse(calls, segs, min_vaf, min_qual):
     tag = f"vaf{min_vaf:.2f}_qual{min_qual}"
     rows = collections.defaultdict(lambda: {"n": 0, "clean": 0, "loh": 0, "chroms": set(), "vaf": [], "qual": []})
     classes = collections.Counter()
-    for key in set().union(*calls.values()):
+    snv_rows = []
+    for key in sorted(set().union(*calls.values()), key=lambda k: (k[0], k[1])):
         got = {c: calls[c][key] for c in CLONES if key in calls[c]}
         if any(v < min_vaf for v, _ in got.values()):
             classes["weak_call_set_aside"] += 1
             continue
         if statistics.median(q for _, q in got.values()) < min_qual:
             classes["low_qual_set_aside"] += 1
+            snv_rows.append((key, ",".join(c for c in CLONES if c in got), "low_qual"))
             continue
         mask = sum(1 << i for i, c in enumerate(CLONES) if c in got)
         row = rows[mask]
@@ -163,17 +166,25 @@ def analyse(calls, segs, min_vaf, min_qual):
         size = bin(mask).count("1")
         if mask == FULL:
             classes["truncal"] += 1
+            snv_rows.append((key, names(mask), "truncal"))
         elif size == 1:
             classes["private"] += 1
+            snv_rows.append((key, names(mask), "private"))
         else:
             status = cn_status(key, list(got), [c for c in CLONES if c not in got], segs)
             classes["shared_" + status] += 1
+            snv_rows.append((key, names(mask), "shared_" + status))
             if status == "clean":
                 row["clean"] += 1
                 row["chroms"].add(key[0])
             elif status == "absent_in_loh":
                 row["loh"] += 1
 
+    if (min_vaf, min_qual) == SETTINGS[0]:
+        with open(OUT / f"snv_classes_{tag}.tsv", "w") as out:
+            out.write("chrom\tpos\tref\talt\tpattern\tclass\n")
+            for key, pattern, kind in snv_rows:
+                out.write(f"{key[0]}\t{key[1]}\t{key[2]}\t{key[3]}\t{pattern}\t{kind}\n")
     weight = {m: r["clean"] for m, r in rows.items() if 2 <= bin(m).count("1") <= 7 and r["clean"]}
     chosen = best_laminar(weight)
     pool = [m for m, n in weight.items() for _ in range(n)]

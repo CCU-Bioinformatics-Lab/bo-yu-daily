@@ -2,7 +2,7 @@
 
 Numbers came from lab_report/2026-10-27_hg008_clone_tree_hp/ (deleted 2026-11-04, never tracked; 8 single-cell-derived clones,
 DeepSomatic + PURPLE + bulk ONT haplotypes); event numbers match the stress truth tree (slide 8).
-Topology (updated 2026-10-27 with the 119 PTA single cells, lab_report/2026-10-27_hg008_sc_tree_check/):
+Topology (updated 2026-10-27 with the 119 PTA single cells; that report was deleted 2026-11-07, see lab_report/2026-11-07_hg008_sc_check/):
 truncal -> {3E4 lineage, 7-clone branch (303 SNVs absent from the 8 3E4-sister cells)};
 7-clone branch -> {2D6,2E6}, {SC9,SC14,SC24,SC28} -> {SC14,SC28}, SC6. Order inside the 7-clone branch
 beyond these clades is not resolved. Green labels = single cells (of 119) carrying the branch.
@@ -138,7 +138,7 @@ def main(out):
     ax.text(0.5, 3.0, "⑤ 8 條 private 枝都有 phase block 同時含 HP1、HP2 的 SNV（block 內兩條 HP 都有：實際 0.25–0.57，隨機 0.54–0.61）。"
             "HP1／HP2＝HG008-N assembly 的 hap1／hap2，每條染色體各自定義。", fontsize=9.5, color=INK)
     ax.text(0.5, 0.8, "限制：細胞株的體外演化，不是病人腫瘤；CN 是 PURPLE 推論；7 株共同枝下 SC6 與各 clade 的先後未解析；private 枝在單細胞中看不到。"
-            "資料：GIAB HG008（DeepSomatic、PURPLE、V0.4 phasing、PTA 單細胞 VCF）；lab_report/2026-10-27_hg008_clone_tree_hp/、2026-10-27_hg008_sc_tree_check/。",
+            "資料：GIAB HG008（DeepSomatic、PURPLE、V0.4 phasing、PTA 單細胞 VCF）；lab_report/2026-11-07_hg008_sc_check/。",
             fontsize=9.5, color=GREY)
     fig.savefig(out, dpi=200, bbox_inches="tight", facecolor="white")
 

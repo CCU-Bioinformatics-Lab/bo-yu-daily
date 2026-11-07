@@ -1,11 +1,11 @@
 field	vaf0.25_qual20	vaf0.25_qual0	vaf0.25_qual28	vaf0.15_qual20	vaf0.35_qual20
-truncal	7784	7969	7560	8051	6727
 low_qual_set_aside	2841	0	3680	4604	1897
 weak_call_set_aside	7342	7342	7342	5062	9959
+truncal	7784	7969	7560	8051	6727
 private	3593	5173	3096	3810	3136
 shared_absent_in_loh	245	722	219	253	240
-shared_clean	301	520	258	309	253
 shared_lost	655	806	607	671	550
+shared_clean	301	520	258	309	253
 shared_no_cn	2	231	1	3	1
 shared_clean_total	301	520	258	309	253
 in_chosen_clades	261	271	252	264	218
