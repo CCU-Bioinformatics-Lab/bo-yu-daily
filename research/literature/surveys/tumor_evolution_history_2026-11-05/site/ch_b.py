@@ -309,6 +309,138 @@ def seeing(bk):
     bk.fig(s, "不同歷史，可以有相同的資料", "這是整個領域最核心的困難。比例裡沒有「誰和誰在同一個細胞」的資訊，所以同一份 bulk 資料可以對應好幾棵樹。",
            "這不只是雜訊問題。資料再多，只看比例還是分不開。需要額外資訊，例如單細胞或同一條 read 上的共現。",
            "同一批 PCAWG 資料，有研究說選擇普遍，也有研究說高功效案例只有 3% 有持續選擇。", "還在爭論", ("E2-03", "E1-09"))
+    hg008_method(bk)
+    hg008_tree(bk)
+
+
+def hg008_method(bk):
+    """Two kinds of evidence behind the HG008 tree: grown clones and single cells."""
+    s = S("6.10", 800, 610)
+    s.rect(30, 16, 362, 220, "panel", r=8)
+    s.text(48, 44, "8 株 clone：先養大，再定序", "h")
+    s.cell(84, 118, 15, "c1")
+    s.text(84, 156, "挑一顆細胞", "s", "middle")
+    s.text(84, 176, "第 14 或 19 代", "s", "middle")
+    s.arrow(112, 118, 166, 118)
+    for row, count in enumerate((4, 5, 6, 5, 4)):
+        for i in range(count):
+            s.circle(248 + (i - (count - 1) / 2) * 15, 88 + row * 15, 6.5, "c1")
+    s.text(248, 176, "長成一大群，再定序", "s", "middle")
+    s.text(48, 212, "PacBio long read：同一群細胞一起定序，訊號穩定。", "s")
+    s.rect(408, 16, 362, 220, "panel", r=8)
+    s.text(426, 44, "119 顆單細胞：一顆一顆定序", "h")
+    for i, x in enumerate((462, 512, 562, 612)):
+        s.cell(x, 110, 15, ("c3", "c1", "c2", "c2")[i])
+    s.text(668, 116, "……", "b", "middle")
+    s.cell(722, 110, 15, "c1")
+    s.text(589, 160, "第 23 代，每顆細胞都有自己的突變清單", "s", "middle")
+    s.text(426, 212, "Short read 單細胞：看得到同一顆細胞的組合，但會漏讀。", "s")
+
+    s.rect(30, 252, 740, 330, "panel", r=8)
+    s.circle(58, 280, 15, "ink")
+    s.text(58, 285, "1", "b", "middle", color="paper")
+    s.text(84, 286, "先用 clone 共有的突變畫候選樹（示意）", "h")
+    columns = (("所有株都有", 300), ("其中兩株有", 420), ("只有一株有", 540))
+    for label, x in columns:
+        s.text(x, 318, label, "s", "middle")
+    for y, name, stars in ((344, "clone A", (300, 420)), (374, "clone B", (300, 420)), (404, "clone C", (300, 540))):
+        s.text(84, y + 5, name, "b")
+        s.bar(160, y, 450, "panel3", 12)
+        for x in stars:
+            s.star(x, y, 8)
+    s.text(650, 366, "A、B 比 C", "s", "middle")
+    s.text(650, 386, "更親近", "s", "middle")
+
+    s.circle(58, 456, 15, "ink")
+    s.text(58, 461, "2", "b", "middle", color="paper")
+    s.text(84, 462, "再用單細胞逐顆檢查：這棵樹在細胞裡成立嗎？", "h")
+    s.text(84, 496, "如果 X 分枝在 Y 分枝裡面，帶 X 的細胞就應該也帶 Y。", "s")
+    s.text(84, 526, "真實結果：帶 {SC14, SC28} 的 16 顆，全部也帶 {SC14, SC24, SC28, SC9}；", "b")
+    s.text(84, 552, "這 48 顆又全部帶「除了 3E4 的 7 株」分枝。", "b")
+    bk.fig(s, "HG008：兩種證據拼成一棵樹", "Clone 訊號穩定，適合先找出分枝；單細胞看得到同一顆細胞裡的組合，適合檢查這些分枝。兩種資料一致的部分，才比較可信。",
+           "把 8 株 clone 當成腫瘤裡剛好有 8 個遺傳 clone。8 是養出來的細胞株數量，不是遺傳 clone 的數量。",
+           "還要先處理兩種假訊號：品質低的 call（QUAL 低於 20）和拷貝數丟失。一個突變「某株沒有」，可能只是那段 DNA 丟了，不代表它從來沒有這個突變。例如缺在 SC6 的 367 個 SNV，119 顆細胞全部都帶，所以它們屬於主幹，不是分枝。門檻和分群規則在看單細胞結果前就定好；少數追加的檢查標在報告裡。細節見 lab_report/2026-11-07_hg008_tree_rebuild/、lab_report/2026-11-07_hg008_sc_check/。",
+           None, ("E6-HG008",))
+
+
+def hg008_tree(bk):
+    """The HG008 tree with its evidence strength and the 119 real cells as dots."""
+    s = S("6.11", 800, 660)
+    leaf_x = 490
+    rows = {"3E4": 74, "SC6": 160, "2D6": 220, "2E6": 256, "SC14": 322, "SC28": 358, "SC24": 420, "SC9": 456}
+
+    def edge(x1, y1, x2, y2, weak=False):
+        c, sw = ("mute", 2) if weak else ("ink", 3.5)
+        s.line(x1, y1, x1, y2, c, sw, dash=weak)
+        s.line(x1, y2, x2, y2, c, sw, dash=weak)
+
+    def tips(names, x, weak=True):
+        for name in names:
+            edge(x, rows[name], leaf_x, rows[name], weak)
+            s.text(leaf_x + 8, rows[name] + 5, name, "s")
+
+    s.text(46, 132, "正常細胞", "s", "middle")
+    s.circle(40, 74 + 80, 9, "normal", "ink")
+    s.line(49, 154, 158, 154, "ink", 3.5)
+    s.star(100, 154, 8)
+    s.text(90, 188, "主幹", "b", "middle")
+    s.text(90, 208, "7,784 個 SNV", "s", "middle")
+    s.text(90, 228, "119／119 顆", "s", "middle")
+    # Trunk splits into the 3E4 side and the 7-line branch.
+    edge(158, 154, 480, rows["3E4"])
+    s.line(480, rows["3E4"], leaf_x, rows["3E4"], "mute", 2, dash=True)
+    s.text(leaf_x + 8, rows["3E4"] + 5, "3E4", "s")
+    s.text(230, rows["3E4"] - 10, "3E4 這一側", "s", "middle")
+    edge(158, 154, 230, 240)
+    s.text(194, 262, "7 株", "b", "middle")
+    s.text(194, 282, "111 顆", "s", "middle")
+    # SC6 and the weak 6-line branch.
+    edge(230, 240, 480, rows["SC6"], True)
+    s.line(480, rows["SC6"], leaf_x, rows["SC6"], "mute", 2, dash=True)
+    s.text(leaf_x + 8, rows["SC6"] + 5, "SC6", "s")
+    edge(230, 240, 280, 300, True)
+    # 2D6, 2E6 side.
+    edge(280, 300, 380, 238, True)
+    tips(("2D6", "2E6"), 380)
+    s.line(380, 220, 380, 256, "mute", 2, dash=True)
+    # The four-line clade and {SC14, SC28}.
+    edge(280, 300, 340, 389)
+    s.text(310, 418, "4 株", "b", "middle")
+    s.text(310, 438, "48 顆", "s", "middle")
+    edge(340, 389, 420, 340)
+    s.text(372, 332, "2 株", "b", "middle")
+    s.text(372, 312, "16 顆", "s", "middle")
+    tips(("SC14", "SC28"), 420)
+    s.line(420, 322, 420, 358, "mute", 2, dash=True)
+    edge(340, 389, 420, 438, True)
+    tips(("SC24", "SC9"), 420)
+    s.line(420, 420, 420, 456, "mute", 2, dash=True)
+
+    def dots(y, n, color, per_row=16):
+        for i in range(n):
+            s.circle(574 + (i % per_row) * 12.4, y + (i // per_row) * 12.4, 5, color)
+
+    s.text(570, 26, "119 顆細胞，一點一顆（真實數量）", "s")
+    s.text(570, 58, "3E4 這一側：8 顆", "s")
+    dots(74, 8, "c3")
+    s.text(570, 190, "2D6、2E6 這一側：63 顆（部分證據）", "s")
+    dots(206, 63, "c1")
+    s.text(570, 306, "帶 2 株分枝：16 顆", "s")
+    dots(322, 16, "star2")
+    s.text(570, 400, "帶 4 株分枝，不帶 2 株：32 顆", "s")
+    dots(416, 32, "c2")
+
+    s.rect(30, 490, 740, 156, "panel", r=8)
+    s.line(52, 516, 96, 516, "ink", 3.5)
+    s.text(108, 521, "實線：clone 和單細胞都支持（主幹、7 株、4 株、2 株分枝）", "s")
+    s.line(52, 544, 96, 544, "mute", 2, dash=True)
+    s.text(108, 549, "虛線：目前主要只有 clone，或位點很少", "s")
+    s.text(52, 586, "讀法：主幹很長，早期分出幾個譜系，到第 23 代仍然同時存在。", "b")
+    s.text(52, 614, "至少可分成 4 群細胞。這是推論出來的樹，不是已知的真值。", "b")
+    bk.fig(s, "HG008 的演化樹", "主幹上有數千個突變，之後分成幾個譜系，到第 23 代仍然共存。119 顆細胞至少可分成 4 群；其中 3 層巢狀分枝（111、48、16 顆）的證據最強。",
+           "把樹當成真值，或把細胞比例當成腫瘤的 clone 比例。末端大多沒有驗證；119 顆只是抽樣。這也是培養中的細胞株，不是病人體內的演化史。",
+           "每株還有 225–792 個只有自己帶的突變（圖上沒有畫），除了 3E4 的一部分，第 23 代的細胞幾乎都沒有。樹的主架構在同批資料上重算能得到相同的細胞數，但這不是獨立重複。2D6、2E6 這一側的 63 顆是依「不帶 4 株分枝」歸群，只有少數位點支持。SC6 的位置只有 4 個 SNV。約 5 顆細胞訊號混合，可能是兩顆細胞混在一起；SC293 和樹的順序不完全一致，原因沒有查。chr5 和 chr12 有區段的拷貝數不符合這棵樹。這棵樹由本 repo 用公開資料算出，不是論文結論。細節見 lab_report/2026-11-07_hg008_tree_rebuild/、lab_report/2026-11-07_hg008_sc_check/。",
+           None, ("E6-HG008",))
 
 
 def parents(bk):
