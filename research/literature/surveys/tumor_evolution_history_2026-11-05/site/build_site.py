@@ -23,7 +23,7 @@ GLOSSARY = [("Clone", "同一個祖先細胞傳下來、帶相同突變的一群
             ("Germline／Somatic", "遺傳來、全身都有／出生後才發生、只有部分細胞有。"), ("LOH", "兩份不同的版本變成只剩一種。"), ("cnLOH", "總條數不變，但兩條已相同。"),
             ("Copy number（CN）", "一段 DNA 有幾份。"), ("Multiplicity", "這幾份裡，帶突變的有幾份。"), ("WGD", "整套染色體一次加倍。"),
             ("Cis／Trans", "在同一條／在不同條。"), ("Imprinting", "基因只用爸爸或媽媽那一份。"), ("Signature", "某個突變來源留下的突變類型比例。"),
-            ("Kataegis", "一小段染色體上突然出現的一串突變。"), ("PDX／Xenograft", "把人類腫瘤或細胞種到小鼠身上。"), ("Lineage tracing", "在細胞裡寫入條碼，直接追蹤家族關係。")]
+            ("GIAB benchmark", "NIST 的 GIAB 團隊整理的標準突變清單，用來檢查其他方法。HG008 的版本還是 draft。"), ("Kataegis", "一小段染色體上突然出現的一串突變。"), ("PDX／Xenograft", "把人類腫瘤或細胞種到小鼠身上。"), ("Lineage tracing", "在細胞裡寫入條碼，直接追蹤家族關係。")]
 
 REFS_VISUAL = [("魚形圖", "Miller 2016, fishplot", "https://pmc.ncbi.nlm.nih.gov/articles/PMC5100182/"),
                ("四種模式", "Davis 2017, Tumor evolution: Linear, branching, neutral or punctuated?", "https://pmc.ncbi.nlm.nih.gov/articles/PMC5558210/"),

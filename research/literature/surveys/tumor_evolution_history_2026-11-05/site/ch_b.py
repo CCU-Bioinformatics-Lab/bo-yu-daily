@@ -604,9 +604,135 @@ def parents(bk):
     s.text(400, 179, "4,351 個突變 ÷ 1,884 Mb = 2.31 個／Mb（HG008 體染色體的 hap1）", "b", "middle")
     place(s, body, offset)
     bk.fig(s, "看整體和看區域，答案不同", "兩個細胞株的體染色體，留著的片段兩條都接近一樣多。再逐段比，兩條拷貝數相同的 76 段中，只有 1 段校正後顯著。區域上仍可能偏向一邊，但原因不同：可能是一條不見了、一串突變擠在同一條，或是 X 不活化。",
-           "區域偏向沒有固定方向。2 份那條在各染色體不一定來自同一位親代，這裡也沒有量親源，所以不能說成「偏向爸爸」或「偏向媽媽」。逐段比的 hap1、hap2 也不能加總成全基因組比例：和 GIAB 比對時，HG008 約一半染色體的標籤是對調的。那 1 段的原因沒有查，圖上的 4 種類型不是它們的解釋。",
+           "區域偏向沒有固定方向。2 份那條在各染色體不一定來自同一位親代，這裡也沒有量親源，所以不能說成「偏向爸爸」或「偏向媽媽」。逐段比的 hap1、hap2 也不能加總成全基因組比例：和 GIAB 比對時，HG008 的 23 條染色體有 14 條標籤是對調的（圖 7.10）。那 1 段的原因沒有查，圖上的 4 種類型不是它們的解釋。",
            "COLO829 和 HG008 都是本 repo 用公開突變表算的，不是論文結論。HG008 體染色體的比值是 0.97（95% CI 0.93–1.01），只含 truncal 突變，原始比例 44:56 也有 LOH 的影響；它的 chr5 比值 1.32，校正後仍顯著，原因沒有查。COLO829 的調查到此結束，再查細節也不能推廣到其他腫瘤。B04（肺癌，long read）也找到超過 80% 突變集中在一條 HP 的區域，但這些突變只占全部約 0.35–0.41%，而且是否超過偶然還沒有核對。逐段比的格子圖用 PRCGAP 公開結果（Sakamoto 2026，未經同儕審查的預印本）由本 repo 計算，不是論文結論，所以來源和最上面那格不同。校正是因為每株同時比很多段（Bonferroni）。過濾後幾乎只看高 VAF 的突變，subclonal 的情況看不到；這個過濾只在 HG008 用 GIAB 驗證過（吻合 99.9%，涵蓋 64.5%），單倍型判定也只有 HG008 和 GIAB 比對過（整條染色體可對調後，一致 97.4%），所以 COLO829 這部分沒有同等驗證。細節見 lab_report/2026-11-06_colo829_loss_events/、lab_report/2026-11-06_hg008_hap_snv_ratio/、lab_report/2026-11-06_prcgap_hap_snv_ratio/。",
            "還不知道", ("E6-12", "E6-HG008", "E6-15", "E6-16", "E4-02", "E4-20", "B04"))
+    label_strength(bk)
+    giab_comparison(bk)
+
+
+def label_strength(bk):
+    """What an assembly's hap1 and hap2 labels can and cannot prove."""
+    s = S("7.9", 800, 640)
+    bx, bw = 180, 250
+    tx = 470
+    rows = [
+        (20, "同一條內", "兩個突變在同一條嗎？", "相對強", ["組裝把 long read 接成連續序列，", "同一條 contig 上的突變，", "通常真的在同一條染色體拷貝上。"], "stok"),
+        (172, "同一對內", "這對的兩條，誰的突變多？", "可以，但要控制拷貝數", ["兩條比的是同一對染色體。", "但份數多的那條，突變也可能較多，", "所以要比拷貝數相同的區段。"], "stok"),
+        (324, "跨染色體", "全部 hap1 加起來比 hap2？", "不行", ["chr1 的 hap1 和 chr2 的 hap1，", "不一定來自同一位親代。", "編號只在一條染色體內有意義。"], "stdis"),
+        (476, "爸爸媽媽", "突變偏向爸爸或媽媽？", "不行", ["hap1 只是編號，沒有量到親源。", "要有爸媽的序列，", "或印記區的甲基化這類標記。"], "stdis"),
+    ]
+    for y, name, question, verdict, why, tone in rows:
+        s.rect(30, y, 740, 136, "panel", r=8)
+        s.text(46, y + 28, name, "h")
+        s.text(tx, y + 28, question, "b")
+        s.text(tx, y + 52, verdict, "h", color=tone)
+        s.lines(tx, y + 76, why, "s", "start", 19)
+    # The same contig: two stars tied together.
+    s.text(bx - 12, 77, "hap1", "s", "end")
+    s.bar(bx, 72, bw, "hap1", 14)
+    s.star(bx + 70, 72, 8)
+    s.star(bx + 180, 72, 8)
+    s.line(bx + 70, 54, bx + 180, 54, "ink2", 1.5)
+    s.line(bx + 70, 54, bx + 70, 62, "ink2", 1.5)
+    s.line(bx + 180, 54, bx + 180, 62, "ink2", 1.5)
+    s.text(bx + 125, 46, "同一條連續序列", "s", "middle")
+    s.text(bx - 12, 117, "hap2", "s", "end")
+    s.bar(bx, 112, bw, "hap2", 14)
+    # One pair: count stars on the two bars of one chromosome.
+    for y, name, c, xs, n in ((222, "hap1", "hap1", (50, 120, 190), "3 個"), (262, "hap2", "hap2", (35, 90, 150, 215), "4 個")):
+        s.text(bx - 12, y + 5, name, "s", "end")
+        s.bar(bx, y, bw - 50, c, 14)
+        for x in xs:
+            s.star(bx + x * .8, y, 8)
+        s.text(bx + bw - 40, y + 5, n, "s")
+    # Across chromosomes: the same word, two unknown parents.
+    for x, chrom in ((90, "chr1"), (280, "chr2")):
+        s.text(x + 66, 372, chrom, "b", "middle")
+        s.text(x, 398, "hap1", "s", "end")
+        s.bar(x + 6, 393, 120, "hap1", 14)
+        s.text(x + 66, 432, "來自哪一位？不知道", "s", "middle")
+    # Parents: the label does not connect to a person.
+    s.person(160, 498, 70, "dad")
+    s.text(160, 590, "爸爸", "s", "middle")
+    s.person(420, 498, 70, "mom")
+    s.text(420, 590, "媽媽", "s", "middle")
+    s.text(290, 520, "hap1", "s", "middle")
+    s.bar(230, 530, 120, "hap1", 14)
+    s.line(216, 537, 186, 537, "line2", 2, dash=True)
+    s.line(364, 537, 394, 537, "line2", 2, dash=True)
+    s.text(201, 528, "？", "b", "middle")
+    s.text(379, 528, "？", "b", "middle")
+    s.text(290, 572, "沒有資料能連起來", "s", "middle")
+    bk.fig(s, "組裝標籤能證明什麼", "組裝標籤是相對強的證據，但它回答的是「這些突變是否在同一條染色體拷貝上」。它不回答「這條來自爸爸還是媽媽」。",
+           "把 hap1 看成爸爸、hap2 看成媽媽。實際上它們只是組裝時給的編號。",
+           "HG008 和 GIAB 對照時，23 條染色體有 14 條的編號整條相反（圖 7.10）。在目前查過的 PRCGAP 8 株、COLO829 和 HG008 公開資料中，都沒有能驗證親源的資料；這不代表所有公開細胞株都沒有。",
+           "確定", ("E6-16", "E6-HG008"))
+
+
+# lab_report/2026-11-07_hg008_giab_hap_concordance/per_chromosome.tsv: same label, swapped label.
+GIAB_CHROMS = [("1", 468, 11), ("2", 603, 26), ("3", 470, 15), ("4", 8, 273), ("5", 3, 376), ("6", 13, 261), ("7", 332, 2), ("8", 9, 324),
+               ("9", 2, 136), ("10", 352, 10), ("11", 8, 316), ("12", 5, 222), ("13", 13, 302), ("14", 9, 267), ("15", 1, 205), ("16", 145, 4),
+               ("17", 83, 1), ("18", 140, 1), ("19", 68, 0), ("20", 0, 146), ("21", 0, 56), ("22", 1, 46), ("X", 21, 548)]
+
+
+def giab_comparison(bk):
+    """How the PRCGAP haplotype of an HG008 SNV is compared with the GIAB benchmark, with the real counts."""
+    s = S("7.10", 800, 910)
+
+    def step(y, h, n, title):
+        s.rect(30, y, 740, h, "panel", r=8)
+        s.circle(58, y + 26, 15, "ink")
+        s.text(58, y + 31, str(n), "b", "middle", color="paper")
+        s.text(84, y + 32, title, "h")
+
+    step(16, 188, 1, "兩個團隊，各自得到一份答案")
+    for x, team, how, count in ((50, "PRCGAP（Sakamoto 2026）", ["把 read 比到自己組裝的正常基因體，", "找出突變，看它落在哪條 contig。"], "HG008 過濾後 6,821 個 SNV"),
+                                (415, "GIAB benchmark v0.4（draft）", ["直接比對腫瘤組裝和正常組裝 v6.3，", "再用多種定序資料確認每個突變。"], "GRCh38 上 9,574 個 truncal SNV")):
+        s.rect(x, 62, 335, 130, "paper", "line", r=6)
+        s.text(x + 16, 86, team, "b")
+        s.lines(x + 16, 110, how, "s", "start", 19)
+        s.text(x + 16, 174, count, "s")
+
+    step(220, 150, 2, "換到同一把尺：找出同一個突變")
+    s.text(84, 276, "GRCh38 同一位置、同樣的鹼基變化，才算同一個突變。", "s")
+    s.bar(84, 300, 420, "panel3", 14)
+    s.star(300, 300, 9)
+    s.text(300, 340, "示意：同一個位置，同樣是 G→A", "s", "middle")
+    s.text(740, 286, "6,306 個對到", "h", "end")
+    s.text(740, 312, "4 個 GIAB 標籤不明，扣除", "s", "end")
+    s.text(740, 338, "實際比較 6,302 個", "b", "end")
+
+    step(386, 140, 3, "比編號：一條染色體可以整條相反")
+    s.text(84, 440, "兩邊的 hap1 是各自取的名字，所以只看「整條是不是一致」。", "s")
+    for x, chrom, same, swap, result in ((84, "chr7", 332, 2, "編號相同，一致"), (430, "chr5", 3, 376, "編號整條相反，對調後一致")):
+        s.text(x, 472, f"{chrom}：相同 {same}，相反 {swap}", "b")
+        s.text(x, 498, result, "s")
+
+    step(542, 282, 4, "真實結果：23 條染色體，每條都幾乎一面倒")
+    s.rect(84, 588, 10, 10, "ink", r=1)
+    s.text(100, 598, "編號相同", "s")
+    s.rect(190, 588, 10, 10, "panel3", r=1)
+    s.text(206, 598, "編號相反", "s")
+    x0, step_x, top, height = 78, 28.4, 620, 120
+    for i, (chrom, same, swap) in enumerate(GIAB_CHROMS):
+        x = x0 + i * step_x
+        top_h = height * same / (same + swap)
+        if same:
+            s.rect(x, top + height - top_h, 20, top_h, "ink", r=1)
+        if swap:
+            s.rect(x, top, 20, height - top_h - (1 if same else 0), "panel3", r=1)
+        s.text(x + 10, top + height + 18, chrom, "s", "middle")
+    s.text(400, 790, "對調後一致：6,139 ／ 6,302 = 97.4%", "h", "middle")
+    s.text(400, 812, "14 條編號相反，9 條編號相同", "s", "middle")
+
+    s.rect(30, 838, 740, 56, "paper", "line")
+    s.text(400, 860, "這是兩份組裝結果互相一致，不是和絕對真值比對。", "t", "middle")
+    s.text(400, 882, "兩邊都沒有親源資訊，所以 97.4% 也不能回答爸爸或媽媽。", "s", "middle")
+    bk.fig(s, "HG008 怎麼和 GIAB benchmark 對照", "先找出兩邊都有的同一個突變，再比它落在哪一條。因為編號是各自取的，所以每條染色體可以整條對調一次。6,302 個突變中，對調後有 97.4% 一致。",
+           "以為 97.4% 代表和真值一致。GIAB 也來自組裝，而且還是 draft；這裡證明的是兩份結果互相吻合。",
+           "只比較 GIAB 也有的 truncal SNV，所以低 VAF 的 subclonal 突變不在內。每條染色體取較多的方向當一致，所以比例會略為偏高，但各條都幾乎一面倒，影響很小。其餘 163 個不一致的原因沒有查。兩邊是否用到相同的定序資料沒有核對，所以不能算完全獨立。GIAB 會用多種定序資料確認突變，也抽查過 34 個重複出現的位點，但沒有逐一人工檢查所有突變。GIAB 的做法見其 v0.4 README；細節見 lab_report/2026-11-07_hg008_giab_hap_concordance/。",
+           None, ("E6-16", "E6-HG008"))
 
 
 def place(target, part, dy):

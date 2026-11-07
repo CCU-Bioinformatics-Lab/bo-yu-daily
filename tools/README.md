@@ -127,4 +127,5 @@ HG008 的 bulk 資料用共用副本 `/big8_disk/yungjen114/data/HG008/`（`docs
 | `prcgap_hap_snv_ratio.py` | PRCGAP 公開結果：8 株逐染色體與拷貝數相同區段的兩條 SNV 比較，附圖 | `lab_report/2026-11-06_prcgap_hap_snv_ratio/` |
 | `snv_hp_independence.py` | COLO829、HG008：相鄰 SNV 落在同一條 HP 的比例，依距離和打亂基準比較 | `lab_report/2026-11-07_snv_hp_independence/` |
 | `plot_snv_hp_independence.py` | 上一支的圖 | 同上 |
+| `hg008_giab_hap_concordance.py` | HG008：比較 PRCGAP 和 GIAB 的單倍型判定，每條染色體可整條對調 | `lab_report/2026-11-07_hg008_giab_hap_concordance/` |
 | `hg008_hap_snv_density.py` | HG008 官方 benchmark：兩條單倍型的 truncal SNV 密度，用官方 CN 軌道定義留著的片段，附圖 | `lab_report/2026-11-06_hg008_hap_snv_ratio/` |
