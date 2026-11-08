@@ -42,8 +42,7 @@ FONT = "Noto Sans TC, Arial, sans-serif"
 MONO = "JetBrains Mono, Courier New, monospace"
 
 DECK_TITLE = "2026-11-11 單點突變模擬的證據與驗證"
-ORDER = ["outline", "n-fixes", "tasks", "ratio-flow", "hypotheses", "options", "t2-data",
-         "colo-loh", "balance", "local", "hg008-tree", "tree-shape", "self-check", "ai-env", "decide"]
+ORDER = ["outline", "n-fixes", "tasks", "ratio-flow", "hypotheses", "t2-data", "colo-loh", "balance", "local", "hg008-tree", "tree-shape", "self-check", "ai-env", "options", "decide"]
 SECTIONS = {
     "outline": "接回上次會議", "n-fixes": "接回上次會議", "tasks": "本週任務",
     "ratio-flow": "方案與選擇理由", "hypotheses": "方案與選擇理由", "options": "方案與選擇理由", "t2-data": "方案與選擇理由",

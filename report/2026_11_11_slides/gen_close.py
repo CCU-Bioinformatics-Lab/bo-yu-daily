@@ -105,14 +105,14 @@ def self_check():
             (False, ico_person, "脫稿講完生成步驟", "本冊沒有生成步驟頁"),
         ]),
         ("10-28 會議", 470, 340, [
-            (True, ico_back, "開頭接回上次會議", "第 1、2 頁"),
-            (True, ico_abc, "選擇都列候選與理由", "第 6、7 頁"),
-            (True, ico_flow, "逐步過程有圖", "第 4、11 頁"),
+            (True, ico_back, "開頭接回上次會議", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('outline', 'n-fixes',))} 頁"),
+            (True, ico_abc, "選擇都列候選與理由", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('t2-data', 'options',))} 頁"),
+            (True, ico_flow, "逐步過程有圖", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('ratio-flow', 'hg008-tree',))} 頁"),
         ]),
         ("11-04 會議", 830, 370, [
-            (True, ico_reads, "分清模擬真值與觀測", "第 2 頁"),
-            (True, ico_hyp, "機制附假說與來源", "第 5、6 頁"),
-            (True, ico_ladder, "驗證標出支持哪一層", "第 7–12 頁"),
+            (True, ico_reads, "分清模擬真值與觀測", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('n-fixes',))} 頁"),
+            (True, ico_hyp, "機制附假說與來源", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('hypotheses', 'options',))} 頁"),
+            (True, ico_ladder, "驗證標出支持哪一層", f"第 {ORDER.index('t2-data') + 1}–{ORDER.index('tree-shape') + 1} 頁"),
             (True, ico_gear, "有 AI 環境改善頁", f"第 {ORDER.index('ai-env') + 1} 頁"),
         ]),
     ]
@@ -248,7 +248,7 @@ def ai_env():
              "規則一就是畫圖前要讀到最底層，把圖上每一項和原文對過。規則二是設計上的選項，先帶到週會讓老師選，再動手。"
              "右下是實例：有效的三個，查證抓到「沒有座標」寫錯，其實有座標、只是沒作用；大綱審查抓到兩處說法寫錯。"
              "無效的一個是子代理的摘要沒核對就採用，數字放錯格。"
-             "最後一頁，是想請老師決定的兩件事。")
+             "接下來回到模擬器的三個方案，最後請老師決定兩件事。")
     write_page("ai-env", page("ai-env", "本週加了兩條工作規則：畫圖前逐項對原文、設計選項帶到週會", s, notes=notes))
 
 
@@ -284,10 +284,10 @@ def decide():
     s.arrow(962, 296, 1004, 296, c="c4", sw=2.5)
     s.text(905, 435, "「像」怎麼定義？", "big", "middle", "mut")
 
-    notes = ("最後有兩件事想請老師決定。左邊第一件是 SNV 階段的模擬器用哪個方案，三張圖和第 6 頁相同，都是示意："
+    notes = ("最後有兩件事想請老師決定。左邊第一件是 SNV 階段的模擬器用哪個方案，三張圖和前一頁相同，都是示意："
              "A 維持獨立 50%，每個 SNV 各半落在 HP1 或 HP2，這是目前傾向；"
              "B 加座標，讓 1 kb 內的 SNV 近距離成簇落在同一條；C 真值多記一欄爸或媽。"
-             "右邊第二件是 HG008 能驗證到哪一層。這是第 11 頁的候選樹，實線有單細胞支持、半實線部分支持，"
+             "右邊第二件是 HG008 能驗證到哪一層。這是 HG008 的候選樹，實線有單細胞支持、半實線部分支持，"
              "目前只亮到「克隆結構」，「演化路徑」還是問號。所以想請老師一起定義，模擬和真實資料「像」要怎麼算。")
     write_page("decide", page("decide", "請老師決定：SNV 階段的模擬器方案，以及 HG008 能驗證到哪一層", s, notes=notes))
 

@@ -6,7 +6,7 @@
 
 | 路徑 | 內容 |
 |---|---|
-| [`papers/`](papers/) | 逐篇資料，一篇一個目錄：`summary.md`、`fulltext.md`、`source.md`、本機 PDF。ID 前綴代表收錄來源：A／B = 2026 文獻調查，M = 方法調查，R = 真值樹來源 |
+| [`papers/`](papers/) | 逐篇資料，一篇一個目錄：`summary.md`、`fulltext.md`、`source.md`、本機 PDF。ID 前綴代表收錄來源：A／B = 2026 文獻調查，M = 方法調查，R = 真值樹來源，P = SNV 落在哪條親代染色體（親源／單倍型分布，2026-11-08 加入） |
 | [`SYNTHESIS_phyclone_longphase.md`](SYNTHESIS_phyclone_longphase.md) | 跨論文去重與 PhyClone × longphase-s 整合地圖 |
 | [`surveys/patient_sc_longread_2026/`](surveys/patient_sc_longread_2026/summary.md) | 病人 single-cell 與 long-read／haplotype 特徵調查（A／B 類摘要、資料與程式可得性、改進方案） |
 | [`surveys/methods_survey/`](surveys/methods_survey/summary.md) | 腫瘤演化樹重建方法調查（2019–2026） |

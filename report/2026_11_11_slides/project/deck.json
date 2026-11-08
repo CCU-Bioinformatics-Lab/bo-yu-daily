@@ -28,7 +28,6 @@
     "tasks",
     "ratio-flow",
     "hypotheses",
-    "options",
     "t2-data",
     "colo-loh",
     "balance",
@@ -37,6 +36,7 @@
     "tree-shape",
     "self-check",
     "ai-env",
+    "options",
     "decide"
   ],
   "sections": {

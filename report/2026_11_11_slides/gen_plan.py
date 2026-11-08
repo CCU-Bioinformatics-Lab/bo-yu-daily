@@ -165,121 +165,78 @@ def card(s, x, y, w, h, name, stamp, grey=False, stamp_col="ink2"):
     return x + w / 2, (y + 42 + y + h - 40) / 2
 
 
+def split_bar(s, x, y, w, frac, left, right, h=22):
+    """Paternal | maternal share as a grey two-part bar (parents never get a color, F-4)."""
+    s.rect(x, y, w * frac, h, "panel3", r=0)
+    s.rect(x + w * frac, y, w * (1 - frac), h, "line2", r=0)
+    s.line(x + w / 2, y - 5, x + w / 2, y + h + 5, "ink", 2, dash=True)
+    s.text(x + 6, y + 17, left, "s", "start", "ink")
+    s.text(x + w - 6, y + 17, right, "s", "end", "on")
+
+
 def p5():
+    # 2026-11-08 redesign (user): evidence from papers, not our own statistics. Sources: research/literature/papers/P01-P11
+    # and the tumor_evolution_history survey cards E4-26 (Lefèbvre), E4-04 (Jäger), E4-02 (Nik-Zainal), E4-20 (Bergstrom).
     s = S("hypotheses", 1200, 470)
-    frame(s, 10, 10, 762, 452, "paper", "line2", 2)
-    frame(s, 790, 10, 400, 452, "paper", "line2", 2)
-    s.text(30, 44, "SNV 階段", "h")
-    s.text(810, 44, "拷貝數階段", "h")
-    pill(s, 1000, 44, "下一階段", "mute")
-    s.text(30, 74, "有資料", "b", color="c4")
-    s.text(810, 74, "改變的是看到幾個", "s")
+    frame(s, 10, 10, 580, 380, "paper", "c4", 2.5)
+    frame(s, 610, 10, 580, 380, "paper", "line2", 2)
+    s.text(30, 46, "兩條大致各半", "h", color="c4")
+    s.text(610 + 20, 46, "只在這些情境偏一條", "h")
 
-    cw, ch1, ch2 = 176, 180, 176
-    xs = [20 + i * (cw + 12) for i in range(4)]
-    y1, y2 = 82, 276
-    s.text(xs[3] + cw / 2, y2 + 90, "只限致癌突變", "b", "middle", "mute")
-    s.text(xs[3] + cw / 2, y2 + 118, "或證據不足", "b", "middle", "mute")
+    # left: three evidence rows, each a paternal/maternal split bar
+    rows = [
+        ("腫瘤 21 人：父母差異 ≤ 5%", "Lefèbvre 2026（預印本，short read）", 0.5, "父", "母"),
+        ("家族：受精後突變 52% 在父源", "Sasani 2019（eLife，249／475）", 249 / 475, "父 52%", "母 48%"),
+        ("long read 家族：父：母 1.38:1，不顯著", "Porubsky 2025（Nature，P = 0.09）", 1.38 / 2.38, "父 58%", "母 42%"),
+    ]
+    for i, (head, cite, frac, l, r) in enumerate(rows):
+        y = 70 + i * 104
+        s.text(30, y + 22, head, "b")
+        split_bar(s, 30, y + 38, 300, frac, l, r)
+        s.text(30, y + 88, cite, "s", "start", "mute")
+    s.text(345, 116, "虛線＝各半", "s", "start", "mute")
 
-    # balanced: half and half
-    cx, cy = card(s, xs[0], y1, cw, ch1, "兩條各半", "兩株沒有否定", stamp_col="c4")
-    s.text(cx, y1 + ch1 - 42, "COLO829、HG008", "s", "middle")
-    cy -= 10
-    s.poly([(cx, cy - 14), (cx - 16, cy + 34), (cx + 16, cy + 34)], "panel3")
-    s.line(cx - 62, cy - 14, cx + 62, cy - 14, "ink2", 3)
-    for side, c in [(-1, "hp1"), (1, "hp2")]:
-        ex = cx + side * 58
-        s.line(ex, cy - 14, ex - 22, cy + 14, "line2", 1.5)
-        s.line(ex, cy - 14, ex + 22, cy + 14, "line2", 1.5)
-        s.bar(ex - 26, cy + 16, 52, c, 10)
-        s.star(ex - 11, cy + 6, 7)
-        s.star(ex + 11, cy + 6, 7)
+    # right: three context-specific biases
+    rx = 630
+    y = 66
+    s.text(rx, y + 22, "失活的 X：Xi 是 Xa 的 1.78 倍", "b")
+    s.text(rx, y + 52, "Xa", "s")
+    s.text(rx, y + 76, "Xi", "s")
+    s.bar(rx + 34, y + 46, 150, "panel3", 12)
+    s.bar(rx + 34, y + 70, 150, "ink2", 12)
+    stars_on(s, y + 46, [rx + 70, rx + 150])
+    stars_on(s, y + 70, [rx + 54, rx + 84, rx + 114, rx + 144, rx + 170])
+    s.text(rx, y + 102, "Caballero 2023、Jäger 2013", "s", "start", "mute")
 
-    # independence, except very close pairs
-    cx, cy = card(s, xs[1], y1, cw, ch1, "相鄰 SNV 獨立", "<1 kb 內例外", stamp_col="c4")
-    s.bar(cx - 70, cy - 2, 140, "hp1", 12)
-    s.bar(cx - 70, cy + 26, 140, "hp2", 12)
-    stars_on(s, cy - 2, [cx - 50, cx + 18, cx + 30])
-    stars_on(s, cy + 26, [cx - 20, cx + 52])
-    s.text(cx + 24, cy - 18, "<1 kb", "s", "middle")
+    y = 178
+    s.text(rx, y + 22, "成簇突變：同一條，只占 3.7%", "b")
+    s.bar(rx + 34, y + 46, 150, "hp1", 12)
+    s.bar(rx + 34, y + 70, 150, "hp2", 12)
+    stars_on(s, y + 46, [rx + 92, rx + 108, rx + 124, rx + 140])
+    stars_on(s, y + 70, [rx + 60])
+    s.text(rx, y + 102, "Nik-Zainal 2012、Bergstrom 2022", "s", "start", "mute")
 
-    # parents differ?
-    cx, cy = card(s, xs[2], y1, cw, ch1, "爸媽本身不同", "沒測到差異", stamp_col="c4")
-    parent(s, cx - 42, cy - 40, "爸", 46)
-    parent(s, cx + 42, cy - 40, "媽", 46)
-    s.text(cx, cy - 2, "？", "h", "middle")
+    y = 290
+    s.text(rx, y + 22, "少數基因座：JAK2 38／45 和 germline 同一條", "b")
+    s.bar(rx + 34, y + 52, 150, "hp1", 12)
+    s.circle(rx + 74, y + 52, 6, "ink")
+    s.star(rx + 124, y + 52, 8)
+    s.path(f"M{rx + 76} {y + 40} Q{rx + 100} {y + 20} {rx + 122} {y + 39}", "ink2", 2)
+    s.text(rx + 200, y + 58, "● germline　★ somatic", "s", "start", "mute")
+    s.text(rx, y + 86, "Kilpivaara 2009；驅動基因另見 Gorelick 2020", "s", "start", "mute")
 
-    # Xi has more mutations
-    cx, cy = card(s, xs[3], y1, cw, ch1, "失活的 X 較多", "共識，只在 chrX", stamp_col="c4")
-    s.text(cx - 78, cy + 2, "Xa", "s")
-    s.text(cx - 78, cy + 32, "Xi", "s")
-    s.bar(cx - 50, cy - 4, 124, "panel3", 12)
-    s.bar(cx - 50, cy + 26, 124, "ink2", 12)
-    stars_on(s, cy - 4, [cx - 20, cx + 40])
-    stars_on(s, cy + 26, [cx - 34, cx - 4, cx + 26, cx + 54])
+    # bottom strip
+    s.rect(10, 404, 580, 58, "panel", r=10)
+    s.text(30, 440, "對照：germline 新生突變約 80% 在父源（精卵，不是體細胞）", "s")
+    s.rect(610, 404, 580, 58, "panel2", r=10)
+    s.text(630, 440, "拷貝數改變（LOH、擴增）會改變看到的比例 → 下一階段", "s")
 
-    # grey row
-    cx, cy = card(s, xs[0], y2, cw, ch2, "兩次打擊分兩條", "只限致癌突變", grey=True)
-    s.rect(cx - 2, cy - 22, 34, 58, None, "ink", r=4, sw=2)
-    s.bar(cx - 70, cy - 4, 140, "hp1", 12)
-    s.bar(cx - 70, cy + 20, 140, "hp2", 12)
-    s.star(cx + 15, cy - 4, 7)
-    s.star(cx + 15, cy + 20, 7)
-
-    cx, cy = card(s, xs[1], y2, cw, ch2, "複製時間不同", "證據不足", grey=True)
-    s.bar(cx - 76, cy - 4, 100, "hp1", 12)
-    s.bar(cx - 76, cy + 20, 100, "hp2", 12)
-    s.circle(cx + 52, cy + 8, 22, "paper", "ink2", 2)
-    s.line(cx + 52, cy + 8, cx + 52, cy - 6, "ink2", 2.5)
-    s.line(cx + 52, cy + 8, cx + 62, cy + 14, "ink2", 2.5)
-
-    cx, cy = card(s, xs[2], y2, cw, ch2, "germline 影響", "證據不足", grey=True)
-    s.bar(cx - 70, cy + 14, 140, "hp1", 12)
-    s.circle(cx - 30, cy + 14, 6, "ink")
-    s.star(cx + 34, cy + 14, 8)
-    s.path(f"M{cx - 28} {cy + 2} Q{cx + 2} {cy - 26} {cx + 30} {cy + 1}", "ink2", 2)
-    s.poly([(cx + 33, cy + 4), (cx + 24, cy - 2), (cx + 34, cy - 7)], "ink2")
-
-    # copy number stage
-    rx = [800, 996]
-    rw = 184
-    cx, cy = card(s, rx[0], y1, rw, ch1, "LOH 改寫比例", "確定", stamp_col="c4")
-    for j in range(2):
-        s.bar(cx - 66, cy - 14 + j * 18, 120, "hp1", 11)
-        stars_on(s, cy - 14 + j * 18, [cx - 36, cx + 20], 6)
-    ghost(s, cx - 66, cy + 22, 120, h=11)
-
-    cx, cy = card(s, rx[1], y1, rw, ch1, "平行事件", "確定", stamp_col="c4")
-    root, a, b = (cx, cy - 30), (cx - 44, cy + 2), (cx + 44, cy + 2)
-    s.line(*root, *a, "line2", 2.5)
-    s.line(*root, *b, "line2", 2.5)
-    s.circle(*root, 9, "normal", "cellline")
-    s.circle(*a, 11, "c1", "cellline")
-    s.circle(*b, 11, "c2", "cellline")
-    s.bar(a[0] - 26, cy + 24, 52, "hp2", 8)
-    s.bar(a[0] - 26, cy + 36, 52, "hp1", 8, dash=True)
-    s.bar(b[0] - 26, cy + 24, 52, "hp1", 8)
-    s.bar(b[0] - 26, cy + 36, 52, "hp2", 8, dash=True)
-
-    cx, cy = card(s, rx[0], y2, rw, ch2, "印記：只表現一親", "局部、部分爭議")
-    parent(s, cx - 40, cy - 34, "爸", 40)
-    parent(s, cx + 40, cy - 34, "媽", 40, cross=True)
-
-    cx, cy = card(s, rx[1], y2, rw, ch2, "致癌突變那條擴增", "只限致癌突變")
-    for j in range(2):
-        yy = cy - 14 + j * 18
-        s.bar(cx - 66, yy, 120, "hp1", 11)
-        s.star(cx - 6, yy, 6)
-    s.rect(cx - 20, cy - 24, 28, 46, None, "ink", r=4, sw=2)
-    s.bar(cx - 66, cy + 26, 120, "hp2", 11)
-
-    notes = ("這頁把假說分成兩堆。左邊是 SNV 階段，一共七個。上面四個有資料：兩條各半，COLO829、HG008 兩株都沒有否定；"
-             "相鄰 SNV 彼此獨立，只有 1 kb 內是例外；爸媽本身不同，目前沒測到差異；"
-             "失活的 X，圖上的 Xi，突變比較多，這是共識，但只在 chrX。"
-             "下面三張灰卡，兩次打擊分兩條只限致癌突變，複製時間和 germline 影響證據不足。"
-             "右邊是拷貝數階段：LOH、平行事件、只表現一親的印記區、致癌突變那條擴增，"
-             "它們改變的是我們看到幾個，所以留到下一階段。")
-    write_page("hypotheses", page("hypotheses", "SNV 階段有 7 個假說，4 個有資料；其餘屬拷貝數階段", s, "", notes))
+    notes = ("這頁看論文怎麼回答：SNV 偏向一條，還是兩條都有。左邊是兩條大致各半的證據。"
+             "腫瘤只有一篇 21 人的預印本，父母差異在 5% 以內；兩個家族研究看受精後的突變，52% 在父源，"
+             "long read 家族是 1.38 比 1，都不顯著。右邊是會偏一條的情境：失活的 X 突變率是另一條的 1.78 倍；"
+             "成簇突變落在同一條，但只占 3.7%；JAK2 這類少數基因座和 germline 變異在同一條。"
+             "下面對照：精卵的新生突變約八成來自父親，那不是體細胞。拷貝數改變留到下一階段。")
+    write_page("hypotheses", page("hypotheses", "論文支持 SNV 在兩條大致各半；偏向只在特定情境", s, "", notes))
 
 
 # ---- p6 options ------------------------------------------------------------------
@@ -376,7 +333,7 @@ def p6():
              "A 維持每個 SNV 獨立、兩條各半，和 COLO829、HG008 兩株一致；這次的 50% 有實測支持，不是直接設的。缺點是沒有近距離成簇。"
              "B 加座標，讓少數 SNV 在 1 kb 內成簇落在同一條，更接近真實，但要大改程式。C 多記一欄爸或媽，SNV 階段沒新資訊。"
              "下面左邊，現有模擬器隨機選一份 copy，只在兩條份數相同時是 50%。中間四個工具，模擬時會用座標。"
-             "右邊，diplosim 各自定拷貝數，不需要座標；真實資料要靠座標對到拷貝數片段。")
+             "右邊，diplosim 各自定拷貝數，不需要座標；真實資料要靠座標對到拷貝數片段。下一頁請老師決定用哪個方案。")
     write_page("options", page("options", "模擬器的三個方案，目前傾向維持獨立 50%（根據見結果段）", s, "", notes))
 
 
