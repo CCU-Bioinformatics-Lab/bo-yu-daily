@@ -43,12 +43,12 @@ MONO = "JetBrains Mono, Courier New, monospace"
 
 DECK_TITLE = "2026-11-11 單點突變模擬的證據與驗證"
 ORDER = ["outline", "n-fixes", "tasks", "ratio-flow", "hypotheses", "options", "t2-data",
-         "colo-loh", "balance", "local", "hg008-tree", "tree-shape", "not-yet", "self-check", "ai-env", "decide"]
+         "colo-loh", "balance", "local", "hg008-tree", "tree-shape", "self-check", "ai-env", "decide"]
 SECTIONS = {
     "outline": "接回上次會議", "n-fixes": "接回上次會議", "tasks": "本週任務",
     "ratio-flow": "方案與選擇理由", "hypotheses": "方案與選擇理由", "options": "方案與選擇理由", "t2-data": "方案與選擇理由",
     "colo-loh": "結果（含失敗）", "balance": "結果（含失敗）", "local": "結果（含失敗）", "hg008-tree": "結果（含失敗）",
-    "tree-shape": "結果（含失敗）", "not-yet": "結果（含失敗）",
+    "tree-shape": "結果（含失敗）",
     "self-check": "自我檢查", "ai-env": "AI 環境改善", "decide": "請老師決定",
 }
 

@@ -1,5 +1,5 @@
 """p14 self-check, p15 ai-env, p16 decide. Sketches: sketches/close.md."""
-from slidekit import S, page, write_page, n3_ladder, tag  # noqa: F401
+from slidekit import S, page, write_page, n3_ladder, tag, ORDER  # noqa: F401
 from gen_plan import option_pic, pill
 from gen_res2 import hg008_tree, tree_legend
 
@@ -113,7 +113,7 @@ def self_check():
             (True, ico_reads, "分清模擬真值與觀測", "第 2 頁"),
             (True, ico_hyp, "機制附假說與來源", "第 5、6 頁"),
             (True, ico_ladder, "驗證標出支持哪一層", "第 7–12 頁"),
-            (True, ico_gear, "有 AI 環境改善頁", "第 15 頁"),
+            (True, ico_gear, "有 AI 環境改善頁", f"第 {ORDER.index('ai-env') + 1} 頁"),
         ]),
     ]
     for name, x, w, rows in panels:

@@ -1,4 +1,4 @@
-"""Result pages, second half: p11 hg008-tree, p12 tree-shape, p13 not-yet.
+"""Result pages, second half: p11 hg008-tree, p12 tree-shape (p13 not-yet deleted 2026-11-08).
 
 Numbers come from lab_report/2026-11-07_hg008_tree_rebuild/ and 2026-11-07_hg008_sc_check/ (BRIEF R10, R11).
 p12 histograms read the real per-tree values (diplosim_trees.tsv, scenario sample_8_of_more).
@@ -336,6 +336,7 @@ NOTES = {
         "左上的分岔不平衡在第 87 百分位，綠框，範圍內。"
         "末端枝比例在第 94，內部對末端枝長比在第 6，末端枝長變異係數在第 3，剛好 8 葉時是第 1.2，這三個是棕框的邊緣，兩個標了證據弱。"
         "百分位不是 p 值。右邊提醒，HG008 是細胞株的譜系，diplosim 是亞群的 clone tree，兩種樹不完全相同；第一次比時沒把直鏈併成一點，已修正。"
+        "結果段到這裡，下一頁是自我檢查。"
     ),
     "not-yet": (
         "這頁列出三件現在還做不到的事。"
@@ -358,7 +359,8 @@ CAPTIONS = {
 }
 
 if __name__ == "__main__":
-    for pid, fn in [("hg008-tree", p11), ("tree-shape", p12), ("not-yet", p13)]:
+    # p13 not-yet was deleted by the user in the deck editor on 2026-11-08; p13() is kept for reference only.
+    for pid, fn in [("hg008-tree", p11), ("tree-shape", p12)]:
         s = fn()
         write_page(pid, page(pid, TITLES[pid], s, CAPTIONS[pid], NOTES[pid]))
         print(pid, "notes chars:", len(NOTES[pid]))

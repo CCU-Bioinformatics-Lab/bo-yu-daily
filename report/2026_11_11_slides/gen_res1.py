@@ -87,8 +87,9 @@ def p8():
 # PRCGAP 8 cell lines, windows where both haplotypes have the same copy number (lab report rule:
 # both retained >= 80 %, mean CN difference < 0.3, >= 10 SNVs, autosomes, 20 Mb on CHM13).
 P9_ORDER = ["COLO829", "HG008", "H1437", "H2009", "H209", "H2126", "HCC1937", "HCC1954"]
-# Independent check of PRCGAP's haplotype calls: HG008 vs GIAB (97.4 %); COLO829 partly, by read linkage.
-P9_CHECK = {"HG008": ("GIAB 核對 ✓", "c4"), "COLO829": ("部分核對", "stdis")}
+# Independent check of PRCGAP's haplotype calls: only HG008 (vs GIAB, 97.4 %). COLO829 has our own read
+# linkage phasing, but it was never compared call by call with PRCGAP, so it counts as unverified.
+P9_CHECK = {"HG008": ("GIAB 核對 ✓", "c4")}
 
 
 def expected_larger(n):
@@ -199,13 +200,13 @@ def p10():
     tag(s, 10, 32, "實際結果")
     n3_ladder(s, LADDER_X, LADDER_Y, lit=[0])
 
-    # what "same strand" means: a phase block with two stars on the same HP
+    # what "same strand" means: one 20 Mb window of the phased assembly, two stars on the same HP
     s.rect(138, 10, 120, 44, None, "ink2", r=4, dash=True)
     s.bar(146, 22, 104, "hp1", 10)
     s.bar(146, 42, 104, "hp2", 10)
     s.star(178, 22, 7)
     s.star(214, 22, 7)
-    s.text(268, 30, "phase block 內，兩個 SNV 都在同一個 HP＝「同一條」", "s")
+    s.text(268, 30, "同一個 20 Mb 區段內（組裝定相）同一個 HP＝「同一條」", "s")
     tag(s, 860, 30, "示意", "demo")
 
     # axes
@@ -297,7 +298,7 @@ def p10():
     s.text(800, 376, "比值 0.66", "big")
     s.text(800, 424, "一株；哪條是失活的 X 取自論文", "s")
 
-    notes = "這頁要看的是兩個局部例外。左邊是相鄰 SNV 在同一條的比例，同一條是指同一個 phase block 內的同一個 HP。粗線左邊是 1 kb 內，用全部 SNV：HG008 是 0.97、0.96、0.82；COLO829 只有 0 到 100 bp 高，0.85。對照是檢查近距離定相能否用，COLO829 是 0.658，沒過門檻 0.8。粗線右邊把成簇 SNV 併成一個，多數靠近 0.5，問號是未定的點。右邊 HG008 的 X，失活那條 3.71、另一條 2.46，比值 0.66。任務一到這裡；下一頁回到任務二，看 HG008 的候選樹。"
+    notes = "這頁要看的是兩個局部例外。左邊是相鄰 SNV 在同一條的比例，同一條是指同一個 20 Mb 區段內，組裝定相的同一個 HP。粗線左邊是 1 kb 內，用全部 SNV：HG008 是 0.97、0.96、0.82；COLO829 只有 0 到 100 bp 高，0.85。對照是檢查近距離定相能否用，COLO829 是 0.658，沒過門檻 0.8。粗線右邊把成簇 SNV 併成一個，多數靠近 0.5，問號是未定的點。右邊 HG008 的 X，失活那條 3.71、另一條 2.46，比值 0.66。任務一到這裡；下一頁回到任務二，看 HG008 的候選樹。"
     write_page(pid, page(pid, "兩個局部例外：很近的 SNV 常在同一條、失活的 X 突變較多", s,
                          "1 kb 以上多數接近 0.5，問號點未定。", notes))
     return notes

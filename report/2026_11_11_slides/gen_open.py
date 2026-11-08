@@ -76,96 +76,78 @@ def doc(s, x, y, w=44, h=56, lines=4):
 
 
 # ---- p1 outline ----
+# 2026-11-08 redesign (user): left = key points of the 11-04 meeting (no page numbers),
+# right = the two tasks finished this week. The research-purpose row was removed earlier the same day.
+
+def mini_ladder(s, x, y, lit=0):
+    """Three stacked steps (觀測特徵 / 克隆結構 / 演化路徑); the lit one is green."""
+    for i in range(3):
+        s.rect(x, y - i * 14, 46, 11, "c4" if i == lit else "panel3", r=2)
+
 
 def p_outline():
     pid = "outline"
-    s = S(pid, 1200, 512)
-    # Row A: research purpose as a picture.
-    s.rect(10, 6, 1180, 104, "panel", r=10)
-    s.text(30, 64, "研究目的", "h")
-    cols = ["c1", "c2", "normal"]
-    s.cluster(215, 50, 46, 30, lambda dx, dy: cols[int((dx + 1) * 1.49) % 3], r=5.5)
-    s.text(215, 101, "bulk 腫瘤", "s", "middle")
-    s.arrow(272, 50, 318, 50)
-    reads(s, 335, 18, ["hp1", "hp2", "hp1", "hp2", "hp1"], w=110, h=7, gap=12)
-    s.text(395, 101, "long read：HP1 藍、HP2 橘", "s", "middle")
-    s.arrow(472, 50, 518, 50)
-    mini_tree(s, 560, 22, 1.05)
-    s.text(600, 58, "真值樹", "t")
-    s.arrow(680, 50, 726, 50)
-    s.text(742, 58, "加入 HP 建樹，會更準嗎？", "h")
+    s = S(pid, 1200, 440)
 
-    # Row B: status of the 11-04 decisions and open items.
-    s.text(20, 146, "上次會議（11-04）的決議與未決事項", "t")
-    cards = [
-        (["真值與觀測", "分開"], "ok", f"第 {pno('n-fixes')} 頁"),
-        (["先聚焦", "單點突變"], "now", "本週"),
-        (["AI 環境改善"], "ok", f"第 {pno('ai-env')} 頁"),
-        (["HCC1395", "盤點"], "ok", f"第 {pno('t2-data')} 頁"),
-        (["既有模擬器", "機制"], "ok", f"第 {pno('options')} 頁"),
-        (["突變速率"], "pause", "暫停"),
+    # Left: key points of the last meeting.
+    s.rect(10, 6, 520, 428, "panel", r=12)
+    s.text(30, 44, "上次會議（11-04）重點", "h")
+    rows = [
+        ("不模擬 unphased read", "演化中沒有「unphased」這條染色體"),
+        ("模擬不過擬合 HCC1395 或其他癌種", "驗證要寫出支持到哪一層"),
+        ("先聚焦單點突變", "先查生物假說，再改模擬器"),
+        ("報告加 AI 環境改善", "記錄改了哪些工作規則"),
     ]
-    for i, (name, kind, note) in enumerate(cards):
-        x0 = 10 + i * 198
-        cx = x0 + 93
-        hi = kind == "now"
-        s.rect(x0, 160, 186, 180, "hl" if hi else "paper", "hp1" if hi else "line", r=10, sw=3 if hi else 1.5)
-        icy = 205
+    for i, (head, sub) in enumerate(rows):
+        y = 74 + i * 90
+        cx = 72
         if i == 0:
-            reads(s, cx - 50, icy - 26, ["hp1", "hp2", "unphased"], w=90, h=9, gap=17)
-            s.xmark(cx + 54, icy + 12, 9)
+            reads(s, cx - 42, y + 14, ["hp1", "hp2", "unphased"], w=72, h=8, gap=15)
+            s.xmark(cx + 44, y + 44, 8)
         elif i == 1:
-            s.bar(cx - 60, icy, 120, "hp1", 16)
-            s.star(cx + 5, icy, 11)
+            mini_ladder(s, cx - 23, y + 58, lit=0)
         elif i == 2:
-            doc(s, cx - 22, icy - 28)
-        elif i == 3:
-            mini_tree(s, cx - 8, icy - 26, .95)
-            s.xmark(cx + 36, icy + 4, 11)
-        elif i == 4:
-            gear(s, cx - 26, icy, 21)
-            mini_tree(s, cx + 30, icy - 26, .95)
+            s.bar(cx - 42, y + 36, 84, "hp1", 14)
+            s.star(cx, y + 36, 10)
         else:
-            s.circle(cx, icy, 26, "on", "cellline", 2.5)
-            s.line(cx, icy, cx, icy - 17, "ink2", 3)
-            s.line(cx, icy, cx + 13, icy + 4, "ink2", 3)
-        for j, ln in enumerate(name):
-            s.text(cx, 266 + j * 25, ln, "t", "middle")
-        badge(s, x0 + 38, 316, kind)
-        s.text(x0 + 62, 322, note, "s", "start", "hp1" if hi else None)
+            doc(s, cx - 18, y + 12, w=36, h=48)
+        s.text(140, y + 36, head, "b")
+        s.text(140, y + 64, sub, "s")
 
-    # Row C left: this week's two tasks, fed by card 2.
-    s.rect(10, 358, 690, 150, "panel", r=10)
-    s.arrow(103 + 198, 341, 103 + 198, 372, c="hp1", sw=3)
-    s.text(30, 392, "本週兩個任務", "b")
-    s.bar(110, 428, 180, "hp1", 14)
-    s.bar(110, 454, 180, "hp2", 14)
-    for x in (150, 250):
-        s.star(x, 428, 10)
-    s.star(200, 454, 10)
-    s.text(200, 494, "SNV 落在哪條的證據", "t", "middle")
-    for k in range(4):
-        tube(s, 432 + k * 28, 404, 20, 56)
-    for k in range(6):
-        s.circle(560 + (k % 3) * 19, 420 + (k // 3) * 22, 7.5, "on", "cellline", 1.6)
-    s.text(520, 494, "克隆結構的獨立驗證資料", "t", "middle")
-    # Row C right: parents cannot be asked; only group names.
-    s.rect(715, 358, 475, 150, "panel", r=10)
-    s.text(735, 392, "親源無法直接回答，只能比 HP1／HP2", "s")
-    parent(s, 765, 408, "爸", 50)
-    parent(s, 830, 408, "媽", 50)
-    s.text(885, 452, "？", "big", "middle")
-    s.arrow(910, 442, 960, 442)
-    s.bar(975, 428, 130, "hp1", 14)
-    s.bar(975, 458, 130, "hp2", 14)
-    s.text(1115, 434, "HP1", "s")
-    s.text(1115, 464, "HP2", "s")
+    # Middle arrow: this week.
+    s.arrow(540, 220, 600, 220, c="hp1", sw=5, head=14)
+    s.text(570, 202, "本週", "b", "middle", "hp1")
+
+    # Right: the two tasks finished this week.
+    s.text(620, 44, "這星期完成的任務", "h")
+    cards = [
+        ("SNV 落在哪條的證據", ["8 株細胞株：兩條份數相同時", "HP1、HP2 接近各半", "整理假說，列出模擬器 3 個方案"]),
+        ("克隆結構的獨立驗證資料", ["HG008：8 株選殖株＋119 顆單細胞", "候選樹 3 層有單細胞支持", "和 diplosim 的樹形比較"]),
+    ]
+    for j, (head, lines) in enumerate(cards):
+        y0 = 66 + j * 186
+        s.rect(610, y0, 580, 170, "paper", "line", r=12, sw=1.5)
+        badge(s, 1158, y0 + 30, "ok")
+        if j == 0:
+            s.bar(632, y0 + 70, 120, "hp1", 14)
+            s.bar(632, y0 + 100, 120, "hp2", 14)
+            for x in (662, 722):
+                s.star(x, y0 + 70, 10)
+            s.star(692, y0 + 100, 10)
+        else:
+            for k in range(3):
+                tube(s, 628 + k * 26, y0 + 50, 18, 56)
+            for k in range(4):
+                s.circle(718 + (k % 2) * 18, y0 + 62 + (k // 2) * 20, 7, "on", "cellline", 1.6)
+        s.text(780, y0 + 38, head, "b")
+        for k, ln in enumerate(lines):
+            s.text(780, y0 + 74 + k * 28, ln, "s")
 
     notes = ("這週要回答的主問題，就是標題這句：單點突變階段的模擬，有哪些證據支持、能用什麼驗證。"
-             "最上面是研究目的：模擬帶 HP1、HP2 的 long read bulk 資料，附上真值樹，測試加入 HP 建樹會不會更準。"
-             "中間是上次會議的決議和未決事項：真值和觀測分開、AI 環境改善、HCC1395 盤點、既有模擬器機制，都已處理，打勾旁邊寫了在哪一頁講；"
-             "突變速率先暫停。藍框的先聚焦單點突變，就是本週的重點，拆成左下兩個任務。"
-             "右下角提醒大家：目前資料沒有爸媽標籤，只能比 HP1、HP2。")
+             "左邊是上次會議的四個重點：不模擬 unphased read，因為演化中沒有「unphased」這條染色體，每條 read 都來自 HP1 或 HP2；模擬結果不應該過擬合 HCC1395 或其他癌種，驗證要寫出支持到哪一層；"
+             "先聚焦單點突變，先查假說再改模擬器；報告加 AI 環境改善。"
+             "右邊是這星期完成的兩個任務。第一個是 SNV 落在哪條的證據：8 株細胞株在兩條份數相同時接近各半，也整理了假說和模擬器的三個方案。"
+             "第二個是克隆結構的獨立驗證資料：HG008 的候選樹有三層得到單細胞支持。")
     title = "單點突變階段的模擬，有哪些證據支持、能用什麼驗證？"
     write_page(pid, page(pid, title, s, "", notes))
 
@@ -174,14 +156,14 @@ def p_outline():
 
 def p_fixes():
     pid = "n-fixes"
-    s = S(pid, 1200, 496)
+    s = S(pid, 1200, 434)
     s.text(300, 28, "上次的問題", "h", "middle")
     s.text(870, 28, "這週的做法", "h", "middle")
-    heights = [78, 78, 140, 78, 78]
+    heights = [78, 78, 78, 78, 78]
     rows = [
         ("模擬也做了沒分組的 read", "混了真值和觀測限制", "每條 read 只屬 HP1 或 HP2", "沒分組的 read 從模擬器移除"),
         ("直接加 50% 隨機參數", "沒先查生物假說", "先查假說，再改程式", "寫成標來源的知識文件"),
-        ("BAM 像真實資料就當驗證", "不同路徑可得到相似資料", "驗證分三層", "結果頁亮起支持到的那層"),
+        ("BAM 像真實資料就當驗證", "不同路徑可得到相似資料", "暫時想不到驗證方法", "BAM 相似不能證明演化對"),
         ("一次加 CNA、LOH、多倍體", "看不出哪個設定合理", "一次一個機制", "先做單點突變"),
         ("只叫 AI 給 2–3 個選項", "前提錯，選項全偏", "研究目標寫進專案知識", "AI 列方案前先對照目標"),
     ]
@@ -205,12 +187,14 @@ def p_fixes():
             s.rect(740, yc - 24, 70, 48, "on", "ink2", r=6, sw=2)
             s.text(775, yc + 7, "程式", "s", "middle")
         elif i == 2:
-            for k, dx in enumerate((50, 125)):
-                for r in range(5):
-                    s.rect(dx + (r % 2) * 6, yc - 34 + r * 12, 50, 7, "panel3", r=3)
-                s.star(dx + 28, yc - 30 + (2 + k) * 12, 6)
-            s.text(113, yc + 50, "≈", "big", "middle")
-            n3_ladder(s, 650, yc + 26, lit=(0,))
+            for k, dx in enumerate((45, 125)):
+                for r in range(4):
+                    s.rect(dx + (r % 2) * 6, yc - 26 + r * 12, 50, 7, "panel3", r=3)
+                s.star(dx + 28, yc - 22 + (1 + k) * 12, 6)
+            s.text(110, yc + 8, "≈", "big", "middle")
+            # 2026-11-08 (user): the three-layer ladder was replaced; no validation method yet.
+            s.circle(700, yc, 24, "on", "stgap", 3)
+            s.text(700, yc + 11, "?", "big", "middle", "stgap")
         elif i == 3:
             s.bar(45, yc - 14, 140, "hp1", 12)
             s.star(70, yc - 14, 8)
@@ -240,13 +224,13 @@ def p_fixes():
         s.text(fx, yc + 22, f2, "s")
         y += h
 
-    notes = ("這頁看的是上次指出的五個問題，這週各改了什麼。"
+    notes = ("這頁看的是上次指出的五個問題，這週各改了什麼；其中驗證方法還沒想到。"
              "第一列，模擬器原本也做了沒分組的 read，混了真值和觀測限制；現在拿掉了，每條 read 只屬 HP1 或 HP2。"
              "第二列，不再直接加 50% 的隨機參數，先查假說、寫成知識文件，再改程式。"
-             "第三列是這份報告的三層階梯：觀測特徵、克隆結構、演化路徑；後面每張結果頁都會放這個階梯，亮起它支持到的那一層。"
+             "第三列，BAM 像真實資料不能當驗證，因為不同的演化路徑可以得到相似的資料；能驗證演化路徑的方法，我們暫時還想不到。"
              "第四列，一次只加一個機制，先做單點突變。第五列，研究目標寫進專案知識，AI 列方案前先對照目標。"
              "照這些做法，這週定了兩個任務，下一頁說明。")
-    write_page(pid, page(pid, "上次指出的五個問題，這週都改了做法", s, "", notes))
+    write_page(pid, page(pid, "上次指出的五個問題：四個已改做法，驗證方法還沒想到", s, "", notes))
 
 
 # ---- p3 tasks ----
