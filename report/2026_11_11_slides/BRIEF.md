@@ -23,10 +23,10 @@
 | R2 | `research/literature/surveys/parental_snv_2026-11-07/summary.md` | p4、p5、p6 |
 | R3 | `research/simulation_pipeline_research/notes/10_SNV_COORDINATES.md` | p6 |
 | R4 | `research/literature/surveys/independent_evidence_2026-11-06/summary.md`、`seqc2_hcc1395_evolution_2026-11-07/` | p7 |
-| R5 | `lab_report/2026-11-06_colo829_loss_events/` | p8 |
+| R5 | `lab_report/2026-11-06_colo829_loss_events/` | 2026-11-08 p8 改版後不上頁面 |
 | R6 | `lab_report/2026-11-06_colo829_hap_snv_ratio/`（`haplotype_totals.tsv`） | 2026-11-08 p9 改版後不上頁面 |
 | R7 | `lab_report/2026-11-06_hg008_hap_snv_ratio/`（README §4 表） | p10 |
-| R8 | `lab_report/2026-11-06_prcgap_hap_snv_ratio/` | p9 |
+| R8 | `lab_report/2026-11-06_prcgap_hap_snv_ratio/` | p8、p9 |
 | R9 | `lab_report/2026-11-07_snv_hp_independence/`（`control_detail.tsv`、`pairs_by_distance.tsv`） | p10、p13 |
 | R10 | `lab_report/2026-11-07_hg008_tree_rebuild/`（`tables/diplosim/comparison.tsv`） | p11、p12 |
 | R11 | `lab_report/2026-11-07_hg008_sc_check/` | p11、p13 |
@@ -47,8 +47,8 @@
 
 ## 數字怎麼量（C-9）
 
-- p8：COLO829 LOH 約 765 Mb（份數 2：471、3：183、4：111 Mb）；2:1 區 1,639 比 1,425，1 份那條預測 1,588（每份突變率相同的模型），p≈0.003。（R5）
-- p9（2026-11-08 改版）：PRCGAP 8 株，只用兩條份數相同的 20 Mb 區段（兩條都留著 ≥ 80%、平均拷貝數差 < 0.3、SNV ≥ 10、體染色體，共 229 段；R8 `per_window_20mb.tsv`）。「實測」＝各區段 SNV 較多那條的數量總和 ÷ 區段內 SNV 總數（R8 `summary.tsv` balanced_larger_side_share）。「隨機」＝每段假設 Binomial(n, 0.5) 時較多那條的期望值 E[max(X, n−X)]，加總後 ÷ 總數，由 `gen_res1.py` 精確計算，lab_report 沒有這欄。差距 0.5–4.4 個百分點（H2009 最小、HCC1954 最大）。核對標籤：HG008 和 GIAB 一致 97.4%（`2026-11-07_hg008_giab_hap_concordance`）；COLO829 只有同一條 read 連接（4,393 個連得起來 3,968 個）；其他 6 株只有 PRCGAP 自己的判定。舊版的 COLO829 1.004、HG008 0.97 全基因組密度比（R6、R7）不再上頁面。
+- p8（2026-11-08 改版）：PRCGAP `per_chromosome.tsv` 23 條染色體（含 chrX）的 hap1_snv、hap2_snv 直接加總，由 `gen_res1.py` 計算。總數是嚴格過濾後、落在留著片段（CN ≥ 0.5）的 SNV，所以比 `summary.tsv` strict_snv 少 98–1,150 個（例：COLO829 27,174 vs 27,471）。HP1 占比：COLO829 65.6、HG008 60.5、H1437 46.9、H2009 52.9、H209 48.2、H2126 53.4、HCC1937 52.8、HCC1954 45.8%。（R8）舊版 COLO829 LOH 數字仍在 R5，不上頁面。
+- p9（2026-11-08 改版）：PRCGAP 8 株，只用兩條份數相同的 20 Mb 區段（兩條都留著 ≥ 80%、平均拷貝數差 < 0.3、SNV ≥ 10、體染色體，共 229 段；R8 `per_window_20mb.tsv`）。「實測」＝各區段 SNV 較多那條的數量總和 ÷ 區段內 SNV 總數（R8 `summary.tsv` balanced_larger_side_share）。「隨機」＝每段假設 Binomial(n, 0.5) 時較多那條的期望值 E[max(X, n−X)]，加總後 ÷ 總數，由 `gen_res1.py` 精確計算，lab_report 沒有這欄。差距 0.5–4.4 個百分點（H2009 最小、HCC1954 最大）。2026-11-08 使用者要求：頁面只留「實測」，隨機期望與段數不上頁面，圖說刪掉；數字留在本檔（段數：COLO829 33、HG008 43、H1437 15、H2009 36、H209 75、H2126 6、HCC1937 5、HCC1954 16）。核對標籤：HG008 和 GIAB 一致 97.4%（`2026-11-07_hg008_giab_hap_concordance`）；COLO829 只有同一條 read 連接（4,393 個連得起來 3,968 個）；其他 6 株只有 PRCGAP 自己的判定。舊版的 COLO829 1.004、HG008 0.97 全基因組密度比（R6、R7）不再上頁面。
 - p10：同一條比例（R9 `control_detail.tsv`）：HG008 0–100 0.967、100–300 0.962、300–1000 0.815；COLO829 0.846、0.517、0.576；<1 kb 對照 COLO829 0.658（未過）。≥1 kb（`pairs_by_distance.tsv`，合併聚集後）：HG008 1–10 kb 0.593、≥1 Mb 0.573；COLO829 1–10 kb 0.480。1 kb 內配對數／SNV 數：COLO829 約 2.5%（193/7762）、HG008 約 4.5%（113/2520）。chrX：2.46 vs 3.71，比值 0.663（R7）。
 - p11：301 個共有 SNV 中 261 個相容；單細胞 119 → 111 → 48 → 16（R10、R11）。
 - p12：comparison.tsv `sample_8_of_more` 列：Colless 87.4、末端枝比例 94.1、內部／末端枝長比 5.9、末端枝變異係數 2.9 百分位；剛好 8 葉時變異係數 1.2。
@@ -91,7 +91,7 @@
 
 - p4：份數變多後，新突變的目標也變多（CNA 階段的時序問題）。
 - p7：HCC1395 新實驗暫停、COLO829 已結案是工作決定，不是需求表理由。
-- p8：61:39 來自 Sohn 那批；765 Mb 的 LOH 與 2:1 區數字來自 ONT R10 那批，兩批 chr1p 份數不同。p9 的密度是每 Mb、且扣掉流失片段，不推翻 p8 的「少約 10%」。LOH 區留下的那條畫成 HP1 是示意（依據：Sohn 組裝中零 SNV 的 contig 全在 hap2）。2:1 區兩條用灰色，因為 2 份那條不固定是 HP1。「克隆結構」半亮：這是 bulk 的等位基因狀態，不是分枝。
+- p8：直接加總的 HP1 比例不能當偏向，因為 HP1 編號跨染色體不對應，偏向會互相抵消或疊加（例：H2009 加總 52.9%，但逐條染色體較多那條占 67.2%）。逐條染色體「較多那條」占比 60.4–76.5%，純隨機 50.5–52.2%；差距主要來自拷貝數（每株 0–8 條染色體只剩一條；CN 差與密度差相關最高 0.95）。PRCGAP 的 COLO829 65.6% 和舊版 Sohn 那批的 61:39 不同，兩批資料不同。chr4 對調是示意，依據是 HG008 對 GIAB 的實測 14／23 條對調（chr4 確實是對調的一條）。編號依據〔程式〕：Verkko v2.0–v2.2.1 `src/scripts/cluster.py` 在 Hi-C／Pore-C 模式下逐個連通區塊（約一條染色體）用 Kernighan–Lin 切兩群，起始分組用亂數（固定 seed，試 100 個起點），第 0 群寫成 haplotype1（`8-hicPipeline.sm` `--hap-names haplotype1,haplotype2`）；不用親代資料，也沒有跨區塊對齊編號的步驟。
 - p9：PRCGAP 是預印本，未經同儕審查。7 株的區段間差異比純隨機大（卡方／自由度 1.8–4.4，HG008 1.21），229 段中 7 段校正後顯著（例：H209 chr8 120–140 Mb 182 比 92），原因沒查。hap1／hap2 標籤每條染色體可能對調，所以不算全基因組 hap1:hap2，只用「較多那條」。全部是長期培養的細胞株。天平與星數是示意，天平不依數值傾斜。過濾條件的 `point_mutation_other`、`GRCh38_flag` 兩欄是用 HG008 對 GIAB 選的，只在 HG008 驗證過。
 - p10：雙鹼基突變（例如 CC>TT）可能撐高 0–100 bp 與對照，程式沒有分開（推論，待重算）；它解釋不了 HG008 100–300 bp 仍有 0.96；HG008 對照通過只表示近距離定相可用，不能證明 1 kb 以上定相正確；phase block 小圖是示意。≥1 kb 未標數值的點：HG008 0.477、0.504，COLO829 0.506、0.506（`pairs_by_distance.tsv`）；COLO829 ≥1 Mb 只有 8 對（0.500），也標未定。
 - p11：細胞株體外演化不等於病人腫瘤；選殖株不等於遺傳 clone；部分選殖株在第 14、19 代分離（H、G 的代數未查到），單細胞是第 23 代；「單細胞衍生」原文待核對；PTA dropout、約 5 顆疑似混合細胞、1 顆細胞順序和樹不符。
@@ -105,6 +105,8 @@
 
 ## 規則檢查（2026-11-08）
 
+2026-11-08 p8 改版（使用者要求改成 8 株全部 SNV 加總；備份 `a255bb0`，線上版存 `live_backup/`）：p7 講稿橋接句改成「下一頁是 8 株的全部 SNV 怎麼分在兩條」；deck.json 第 3 段說明同步。p8 圖外文字：0 字（無圖說）。
+
 2026-11-08 p9 改版（P-8 局部修改，使用者選方案 A：8 個小天平）：只重查 p9，W-3 與 E-1 查全冊。p9 圖外文字：圖說 22 字；腳本 0 個錯誤。p5 講稿仍寫「COLO829、HG008 兩株都沒有否定」，和 p9 的 8 株不矛盾，未改。
 
 腳本：`python3 tools/check_slides.py report/2026_11_11_slides/ --titles` → 16 頁，0 個錯誤。
@@ -117,7 +119,7 @@
 5. SNV 階段有 7 個假說，4 個有資料；其餘屬拷貝數階段
 6. 模擬器的三個方案，目前傾向維持獨立 50%（根據見結果段）
 7. 能驗證克隆結構的只有 HG008：long read 多株＋獨立單細胞
-8. COLO829 原始比例 61:39，主要因為一條的大片段變成 LOH
+8. 全部 SNV 加總，HP1 占 46–66%；HP1 編號跨染色體不對應，只能參考
 9. 只比兩條份數相同的區段，8 株的 HP1、HP2 SNV 數大致相等
 10. 兩個局部例外：很近的 SNV 常在同一條、失活的 X 突變較多
 11. HG008 候選樹：單細胞支持 3 層巢狀分枝
