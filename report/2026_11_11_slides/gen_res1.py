@@ -95,74 +95,104 @@ def p8():
 
 
 # ---------------------------------------------------------------- p9 balance
-def balance(s, cx, name, rule, nums, ratio, extra=None):
-    s.text(cx, 40, name, "h", "middle")
-    # fulcrum and beam
-    s.poly([(cx, 62), (cx - 18, 96), (cx + 18, 96)], "ink2")
-    s.line(cx - 170, 62, cx + 170, 62, "ink2", 5)
+# PRCGAP 8 cell lines, windows where both haplotypes have the same copy number (lab report rule:
+# both retained >= 80 %, mean CN difference < 0.3, >= 10 SNVs, autosomes, 20 Mb on CHM13).
+P9_ORDER = ["COLO829", "HG008", "H1437", "H2009", "H209", "H2126", "HCC1937", "HCC1954"]
+# Independent check of PRCGAP's haplotype calls: HG008 vs GIAB (97.4 %); COLO829 partly, by read linkage.
+P9_CHECK = {"HG008": ("GIAB 核對 ✓", "c4"), "COLO829": ("部分核對", "stdis")}
+P9_FEW = {"H2126", "HCC1937"}  # <= 6 windows
+
+
+def expected_larger(n):
+    """E[max(X, n-X)] for X ~ Binomial(n, 1/2): the larger side's count under pure chance."""
+    from math import comb
+    return sum(comb(n, k) * max(k, n - k) for k in range(n + 1)) / 2 ** n
+
+
+def load_balanced():
+    rows = csv.DictReader(open(LAB / "2026-11-06_prcgap_hap_snv_ratio/per_window_20mb.tsv"), delimiter="\t")
+    out = {}
+    for r in rows:
+        a, b = int(r["hap1_snv"]), int(r["hap2_snv"])
+        d = out.setdefault(r["sample"], [0, 0, 0.0, 0])  # windows, larger, expected larger, total
+        d[0] += 1
+        d[1] += max(a, b)
+        d[2] += expected_larger(a + b)
+        d[3] += a + b
+    return {k: (w, lg / t, ex / t) for k, (w, lg, ex, t) in out.items()}
+
+
+def mini_balance(s, cx, y, w=76):
+    """A level beam with an HP1 pan and an HP2 pan."""
+    s.poly([(cx, y), (cx - 12, y + 24), (cx + 12, y + 24)], "ink2")
+    s.line(cx - w / 2 - 6, y, cx + w / 2 + 6, y, "ink2", 4)
     for side, c in ((-1, "hp1"), (1, "hp2")):
-        px = cx + side * 150
-        s.line(px - 70, 112, px, 62, "line2", 1.5)
-        s.line(px + 70, 112, px, 62, "line2", 1.5)
-        s.path(f"M{px - 80} 112 Q{px} 150 {px + 80} 112 Z", None, 0, "panel2")
-        s.bar(px - 66, 122, 132, c, 18)
-        stars_on_bar(s, px - 66, 132, 122, 5, r=7)
-        s.text(px, 172, "HP1" if c == "hp1" else "HP2", "b", "middle", c)
-    s.text(cx, 200, rule, "s", "middle")
-    s.text(cx, 228, nums, "b", "middle")
-    s.text(cx, 256, ratio, "b", "middle", "c4")
-    if extra:
-        s.text(cx, 280, extra, "s", "middle", "mute")
+        px = cx + side * w / 2
+        s.line(px - 20, y + 30, px, y, "line2", 1.2)
+        s.line(px + 20, y + 30, px, y, "line2", 1.2)
+        s.path(f"M{px - 24} {y + 30} Q{px} {y + 50} {px + 24} {y + 30} Z", None, 0, "panel2")
+        s.bar(px - 19, y + 33, 38, c, 9)
+        stars_on_bar(s, px - 19, 38, y + 33, 2, r=4)
 
 
 def p9():
     pid = "balance"
     s = S(pid, 1200, 460)
-    tag(s, 10, 32, "實際結果")
+    data = load_balanced()
+    assert sorted(data) == sorted(P9_ORDER) and sum(v[0] for v in data.values()) == 229, data
     n3_ladder(s, LADDER_X, LADDER_Y, lit=[0])
-    balance(s, 260, "COLO829", "整個組裝扣掉 >5 Mb 無 SNV 的片段", "9.34 vs 9.31 個／Mb", "比值 1.004 ✓",
-            "每 Mb、扣掉流失片段；和第 8 頁的 2:1 區算法不同")
-    balance(s, 760, "HG008", "體染色體，只算該條在腫瘤裡 ≥ 1 份的片段", "2.31 vs 2.39 個／Mb", "比值 0.97 ✓")
-    s.line(510, 30, 510, 270, "line", 2)
-    tag(s, 950, 180, "星數＝示意", "demo")
 
-    # PRCGAP barcode
-    s.rect(10, 290, 1180, 162, "panel", r=10)
-    s.text(28, 322, "PRCGAP：公開的 8 株細胞株 long read 組裝（含上面兩株）", "h")
-    s.text(28, 350, "229 個 20 Mb 區段，兩條份數相同；一格＝一個區段", "s")
-    rows = list(csv.DictReader(open(LAB / "2026-11-06_prcgap_hap_snv_ratio/per_window_20mb.tsv"), delimiter="\t"))
-    groups = []
-    for r in rows:
-        if not groups or groups[-1][0] != r["sample"]:
-            groups.append((r["sample"], []))
-        groups[-1][1].append(float(r["p_bonferroni"]) < 0.05)
-    gap, x, cw = 12, 28.0, (1172 - 28 - 12 * 7) / len(rows)
-    y0, hh = 366, 44
-    sig = 0
-    others = []
-    for gi, (name, flags) in enumerate(groups):
-        gx = x
-        for f in flags:
-            s.rect(x + 0.4, y0, cw - 0.8, hh, "ink" if f else "panel3", r=0)
-            if f:
-                sig += 1
-                s.poly([(x + cw / 2, y0 - 2), (x + cw / 2 - 6, y0 - 11), (x + cw / 2 + 6, y0 - 11)], "ink")
-            x += cw
-        if name in ("COLO829", "HG008"):
-            s.text((gx + x) / 2, y0 + hh + 24, name, "s", "middle")
-        elif not others:
-            others = [gx, 0]
-        if others:
-            others[1] = x
-        x += gap
-    assert len(rows) == 229 and sig == 7, (len(rows), sig)
-    s.text((others[0] + others[1]) / 2, y0 + hh + 24, "其他 6 株", "s", "middle")
-    s.text(1172, 322, "大致各半 ✓　區段間差異比隨機大 ✗", "s", "end")
-    s.text(1172, 350, "▼ 深色 7 格＝校正後顯著", "s", "end")
+    # inset: which 20 Mb windows are counted
+    s.rect(10, 6, 740, 134, "panel", r=10)
+    s.text(28, 36, "只算兩條份數相同的 20 Mb 區段", "h")
+    tag(s, 360, 36, "示意", "demo")
+    cases = [  # (HP1 copies, HP2 copies, HP2 lost, counted)
+        (1, 1, False, True), (2, 1, False, False), (1, 0, True, False)]
+    for i, (n1, n2, lost, ok) in enumerate(cases):
+        x = 30 + i * 240
+        y = 62
+        for k in range(n1):
+            s.bar(x, y + k * 16, 100, "hp1", 10)
+            stars_on_bar(s, x, 100, y + k * 16, 3, r=5)
+        y2 = y + n1 * 16 + 4
+        if lost:
+            s.bar(x, y2, 100, "hp2", 10, dash=True)
+        for k in range(n2):
+            s.bar(x, y2 + k * 16, 100, "hp2", 10)
+            stars_on_bar(s, x, 100, y2 + k * 16, 3, r=5)
+        lab = {0: "1 份 : 1 份", 1: "2 份 : 1 份", 2: "一條流失"}[i]
+        s.text(x + 112, 84, lab, "b")
+        s.text(x + 112, 114, "算 ✓" if ok else "不算 ✗", "b", "start", "c4" if ok else "stdis")
 
-    notes = "這頁要看的是，扣掉流失的片段後，兩條的 SNV 密度接近各半。左邊 COLO829 扣掉超過 5 Mb 沒有 SNV 的片段，每 Mb 9.34 對 9.31，比值 1.004；這是每 Mb 的密度，和第 8 頁 2:1 區的算法不同。中間 HG008 只算體染色體裡、該條在腫瘤至少 1 份的片段，2.31 對 2.39，比值 0.97。下面是 PRCGAP，一個公開的 8 株細胞株 long read 組裝資料。兩條份數相同的 229 個 20 Mb 區段，一格一段，深色 7 格校正後顯著。所以大致各半，但區段之間的差異比隨機大。"
-    write_page(pid, page(pid, "扣掉流失片段後，COLO829 和 HG008 的兩條接近各半；8 株的區段比較大致各半但不均勻", s,
-                         "扣掉流失片段後，兩條密度接近 1:1；區段之間仍有差異。", notes))
+    # 8 cell lines
+    tag(s, 770, 132, "實際結果")
+    s.text(900, 132, "▼ 8 株", "s")
+    s.text(770, 40, "實測＝SNV 較多那條的占比", "s")
+    s.text(770, 70, "純隨機也會大於 50%", "s")
+    cw, ch, gx, gy = 292, 148, 10, 152
+    for i, name in enumerate(P9_ORDER):
+        win, obs, exp = data[name]
+        x = gx + (i % 4) * (cw + 4)
+        y = gy + (i // 4) * (ch + 6)
+        s.rect(x, y, cw, ch, "panel", r=10)
+        s.text(x + 14, y + 30, name, "h")
+        chk, col = P9_CHECK.get(name, ("未獨立驗證", "mute"))
+        s.text(x + cw - 12, y + 30, chk, "s", "end", col)
+        mini_balance(s, x + 70, y + 62)
+        s.text(x + 150, y + 76, f"實測 {obs * 100:.1f}%", "b")
+        s.text(x + 150, y + 104, f"隨機 {exp * 100:.1f}%", "s")
+        few = name in P9_FEW
+        s.text(x + 150, y + 132, f"{win} 段" + ("（少）" if few else ""), "s", "start", "stdis" if few else "mute")
+    diffs = [(data[n][1] - data[n][2]) * 100 for n in P9_ORDER]
+    print("p9 obs-random gap (pp):", [f"{d:.1f}" for d in diffs])
+
+    notes = ("這頁看 PRCGAP 這個公開資料集的 8 株細胞株。上面是算法：只算兩條份數相同的 20 Mb 區段，"
+             "1 份對 1 份就算，2 份對 1 份或一條流失就不算。下面一格一株。"
+             "實測是每個區段裡 SNV 較多那條的占比，這個數字一定大於一半，所以旁邊放純隨機的期望。"
+             "8 株都只比隨機高一點，例如 HG008 是 55.8 對 55.2，最大的 HCC1954 是 58.3 對 53.9。"
+             "右上角是有沒有獨立核對，只有 HG008 核對過。")
+    write_page(pid, page(pid, "只比兩條份數相同的區段，8 株的 HP1、HP2 SNV 數大致相等", s,
+                         f"實際結果：實測只比純隨機高 {min(diffs):.1f}–{max(diffs):.1f} 個百分點。", notes))
     return notes
 
 
