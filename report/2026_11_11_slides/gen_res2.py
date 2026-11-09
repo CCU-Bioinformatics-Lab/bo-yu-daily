@@ -101,57 +101,66 @@ def tree_legend(s, pts, sw=4):
 # ---- p11 ---------------------------------------------------------------------------
 
 def p11():
+    # 2026-11-09 v2 (user): show only the 4 groups the single cells support. A clone group is a circle of cells,
+    # cells carry the branch mutations (stars). Numbers: lab_report/2026-11-07_hg008_sc_check/ branch_summary
+    # (127 -> 111 cells, 14 -> 48, 68 -> 16, 8 cells without 127). Groups: 8, 111-48, 48-16, 16.
+    # Clone letters per group follow the candidate tree (H | G, A, B | E, F | C, D); the 4-, 31- and 17-SNV
+    # branches are not confirmed by single cells and are merged into their group.
+    import math
     s = S("hg008-tree", 1200, 462)
-    s.text(0, 26, "沒有真值樹；樹由 8 株選殖株推論；用 short read 單細胞獨立檢查", "h")
+    RED, PUR, GOLD = "mut", "c2", "c3"
+    s.text(0, 26, "8 株選殖株（long read）推出的樹，用 119 顆單細胞（short read）檢查後，可靠的是這 4 群", "h")
 
-    # Left: how the tree was inferred.
-    s.rect(0, 50, 222, 400, "panel", None, r=10)
-    s.text(111, 80, "8 株選殖株", "b", "middle")
-    for i in range(8):
-        tube(s, 22 + i * 25.5, 96, w=14, h=36)
-    s.text(111, 160, "PacBio long read", "s", "middle")
-    pill(s, 30, 196, "多株＝上限參考")
-    s.arrow(111, 214, 111, 238, sw=2.5)
-    s.poly([(36, 244), (186, 244), (126, 296), (96, 296)], "panel3")
-    s.text(111, 322, "排除因流失才缺", "s", "middle")
-    s.text(111, 345, "的共有 SNV", "s", "middle")
-    s.rect(18, 362, 186 * 261 / 301, 26, "c4", None, r=3)
-    s.rect(18 + 186 * 261 / 301 + 2, 362, 186 * 40 / 301 - 2, 26, "panel3", None, r=3)
-    s.text(18, 412, "261 相容", "s", "start", "c4")
-    s.text(204, 412, "40 不相容", "s", "end")
-    s.text(111, 438, "共 301 個", "s", "middle")
-    s.arrow(228, 200, 262, 200, sw=2.5)
+    gx = [150, 450, 750, 1050]       # group centres
+    gy, gr = 344, 68
+    groups = [(8, 0, "選殖株 H"), (63, 1, "G、A、B"), (32, 2, "E、F"), (16, 3, "C、D")]
+    # binary tree (2026-11-09 v3, user): root -> (group 1, R); R -> (group 2, P); P -> (group 3, group 4).
+    # Internal nodes sit above the middle of their children; edges are straight lines.
+    top = gy - gr
+    P = ((gx[2] + gx[3]) / 2, 204)
+    R = ((gx[1] + P[0]) / 2, 126)
+    root = ((gx[0] + R[0]) / 2, 50)
+    edges = [(root, (gx[0], top), None), (root, R, (RED, "127")),
+             (R, (gx[1], top), None), (R, P, (PUR, "14")),
+             (P, (gx[2], top), None), (P, (gx[3], top), (GOLD, "68"))]
+    for (x1, y1), (x2, y2), mut in edges:
+        if mut:
+            col, lab = mut
+            s.line(x1, y1, x2, y2, col, 6)
+            mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+            s.star(mx - 4, my - 16, 10, col)
+            s.text(mx + 16, my - 8, f"{lab} 個 SNV", "b", "start", col)
+        else:
+            s.line(x1, y1, x2, y2, "ink2", 2.5)
+    for nx, ny in (root, R, P):
+        s.circle(nx, ny, 7, "ink2")
 
-    # Middle: the candidate tree (elbow layout). Leaf order H G A B E F C D.
-    P = hg008_tree(s, 292, 62, (62, 120, 176, 232, 288), 318, numbers=True)
-    tag(s, 640, 64, "推論", "infer")
-    s.text(712, 64, "數字＝SNV 數", "s", "start", "mute")
+    def cell(x, y, stars):
+        s.circle(x, y, 12, "on", "cellline", 1.5)
+        cols = [RED, PUR, GOLD][:stars]
+        for j, c in enumerate(cols):
+            s.star(x + (j - (len(cols) - 1) / 2) * 7.5, y + 1, 3.8, c)
 
-    tree_legend(s, [(262, 432), (450, 432), (616, 432)])
+    fills = ["panel", "panel2", "panel3", "hl"]
+    for (n, stars, clones), x, fill in zip(groups, gx, fills):
+        s.circle(x, gy, gr, fill, "cellline", 2.5)
+        s.text(x, gy - gr + 26, f"{n} 顆", "h", "middle")
+        k = max(3, round(n / 6))                                   # one drawn cell ~ 6 real cells (示意)
+        pts = []                                                   # hexagonal packing, nearest the centre first
+        for row in range(-3, 4):
+            for col in range(-3, 4):
+                px, py = col * 27 + (row % 2) * 13.5, row * 24
+                if math.hypot(px, py) <= 42:
+                    pts.append((math.hypot(px, py), px, py))
+        for _, px, py in sorted(pts)[:k]:
+            cell(x + px, gy + 10 + py, stars)
+        s.text(x, gy + gr + 28, clones, "b", "middle", "ink2")
 
-    # Right: 119 single cells, nested.
-    cx, yb = 892, 336
-    s.text(cx, 96, "119 顆單細胞", "b", "middle")
-    for r, n, fill in [(108, "119", "panel"), (88, "111", "panel2"), (60, "48", "panel3"), (34, "16", "line2")]:
-        s.circle(cx, yb - r, r, fill, "cellline", 2)
-    s.text(cx, 186, "111", "b", "middle")
-    s.text(cx, 244, "48", "b", "middle")
-    s.text(cx, 309, "16", "b", "middle", "on")
-    # Leader lines from each ring to the branch it supports.
-    for (rx, ry), (tx, ty) in [((818, 200), (P["x7"], 90)), ((841, 244), (P["xCDEF"], 204)), ((858, 302), (P["xCD"], 262))]:
-        s.path(f"M{rx} {ry} L770 {ty} L{tx + 6} {ty}", "c4", 2.5, dash=True)
-        s.circle(tx, ty, 6, "c4")
-    s.text(cx, 368, "short read，獨立量測", "s", "middle")
-
-    # Bottom right: copy number that does not fit the tree.
-    for i, (chrom, a, b) in enumerate([("chr5", .62, .9), ("chr12", .05, .3)]):
-        y = 400 + i * 38
-        s.text(768, y + 6, chrom, "s")
-        s.bar(830, y, 150, "panel3", h=14)
-        s.rect(830 + 150 * a, y - 7, 150 * (b - a), 14, "mut", None, r=3)
-        s.xmark(998, y, 8)
-    s.text(1012, 440, "拷貝數不符", "s")
-    # 2026-11-08: the three-layer validation ladder was removed at the user's request (not agreed).
+    s.text(1180, 64, "★ 同一組突變：選殖株和單細胞都看到", "s", "end", "ink2")
+    tag(s, 976, 98, "細胞數量示意", "demo")
+    s.text(1180, 128, "顆數是實際結果", "s", "end", "mute")
+    s.text(0, 64, "另外 4、31、17 個 SNV 的分枝", "s", "start", "mute")
+    s.text(0, 88, "單細胞還沒證實，併在同一群", "s", "start", "mute")
     return s
 
 
@@ -324,11 +333,11 @@ def p13():
 
 NOTES = {
     "hg008-tree": (
-        "這頁要看的是：HG008 沒有真值樹，但主要的 3 層有單細胞支持。"
-        "左邊是推論步驟：8 株選殖株用 PacBio long read 定序，排除因為流失才缺的共有 SNV，301 個有 261 個相容。"
-        "中間是這棵候選樹，枝上的數字是 SNV 數。實線那三層，127、14、68，右邊的單細胞都看得到：119 顆裡 111 顆、48 顆、16 顆，一層包一層。"
-        "A、B 那段只有部分支持；只有 4 個 SNV 的那層最弱，虛線的部分還沒驗證。"
-        "右下角 chr5、chr12 的拷貝數和樹不符。多株只當上限參考。"
+        "這頁要看的是：HG008 的樹，用單細胞檢查後，可靠的是 4 群。"
+        "每個大圓是一群細胞，小圓是細胞，裡面的星星是它帶的突變。"
+        "最左邊 8 顆沒有紅星，對應選殖株 H；紅星那段有 127 個 SNV，只帶紅星的有 63 顆，對應 G、A、B；"
+        "再往右多了紫星 14 個 SNV，32 顆，對應 E、F；最右邊三種星都有，金星 68 個 SNV，16 顆，對應 C、D。"
+        "選殖株和單細胞看到同一組突變，所以這 4 群互相確認。底下那幾段分枝，單細胞還沒證實，併在同一群。"
     ),
     "tree-shape": (
         "這裡可以看到，HG008 的分岔形狀落在 diplosim 的範圍內，跟枝長有關的三個指標在邊緣。"
@@ -348,12 +357,12 @@ NOTES = {
 }
 
 TITLES = {
-    "hg008-tree": "HG008 候選樹：單細胞支持 3 層巢狀分枝",
+    "hg008-tree": "HG008 候選樹：選殖株和單細胞都支持 4 群",
     "tree-shape": "HG008 和 diplosim 的樹形：分岔形狀在範圍內，枝長在邊緣",
     "not-yet": "還做不到的三件事：COLO829 對照、親源資料、HG008 末端",
 }
 CAPTIONS = {
-    "hg008-tree": "實線三層有單細胞支持；A、B 只部分支持，其餘末端還沒驗證。",
+    "hg008-tree": "",
     "tree-shape": "HG008 只有一棵樹，所以只能說不矛盾。",
     "not-yet": "",
 }
