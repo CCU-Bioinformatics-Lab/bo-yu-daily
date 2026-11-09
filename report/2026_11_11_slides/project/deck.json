@@ -49,7 +49,7 @@
       "start": "ratio-flow"
     },
     "s3": {
-      "description": "結果（含失敗）：8 株全部 SNV 加總、COLO829 T2T、兩條份數相同時接近各半、HG008 候選樹與樹形",
+      "description": "結果（含失敗）：8 株全部 SNV 加總、COLO829 T2T、兩條份數相同時接近各半、HG008 的資源",
       "start": "colo-loh"
     },
     "s4": {

@@ -101,83 +101,81 @@ def tree_legend(s, pts, sw=4):
 # ---- p11 ---------------------------------------------------------------------------
 
 def p11():
-    # 2026-11-09 v4 (user: "still odd, look at how PhyClone draws trees"). PhyClone Fig. 6 style: every node is a
-    # clone (internal ones too), labelled with the SNVs it gains; thin arrows parent -> child; a single child sits
-    # straight below; a clone defined only by lacking its parent's... mutations has a dashed border.
-    # Our twist (user, earlier): each clone is a circle of cells, and each cell shows the stars it carries.
-    # Numbers: lab_report/2026-11-07_hg008_sc_check/ (127 -> 111 cells, 14 -> 48, 68 -> 16, 8 cells without 127)
-    # and 2026-11-07_hg008_tree_rebuild/tables/tree_summary.tsv (truncal 7,784 at VAF 0.25, QUAL 20).
-    import math
+    # 2026-11-09 v5 (user): the tree page was replaced by "what HG008 resources exist and what each provides".
+    # Sources: docs/tumor_sample.md 「HG008」 (shared copy /big8_disk/yungjen114/data/HG008/), docs/index.md
+    # (clones + 119 cell VCFs in /big8_disk/boyu114/benchmark_data/GIAB/HG008/), research/literature/surveys/
+    # independent_evidence_2026-11-06/summary.md (120 CNV cells, dGH WGD fractions), PRCGAP Sakamoto 2026.
+    import lib
+    from lib import width
     s = S("hg008-tree", 1200, 462)
-    RED, PUR, GOLD = "mut", "c2", "c3"
-    s.text(0, 26, "8 株選殖株（long read）推樹", "b", "start", "ink2")
-    s.text(0, 52, "119 顆單細胞（short read）檢查", "b", "start", "ink2")
+    cw, th, gap = 392, 124, 8
+    cols = [("bulk：和模擬資料同一類", "panel"), ("參考答案（不是演化真值）", "panel2"), ("克隆結構", "panel3")]
 
-    def cell(x, y, stars):
-        s.circle(x, y, 10, "on", "cellline", 1.4)
-        if stars == "H":                              # H-private SNVs: partial support only -> pale star
-            s.star(x, y + 1, 4.2, "line2")
-            return
-        cols = [RED, PUR, GOLD][:stars]
-        for j, c in enumerate(cols):
-            s.star(x + (j - (len(cols) - 1) / 2) * 6.5, y + 1, 3.3, c)
+    def ico_tubes(x, y, n, fills):
+        for i in range(n):
+            tube(s, x + 12 + i * 24, y, w=16, h=40)
+            if fills:
+                s.rect(x + 12 + i * 24 - 6, y + 34 - 16 * fills[i], 12, 16 * fills[i], "c4", None, r=2, op=0.6)
 
-    HEX = [(0, 0), (-20, 0), (20, 0), (-10, -17), (10, -17), (-10, 17), (10, 17)]
+    def ico_doc(x, y):
+        s.rect(x + 14, y - 4, 44, 54, "on", "ink2", r=4, sw=2)
+        for k in range(3):
+            s.line(x + 22, y + 8 + k * 11, x + 50, y + 8 + k * 11, "line2", 2)
+        s.circle(x + 58, y + 44, 12, "c4")
+        s.path(f"M{x + 52} {y + 44} L{x + 56} {y + 49} L{x + 64} {y + 39}", "on", 2.6)
 
-    def clone(x, y, n, stars, tint, dashed=False, r=40):
-        if tint:
-            s.circle(x, y, r, tint, None, op=0.16)
-        s.circle(x, y, r, None if tint else "paper", "cellline", 2.2, dash=dashed)
-        k = min(7, max(3, round(n / 9)))              # one drawn cell ~ 9 real cells (示意)
-        for px, py in HEX[:k]:
-            cell(x + px, y + py, stars)
+    def ico_haps(x, y):
+        for k, c in enumerate(("hp1", "hp2")):
+            s.bar(x + 4, y + 8 + k * 22, 76, c, 11)
+        for sx in (20, 46):
+            s.star(x + sx, y + 13, 5)
+        s.star(x + 34, y + 35, 5)
 
-    def arrow(x1, y1, x2, y2, mut=None):
-        col = mut[0] if mut else "ink2"
-        s.arrow(x1, y1, x2, y2, c=col, sw=4 if mut else 2, head=11 if mut else 9)
-        if mut:
-            mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-            s.star(mx + 22, my, 9, col)
-            s.text(mx + 38, my + 7, f"+{mut[1]} 個 SNV", "b", "start", col)
+    def ico_chrom(x, y):
+        for k in range(4):
+            s.rect(x + 10 + k * 18, y + (k % 2) * 6, 10, 46 - (k % 2) * 6, "panel3", "ink2", r=5, sw=1.5)
+        s.rect(x + 10, y + 50, 64, 3, "ink2", None, r=1)
 
-    # root: the common ancestor (SNVs all 8 clones share)
-    rx, ry = 560, 52
-    s.rect(rx - 118, ry - 26, 236, 52, "panel3", "cellline", r=26, sw=2)
-    s.text(rx, ry - 2, "共同祖先", "b", "middle")
-    s.text(rx, ry + 19, "8 株都有的 7,784 個 SNV", "s", "middle", "ink2")
+    def ico_clones(x, y):
+        for k in range(8):
+            s.circle(x + 12 + (k % 4) * 20, y + 8 + (k // 4) * 22, 8, "paper", "cellline", 1.6)
 
-    # level 1: group 1 (lacks red, dashed) and group 2 (+127)
-    g1, g2 = (380, 170), (740, 170)
-    arrow(rx - 70, ry + 26, g1[0] + 20, g1[1] - 40)
-    arrow(rx + 70, ry + 26, g2[0] - 20, g2[1] - 40, (RED, 127))
-    clone(*g1, 8, "H", None, dashed=True)
-    clone(*g2, 63, 1, RED)
-    # chain straight down: group 3 (+14), group 4 (+68)
-    g3, g4 = (740, 296), (740, 418)
-    clone(*g3, 32, 2, PUR)
-    clone(*g4, 16, 3, GOLD)
-    arrow(g2[0], g2[1] + 40, g3[0], g3[1] - 40, (PUR, 14))
-    # g4 is close; short arrow
-    arrow(g3[0], g3[1] + 40, g4[0], g4[1] - 40, (GOLD, 68))
+    def ico_cells(x, y, faint=False):
+        for k in range(15):
+            s.circle(x + 8 + (k % 5) * 16, y + 4 + (k // 5) * 16, 6, "panel3" if faint else "on", "cellline", 1.2)
+            if not faint and k % 3 == 0:
+                s.star(x + 8 + (k % 5) * 16, y + 5 + (k // 5) * 16, 3, "mut")
 
-    # which clones each group holds
-    s.star(g1[0] - 30, g1[1] + 62, 8, "line2")
-    s.text(g1[0] - 18, g1[1] + 68, "H 專屬，部分支持", "s", "start", "mute")
-    for (x, y), n, lab in ((g1, 8, "選殖株 H"), (g2, 63, "選殖株 G、A、B"), (g3, 32, "選殖株 E、F"), (g4, 16, "選殖株 C、D")):
-        s.text(x - 56, y - 4, f"{n} 顆細胞", "h", "end")
-        s.text(x - 56, y + 22, lab, "s", "end", "ink2")
-
-    # legend
-    lx = 900
-    s.text(lx, 150, "每個圓＝一群細胞（一個 clone）", "s", "start", "ink2")
-    s.text(lx, 176, "★ 新的突變：選殖株和", "s", "start", "ink2")
-    s.text(lx, 198, "　單細胞都看到", "s", "start", "ink2")
-    s.circle(lx + 14, 236, 14, None, "cellline", 2, dash=True)
-    s.text(lx + 38, 242, "只靠「沒有紅星」定義", "s", "start", "ink2")
-    tag(s, lx, 290, "細胞數量示意", "demo")
-    s.text(lx, 330, "顆數是實際結果", "s", "start", "mute")
-    s.text(lx, 400, "另外 4、31、17 個 SNV 的分枝", "s", "start", "mute")
-    s.text(lx, 424, "單細胞還沒證實，併在同一群", "s", "start", "mute")
+    tiles = [
+        [("腫瘤 bulk long read", "ONT、ONT-UL、PacBio", "→ HP、VAF、拷貝數", "ok", lambda x, y: ico_tubes(x, y, 3, None)),
+         ("正常組織 2 種", "胰臟、十二指腸", "→ 扣掉 germline、定相", "ok", lambda x, y: ico_tubes(x, y, 2, None)),
+         ("purity 混合系列", "ONT，腫瘤和正常混合", "→ purity 對 call 的影響", "ok",
+          lambda x, y: ico_tubes(x, y, 3, [0.9, 0.55, 0.25]))],
+        [("NIST 體細胞基準", "草稿：SNV、拷貝數", "→ truncal SNV、HP、CN", "ok", ico_doc),
+         ("PRCGAP 組裝結果", "Sakamoto 2026 預印本", "→ 每個 SNV 在哪條 HP", "ok", ico_haps),
+         ("染色體影像", "第 21、53、101 代", "→ WGD 細胞比例", "paper", ico_chrom)],
+        [("8 株選殖株", "PacBio，第 14、19 代", "→ 候選樹（推論）", "ok", ico_clones),
+         ("119 顆單細胞", "PTA、short read，第 23 代", "→ 獨立檢查分枝", "ok", lambda x, y: ico_cells(x, y)),
+         ("120 顆低深度單細胞", "只量拷貝數", "→ 拷貝數分群", "no", lambda x, y: ico_cells(x, y, True))],
+    ]
+    status = {"ok": ("✓ 本機", "c4"), "no": ("沒下載", "mute"), "paper": ("只有論文", "mute")}
+    for c, ((head, fill), col) in enumerate(zip(cols, tiles)):
+        x0 = c * (cw + 12)
+        s.rect(x0, 0, cw, 34, fill, None, r=8)
+        s.text(x0 + cw / 2, 24, head, "b", "middle")
+        for r, (name, spec, gives, st, icon) in enumerate(col):
+            y0 = 44 + r * (th + gap)
+            s.rect(x0, y0, cw, th, "paper", "line2", r=10, sw=1.5)
+            icon(x0 + 6, y0 + 34)
+            tx = x0 + 104
+            lab, lc = status[st]
+            s.text(x0 + cw - 12, y0 + 28, lab, "s", "end", lc)
+            s.text(tx, y0 + 30, name, "b")
+            s.text(tx, y0 + 62, spec, "s", "start", "mute")
+            s.text(tx, y0 + 96, gives, "s", "start", "c4" if st == "ok" else "ink2")
+            for txt, cls in ((spec, "s"), (gives, "s")):
+                assert width(txt, lib.SIZES[cls]) < cw - 104 - 8, txt
+            assert width(name, lib.SIZES["b"]) + width(lab, lib.SIZES["s"]) < cw - 104 - 16, name
     return s
 
 
@@ -350,10 +348,10 @@ def p13():
 
 NOTES = {
     "hg008-tree": (
-        "這頁要看的是：HG008 的樹，用單細胞檢查後，可靠的是 4 群。畫法照 PhyClone：每個圓是一個 clone，箭頭從祖先指向後代。"
-        "最上面是 8 株共有的 7,784 個 SNV。往左是 8 顆沒有紅星的細胞，對應選殖株 H，虛線表示只靠沒有紅星來定義，淡色星是 H 專屬突變，只有部分支持。"
-        "往右多了紅星 127 個 SNV，63 顆，對應 G、A、B；再往下多紫星 14 個，32 顆，對應 E、F；最下面多金星 68 個，16 顆，對應 C、D。"
-        "彩色星是選殖株和單細胞都看到的突變。"
+        "這頁列出 HG008 現在有的資源，分三欄。左欄和模擬資料同一類：腫瘤的 long read bulk、兩種正常組織、腫瘤和正常混合的 purity 系列。"
+        "中欄是參考答案，但不是演化真值：NIST 的體細胞基準、PRCGAP 的組裝結果，還有染色體影像量到的 WGD 比例。"
+        "右欄看克隆結構：8 株選殖株推出候選樹，119 顆單細胞用 PTA 放大後獨立檢查，另有 120 顆只量拷貝數的單細胞。"
+        "右上角寫有沒有在本機。"
     ),
     "tree-shape": (
         "這裡可以看到，HG008 的分岔形狀落在 diplosim 的範圍內，跟枝長有關的三個指標在邊緣。"
@@ -373,7 +371,7 @@ NOTES = {
 }
 
 TITLES = {
-    "hg008-tree": "HG008 候選樹：選殖株和單細胞都支持 4 群",
+    "hg008-tree": "HG008 有三類資源：和模擬同類的 bulk、參考答案、克隆結構",
     "tree-shape": "HG008 和 diplosim 的樹形：分岔形狀在範圍內，枝長在邊緣",
     "not-yet": "還做不到的三件事：COLO829 對照、親源資料、HG008 末端",
 }
