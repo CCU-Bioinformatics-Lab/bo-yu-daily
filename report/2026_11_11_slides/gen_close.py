@@ -106,13 +106,13 @@ def self_check():
         ]),
         ("10-28 會議", 470, 340, [
             (True, ico_back, "開頭接回上次會議", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('outline', 'n-fixes',))} 頁"),
-            (True, ico_abc, "選擇都列候選與理由", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('t2-data', 'options',))} 頁"),
+            (True, ico_abc, "選擇都列候選與理由", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('hypotheses', 'options',))} 頁"),
             (True, ico_flow, "逐步過程有圖", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('ratio-flow', 'hg008-tree',))} 頁"),
         ]),
         ("11-04 會議", 830, 370, [
             (True, ico_reads, "分清模擬真值與觀測", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('n-fixes',))} 頁"),
             (True, ico_hyp, "機制附假說與來源", f"第 {'、'.join(str(ORDER.index(i) + 1) for i in ('hypotheses', 'options',))} 頁"),
-            (True, ico_ladder, "驗證標出支持哪一層", f"第 {ORDER.index('t2-data') + 1}–{ORDER.index('tree-shape') + 1} 頁"),
+            (False, ico_lens, "驗證標出支持哪一層", "三層標示未定案，已移除"),
             (True, ico_gear, "有 AI 環境改善頁", f"第 {ORDER.index('ai-env') + 1} 頁"),
         ]),
     ]
@@ -139,13 +139,13 @@ def self_check():
             ico(s, x + 84, cy)
             s.text(x + 120, cy - 5, label, "t")
             s.text(x + 120, cy + 21, why, "s", "start", "ink2" if ok else "mut")
-    notes = ("這頁是上次會議要我們報告前自己檢查的清單，三次會議加起來 13 條，9 條通過，4 條沒通過。"
-             "右邊兩欄，10-28 和 11-04 的 7 條都通過，旁邊寫的是在哪一頁做到。"
-             "沒通過的 4 條都在左邊 10-21 這欄，用紅框標出來。"
+    notes = ("這頁是上次會議要我們報告前自己檢查的清單，三次會議加起來 13 條，8 條通過，5 條沒通過。"
+             "中間 10-28 的 3 條都通過，旁邊寫的是在哪一頁做到；右邊 11-04 有 1 條沒通過：驗證支持哪一層，這個標示還沒定案，這次先拿掉。"
+             "左邊 10-21 這欄有 4 條沒通過，用紅框標出來。"
              "第一，資料卡缺了輸入和生成程式兩件事；第二，「六個克隆」沒有寫查了哪裡；"
              "第三，結果頁沒有標出哪些是我自己核對過的；第四，這次沒有生成步驟頁，所以沒辦法檢查能不能脫稿講完。"
              "這四條下次報告會補上。下一頁是 AI 環境改善：這週加的兩條工作規則。")
-    write_page("self-check", page("self-check", "上次會議的檢查清單：9 條通過，4 條未通過", s, notes=notes))
+    write_page("self-check", page("self-check", "上次會議的檢查清單：8 條通過，5 條未通過", s, notes=notes))
 
 
 # --- p15 ----------------------------------------------------------------------------------
@@ -161,95 +161,32 @@ def strike_pair(s, cx, y, wrong, right):
 
 
 def ai_env():
-    H = 465
+    # 2026-11-08 (user comment): keep only the knowledge-base layers; the two rules and the examples were removed.
+    H = 440
     s = S("ai-env", 1200, H)
-    # left: the layered knowledge base
-    s.rect(0, 0, 400, H, "panel", None, r=10)
-    s.text(20, 38, "知識庫分層", "h")
-    layers = [("索引", "先找路徑", "panel2"), ("摘要", "重點", "panel2"), ("全文", "找段落", "panel3"), ("第一手資料", "論文・程式", "hl")]
-    for i, (name, sub, col) in enumerate(layers):
-        y0 = 70 + i * 96
-        half_top, half_bot = 170 - i * 26, 170 - (i + 1) * 26
-        cx = 215
-        s.poly([(cx - half_top, y0), (cx + half_top, y0), (cx + half_bot, y0 + 82), (cx - half_bot, y0 + 82)], col)
-        s.text(cx, y0 + 38, name, "h", "middle")
-        s.text(cx, y0 + 66, sub, "s", "middle")
-    s.arrow(26, 90, 26, 430, c="ink2", sw=2.5)
-    s.text(36, 455, "不夠才往下讀", "s")
+    s.rect(0, 0, 1200, H, "panel", None, r=10)
+    layers = [("索引", "先找路徑", "panel2", "research/index.md：每篇一列，路徑＋一句話＋關鍵字"),
+              ("摘要", "重點", "panel2", "summary.md：結論與數字，標〔論文〕〔推論〕"),
+              ("全文", "找段落", "panel3", "fulltext.md：用關鍵字找原句（只留本機）"),
+              ("第一手資料", "論文・程式", "hl", "source.md 指向 PDF、DOI、程式 commit")]
+    cx = 250
+    for i, (name, sub, col, what) in enumerate(layers):
+        y0 = 24 + i * 100
+        half_top, half_bot = 220 - i * 34, 220 - (i + 1) * 34
+        s.poly([(cx - half_top, y0), (cx + half_top, y0), (cx + half_bot, y0 + 86), (cx - half_bot, y0 + 86)], col)
+        s.text(cx, y0 + 40, name, "h", "middle")
+        s.text(cx, y0 + 68, sub, "s", "middle")
+        s.line(cx + half_top + 14, y0 + 43, 520, y0 + 43, "line2", 1.5, dash=True)
+        s.text(536, y0 + 50, what, "t")
+    s.arrow(14, 40, 14, 400, c="ink2", sw=2.5)
+    s.text(24, 428, "不夠才往下讀", "s")
 
-    # right top: the two rules
-    def rule_card(x, title):
-        s.rect(x, 0, 375, 215, "panel", None, r=10)
-        s.text(x + 20, 38, title, "h")
-
-    rule_card(425, "規則一：畫圖前逐項對原文")
-    # draft figure
-    fx, fy = 450, 70
-    s.rect(fx, fy, 120, 110, "on", "ink2", r=6, sw=2)
-    s.bar(fx + 14, fy + 34, 92, "hp1", 12)
-    s.bar(fx + 14, fy + 62, 92, "hp2", 12)
-    s.star(fx + 40, fy + 34, 8)
-    s.star(fx + 78, fy + 62, 8)
-    s.text(fx + 60, fy + 98, "圖", "s", "middle")
-    # source document
-    dx = 655
-    s.rect(dx, fy, 120, 110, "hl", "ink2", r=6, sw=2)
-    for i in range(5):
-        s.line(dx + 14, fy + 18 + i * 14, dx + 106 - (i % 2) * 22, fy + 18 + i * 14, "line2", 2.5)
-    s.text(dx + 60, fy + 98, "原文", "s", "middle")
-    for i, yy in enumerate((fy + 34, fy + 62)):
-        s.line(fx + 124, yy, dx - 4, yy, "ink2", 2, dash=True)
-        seal(s, 612, yy, True, 11)
-    ico_lens(s, 760, 186)
-
-    rule_card(825, "規則二：設計選項帶到週會")
-    for i, L in enumerate("ABC"):
-        s.rect(848, 72 + i * 42, 46, 34, "on", "ink2", r=5, sw=2)
-        s.text(871, 96 + i * 42, L, "h", "middle")
-    s.arrow(905, 125, 960, 125, c="ink2")
-    # meeting: a table with people around it
-    s.rect(990, 136, 170, 26, "panel3", None, r=13)
-    for i, px in enumerate((1010, 1075, 1140)):
-        s.person(px, 80, h=52, fill="c4" if i == 1 else "panel3")
-    s.text(1075, 195, "週會上選", "s", "middle")
-
-
-    # right bottom: effective / not effective
-    s.rect(425, 235, 775, 230, "panel", None, r=10)
-    seal(s, 450, 266, True, 13)
-    s.text(472, 274, "有效", "h", "start", "c4")
-    seal(s, 1035, 266, False, 13)
-    s.text(1057, 274, "無效", "h", "start", "mut")
-    tiles = [(530, "查證", "沒有座標", "有座標，沒作用"),
-             (718, "大綱審查", "控制拷貝數", "扣掉流失片段"),
-             (900, "大綱審查", "兩條都在", "該條 ≥1 份")]
-    for cx, who, wrong, right in tiles:
-        s.rect(cx - 88, 292, 176, 162, "on", None, r=8)
-        s.text(cx, 320, who, "s", "middle")
-        strike_pair(s, cx, 354, wrong, right)
-    s.line(995, 292, 995, 454, "line2", 2)
-    # bad: a summary copied in without checking; one number lands in the wrong cell
-    cx = 1105
-    s.rect(cx - 88, 292, 176, 162, "on", None, r=8)
-    s.text(cx, 320, "子代理摘要", "s", "middle")
-    for i in range(3):
-        for j in range(3):
-            s.rect(cx - 45 + i * 31, 338 + j * 24, 28, 21, "panel2", None, r=2)
-    s.rect(cx - 45 + 62, 338, 28, 21, None, "mut", r=2, sw=2, dash=True)
-    s.rect(cx - 45 + 0, 338 + 48, 28, 21, "mut", None, r=2)
-    s.arrow(cx + 30, 350, cx - 28, 392, c="mut", sw=2)
-    s.text(cx, 434, "數字放錯格", "s", "middle", "mut")
-    # dashed link from rule one down the gap to the first-hand layer
-    s.path("M445 200 Q412 210 412 250 L412 360 Q412 380 392 380 L340 380", "stdis", 2.5, dash=True)
-    s.poly([(328, 380), (340, 373), (340, 387)], "stdis")
-
-    notes = ("這週在工作規則裡加了兩條：畫圖前逐項對原文，和設計選項帶到週會。"
-             "左邊是知識庫的分層，先看索引和摘要，不夠才往下讀全文，最底下是論文和程式這些第一手資料。"
-             "規則一就是畫圖前要讀到最底層，把圖上每一項和原文對過。規則二是設計上的選項，先帶到週會讓老師選，再動手。"
-             "右下是實例：有效的三個，查證抓到「沒有座標」寫錯，其實有座標、只是沒作用；大綱審查抓到兩處說法寫錯。"
-             "無效的一個是子代理的摘要沒核對就採用，數字放錯格。"
-             "接下來回到模擬器的三個方案，最後請老師決定兩件事。")
-    write_page("ai-env", page("ai-env", "本週加了兩條工作規則：畫圖前逐項對原文、設計選項帶到週會", s, notes=notes))
+    notes = ("這週的 AI 環境改善，是把研究知識庫分成四層。"
+             "最上面是索引，每篇論文一列，先在這裡找路徑；第二層是摘要，寫結論和數字，標出哪些是論文、哪些是推論；"
+             "摘要不夠，再到第三層全文，用關鍵字找原句；最底下是第一手資料，就是 PDF、DOI 和程式。"
+             "AI 回答時先從上往下找，不夠才往下讀。"
+             "最後一頁是模擬器的兩個方案。")
+    write_page("ai-env", page("ai-env", "本週把研究知識庫分成四層：索引、摘要、全文、第一手資料", s, notes=notes))
 
 
 # --- p16 ----------------------------------------------------------------------------------
@@ -274,25 +211,22 @@ def decide():
 
     # card two: HG008 tree thumbnail (the p11 tree without numbers) and the N3 ladder
     s.rect(610, 0, 590, H, "panel", None, r=10)
-    s.text(634, 42, "② HG008 能驗證到哪一層？", "h")
+    s.text(634, 42, "② HG008 的候選樹能驗證什麼？", "h")
     s.rect(630, 64, 330, 330, "on", None, r=8)
     hg008_tree(s, 665, 37, (104, 144, 184, 224, 264), 300, tube_w=14, tube_h=32, sw=4, stub=16)
     tree_legend(s, [(980, 110), (980, 150), (980, 190)])
-    # ladder: clone structure lit, evolutionary path unknown
-    n3_ladder(s, 1010, 330, lit=[1])
-    s.text(1172, 271, "?", "big", "middle", "mut")
-    s.arrow(962, 296, 1004, 296, c="c4", sw=2.5)
+    # 2026-11-08: the three-layer validation ladder was removed at the user's request (not agreed).
     s.text(905, 435, "「像」怎麼定義？", "big", "middle", "mut")
 
     notes = ("最後有兩件事想請老師決定。左邊第一件是 SNV 階段的模擬器用哪個方案，三張圖和前一頁相同，都是示意："
              "A 維持獨立 50%，每個 SNV 各半落在 HP1 或 HP2，這是目前傾向；"
              "B 加座標，讓 1 kb 內的 SNV 近距離成簇落在同一條；C 真值多記一欄爸或媽。"
-             "右邊第二件是 HG008 能驗證到哪一層。這是 HG008 的候選樹，實線有單細胞支持、半實線部分支持，"
-             "目前只亮到「克隆結構」，「演化路徑」還是問號。所以想請老師一起定義，模擬和真實資料「像」要怎麼算。")
-    write_page("decide", page("decide", "請老師決定：SNV 階段的模擬器方案，以及 HG008 能驗證到哪一層", s, notes=notes))
+             "右邊第二件是 HG008 的候選樹能驗證什麼。實線有單細胞支持、半實線部分支持。"
+             "想請老師一起定義，模擬和真實資料「像」要怎麼算。")
+    write_page("decide", page("decide", "請老師決定：SNV 階段的模擬器方案，以及 HG008 的候選樹能驗證什麼", s, notes=notes))
 
 
 if __name__ == "__main__":
-    self_check()
+    # self-check was deleted by the user in the deck editor on 2026-11-08; self_check() kept for reference only.
     ai_env()
-    decide()
+    # decide was deleted by the user in the deck editor on 2026-11-08; decide() kept for reference only.

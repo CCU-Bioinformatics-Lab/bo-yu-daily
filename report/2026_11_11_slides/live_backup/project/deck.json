@@ -1,23 +1,73 @@
 {
   "v": 4,
-  "createdOnFiles": {"v": 1, "at": "2026-11-08T14:00:00+08:00"},
-  "lists": "css",
-  "title": "2026-11-11 單點突變模擬的證據與驗證",
+  "attachments": {},
   "cover": "outline",
-  "order": ["outline", "n-fixes", "tasks", "ratio-flow", "hypotheses", "options", "t2-data", "colo-loh", "balance", "local", "hg008-tree", "tree-shape", "not-yet", "self-check", "ai-env", "decide"],
-  "sections": {
-    "s0": {"description": "接回 11-04 會議：研究目的、上次的問題與決議現況", "start": "outline"},
-    "s1": {"description": "本週兩個任務：SNV 落在哪條的證據、克隆結構的獨立驗證資料", "start": "tasks"},
-    "s2": {"description": "方案與選擇理由：比例怎麼來、假說分兩堆、模擬器三方案、驗證資料怎麼選", "start": "ratio-flow"},
-    "s3": {"description": "結果（含失敗）：COLO829 的 LOH、兩條接近各半、局部例外、HG008 候選樹與樹形、還做不到的事", "start": "colo-loh"},
-    "s4": {"description": "自我檢查：上次會議的檢查清單", "start": "self-check"},
-    "s5": {"description": "AI 環境改善：本週加的兩條工作規則", "start": "ai-env"},
-    "s6": {"description": "請老師決定的兩件事", "start": "decide"}
+  "createdOnFiles": {
+    "at": "2026-11-08T14:00:00+08:00",
+    "v": 1
   },
+  "designSystems": [],
   "faces": {
-    "noto-sans-tc": {"family": "Noto Sans TC", "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"},
-    "noto-serif-tc": {"family": "Noto Serif TC", "href": "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap"},
-    "jetbrains-mono": {"family": "JetBrains Mono", "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"}
+    "jetbrains-mono": {
+      "family": "JetBrains Mono",
+      "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+    },
+    "noto-sans-tc": {
+      "family": "Noto Sans TC",
+      "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"
+    },
+    "noto-serif-tc": {
+      "family": "Noto Serif TC",
+      "href": "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap"
+    }
   },
-  "designSystems": []
+  "lists": "css",
+  "order": [
+    "outline",
+    "n-fixes",
+    "tasks",
+    "ratio-flow",
+    "hypotheses",
+    "colo-loh",
+    "balance",
+    "colo829-t2t",
+    "hg008-tree",
+    "ai-env",
+    "options"
+  ],
+  "sections": {
+    "s0": {
+      "description": "接回 11-04 會議：研究目的、上次的問題與決議現況",
+      "start": "outline"
+    },
+    "s1": {
+      "description": "本週兩個任務：SNV 落在哪條的證據、克隆結構的獨立驗證資料",
+      "start": "tasks"
+    },
+    "s2": {
+      "description": "方案與選擇理由：比例怎麼來、假說分兩堆、模擬器三方案、驗證資料怎麼選",
+      "start": "ratio-flow"
+    },
+    "s3": {
+      "description": "結果（含失敗）：8 株全部 SNV 加總、COLO829 T2T、兩條份數相同時接近各半、HG008 候選樹與樹形",
+      "start": "colo-loh"
+    },
+    "s4": {
+      "before": "ai-env",
+      "description": "自我檢查：上次會議的檢查清單",
+      "seq": 0,
+      "start": null
+    },
+    "s5": {
+      "description": "AI 環境改善：本週加的兩條工作規則",
+      "start": "ai-env"
+    },
+    "s6": {
+      "before": null,
+      "description": "請老師決定的兩件事",
+      "seq": 0,
+      "start": null
+    }
+  },
+  "title": "2026-11-11 單點突變模擬的證據與驗證"
 }

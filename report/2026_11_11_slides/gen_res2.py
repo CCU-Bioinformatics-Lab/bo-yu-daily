@@ -151,7 +151,7 @@ def p11():
         s.rect(830 + 150 * a, y - 7, 150 * (b - a), 14, "mut", None, r=3)
         s.xmark(998, y, 8)
     s.text(1012, 440, "拷貝數不符", "s")
-    n3_ladder(s, 1046, 300, lit=(1,))
+    # 2026-11-08: the three-layer validation ladder was removed at the user's request (not agreed).
     return s
 
 
@@ -246,7 +246,7 @@ def p12():
     s.circle(rx + 100, 275, 7, "panel3", "cellline")
     s.text(rx + 118, 268, "直鏈併成一點", "s")
     s.text(rx + 118, 294, "首次漏做，已修正", "s", "start", "mute")
-    n3_ladder(s, rx + 65, 420, lit=(1,))
+    # 2026-11-08: the three-layer validation ladder was removed at the user's request (not agreed).
     return s
 
 
@@ -328,7 +328,7 @@ NOTES = {
         "左邊是推論步驟：8 株選殖株用 PacBio long read 定序，排除因為流失才缺的共有 SNV，301 個有 261 個相容。"
         "中間是這棵候選樹，枝上的數字是 SNV 數。實線那三層，127、14、68，右邊的單細胞都看得到：119 顆裡 111 顆、48 顆、16 顆，一層包一層。"
         "A、B 那段只有部分支持；只有 4 個 SNV 的那層最弱，虛線的部分還沒驗證。"
-        "右下角 chr5、chr12 的拷貝數和樹不符。所以只支持到克隆結構，多株只當上限參考。"
+        "右下角 chr5、chr12 的拷貝數和樹不符。多株只當上限參考。"
     ),
     "tree-shape": (
         "這裡可以看到，HG008 的分岔形狀落在 diplosim 的範圍內，跟枝長有關的三個指標在邊緣。"
@@ -360,7 +360,8 @@ CAPTIONS = {
 
 if __name__ == "__main__":
     # p13 not-yet was deleted by the user in the deck editor on 2026-11-08; p13() is kept for reference only.
-    for pid, fn in [("hg008-tree", p11), ("tree-shape", p12)]:
+    # tree-shape was deleted by the user in the deck editor on 2026-11-08; p12() kept for reference only.
+    for pid, fn in [("hg008-tree", p11)]:
         s = fn()
         write_page(pid, page(pid, TITLES[pid], s, CAPTIONS[pid], NOTES[pid]))
         print(pid, "notes chars:", len(NOTES[pid]))

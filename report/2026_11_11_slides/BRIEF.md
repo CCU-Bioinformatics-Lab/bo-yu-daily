@@ -104,6 +104,12 @@
 
 ## 規則檢查（2026-11-08）
 
+2026-11-08 使用者在編輯器刪除 tree-shape、self-check，並把 colo829-t2t 移到 balance 之後（共 12 頁）；本地同步刪檔（舊版在 `edf318d`）、改 colo-loh／balance／colo829-t2t 橋接句。使用者留言要求 ai-env「除了知識庫分層，右邊其他都刪掉」：本地 `gen_close.py` 改成整頁四層圖（標題「本週把研究知識庫分成四層：索引、摘要、全文、第一手資料」）。線上只有留言流程的簡版；本地版發布時被權限擋下，尚未上線。
+
+2026-11-08 使用者留言「不要出現這驗證三層，我可沒同意」：全冊拿掉觀測特徵／克隆結構／演化路徑階梯（colo-loh、colo829-t2t、balance、hg008-tree、tree-shape、decide、p1 小圖）；decide 第二件改成「HG008 的候選樹能驗證什麼」；自我檢查「驗證標出支持哪一層」改為未通過（8／5）。和 CLAUDE.md N3「每個驗證寫出它支持哪一層」衝突，待使用者決定是否更新 CLAUDE.md。
+
+2026-11-08 使用者在線上編輯器刪除 t2-data（能驗證克隆結構的只有 HG008）與 local（兩個局部例外）；本地同步刪檔（舊頁在 commit `edf318d`）。同時依使用者要求在 colo-loh 後新增 colo829-t2t 頁（COLO829 T2T：原始 61:39，扣掉一條丟失的片段後每 Mb 9.34 對 9.31；來源 `lab_report/2026-11-06_colo829_hap_snv_ratio/` haplotype_totals.tsv gap 5 Mb，資料 Sohn 2026 somatic_snvs.vcf.gz）。橋接：colo-loh →「下一頁先看其中一株 COLO829」；colo829-t2t →「下一頁回到 8 株」；balance 補「任務一到這裡，下一頁看 HG008 的候選樹」；hypotheses 補「接下來看資料結果」。自我檢查頁頁碼改用 hypotheses／options 與 colo-loh–tree-shape。共 14 頁。
+
 2026-11-08 使用者在線上編輯器把 options（模擬器三方案）移到第 14 頁、decide 之前：本地同步 deck.json 與 slidekit ORDER；自我檢查頁頁碼改為自動計算；decide 講稿改成「和前一頁相同」「HG008 的候選樹」；ai-env 講稿橋接改成「接下來回到模擬器的三個方案，最後請老師決定兩件事」；options 講稿加「下一頁請老師決定用哪個方案」。
 
 2026-11-08 使用者要求 p5 改用論文證據、不用自己的統計（方案 A）。來源：P01 Sasani 2019（249／475，全文核對）、P03 Porubsky 2025（1.38:1，P = 0.09，全文核對）、E4-26 Lefèbvre 2026（預印本，上限 4–5%；合併 5.7%）、P05 Caballero 2023（1.78×）、E4-04 Jäger 2013、E4-02 Nik-Zainal 2012、E4-20 Bergstrom 2022（3.7%）、P08 Kilpivaara 2009（38／45）、E4-12 Gorelick 2020；germline 80% 父源取 P01／P03。父／母 split bar 用灰階（F-4）；Lefèbvre 那條只畫 50:50，不代表實測比例。P02 Jónsson 2021 只讀摘要，272／310 未核對，不上頁面。舊版備份 `8081c0c`。

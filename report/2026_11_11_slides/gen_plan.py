@@ -235,7 +235,7 @@ def p5():
              "腫瘤只有一篇 21 人的預印本，父母差異在 5% 以內；兩個家族研究看受精後的突變，52% 在父源，"
              "long read 家族是 1.38 比 1，都不顯著。右邊是會偏一條的情境：失活的 X 突變率是另一條的 1.78 倍；"
              "成簇突變落在同一條，但只占 3.7%；JAK2 這類少數基因座和 germline 變異在同一條。"
-             "下面對照：精卵的新生突變約八成來自父親，那不是體細胞。拷貝數改變留到下一階段。")
+             "下面對照：精卵的新生突變約八成來自父親，那不是體細胞。拷貝數改變留到下一階段。接下來看資料結果。")
     write_page("hypotheses", page("hypotheses", "論文支持 SNV 在兩條大致各半；偏向只在特定情境", s, "", notes))
 
 
@@ -274,22 +274,23 @@ def src_tag(s, x, y, a="start"):
 
 def p6():
     s = S("options", 1200, 470)
-    cols = [10, 410, 810]
-    cw = 380
+    # 2026-11-08 (user): option C (真值多記一欄親源) removed; two wider cards.
+    cols = [10, 610]
+    cw = 580
+    pad = (cw - 380) / 2  # option_pic draws a 380-wide picture
     for x in cols:
         frame(s, x, 30, cw, 300, "paper", "line2", 1.5)
-    s.rect(3, 20, 394, 318, None, "ink", r=16, sw=4)
-    pill(s, 200, 26, "目前傾向，還沒決定", "ink", filled=True)
+    s.rect(3, 20, cw + 14, 318, None, "ink", r=16, sw=4)
+    pill(s, 10 + cw / 2, 26, "目前傾向，還沒決定", "ink", filled=True)
 
     pros = [[(True, "和 COLO829、HG008 兩株一致"), (False, "缺近距離成簇")],
-            [(True, "更接近真實"), (False, "要大改程式")],
-            [(True, "之後的印記區用得到"), (False, "SNV 階段沒新資訊")]]
+            [(True, "更接近真實"), (False, "要大改程式")]]
     for i, x in enumerate(cols):
         s.text(x + cw / 2, 66, OPT_HEADS[i], "h", "middle")
-        option_pic(s, i, x, 111)
+        option_pic(s, i, x + pad, 111)
         s.text(x + cw / 2, 194, OPT_RULES[i], "t", "middle")
         for k, (good, txt) in enumerate(pros[i]):
-            ok_line(s, x + 22, 232 + k * 30, good, txt, "t")
+            ok_line(s, x + pad + 22, 232 + k * 30, good, txt, "t")
         tag(s, x + cw - 80, 318, "示意", "demo")
     s.text(32, 318, "50% 有實測支持，不是直接設", "s", "start", "c4")
 
@@ -329,12 +330,12 @@ def p6():
     s.text(1050, 436, "靠座標對到", "s")
     s.text(1050, 460, "拷貝數片段", "s")
 
-    notes = ("這頁是模擬器的三個方案，目前傾向 A，用黑框標出來，還沒決定；三張圖都是示意。"
+    notes = ("這頁是模擬器的兩個方案，目前傾向 A，用黑框標出來，還沒決定；兩張圖都是示意。"
              "A 維持每個 SNV 獨立、兩條各半，和 COLO829、HG008 兩株一致；這次的 50% 有實測支持，不是直接設的。缺點是沒有近距離成簇。"
-             "B 加座標，讓少數 SNV 在 1 kb 內成簇落在同一條，更接近真實，但要大改程式。C 多記一欄爸或媽，SNV 階段沒新資訊。"
+             "B 加座標，讓少數 SNV 在 1 kb 內成簇落在同一條，更接近真實，但要大改程式。"
              "下面左邊，現有模擬器隨機選一份 copy，只在兩條份數相同時是 50%。中間四個工具，模擬時會用座標。"
-             "右邊，diplosim 各自定拷貝數，不需要座標；真實資料要靠座標對到拷貝數片段。下一頁請老師決定用哪個方案。")
-    write_page("options", page("options", "模擬器的三個方案，目前傾向維持獨立 50%（根據見結果段）", s, "", notes))
+             "右邊，diplosim 各自定拷貝數，不需要座標；真實資料要靠座標對到拷貝數片段。這兩個方案想請老師決定。")
+    write_page("options", page("options", "模擬器的兩個方案，目前傾向維持獨立 50%（根據見結果段）", s, "", notes))
 
 
 # ---- p7 t2-data ------------------------------------------------------------------
@@ -427,4 +428,4 @@ if __name__ == "__main__":
     p4()
     p5()
     p6()
-    p7()
+    # p7 t2-data was deleted by the user in the deck editor on 2026-11-08; p7() kept for reference only.

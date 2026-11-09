@@ -67,7 +67,7 @@ def p8():
         s.text(1052, y + 22, "可能對調" if swap else "", "s", "start", "stdis")
     s.text(818, 288, "HG008 對 GIAB：14／23 條對調", "s")
     s.text(808, 350, "→ 加總只能參考", "b", "start", "stdis")
-    n3_ladder(s, LADDER_X, 410, lit=[0])
+    # 2026-11-08: three-layer ladder removed at the user's request.
 
     lo = min(P9_ORDER, key=lambda n: tot[n][0] / sum(tot[n]))
     hi = max(P9_ORDER, key=lambda n: tot[n][0] / sum(tot[n]))
@@ -80,6 +80,61 @@ def p8():
              "所以這個加總只能參考。下一頁只比兩條份數相同的區段。")
     write_page(pid, page(pid, f"全部 SNV 加總，HP1 占 {flo:.0f}–{fhi:.0f}%；HP1 編號跨染色體不對應，只能參考", s,
                          "", notes))
+    return notes
+
+
+# ---------------------------------------------------------------- p7 colo829-t2t (added 2026-11-08, user)
+# Numbers: lab_report/2026-11-06_colo829_hap_snv_ratio (haplotype_totals.tsv, gap 5 Mb), from Sohn 2026 somatic_snvs.vcf.gz.
+def p_t2t():
+    pid = "colo829-t2t"
+    s = S(pid, 1200, 460)
+    s.text(10, 30, "資料：COLO829 T2T（Sohn 2026，Cell），long read 體細胞 SNV 44,810 個", "h")
+    tag(s, 10, 64, "實際結果")
+    s.text(128, 64, "hap1／hap2 是組裝標籤，不是爸媽", "s")
+
+    # left: raw totals and the lost stretch
+    s.rect(10, 84, 560, 372, "panel", r=10)
+    s.text(28, 118, "原始比例", "h")
+    x0, w = 28, 520
+    f = 27410 / (27410 + 17400)
+    s.rect(x0, 134, w * f, 34, "hp1", r=0)
+    s.rect(x0 + w * f, 134, w * (1 - f), 34, "hp2", r=0)
+    s.text(x0 + 10, 158, "hap1 27,410（61.2%）", "s", "start", "on")
+    s.text(x0 + w - 10, 158, "hap2 17,400", "s", "end", "on")
+    s.text(28, 222, "hap1", "b", "start", "hp1")
+    s.bar(90, 208, 440, "hp1", 16)
+    stars_on_bar(s, 90, 440, 208, 11, r=6)
+    s.text(28, 262, "hap2", "b", "start", "hp2")
+    s.bar(90, 248, 270, "hp2", 16)
+    stars_on_bar(s, 90, 270, 248, 7, r=6)
+    s.bar(364, 248, 166, "hp2", 16, dash=True)
+    s.text(447, 296, "844 Mb 沒有 SNV", "b", "middle", "hp2")
+    s.text(447, 322, "（7 條 contig）", "s", "middle")
+    s.text(28, 380, "腫瘤丟掉這段 → hap2 的 SNV 少了一截", "t")
+    tag(s, 28, 430, "染色體示意", "demo")
+
+    # arrow
+    s.arrow(578, 270, 622, 270, c="ink2", sw=3, head=12)
+
+    # right: density after removing long empty stretches
+    s.rect(630, 84, 560, 372, "panel", r=10)
+    s.text(648, 118, "扣掉 >5 Mb 沒有 SNV 的片段後", "h")
+    s.text(648, 148, "每 Mb 的 SNV 數", "s")
+    scale = 380 / 10
+    for i, (lab, v, c) in enumerate((("hap1", 9.34, "hp1"), ("hap2", 9.31, "hp2"))):
+        y = 186 + i * 62
+        s.text(648, y + 24, lab, "b", "start", c)
+        s.rect(712, y, v * scale, 34, c, r=4)
+        s.text(712 + v * scale + 10, y + 24, f"{v:.2f}", "b")
+    s.text(648, 352, "比值 1.004 ✓", "big", "start", "c4")
+    s.text(648, 384, "95% CI 0.985–1.023", "s")
+    # 2026-11-08: three-layer ladder removed at the user's request.
+
+    notes = ("這頁看其中一株 COLO829 的細節，資料是 Sohn 2026 在 Cell 公開的 long read 體細胞 SNV，共 44,810 個。"
+             "左邊是原始比例，hap1 27,410、hap2 17,400，大約 61 比 39。原因在下面：hap2 有 844 Mb、7 條 contig 一個 SNV 都沒有，"
+             "就是腫瘤丟掉的那段。右邊扣掉超過 5 Mb 沒有 SNV 的片段後，每 Mb 是 9.34 對 9.31，比值 1.004。"
+             "任務一到這裡；下一頁回到任務二，看 HG008 的候選樹。")
+    write_page(pid, page(pid, "COLO829 T2T：原始 61:39，扣掉一條丟失的片段後每 Mb 9.34 對 9.31", s, "", notes))
     return notes
 
 
@@ -129,7 +184,7 @@ def p9():
     s = S(pid, 1200, 460)
     data = load_balanced()
     assert sorted(data) == sorted(P9_ORDER) and sum(v[0] for v in data.values()) == 229, data
-    n3_ladder(s, LADDER_X, LADDER_Y, lit=[0])
+    # 2026-11-08: three-layer ladder removed at the user's request.
 
     # inset: which 20 Mb windows are counted
     s.rect(10, 6, 740, 134, "panel", r=10)
@@ -177,7 +232,7 @@ def p9():
              "1 份對 1 份就算，2 份對 1 份或一條流失就不算。下面一格一株。"
              "實測是每個區段裡 SNV 較多那條的占比，這個數字一定大於一半，純隨機也會大於一半。"
              "8 株落在 51.9% 到 58.3%，都接近一半。"
-             "右上角是有沒有獨立核對，只有 HG008 核對過。")
+             "右上角是有沒有獨立核對，只有 HG008 核對過。下一頁看其中一株 COLO829 的細節。")
     write_page(pid, page(pid, "只比兩條份數相同的區段，8 株的 HP1、HP2 SNV 數大致相等", s, "", notes))
     return notes
 
@@ -305,6 +360,7 @@ def p10():
 
 
 if __name__ == "__main__":
-    for f in (p8, p9, p10):
+    # p10 local was deleted by the user in the deck editor on 2026-11-08; p10() kept for reference only.
+    for f in (p8, p_t2t, p9):
         n = f()
         print(f.__name__, "notes chars:", len(n))
