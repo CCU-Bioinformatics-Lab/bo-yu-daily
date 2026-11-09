@@ -101,66 +101,83 @@ def tree_legend(s, pts, sw=4):
 # ---- p11 ---------------------------------------------------------------------------
 
 def p11():
-    # 2026-11-09 v2 (user): show only the 4 groups the single cells support. A clone group is a circle of cells,
-    # cells carry the branch mutations (stars). Numbers: lab_report/2026-11-07_hg008_sc_check/ branch_summary
-    # (127 -> 111 cells, 14 -> 48, 68 -> 16, 8 cells without 127). Groups: 8, 111-48, 48-16, 16.
-    # Clone letters per group follow the candidate tree (H | G, A, B | E, F | C, D); the 4-, 31- and 17-SNV
-    # branches are not confirmed by single cells and are merged into their group.
+    # 2026-11-09 v4 (user: "still odd, look at how PhyClone draws trees"). PhyClone Fig. 6 style: every node is a
+    # clone (internal ones too), labelled with the SNVs it gains; thin arrows parent -> child; a single child sits
+    # straight below; a clone defined only by lacking its parent's... mutations has a dashed border.
+    # Our twist (user, earlier): each clone is a circle of cells, and each cell shows the stars it carries.
+    # Numbers: lab_report/2026-11-07_hg008_sc_check/ (127 -> 111 cells, 14 -> 48, 68 -> 16, 8 cells without 127)
+    # and 2026-11-07_hg008_tree_rebuild/tables/tree_summary.tsv (truncal 7,784 at VAF 0.25, QUAL 20).
     import math
     s = S("hg008-tree", 1200, 462)
     RED, PUR, GOLD = "mut", "c2", "c3"
-    s.text(0, 26, "8 株選殖株（long read）推出的樹，用 119 顆單細胞（short read）檢查後，可靠的是這 4 群", "h")
-
-    gx = [150, 450, 750, 1050]       # group centres
-    gy, gr = 344, 68
-    groups = [(8, 0, "選殖株 H"), (63, 1, "G、A、B"), (32, 2, "E、F"), (16, 3, "C、D")]
-    # binary tree (2026-11-09 v3, user): root -> (group 1, R); R -> (group 2, P); P -> (group 3, group 4).
-    # Internal nodes sit above the middle of their children; edges are straight lines.
-    top = gy - gr
-    P = ((gx[2] + gx[3]) / 2, 204)
-    R = ((gx[1] + P[0]) / 2, 126)
-    root = ((gx[0] + R[0]) / 2, 50)
-    edges = [(root, (gx[0], top), None), (root, R, (RED, "127")),
-             (R, (gx[1], top), None), (R, P, (PUR, "14")),
-             (P, (gx[2], top), None), (P, (gx[3], top), (GOLD, "68"))]
-    for (x1, y1), (x2, y2), mut in edges:
-        if mut:
-            col, lab = mut
-            s.line(x1, y1, x2, y2, col, 6)
-            mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-            s.star(mx - 4, my - 16, 10, col)
-            s.text(mx + 16, my - 8, f"{lab} 個 SNV", "b", "start", col)
-        else:
-            s.line(x1, y1, x2, y2, "ink2", 2.5)
-    for nx, ny in (root, R, P):
-        s.circle(nx, ny, 7, "ink2")
+    s.text(0, 26, "8 株選殖株（long read）推樹", "b", "start", "ink2")
+    s.text(0, 52, "119 顆單細胞（short read）檢查", "b", "start", "ink2")
 
     def cell(x, y, stars):
-        s.circle(x, y, 12, "on", "cellline", 1.5)
+        s.circle(x, y, 10, "on", "cellline", 1.4)
+        if stars == "H":                              # H-private SNVs: partial support only -> pale star
+            s.star(x, y + 1, 4.2, "line2")
+            return
         cols = [RED, PUR, GOLD][:stars]
         for j, c in enumerate(cols):
-            s.star(x + (j - (len(cols) - 1) / 2) * 7.5, y + 1, 3.8, c)
+            s.star(x + (j - (len(cols) - 1) / 2) * 6.5, y + 1, 3.3, c)
 
-    fills = ["panel", "panel2", "panel3", "hl"]
-    for (n, stars, clones), x, fill in zip(groups, gx, fills):
-        s.circle(x, gy, gr, fill, "cellline", 2.5)
-        s.text(x, gy - gr + 26, f"{n} 顆", "h", "middle")
-        k = max(3, round(n / 6))                                   # one drawn cell ~ 6 real cells (示意)
-        pts = []                                                   # hexagonal packing, nearest the centre first
-        for row in range(-3, 4):
-            for col in range(-3, 4):
-                px, py = col * 27 + (row % 2) * 13.5, row * 24
-                if math.hypot(px, py) <= 42:
-                    pts.append((math.hypot(px, py), px, py))
-        for _, px, py in sorted(pts)[:k]:
-            cell(x + px, gy + 10 + py, stars)
-        s.text(x, gy + gr + 28, clones, "b", "middle", "ink2")
+    HEX = [(0, 0), (-20, 0), (20, 0), (-10, -17), (10, -17), (-10, 17), (10, 17)]
 
-    s.text(1180, 64, "★ 同一組突變：選殖株和單細胞都看到", "s", "end", "ink2")
-    tag(s, 976, 98, "細胞數量示意", "demo")
-    s.text(1180, 128, "顆數是實際結果", "s", "end", "mute")
-    s.text(0, 64, "另外 4、31、17 個 SNV 的分枝", "s", "start", "mute")
-    s.text(0, 88, "單細胞還沒證實，併在同一群", "s", "start", "mute")
+    def clone(x, y, n, stars, tint, dashed=False, r=40):
+        if tint:
+            s.circle(x, y, r, tint, None, op=0.16)
+        s.circle(x, y, r, None if tint else "paper", "cellline", 2.2, dash=dashed)
+        k = min(7, max(3, round(n / 9)))              # one drawn cell ~ 9 real cells (示意)
+        for px, py in HEX[:k]:
+            cell(x + px, y + py, stars)
+
+    def arrow(x1, y1, x2, y2, mut=None):
+        col = mut[0] if mut else "ink2"
+        s.arrow(x1, y1, x2, y2, c=col, sw=4 if mut else 2, head=11 if mut else 9)
+        if mut:
+            mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+            s.star(mx + 22, my, 9, col)
+            s.text(mx + 38, my + 7, f"+{mut[1]} 個 SNV", "b", "start", col)
+
+    # root: the common ancestor (SNVs all 8 clones share)
+    rx, ry = 560, 52
+    s.rect(rx - 118, ry - 26, 236, 52, "panel3", "cellline", r=26, sw=2)
+    s.text(rx, ry - 2, "共同祖先", "b", "middle")
+    s.text(rx, ry + 19, "8 株都有的 7,784 個 SNV", "s", "middle", "ink2")
+
+    # level 1: group 1 (lacks red, dashed) and group 2 (+127)
+    g1, g2 = (380, 170), (740, 170)
+    arrow(rx - 70, ry + 26, g1[0] + 20, g1[1] - 40)
+    arrow(rx + 70, ry + 26, g2[0] - 20, g2[1] - 40, (RED, 127))
+    clone(*g1, 8, "H", None, dashed=True)
+    clone(*g2, 63, 1, RED)
+    # chain straight down: group 3 (+14), group 4 (+68)
+    g3, g4 = (740, 296), (740, 418)
+    clone(*g3, 32, 2, PUR)
+    clone(*g4, 16, 3, GOLD)
+    arrow(g2[0], g2[1] + 40, g3[0], g3[1] - 40, (PUR, 14))
+    # g4 is close; short arrow
+    arrow(g3[0], g3[1] + 40, g4[0], g4[1] - 40, (GOLD, 68))
+
+    # which clones each group holds
+    s.star(g1[0] - 30, g1[1] + 62, 8, "line2")
+    s.text(g1[0] - 18, g1[1] + 68, "H 專屬，部分支持", "s", "start", "mute")
+    for (x, y), n, lab in ((g1, 8, "選殖株 H"), (g2, 63, "選殖株 G、A、B"), (g3, 32, "選殖株 E、F"), (g4, 16, "選殖株 C、D")):
+        s.text(x - 56, y - 4, f"{n} 顆細胞", "h", "end")
+        s.text(x - 56, y + 22, lab, "s", "end", "ink2")
+
+    # legend
+    lx = 900
+    s.text(lx, 150, "每個圓＝一群細胞（一個 clone）", "s", "start", "ink2")
+    s.text(lx, 176, "★ 新的突變：選殖株和", "s", "start", "ink2")
+    s.text(lx, 198, "　單細胞都看到", "s", "start", "ink2")
+    s.circle(lx + 14, 236, 14, None, "cellline", 2, dash=True)
+    s.text(lx + 38, 242, "只靠「沒有紅星」定義", "s", "start", "ink2")
+    tag(s, lx, 290, "細胞數量示意", "demo")
+    s.text(lx, 330, "顆數是實際結果", "s", "start", "mute")
+    s.text(lx, 400, "另外 4、31、17 個 SNV 的分枝", "s", "start", "mute")
+    s.text(lx, 424, "單細胞還沒證實，併在同一群", "s", "start", "mute")
     return s
 
 
@@ -333,11 +350,10 @@ def p13():
 
 NOTES = {
     "hg008-tree": (
-        "這頁要看的是：HG008 的樹，用單細胞檢查後，可靠的是 4 群。"
-        "每個大圓是一群細胞，小圓是細胞，裡面的星星是它帶的突變。"
-        "最左邊 8 顆沒有紅星，對應選殖株 H；紅星那段有 127 個 SNV，只帶紅星的有 63 顆，對應 G、A、B；"
-        "再往右多了紫星 14 個 SNV，32 顆，對應 E、F；最右邊三種星都有，金星 68 個 SNV，16 顆，對應 C、D。"
-        "選殖株和單細胞看到同一組突變，所以這 4 群互相確認。底下那幾段分枝，單細胞還沒證實，併在同一群。"
+        "這頁要看的是：HG008 的樹，用單細胞檢查後，可靠的是 4 群。畫法照 PhyClone：每個圓是一個 clone，箭頭從祖先指向後代。"
+        "最上面是 8 株共有的 7,784 個 SNV。往左是 8 顆沒有紅星的細胞，對應選殖株 H，虛線表示只靠沒有紅星來定義，淡色星是 H 專屬突變，只有部分支持。"
+        "往右多了紅星 127 個 SNV，63 顆，對應 G、A、B；再往下多紫星 14 個，32 顆，對應 E、F；最下面多金星 68 個，16 顆，對應 C、D。"
+        "彩色星是選殖株和單細胞都看到的突變。"
     ),
     "tree-shape": (
         "這裡可以看到，HG008 的分岔形狀落在 diplosim 的範圍內，跟枝長有關的三個指標在邊緣。"
