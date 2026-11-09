@@ -54,7 +54,8 @@
 
 ### E8-01 Lefèbvre 2026, bioRxiv preprint — 10.64898/2026.09.02.748867
 - **資料：** PCAWG 2,645 人篩出 21 位 admixed 病人，癌別混合（作者未逐癌別列出，只舉 chromophobe RCC 例子）。bulk WGS。**short read**（paired-end 100 bp，約 55X）。單區域。真值來源：無 trio；用 local ancestry 當親源代理，用 mtDNA、chrX、chrY 判定父母。
-- **讀取層級：** 全文（不含 Supplementary Table）。未經同儕審查。
+- **讀取層級：** 全文；Supplementary Table 1–3（bioRxiv media-1～3.tsv，2026-11-09 讀）。未經同儕審查。
+- **21 人的癌別與 purity（2026-11-09 補）：** 癌別取自 S1 的 project 欄，再用本機 PCAWG `icgc_sample_annotations_summary_table.txt` 以 tumour aliquot ID 對上 histology_abbreviation（21／21 對上）。Breast-AdenoCA 6、Uterus-AdenoCA 3、Kidney-ChRCC 2、Panc-AdenoCA 2、Skin-Melanoma 2，Prost-AdenoCA、Eso-AdenoCA、ColoRect-AdenoCA、SoftTissue-Leiomyo、Liver-HCC、Ovary-AdenoCA 各 1。論文和補充表都沒有 purity 欄；PCAWG consensus purity 是 0.38–0.98（中位數 0.78），4 人 < 0.5，8 人 WGD。論文沒寫用哪一版 purity〔論文〕〔repo〕`/big8_disk/boyu114/benchmark_data/PCAWG/icgc25k_open/`。S3 中有 1 人（0bfd1043，Prost-AdenoCA，淋巴結轉移）haplotype A 比例 0.41、p ≈ 0，偏離 50%〔論文〕。
 - **用了建樹工具：** 無。
 - **觀點：** 作者認為結果「validating a key assumption of cancer evolutionary analyses」，並稱這是首次活體量化。
 - **演化假設：** 兩條親代基因組累積體細胞突變的速率相同。作者指出多數癌症基因體分析隱含這個假設，gain timing 尤其依賴它。

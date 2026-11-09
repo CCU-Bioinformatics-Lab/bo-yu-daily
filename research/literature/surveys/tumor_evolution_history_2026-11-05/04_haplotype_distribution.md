@@ -40,7 +40,7 @@
 ### E4-26 Lefèbvre 2026, bioRxiv preprint — 10.64898/2026.09.02.748867
 
 - **資料：** PCAWG 2,645 位中可用 21 位（只有一位是 F1）；多癌別；bulk WGS；**short read**（paired-end 100 bp，約 55X）；單區域。真值：親代來源由 local ancestry 推得，不是 trio。
-- **讀取層級：** 全文（WEB，已存本地文字）。**未經同儕審查**。
+- **讀取層級：** 全文（WEB，已存本地文字）；補充表 S1–S3 已讀（2026-11-09）。**未經同儕審查**。21 人的癌別與 PCAWG consensus purity（0.38–0.98，中位數 0.78）見 `08_parent_of_origin.md` E8-01 卡片。
 - **用了建樹工具：** 無。
 - **觀點：** 作者寫 "validating a key assumption"。這是作者的解讀。我認為 21 位 preprint 不足以稱驗證〔推論〕。
 - **演化假設：** 兩條親代基因組突變累積相同。作者寫這個假設 "has never been tested"。
