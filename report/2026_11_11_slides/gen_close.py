@@ -160,33 +160,115 @@ def strike_pair(s, cx, y, wrong, right):
     s.text(cx, y + 72, right, "t", "middle", "c4")
 
 
-def ai_env():
-    # 2026-11-08 (user comment): keep only the knowledge-base layers; the two rules and the examples were removed.
-    H = 440
-    s = S("ai-env", 1200, H)
-    s.rect(0, 0, 1200, H, "panel", None, r=10)
-    layers = [("索引", "先找路徑", "panel2", "research/index.md：每篇一列，路徑＋一句話＋關鍵字"),
-              ("摘要", "重點", "panel2", "summary.md：結論與數字，標〔論文〕〔推論〕"),
-              ("全文", "找段落", "panel3", "fulltext.md：用關鍵字找原句（只留本機）"),
-              ("第一手資料", "論文・程式", "hl", "source.md 指向 PDF、DOI、程式 commit")]
-    cx = 250
-    for i, (name, sub, col, what) in enumerate(layers):
-        y0 = 24 + i * 100
-        half_top, half_bot = 220 - i * 34, 220 - (i + 1) * 34
-        s.poly([(cx - half_top, y0), (cx + half_top, y0), (cx + half_bot, y0 + 86), (cx - half_bot, y0 + 86)], col)
-        s.text(cx, y0 + 40, name, "h", "middle")
-        s.text(cx, y0 + 68, sub, "s", "middle")
-        s.line(cx + half_top + 14, y0 + 43, 520, y0 + 43, "line2", 1.5, dash=True)
-        s.text(536, y0 + 50, what, "t")
-    s.arrow(14, 40, 14, 400, c="ink2", sw=2.5)
-    s.text(24, 428, "不夠才往下讀", "s")
+def doc_icon(s, x, y, w, h, fill="on", stroke="ink2", lines=3, label=None):
+    """A sheet with a folded corner; optional short label inside."""
+    c = min(w, h) * 0.28
+    s.poly([(x, y), (x + w - c, y), (x + w, y + c), (x + w, y + h), (x, y + h)], fill, stroke, 2)
+    s.poly([(x + w - c, y), (x + w - c, y + c), (x + w, y + c)], "line", stroke, 1.5)
+    for i in range(lines):
+        yy = y + c + 8 + i * (h - c - 16) / max(lines, 1)
+        s.line(x + 8, yy, x + w - 10, yy, "line2", 2)
+    if label:
+        s.text(x + w / 2, y + h - 8, label, "s", "middle", "ink")
 
-    notes = ("這週的 AI 環境改善，是把研究知識庫分成四層。"
-             "最上面是索引，每篇論文一列，先在這裡找路徑；第二層是摘要，寫結論和數字，標出哪些是論文、哪些是推論；"
-             "摘要不夠，再到第三層全文，用關鍵字找原句；最底下是第一手資料，就是 PDF、DOI 和程式。"
-             "AI 回答時先從上往下找，不夠才往下讀。"
-             "最後一頁是模擬器的兩個方案。")
-    write_page("ai-env", page("ai-env", "本週把研究知識庫分成四層：索引、摘要、全文、第一手資料", s, notes=notes))
+
+def table_icon(s, x, y, w, rows, rh=20, new_row=None):
+    s.rect(x, y, w, rh, "panel3", "ink2", r=0, sw=1.5)
+    for i in range(rows):
+        last = new_row is not None and i == rows - 1
+        s.rect(x, y + rh * (i + 1), w, rh, "hl" if last else "on", "ink2", r=0, sw=1.5)
+    for f in (0.28, 0.62):
+        s.line(x + w * f, y, x + w * f, y + rh * (rows + 1), "ink2", 1.2)
+    if new_row:
+        s.text(x + 8, y + rh * rows + rh - 5, new_row, "s", "start", "ink")
+
+
+def robot(s, cx, cy):
+    s.line(cx, cy - 36, cx, cy - 50, "ink2", 3)
+    s.circle(cx, cy - 54, 6, "mut")
+    s.rect(cx - 40, cy - 36, 80, 66, "ink2", None, r=16)
+    s.circle(cx - 17, cy - 6, 9, "on")
+    s.circle(cx + 17, cy - 6, 9, "on")
+    s.circle(cx - 17, cy - 6, 4, "ink")
+    s.circle(cx + 17, cy - 6, 4, "ink")
+    s.rect(cx - 14, cy + 14, 28, 5, "on", None, r=2)
+
+
+def ai_env():
+    # 2026-11-09 redesign v2 (user): ~80 % pictures, ~20 % text (report_rule F-16). Sources:
+    # research/literature/README.md 「規則」 (ingest), research/index.md 檔頭「檢索順序」 (retrieval).
+    H = 470
+    s = S("ai-env", 1200, H)
+
+    # (1) one paper goes in: paper -> folder of three files -> one new index row
+    s.rect(0, 0, 1200, 208, "panel", None, r=10)
+    s.text(20, 34, "① 放進知識庫", "h")
+    doc_icon(s, 70, 54, 96, 118, "on", "ink2", 4, "PDF")
+    s.text(118, 198, "論文", "b", "middle")
+    s.arrow(186, 113, 286, 113, c="ink2", sw=3, head=12)
+    # folder
+    s.poly([(300, 58), (392, 58), (408, 72), (300, 72)], "c3")
+    s.rect(300, 70, 330, 108, "hl", "c3", r=8, sw=2)
+    s.text(316, 64, "P01", "s", "start", "ink")
+    for i, lab in enumerate(("全文", "摘要", "來源")):
+        doc_icon(s, 326 + i * 100, 84, 74, 84, "on", "ink2", 2, lab)
+    s.text(465, 198, "一篇一個資料夾", "b", "middle")
+    s.arrow(648, 113, 738, 113, c="ink2", sw=3, head=12)
+    table_icon(s, 752, 50, 300, 5, 21, "P01")
+    s.circle(1080, 166, 16, "c4")
+    s.text(1080, 173, "+", "h", "middle", "on")
+    s.text(902, 198, "索引加一列", "b", "middle")
+
+    # (2) how the agent looks it up: a staircase index -> summary -> full text -> original
+    s.rect(0, 220, 1200, 250, "panel2", None, r=10)
+    s.text(20, 254, "② agent 怎麼找", "h")
+    seal(s, 950, 247, True, r=11)
+    s.text(968, 254, "夠了就回答", "s", "start", "c4")
+    s.text(1180, 254, "↘ 不夠才往下", "s", "end", "ink2")
+    robot(s, 92, 338)
+    s.arrow(150, 318, 220, 302, c="ink2", sw=2.5, head=10)
+    s.rect(14, 400, 176, 50, "on", "line2", r=14, sw=1.5)
+    s.poly([(82, 400), (96, 400), (92, 386)], "on", "line2", 1.5)
+    s.text(102, 432, "哪幾篇支持各半？", "s", "middle", "ink")
+
+    sw, sh = 210, 60
+    steps = []
+    for i, lab in enumerate(("索引", "摘要", "全文", "原文")):
+        x, y = 228 + i * 238, 272 + i * 44
+        steps.append((x, y))
+        last = i == 3
+        s.rect(x, y, sw, sh, "hl" if last else "on", "ink2", r=10, sw=1.8)
+        ix, iy = x + 14, y + 8
+        if i == 0:
+            table_icon(s, ix, iy + 2, 64, 3, 10)
+        elif i == 1:
+            doc_icon(s, ix + 10, iy, 36, 44, "on", "ink2", 2)
+        elif i == 2:
+            doc_icon(s, ix + 4, iy - 2, 40, 48, "on", "ink2", 4)
+            s.circle(ix + 46, iy + 30, 10, None, "mut", 3)
+            s.line(ix + 53, iy + 37, ix + 61, iy + 45, "mut", 3.5)
+        else:
+            doc_icon(s, ix + 6, iy, 40, 46, "on", "ink2", 0, None)
+            s.text(ix + 26, iy + 38, "PDF", "s", "middle", "mut")
+        s.text(x + 128, y + 39, lab, "h", "middle")
+        if i < 3:
+            seal(s, x + sw - 6, y + 4, True, r=11)
+    for i in range(3):
+        (x1, y1), (x2, y2) = steps[i], steps[i + 1]
+        s.arrow(x1 + sw + 4, y1 + 36, x2 - 4, y2 + 30, c="ink2", sw=2.5, head=10)
+    # feedback: what the bottom layer finds is written back (dashed, F-6)
+    (xs, ys), (xe, ye) = steps[3], steps[1]
+    s.path(f"M{xs + sw / 2} {ys} L{xs + sw / 2} {ye + sh / 2} L{xe + sw + 6} {ye + sh / 2}", "c4", 2.5, dash=True)
+    s.poly([(xe + sw + 2, ye + sh / 2), (xe + sw + 14, ye + sh / 2 - 7), (xe + sw + 14, ye + sh / 2 + 7)], "c4")
+    s.text(xs + sw / 2 + 12, ye + sh / 2 - 8, "補回", "s", "start", "c4")
+
+    notes = ("這頁畫知識庫怎麼用。上面是放一篇論文：拿到論文，開一個資料夾，放全文、摘要、來源三個檔，"
+             "最後在索引加一列，寫路徑、一句話和關鍵字。下面是 agent 怎麼找：先查索引，再讀摘要，"
+             "打勾表示夠了就回答；不夠才讀全文，最後才看 PDF 或補充表。"
+             "最底層找到的新資料會補回摘要，像今天 Lefèbvre 的癌別和 purity。回答時標來源和讀到第幾層。"
+             "下一頁回到模擬器的三個方案。")
+    write_page("ai-env", page("ai-env", "知識庫：論文一篇一個資料夾，agent 從索引一層層往下找", s, notes=notes))
+    return notes
 
 
 # --- p16 ----------------------------------------------------------------------------------
