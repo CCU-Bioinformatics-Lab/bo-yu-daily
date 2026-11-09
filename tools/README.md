@@ -121,6 +121,7 @@ HG008 的 bulk 資料用共用副本 `/big8_disk/yungjen114/data/HG008/`（`docs
 | `lit_check_quotes.py` | 檢查引文表的每段引文是否逐字出現在抓下來的文字 | 同上 |
 | `colo829_hap_snv_ratio.py` | COLO829 公開 VCF：兩條單倍型的 SNV 數、密度、同源配對比較 | `lab_report/2026-11-06_colo829_hap_snv_ratio/` |
 | `plot_colo829_hap_snv_ratio.py` | 上一支的圖 | 同上 |
+| `plot_colo829_t2t_overview.py` | 畫 COLO829 T2T（Sohn 2026）資料長什麼樣子：14 對同源 contig 上每個 SNV 的位置，加一筆 VCF 紀錄的解說 | `lab_report/2026-11-06_colo829_hap_snv_ratio/t2t_overview.png` |
 | `draw_colo829_hap_explainer.py` | 上一個實驗的白話圖解（真實突變位置），輸出 HTML | 同上 |
 | `colo829_event_evidence.py` | COLO829 不靠 SNV 數的證據：覆蓋度抽樣、ONT 雜合位點、同 read 定相 | `lab_report/2026-11-06_colo829_loss_events/` |
 | `colo829_junction_reads.py` | 找連接 chr1 和 chr10 的 read，看它帶哪條等位基因 | 同上 |

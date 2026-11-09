@@ -8,6 +8,10 @@
 
 ![每對同源染色體的 hap1 比例](hap1_share_by_pair.png)
 
+資料總覽（2026-11-09 加）：每條 contig 上每個 SNV 的位置，以及一筆 VCF 紀錄怎麼讀。`python3 tools/plot_colo829_t2t_overview.py <vcf> <本目錄>`
+
+![COLO829 T2T 資料總覽](t2t_overview.png)
+
 > **2026-11-06 更新：** 後續驗證見 `../2026-11-06_colo829_loss_events/`。本檔的計算不變，但有兩點補充：① Sohn 圖 S2B 支持 hap2 的 chr1 在該批細胞確實缺失；② 實驗室另兩批 COLO829 在 chr1p 的拷貝數不同，所以本檔結果只代表 Sohn 那批。2:1 區的獨立 read 驗證結果是 1,639 比 1,425。
 
 ## 1. 結論
