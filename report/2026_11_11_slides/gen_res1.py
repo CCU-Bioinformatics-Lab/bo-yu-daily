@@ -116,25 +116,40 @@ def p_t2t():
     # arrow
     s.arrow(578, 270, 622, 270, c="ink2", sw=3, head=12)
 
-    # right: density after removing long empty stretches
+    # right: same 100 % bar as the left, after removing long empty stretches.
+    # 2026-11-09 user comment: show the same kind of ratio as the left, not SNV per Mb.
+    # Share = density1 / (density1 + density2): the hap1 share if both haplotypes kept the same length.
+    # lab_report/2026-11-06_colo829_hap_snv_ratio/haplotype_totals.tsv, gap 5 Mb.
+    d1, d2 = 27410 / 2934.0, 17400 / 1869.3
+    g = d1 / (d1 + d2)
+    ci = [r / (1 + r) for r in (0.985, 1.023)]
     s.rect(630, 84, 560, 372, "panel", r=10)
     s.text(648, 118, "扣掉 >5 Mb 沒有 SNV 的片段後", "h")
-    s.text(648, 148, "每 Mb 的 SNV 數", "s")
-    scale = 380 / 10
-    for i, (lab, v, c) in enumerate((("hap1", 9.34, "hp1"), ("hap2", 9.31, "hp2"))):
-        y = 186 + i * 62
-        s.text(648, y + 24, lab, "b", "start", c)
-        s.rect(712, y, v * scale, 34, c, r=4)
-        s.text(712 + v * scale + 10, y + 24, f"{v:.2f}", "b")
-    s.text(648, 352, "比值 1.004 ✓", "big", "start", "c4")
-    s.text(648, 384, "95% CI 0.985–1.023", "s")
+    x1 = 648
+    s.rect(x1, 134, w * g, 34, "hp1", r=0)
+    s.rect(x1 + w * g, 134, w * (1 - g), 34, "hp2", r=0)
+    s.line(x1 + w / 2, 128, x1 + w / 2, 174, "ink", 1.5, dash=True)
+    s.text(x1 + 10, 158, f"hap1 {g * 100:.1f}%", "s", "start", "on")
+    s.text(x1 + w - 10, 158, f"hap2 {(1 - g) * 100:.1f}%", "s", "end", "on")
+    s.text(648, 222, "hap1", "b", "start", "hp1")
+    s.bar(710, 208, 440, "hp1", 16)
+    stars_on_bar(s, 710, 440, 208, 11, r=6)
+    s.text(648, 262, "hap2", "b", "start", "hp2")
+    s.bar(710, 248, 270, "hp2", 16)
+    stars_on_bar(s, 710, 270, 248, 7, r=6)
+    s.text(648, 304, "兩條一樣長時的比例", "t")
+    s.text(648, 352, f"約 50:50 ✓", "big", "start", "c4")
+    s.text(648, 384, f"95% CI hap1 {ci[0] * 100:.1f}%–{ci[1] * 100:.1f}%", "s")
+    tag(s, 648, 430, "染色體示意", "demo")
     # 2026-11-08: three-layer ladder removed at the user's request.
 
     notes = ("這頁看其中一株 COLO829 的細節，資料是 Sohn 2026 在 Cell 公開的 long read 體細胞 SNV，共 44,810 個。"
              "左邊是原始比例，hap1 27,410、hap2 17,400，大約 61 比 39。原因在下面：hap2 有 844 Mb、7 條 contig 一個 SNV 都沒有，"
-             "就是腫瘤丟掉的那段。右邊扣掉超過 5 Mb 沒有 SNV 的片段後，每 Mb 是 9.34 對 9.31，比值 1.004。"
+             "就是腫瘤丟掉的那段。右邊扣掉超過 5 Mb 沒有 SNV 的片段，再換算成兩條一樣長時的比例，"
+             f"是 {g * 100:.1f} 比 {(1 - g) * 100:.1f}，信賴區間 {ci[0] * 100:.1f}% 到 {ci[1] * 100:.1f}%，幾乎各半；"
+             "原始數字是每 Mb 9.34 對 9.31。"
              "任務一到這裡；下一頁回到任務二，看 HG008 的候選樹。")
-    write_page(pid, page(pid, "COLO829 T2T：原始 61:39，扣掉一條丟失的片段後每 Mb 9.34 對 9.31", s, "", notes))
+    write_page(pid, page(pid, "COLO829 T2T：原始 61:39，扣掉一條丟失的片段後約 50:50", s, "", notes))
     return notes
 
 
@@ -166,17 +181,14 @@ def load_balanced():
     return {k: (w, lg / t, ex / t) for k, (w, lg, ex, t) in out.items()}
 
 
-def mini_balance(s, cx, y, w=76):
-    """A level beam with an HP1 pan and an HP2 pan."""
-    s.poly([(cx, y), (cx - 12, y + 24), (cx + 12, y + 24)], "ink2")
-    s.line(cx - w / 2 - 6, y, cx + w / 2 + 6, y, "ink2", 4)
-    for side, c in ((-1, "hp1"), (1, "hp2")):
-        px = cx + side * w / 2
-        s.line(px - 20, y + 30, px, y, "line2", 1.2)
-        s.line(px + 20, y + 30, px, y, "line2", 1.2)
-        s.path(f"M{px - 24} {y + 30} Q{px} {y + 50} {px + 24} {y + 30} Z", None, 0, "panel2")
-        s.bar(px - 19, y + 33, 38, c, 9)
-        stars_on_bar(s, px - 19, 38, y + 33, 2, r=4)
+def load_balanced_hp():
+    """HP1 / HP2 SNV sums over the same balanced windows (2026-11-09: user wants both sides per line)."""
+    out = {}
+    for r in csv.DictReader(open(LAB / "2026-11-06_prcgap_hap_snv_ratio/per_window_20mb.tsv"), delimiter="\t"):
+        d = out.setdefault(r["sample"], [0, 0])
+        d[0] += int(r["hap1_snv"])
+        d[1] += int(r["hap2_snv"])
+    return out
 
 
 def p9():
@@ -211,27 +223,44 @@ def p9():
     # 8 cell lines
     tag(s, 770, 132, "實際結果")
     s.text(900, 132, "▼ 8 株", "s")
-    s.text(770, 40, "實測＝SNV 較多那條的占比", "s")
-    s.text(770, 70, "純隨機也會大於 50%", "s")
+    hp = load_balanced_hp()
+    assert sorted(hp) == sorted(P9_ORDER), hp
+    s.text(770, 40, "每格：這些區段的 SNV 加總", "s")
+    s.bar(770, 58, 40, "hp1", 14)
+    s.text(818, 70, "HP1", "s", "start", "hp1")
+    s.bar(870, 58, 40, "hp2", 14)
+    s.text(918, 70, "HP2", "s", "start", "hp2")
+    s.text(770, 100, "HP1 編號跨染色體可能對調（上一頁）", "s")
     cw, ch, gx, gy = 292, 148, 10, 152
+    fr = {}
     for i, name in enumerate(P9_ORDER):
-        win, obs, exp = data[name]
+        a, b = hp[name]
+        f = a / (a + b)
+        fr[name] = f
         x = gx + (i % 4) * (cw + 4)
         y = gy + (i // 4) * (ch + 6)
         s.rect(x, y, cw, ch, "panel", r=10)
         s.text(x + 14, y + 30, name, "h")
         chk, col = P9_CHECK.get(name, ("未獨立驗證", "mute"))
         s.text(x + cw - 12, y + 30, chk, "s", "end", col)
-        mini_balance(s, x + 70, y + 62)
-        s.text(x + 150, y + 96, f"實測 {obs * 100:.1f}%", "b")
+        bx, bw, by, bh = x + 14, cw - 28, y + 52, 36
+        s.rect(bx, by, bw * f, bh, "hp1", r=0)
+        s.rect(bx + bw * f, by, bw * (1 - f), bh, "hp2", r=0)
+        s.line(bx + bw / 2, by - 5, bx + bw / 2, by + bh + 5, "ink", 1.5, dash=True)
+        s.text(bx + 8, by + 25, f"HP1 {f * 100:.1f}%", "s", "start", "on")
+        s.text(bx + bw - 8, by + 25, f"HP2 {(1 - f) * 100:.1f}%", "s", "end", "on")
+        s.text(bx, y + 124, f"{a + b:,} 個 SNV", "s", "start", "mute")
     # random expectation and window counts were dropped from the page on 2026-11-08 (user request);
-    # they stay in BRIEF.md.
+    # they stay in BRIEF.md. 2026-11-09: larger-side share replaced by HP1 / HP2 shares (user comment).
     print("p9 obs-random gap (pp):", [f"{(data[n][1] - data[n][2]) * 100:.1f}" for n in P9_ORDER])
+    print("p9 HP1 share (%):", {n: round(fr[n] * 100, 1) for n in P9_ORDER})
+    lo, hi = min(fr.values()) * 100, max(fr.values()) * 100
 
     notes = ("這頁看 PRCGAP 這個公開資料集的 8 株細胞株。上面是算法：只算兩條份數相同的 20 Mb 區段，"
-             "1 份對 1 份就算，2 份對 1 份或一條流失就不算。下面一格一株。"
-             "實測是每個區段裡 SNV 較多那條的占比，這個數字一定大於一半，純隨機也會大於一半。"
-             "8 株落在 51.9% 到 58.3%，都接近一半。"
+             "1 份對 1 份就算，2 份對 1 份或一條流失就不算。下面一格一株，"
+             "把這些區段的 SNV 加總，藍色是 HP1、橘色是 HP2，虛線是一半。"
+             f"8 株的 HP1 落在 {lo:.1f}% 到 {hi:.1f}%，都接近一半。"
+             "要注意 HP1 編號跨染色體可能對調，所以加總只能參考。"
              "右上角是有沒有獨立核對，只有 HG008 核對過。下一頁看其中一株 COLO829 的細節。")
     write_page(pid, page(pid, "只比兩條份數相同的區段，8 株的 HP1、HP2 SNV 數大致相等", s, "", notes))
     return notes
