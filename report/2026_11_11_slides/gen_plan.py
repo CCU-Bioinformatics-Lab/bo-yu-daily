@@ -175,68 +175,52 @@ def split_bar(s, x, y, w, frac, left, right, h=22):
 
 
 def p5():
-    # 2026-11-08 redesign (user): evidence from papers, not our own statistics. Sources: research/literature/papers/P01-P11
-    # and the tumor_evolution_history survey cards E4-26 (Lefèbvre), E4-04 (Jäger), E4-02 (Nik-Zainal), E4-20 (Bergstrom).
+    # 2026-11-09 redesign (user): one card per paper with cancer type, purity, short / long read.
+    # Sources: research/literature/papers/P01 (Sasani), P03 (Porubsky); Lefèbvre = survey cards E4-26 / E8-01
+    # (supplementary S1 + PCAWG consensus purity, read 2026-11-09). Exceptions moved to the bottom strip.
     s = S("hypotheses", 1200, 470)
-    frame(s, 10, 10, 580, 380, "paper", "c4", 2.5)
-    frame(s, 610, 10, 580, 380, "paper", "line2", 2)
-    s.text(30, 46, "兩條大致各半", "h", color="c4")
-    s.text(610 + 20, 46, "只在這些情境偏一條", "h")
-
-    # left: three evidence rows, each a paternal/maternal split bar
-    rows = [
-        ("腫瘤 21 人：父母差異 ≤ 5%", "Lefèbvre 2026（預印本，short read）", 0.5, "父", "母"),
-        ("家族：受精後突變 52% 在父源", "Sasani 2019（eLife，249／475）", 249 / 475, "父 52%", "母 48%"),
-        ("long read 家族：父：母 1.38:1，不顯著", "Porubsky 2025（Nature，P = 0.09）", 1.38 / 2.38, "父 58%", "母 42%"),
+    papers = [
+        ("Lefèbvre 2026", "bioRxiv 預印本", "腫瘤 21 人（11 種癌）", "0.38–0.98（PCAWG 值）",
+         "short read", 0.5, "父", "母", "父母差異 ≤ 5%", "混血病人：用祖源分父母"),
+        ("Sasani 2019", "eLife", "正常人血液，CEPH 三代家族", "不適用（不是腫瘤）",
+         "short read", 249 / 475, "父 52%", "母 48%", "249／475，受精後突變", "三代家族：靠遺傳傳遞定相"),
+        ("Porubsky 2025", "Nature", "正常人血液，1 家族 10 人", "不適用（不是腫瘤）",
+         "long read", 1.38 / 2.38, "父 58%", "母 42%", "1.38:1，P = 0.09 不顯著", "long read 直接定相到父母"),
     ]
-    for i, (head, cite, frac, l, r) in enumerate(rows):
-        y = 70 + i * 104
-        s.text(30, y + 22, head, "b")
-        split_bar(s, 30, y + 38, 300, frac, l, r)
-        s.text(30, y + 88, cite, "s", "start", "mute")
-    s.text(345, 116, "虛線＝各半", "s", "start", "mute")
-
-    # right: three context-specific biases
-    rx = 630
-    y = 66
-    s.text(rx, y + 22, "失活的 X：Xi 是 Xa 的 1.78 倍", "b")
-    s.text(rx, y + 52, "Xa", "s")
-    s.text(rx, y + 76, "Xi", "s")
-    s.bar(rx + 34, y + 46, 150, "panel3", 12)
-    s.bar(rx + 34, y + 70, 150, "ink2", 12)
-    stars_on(s, y + 46, [rx + 70, rx + 150])
-    stars_on(s, y + 70, [rx + 54, rx + 84, rx + 114, rx + 144, rx + 170])
-    s.text(rx, y + 102, "Caballero 2023、Jäger 2013", "s", "start", "mute")
-
-    y = 178
-    s.text(rx, y + 22, "成簇突變：同一條，只占 3.7%", "b")
-    s.bar(rx + 34, y + 46, 150, "hp1", 12)
-    s.bar(rx + 34, y + 70, 150, "hp2", 12)
-    stars_on(s, y + 46, [rx + 92, rx + 108, rx + 124, rx + 140])
-    stars_on(s, y + 70, [rx + 60])
-    s.text(rx, y + 102, "Nik-Zainal 2012、Bergstrom 2022", "s", "start", "mute")
-
-    y = 290
-    s.text(rx, y + 22, "少數基因座：JAK2 38／45 和 germline 同一條", "b")
-    s.bar(rx + 34, y + 52, 150, "hp1", 12)
-    s.circle(rx + 74, y + 52, 6, "ink")
-    s.star(rx + 124, y + 52, 8)
-    s.path(f"M{rx + 76} {y + 40} Q{rx + 100} {y + 20} {rx + 122} {y + 39}", "ink2", 2)
-    s.text(rx + 200, y + 58, "● germline　★ somatic", "s", "start", "mute")
-    s.text(rx, y + 86, "Kilpivaara 2009；驅動基因另見 Gorelick 2020", "s", "start", "mute")
+    cw, ch = 388, 352
+    for i, (name, venue, sample, purity, read, frac, l, r, res, how) in enumerate(papers):
+        x, y = 10 + i * (cw + 8), 10
+        tumor = i == 0
+        frame(s, x, y, cw, ch, "paper", "c4" if tumor else "line2", 2.5 if tumor else 1.5)
+        s.text(x + 18, y + 36, name, "h")
+        s.text(x + cw - 18, y + 36, venue, "s", "end", "mute")
+        for k, (lab, val) in enumerate((("樣本", sample), ("purity", purity))):
+            yy = y + 82 + k * 40
+            s.text(x + 18, yy, lab, "s", "start", "mute")
+            s.text(x + 96, yy, val, "b")
+        s.text(x + 18, y + 162, "讀長", "s", "start", "mute")
+        pill(s, x + 96 + W(read, lib.SIZES["b"]) / 2 + 11, y + 162, read,
+             "c4" if read == "long read" else "ink2", filled=read == "long read", cls="b")
+        split_bar(s, x + 18, y + 196, cw - 36, frac, l, r, h=26)
+        s.text(x + 18, y + 254, res, "b")
+        s.text(x + 18, y + 288, "怎麼分父母", "s", "start", "mute")
+        s.text(x + 18, y + 316, how, "s")
+        for txt, cls in ((sample, "b"), (purity, "b"), (res, "b"), (how, "s")):
+            off = 96 if txt in (sample, purity) else 18
+            assert off + W(txt, lib.SIZES[cls]) < cw - 10, (name, txt)
 
     # bottom strip
-    s.rect(10, 404, 580, 58, "panel", r=10)
-    s.text(30, 440, "對照：germline 新生突變約 80% 在父源（精卵，不是體細胞）", "s")
-    s.rect(610, 404, 580, 58, "panel2", r=10)
-    s.text(630, 440, "拷貝數改變（LOH、擴增）會改變看到的比例 → 下一階段", "s")
+    # 2026-11-09 user comment: the exceptions block was deleted; the remaining strip spans the full width (F-8).
+    s.rect(10, 376, 1180, 86, "panel", r=10)
+    s.text(28, 410, "腫瘤＋long read 的論文：這次搜尋沒找到", "b")
+    s.text(28, 440, "→ 第 6–8 頁用公開資料自己算", "s")
 
-    notes = ("這頁看論文怎麼回答：SNV 偏向一條，還是兩條都有。左邊是兩條大致各半的證據。"
-             "腫瘤只有一篇 21 人的預印本，父母差異在 5% 以內；兩個家族研究看受精後的突變，52% 在父源，"
-             "long read 家族是 1.38 比 1，都不顯著。右邊是會偏一條的情境：失活的 X 突變率是另一條的 1.78 倍；"
-             "成簇突變落在同一條，但只占 3.7%；JAK2 這類少數基因座和 germline 變異在同一條。"
-             "下面對照：精卵的新生突變約八成來自父親，那不是體細胞。拷貝數改變留到下一階段。接下來看資料結果。")
-    write_page("hypotheses", page("hypotheses", "論文支持 SNV 在兩條大致各半；偏向只在特定情境", s, "", notes))
+    notes = ("這頁看三篇論文。只有左邊 Lefèbvre 是腫瘤：PCAWG 21 位混血病人、11 種癌，purity 用 PCAWG 官方值是 0.38 到 0.98，論文本身沒寫，"
+             "是 short read 預印本，用祖源分父母，差異在 5% 以內。另兩篇都是正常人血液，沒有 purity；"
+             "Sasani 是 short read，52% 在父源；Porubsky 是 long read，1.38 比 1，不顯著。"
+             "所以腫瘤加 long read 的論文這次沒找到，接下來用公開資料自己算。")
+    write_page("hypotheses", page("hypotheses", "三篇論文支持兩條大致各半，但只有一篇是腫瘤，而且是 short read", s, "", notes))
+    return notes
 
 
 # ---- p6 options ------------------------------------------------------------------
