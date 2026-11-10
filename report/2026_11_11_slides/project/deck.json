@@ -25,8 +25,6 @@
   "order": [
     "outline",
     "n-fixes",
-    "tasks",
-    "ratio-flow",
     "hypotheses",
     "colo-loh",
     "balance",
@@ -41,12 +39,15 @@
       "start": "outline"
     },
     "s1": {
+      "before": "hypotheses",
       "description": "本週兩個任務：SNV 落在哪條的證據、克隆結構的獨立驗證資料",
-      "start": "tasks"
+      "seq": 0,
+      "start": null
     },
     "s2": {
+      "before": null,
       "description": "方案與選擇理由：比例怎麼來、假說分兩堆、模擬器三方案、驗證資料怎麼選",
-      "start": "ratio-flow"
+      "start": "hypotheses"
     },
     "s3": {
       "description": "結果（含失敗）：8 株全部 SNV 加總、COLO829 T2T、兩條份數相同時接近各半、HG008 的資源",

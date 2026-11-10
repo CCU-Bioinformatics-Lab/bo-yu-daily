@@ -259,67 +259,78 @@ def src_tag(s, x, y, a="start"):
 def p6():
     s = S("options", 1200, 470)
     # 2026-11-08 (user): option C (真值多記一欄親源) removed; two wider cards.
+    # 2026-11-10 (user): B redesigned — each sample draws its HP1 share from 30–60%; the bottom strip
+    # (copy choice / coordinate tools / diplosim) replaced by a ruler of measured HP1 shares.
     cols = [10, 610]
     cw = 580
-    pad = (cw - 380) / 2  # option_pic draws a 380-wide picture
     for x in cols:
         frame(s, x, 30, cw, 300, "paper", "line2", 1.5)
     s.rect(3, 20, cw + 14, 318, None, "ink", r=16, sw=4)
     pill(s, 10 + cw / 2, 26, "目前傾向，還沒決定", "ink", filled=True)
 
-    pros = [[(True, "和 COLO829、HG008 兩株一致"), (False, "缺近距離成簇")],
-            [(True, "更接近真實"), (False, "要大改程式")]]
+    heads = ["A　每個樣本都是 50%", "B　每個樣本在 30–60% 隨機"]
+    rules = ["p 固定 50%", "p 在 30–60% 隨機亂數產生"]
+    pros = [[(True, "和 8 株實測一致"), (False, "樣本之間沒有差異")],
+            [(True, "可測比例偏離時建樹穩不穩"), (False, "30% 比所有實測都低")]]
+    samples = [[50] * 5, [33, 40, 45, 52, 58]]
+
+    def ax(x0, v):  # 20–80 % over 440 px
+        return x0 + 70 + (v - 20) * 440 / 60
+
     for i, x in enumerate(cols):
-        s.text(x + cw / 2, 66, OPT_HEADS[i], "h", "middle")
-        option_pic(s, i, x + pad, 111)
-        s.text(x + cw / 2, 194, OPT_RULES[i], "t", "middle")
+        s.text(x + cw / 2, 66, heads[i], "h", "middle")
+        if i == 1:
+            s.rect(ax(x, 30), 128, ax(x, 60) - ax(x, 30), 26, "panel2", r=3)
+        s.line(ax(x, 20), 154, ax(x, 80), 154, "ink2", 2)
+        for v in (30, 50, 60):
+            s.line(ax(x, v), 154, ax(x, v), 161, "ink2", 2)
+            s.text(ax(x, v), 182, f"{v}%", "s", "middle", "mute")
+        for k, v in enumerate(samples[i]):
+            y = 142 - (k * 15 if i == 0 else 0)
+            s.circle(ax(x, v), y, 7, "hp1", "paper", 1.5)
+        s.text(x + cw / 2, 214, rules[i], "t", "middle")
+        s.text(x + cw / 2, 240, "● 一個模擬樣本的 p；每個 SNV 以機率 p 落在 HP1", "s", "middle", "mute")
         for k, (good, txt) in enumerate(pros[i]):
-            ok_line(s, x + pad + 22, 232 + k * 30, good, txt, "t")
+            ok_line(s, x + 120, 274 + k * 30, good, txt, "t")
         tag(s, x + cw - 80, 318, "示意", "demo")
-    s.text(32, 318, "50% 有實測支持，不是直接設", "s", "start", "c4")
+        for txt, cls in ((heads[i], "h"), (rules[i], "t")):
+            assert W(txt, lib.SIZES[cls]) < cw - 40, txt
+        for _, txt in pros[i]:
+            assert 120 + 26 + W(txt, lib.SIZES["t"]) < cw - 90, txt
 
-    # bottom strip
-    for x0, x1 in [(10, 390), (400, 790), (800, 1190)]:
-        frame(s, x0, 344, x1 - x0, 124, "panel")
-    s.text(22, 372, "現有模擬器：隨機選一份 copy", "b")
-    src_tag(s, 384, 372, "end")
-    for j, c in enumerate(["hp1", "hp2"]):
-        s.bar(34, 404 + j * 18, 70, c, 11)
-    s.text(116, 420, "＝ 50%", "t")
-    for j, c in enumerate(["hp1", "hp1", "hp2"]):
-        s.bar(214, 396 + j * 16, 70, c, 11)
-    s.text(296, 420, "≠ 50%", "t")
-    s.text(200, 458, "只在兩條份數相同時等於 50%", "s", "middle")
+    # bottom strip: where the measured HP1 shares fall (same 20–80 % scale for every row)
+    frame(s, 10, 344, 1180, 124, "panel")
 
-    s.text(412, 372, "模擬時會用座標的工具", "b")
-    src_tag(s, 780, 372, "end")
-    for cx, y, name in [(500, 410, "SISTEM"), (672, 410, "HeteroGenesis"), (500, 452, "SMC-Het"), (672, 452, "TNSim")]:
-        pill(s, cx, y, name, "ink2")
+    def rx(v):
+        return 260 + (v - 20) * 15
 
-    s.text(816, 384, "diplosim", "b")
-    src_tag(s, 812, 408)
-    for x, cn in [(930, "2"), (975, "3"), (1020, "1")]:
-        s.star(x, 374, 8)
-        s.text(x, 402, cn, "n", "middle")
-    s.text(1050, 378, "各自定拷貝數", "s")
-    s.text(1050, 402, "不需要座標", "s")
-    s.line(812, 416, 1178, 416, "line2", 1)
-    s.text(816, 446, "真實資料", "b")
-    s.rect(915, 426, 60, 14, "panel3", r=7)
-    s.rect(975, 426, 60, 14, "ink2", r=7)
-    s.star(940, 433, 7)
-    s.star(1002, 433, 7)
-    s.text(945, 461, "2", "n", "middle")
-    s.text(1005, 461, "3", "n", "middle")
-    s.text(1050, 436, "靠座標對到", "s")
-    s.text(1050, 460, "拷貝數片段", "s")
+    s.text(22, 372, "實測的 HP1 比例", "b")
+    s.text(186, 372, "（灰＝B 的範圍）", "s", "start", "mute")
+    s.rect(rx(30), 380, rx(60) - rx(30), 78, "panel2", r=3)
+    s.line(rx(50), 380, rx(50), 458, "ink", 2, dash=True)
+    for v in (30, 40, 50, 60, 70):
+        s.text(rx(v), 372, f"{v}%", "s", "middle", "mute")
+    rows = [("8 株，兩條份數相同", 47.7, 55.5, "47.7–55.5%", False),
+            ("8 株全部加總（參考）", 45.8, 65.6, "45.8–65.6%", True)]
+    for k, (lab, lo, hi, val, dash) in enumerate(rows):
+        y = 400 + k * 26
+        s.text(22, y, lab, "s")
+        s.bar(rx(lo), y - 12, rx(hi) - rx(lo), "hp1", 12, dash=dash)
+        s.text(rx(hi) + 10, y, val, "s")
+        assert W(lab, lib.SIZES["s"]) < 228, lab
+    y = 452
+    s.text(22, y, "正常人血液，兩篇論文", "s")
+    for v in (52, 58):
+        s.circle(rx(v), y - 6, 7, "hp1", "paper", 1.5)
+        s.text(rx(v) + 12, y, f"{v}%", "s")
 
-    notes = ("這頁是模擬器的兩個方案，目前傾向 A，用黑框標出來，還沒決定；兩張圖都是示意。"
-             "A 維持每個 SNV 獨立、兩條各半，和 COLO829、HG008 兩株一致；這次的 50% 有實測支持，不是直接設的。缺點是沒有近距離成簇。"
-             "B 加座標，讓少數 SNV 在 1 kb 內成簇落在同一條，更接近真實，但要大改程式。"
-             "下面左邊，現有模擬器隨機選一份 copy，只在兩條份數相同時是 50%。中間四個工具，模擬時會用座標。"
-             "右邊，diplosim 各自定拷貝數，不需要座標；真實資料要靠座標對到拷貝數片段。這兩個方案想請老師決定。")
-    write_page("options", page("options", "模擬器的兩個方案，目前傾向維持獨立 50%（根據見結果段）", s, "", notes))
+    notes = ("這頁是模擬器的兩個方案，目前傾向 A，用黑框標出來，還沒決定；上面兩張圖是示意。"
+             "兩個方案都先給每個模擬樣本一個 HP1 比例 p，再讓每個 SNV 以機率 p 落在 HP1。"
+             "A 的 p 固定 50%，和 8 株細胞株的實測一致，缺點是樣本之間沒有差異。"
+             "B 的 p 每個樣本在 30% 到 60% 之間隨機亂數產生，可以測比例偏離時樹重建穩不穩；缺點是 30% 比目前所有實測都低。"
+             "下面這條尺是實測值：8 株在兩條份數相同的區域是 47.7% 到 55.5%；全部 SNV 直接加總是 45.8% 到 65.6%，"
+             "但 HP1 編號跨染色體不對應，只能參考；正常人血液的兩篇論文是 52% 和 58%。灰色是 B 的範圍。這兩個方案想請老師決定。")
+    write_page("options", page("options", "模擬器兩個方案：固定 50%，或每個樣本在 30–60% 隨機", s, "", notes))
 
 
 # ---- p7 t2-data ------------------------------------------------------------------

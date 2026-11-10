@@ -158,7 +158,8 @@ def p11():
          ("119 顆單細胞", "PTA、short read，第 23 代", "→ 獨立檢查分枝", "ok", lambda x, y: ico_cells(x, y)),
          ("120 顆低深度單細胞", "只量拷貝數", "→ 拷貝數分群", "no", lambda x, y: ico_cells(x, y, True))],
     ]
-    status = {"ok": ("✓ 本機", "c4"), "no": ("沒下載", "mute"), "paper": ("只有論文", "mute")}
+    # 2026-11-10 user: green text removed (the "✓ 本機" mark and the green "→" lines of local tiles)
+    status = {"ok": ("", "mute"), "no": ("沒下載", "mute"), "paper": ("只有論文", "mute")}
     for c, ((head, fill), col) in enumerate(zip(cols, tiles)):
         x0 = c * (cw + 12)
         s.rect(x0, 0, cw, 34, fill, None, r=8)
@@ -169,10 +170,12 @@ def p11():
             icon(x0 + 6, y0 + 34)
             tx = x0 + 104
             lab, lc = status[st]
-            s.text(x0 + cw - 12, y0 + 28, lab, "s", "end", lc)
+            if lab:
+                s.text(x0 + cw - 12, y0 + 28, lab, "s", "end", lc)
             s.text(tx, y0 + 30, name, "b")
             s.text(tx, y0 + 62, spec, "s", "start", "mute")
-            s.text(tx, y0 + 96, gives, "s", "start", "c4" if st == "ok" else "ink2")
+            if st != "ok":
+                s.text(tx, y0 + 96, gives, "s", "start", "ink2")
             for txt, cls in ((spec, "s"), (gives, "s")):
                 assert width(txt, lib.SIZES[cls]) < cw - 104 - 8, txt
             assert width(name, lib.SIZES["b"]) + width(lab, lib.SIZES["s"]) < cw - 104 - 16, name
@@ -351,7 +354,7 @@ NOTES = {
         "這頁列出 HG008 現在有的資源，分三欄。左欄和模擬資料同一類：腫瘤的 long read bulk、兩種正常組織、腫瘤和正常混合的 purity 系列。"
         "中欄是參考答案，但不是演化真值：NIST 的體細胞基準、PRCGAP 的組裝結果，還有染色體影像量到的 WGD 比例。"
         "右欄看克隆結構：8 株選殖株推出候選樹，119 顆單細胞用 PTA 放大後獨立檢查，另有 120 顆只量拷貝數的單細胞。"
-        "右上角寫有沒有在本機。"
+        "右上角有標記的兩項不在本機：染色體影像只有論文，120 顆低深度單細胞沒下載；其他都在本機。"
     ),
     "tree-shape": (
         "這裡可以看到，HG008 的分岔形狀落在 diplosim 的範圍內，跟枝長有關的三個指標在邊緣。"
