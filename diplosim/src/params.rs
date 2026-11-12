@@ -14,9 +14,11 @@ pub struct Params {
     pub n_snv: usize,
     #[arg(long, default_value_t = 0.5)]
     pub prop_truncal_snvs: f64,
-    #[arg(long, default_value_t = 0.5)]
+    /// diplosim default 0 (CONIPHER 0.5): no CNA in the SNV-only stage (DECISIONS 2026-11-12).
+    #[arg(long, default_value_t = 0.0)]
     pub prop_pos_gained: f64,
-    #[arg(long, default_value_t = 0.3)]
+    /// diplosim default 0 (CONIPHER 0.3): no CNA in the SNV-only stage (DECISIONS 2026-11-12).
+    #[arg(long, default_value_t = 0.0)]
     pub prop_pos_lost: f64,
     #[arg(long, default_value_t = 1.0)]
     pub prop_gained_truncal: f64,
@@ -56,14 +58,15 @@ pub struct Params {
 }
 
 impl Params {
-    /// CONIPHER defaults for everything except the two required counts.
+    /// CONIPHER defaults for everything except the two required counts, except: no CNA
+    /// (prop_pos_gained, prop_pos_lost = 0) and prop_snv_on_b = 0.5.
     pub fn new(n_clones: usize, n_snv: usize) -> Params {
         Params {
             n_clones,
             n_snv,
             prop_truncal_snvs: 0.5,
-            prop_pos_gained: 0.5,
-            prop_pos_lost: 0.3,
+            prop_pos_gained: 0.0,
+            prop_pos_lost: 0.0,
             prop_gained_truncal: 1.0,
             prop_lost_truncal: 1.0,
             prop_pos_second_cna: 0.0,

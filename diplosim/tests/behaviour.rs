@@ -41,6 +41,20 @@ fn no_cn(n_clones: usize, n_snv: usize) -> Params {
     p
 }
 
+/// CONIPHER's CNA defaults (0.5 gained, 0.3 lost), for tests that need copy-number events.
+fn with_cn(n_clones: usize, n_snv: usize) -> Params {
+    let mut p = Params::new(n_clones, n_snv);
+    p.prop_pos_gained = 0.5;
+    p.prop_pos_lost = 0.3;
+    p
+}
+
+#[test]
+fn defaults_make_no_copy_number_events() {
+    let rows = written_rows(&simulate(&Params::new(5, 500), 3).unwrap(), "defaults");
+    assert!(rows.iter().all(|r| (r["CN_A"].as_str(), r["CN_B"].as_str()) == ("1.0", "1.0")));
+}
+
 #[test]
 fn tree_has_n_clones_plus_normal_and_is_connected() {
     for (n_clones, seed) in [(2, 1), (3, 2), (5, 3), (10, 4), (25, 5)] {
@@ -120,8 +134,8 @@ fn output_has_no_untagged_reads_and_cli_has_no_read_noise_flags() {
 
 #[test]
 fn hp_counts_add_up_to_conipher_counts() {
-    let mut cases = vec![Params::new(5, 400), no_cn(3, 300)];
-    let mut wgd = Params::new(6, 400);
+    let mut cases = vec![with_cn(5, 400), no_cn(3, 300)];
+    let mut wgd = with_cn(6, 400);
     wgd.clonal_wgd = true;
     wgd.subclonal_wgd = true;
     wgd.prop_mutloss_positions = 0.1;
@@ -178,7 +192,7 @@ fn truncal_snvs_are_in_every_cancer_cell_without_cn_or_mutation_loss() {
 
 #[test]
 fn putting_every_snv_on_b_swaps_the_alleles_of_the_conipher_genotypes() {
-    let mut on_a = Params::new(5, 300);
+    let mut on_a = with_cn(5, 300);
     on_a.prop_snv_on_b = 0.0;
     let mut on_b = on_a.clone();
     on_b.prop_snv_on_b = 1.0;
@@ -213,13 +227,13 @@ fn trunk_states(sim: &Simulation) -> BTreeSet<(i32, i32)> {
 
 #[test]
 fn one_cna_per_position_cannot_reach_loh_after_gain() {
-    let states = trunk_states(&simulate(&Params::new(5, 2000), 61).unwrap());
+    let states = trunk_states(&simulate(&with_cn(5, 2000), 61).unwrap());
     assert!(states.iter().all(|&(total, minor)| total <= 4 && !(minor == 0 && total >= 3)), "{states:?}");
 }
 
 #[test]
 fn second_cnas_give_loh_with_gains_and_never_lose_the_last_copy() {
-    let mut p = Params::new(5, 2000);
+    let mut p = with_cn(5, 2000);
     p.prop_pos_lost = 0.45;
     p.prop_pos_second_cna = 0.5;
     let sim = simulate(&p, 61).unwrap();
