@@ -26,6 +26,10 @@ AUTHOR_PAIRS = {"chr1": ("haplotype1-0000012", "haplotype2-0000059"), "chr3": ("
                 "chr4": ("haplotype1-0000013", "haplotype2-0000060"), "chr14": ("haplotype1-0000018", "haplotype2-0000070")}
 # The authors split chr16 over several contigs, so it is compared as a group.
 CHR16 = (["haplotype1-0000008", "haplotype1-0000016"], ["haplotype2-0000055", "haplotype2-0000046", "haplotype2-0000067", "haplotype2-0000066"])
+# Sex chromosomes (male donor): chrX only on hap1, chrY only on hap2, so they are left out of the autosome totals.
+# chrX = haplotype1-0000027 (155.6 Mb, no hap2 partner by length); chrY = haplotype2-0000062 (24.5 Mb, 0 SNVs; BL depth half,
+# tumour depth 0 in lab_report/2026-11-06_colo829_loss_events). Preprint Table 1: hap1 carries X, hap2 carries Y.
+SEX_CONTIGS = {"haplotype1-0000027", "haplotype2-0000062"}
 MIN_LEN = 20_000_000
 MAX_LEN_DIFF = 0.01
 
@@ -107,22 +111,25 @@ def main():
     lengths, snvs = read_vcf(vcf)
     hap = lambda c: c.split("-")[0]
 
-    # Level A and B
-    rows = []
-    for gap in (2_000_000, 5_000_000, 10_000_000):
+    # Level A and B, once over every contig and once over autosomes only
+    rows, auto_rows = [], []
+    for gap, target, skip in [(g, t, k) for t, k in ((rows, set()), (auto_rows, SEX_CONTIGS)) for g in (2_000_000, 5_000_000, 10_000_000)]:
         tot, ln, oc = Counter(), Counter(), Counter()
         for c, L in lengths.items():
+            if c in skip:
+                continue
             pos = [p for p, _ in snvs.get(c, [])]
             tot[hap(c)] += len(pos)
             ln[hap(c)] += L
             oc[hap(c)] += occupied(L, pos, gap)
         for h in ("haplotype1", "haplotype2"):
-            rows.append({"gap_mb": gap // 1_000_000, "hap": h, "snv": tot[h], "length_mb": round(ln[h] / 1e6, 1), "snv_per_mb": round(tot[h] / ln[h] * 1e6, 3),
+            target.append({"gap_mb": gap // 1_000_000, "hap": h, "snv": tot[h], "length_mb": round(ln[h] / 1e6, 1), "snv_per_mb": round(tot[h] / ln[h] * 1e6, 3),
                          "occupied_mb": round(oc[h] / 1e6, 1), "snv_per_occupied_mb": round(tot[h] / oc[h] * 1e6, 3)})
-    with open(out / "haplotype_totals.tsv", "w", newline="") as f:
-        w = csv.DictWriter(f, rows[0].keys(), delimiter="\t")
-        w.writeheader()
-        w.writerows(rows)
+    for name, data in (("haplotype_totals.tsv", rows), ("haplotype_totals_autosomes.tsv", auto_rows)):
+        with open(out / name, "w", newline="") as f:
+            w = csv.DictWriter(f, data[0].keys(), delimiter="\t")
+            w.writeheader()
+            w.writerows(data)
 
     # Level C
     gap = 5_000_000
@@ -171,10 +178,13 @@ def main():
     for r in rows:
         print(r)
     # Genome-wide rate ratio over occupied length, with a Poisson 95% CI on the log scale.
-    r1, r2 = [r for r in rows if r["gap_mb"] == 5]
-    rr = r1["snv_per_occupied_mb"] / r2["snv_per_occupied_mb"]
-    se = sqrt(1 / r1["snv"] + 1 / r2["snv"])
-    print(f"rate ratio hap1/hap2 over occupied length {rr:.4f}, 95% CI {exp(log(rr) - 1.96 * se):.4f}-{exp(log(rr) + 1.96 * se):.4f}")
+    for label, data in (("all contigs", rows), ("autosomes", auto_rows)):
+        for gap_mb in (2, 5, 10):
+            r1, r2 = [r for r in data if r["gap_mb"] == gap_mb]
+            rr = r1["snv_per_occupied_mb"] / r2["snv_per_occupied_mb"]
+            se = sqrt(1 / r1["snv"] + 1 / r2["snv"])
+            print(f"{label}, gap {gap_mb} Mb: hap1 {r1['snv_per_occupied_mb']} hap2 {r2['snv_per_occupied_mb']} per occupied Mb; "
+                  f"rate ratio {rr:.4f}, 95% CI {exp(log(rr) - 1.96 * se):.4f}-{exp(log(rr) + 1.96 * se):.4f}")
     unpaired = [(c, round(L / 1e6, 1), len(snvs.get(c, []))) for c, L in lengths.items() if L >= MIN_LEN and c not in {x for _, ga, gb, _ in pairs for x in ga + gb}]
     print("unpaired contigs >= 20 Mb:", unpaired)
     print("zero-SNV contigs >= 20 Mb:", [(c, round(L / 1e6, 1)) for c, L in lengths.items() if L >= MIN_LEN and not snvs.get(c)])

@@ -60,6 +60,7 @@
 | `2026-10-31_diplosim_ppc_hcc1395_mult_t0.8` | SNV 可排在兩次 CNA 之間＋truncal 0.8，multiplicity 對上 | 已整理（採用） |
 | `2026-10-31_diplosim_ppc_hcc1395_depthdisp0.03` | depth 改 negative binomial，φ 0.03 時 VMR 對上 | 已整理（採用，`--depth-dispersion`） |
 | `2026-10-31_diplosim_ppc_hcc1395_truncal09` | truncal 0.9 整體變差 | 已整理（未採用） |
+| 掃描點（10 個，無 README，只有圖和 `tables/`）：`pur097_noerr`、`pur097_mistag0005`；`early_b0.6`、`early_b0.7`、`early_b0.8`；`gainB3`；`mult_t0.6`、`mult_t0.7`；`depthdisp0.01`、`depthdisp0.02` | 上面幾個實驗的參數掃描。說明分別在 `pur097_base0005`、`gainB2`、`mult_t0.8`、`depthdisp0.03` 的 README。`early_b*` 用的是已撤回的 `prop_snv_before_cna`，現在的 diplosim 無法重跑 | 附屬資料（2026-11-09 補登） |
 | `…_depthdisp0.01`、`…_depthdisp0.02` | — | 原始輸出 → `depthdisp0.03` |
 | `…_mult_t0.6`、`…_mult_t0.7`、`…_early_b0.6`、`…_early_b0.7`、`…_early_b0.8` | — | 原始輸出 → `mult_t0.8`、`gainB2` |
 | `…_gainB3` | — | 原始輸出 → `gainB2` |
@@ -71,13 +72,15 @@
 | 目錄 | 結論 | 狀態 |
 |---|---|---|
 | `2026-11-06_prcgap_hap_snv_ratio/` | PRCGAP 公開結果 8 株：兩條拷貝數相同的 229 個 20 Mb 區段只有 7 個校正後顯著，沒有明顯全面偏向，但差異比純隨機大；逐染色體受拷貝數影響；過濾在 HG008 對 GIAB 吻合 99.9%；不知親源 | 現行 |
+| `2026-11-10_prcgap_snv_vs_hap_depth/` | PRCGAP 8 株：同一 20 Mb 區段，depth 高的 haplotype SNV 較多，但主要來自一條幾乎消失（LOH 類）的區段；兩條 depth 差 2 倍內時，斜率 0.04–0.31（HCC1954 0.71），遠低於「成正比」的 1；拷貝數和偵測力沒有分開 | 現行 |
+| `2026-11-10_colo829_hp_depth_snv/` | COLO829 T2T：VCF 的 DP 是單條 HP 的深度（約 60×／份）。SNV 總數偏向深度高的 HP 只因 LOH；留著的拷貝上每 Mb 密度不隨深度增加（CN1 8.9、CN2 9.1、CN4 9.9），同源對的密度占比接近 50%。推論多數 SNV 在拷貝數變化前 | 現行（使用者指定的單一問題） |
 | `2026-11-07_snv_hp_independence/` | COLO829、HG008：1 kb 以上相鄰 SNV 沒有否定 HP 獨立；1 kb 內局部偏向同一條 HP（配對約占 2.5–4.5%）。COLO829 未通過事先定的對照，事後診斷見報告 | 現行 |
 | `2026-11-07_hg008_giab_hap_concordance/` | HG008：PRCGAP 和 GIAB 的單倍型對調後 97.41% 一致（6,139／6,302），14／23 條染色體編號相反；兩份組裝互相吻合，不是絕對真值，也沒有親源 | 現行 |
 | `2026-11-07_hg008_tree_rebuild/` | 8 株重建出二元樹，和 `diplosim` 的樹形不矛盾；主架構有單細胞支持，末端未驗證；拷貝數有不符合樹的區段 | 現行 |
 | `2026-11-07_hg008_sc_check/` | 119 顆單細胞支持 3 層巢狀分枝（111、48、16 顆），事先定的巢狀檢查無違反；{2D6, 2E6} 部分支持，{SC24, SC9} 和多數 private 枝未驗證；少數細胞訊號混合 | 現行 |
 | `2026-11-06_hg008_hap_snv_ratio/` | HG008 long read 組裝的 truncal SNV：原始 hap1:hap2 44:56，有 LOH 的影響；體染色體留著的片段 2.31 比 2.39 個／Mb（比值 0.97，CI 0.93–1.01）；chrX 比值 0.66（inactive X）、chr5 比值 1.32；不知親源，只有一個細胞株 | 現行 |
 | `2026-11-06_colo829_loss_events/` | 用 ONT 深度、雜合位點和同 read 定相驗證：61:39 主要來自 LOH（約 765 Mb 只剩一條，多為多份）；2:1 區分早晚後，1 份那條仍比對稱預測少約 10%（原因未定，不等於爸媽偏向）；三批 COLO829 的 chr1p 拷貝數不同。含 `HANDOFF.md` | 已結案（2026-11-06，不再追查） |
-| `2026-11-06_colo829_hap_snv_ratio/` | COLO829 long read 的 hap1:hap2 原始 61:39，主要因一條流失；扣掉無突變片段後 9.34 比 9.31 個／Mb（比值 1.004），不知親源，只有一個細胞株 | 現行 |
+| `2026-11-06_colo829_hap_snv_ratio/` | COLO829 long read 的 hap1:hap2 原始 61:39，主要因一條流失；扣掉無突變片段、只算體染色體後 9.24 比 9.31 個／Mb（比值 0.993；11-12 更正，原 9.34／9.31 含性染色體），不知親源，只有一個細胞株 | 現行 |
 | `2026-10-30_ascat_hcc1395_5khz` | HCC1395 ONT 5kHz 的 ASCAT：purity 0.97、ploidy 3.06；diplosim 的驗證目標，不當輸入 | 現行 |
 | `2026-10-25_seqc2_hcc1395_measured_purity` | `tX_nY` 是 tumor DNA 比例；實測細胞 purity 較低（例：t20 0.32） | 現行（`docs/tumor_sample.md` 引用） |
 | `2026-10-25_hcc1395_hp_split` | 92.2% 的 somatic SNV 的 alt read 集中在同一條 HP | 現行 |

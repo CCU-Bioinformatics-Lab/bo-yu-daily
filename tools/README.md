@@ -84,6 +84,14 @@ HG008 的 bulk 資料用共用副本 `/big8_disk/yungjen114/data/HG008/`（`docs
 | `hg008_vs_diplosim.py` | 比較 HG008 樹和 8 葉的 `diplosim` 樹的樹形與枝長 |
 | `hg008_sc_clade_test.py` | 用 119 顆單細胞檢查重建樹的分枝和巢狀關係 |
 | `plot_hg008_sc_clades.py` | 上一支的圖：細胞 × 分枝熱圖 |
+| `plot_hg008_tree_method.py` | HG008 參考樹產生流程的圖示（9 步，`lab_report/2026-11-07_hg008_tree_rebuild/how_tree_was_built.png`） |
+| `plot_hg008_tree_ordering.py` | 上一張第 ⑤ 步的詳圖：用「一刀一刀切」說明怎麼排樹（`lab_report/2026-11-07_hg008_tree_rebuild/how_tree_is_ordered.png`） |
+| `plot_hg008_tree_stability.py` | 第 ⑥ 步的詳圖：bootstrap 重抽 1,000 次與 5 種門檻重跑（`lab_report/2026-11-07_hg008_tree_rebuild/how_tree_stability_was_checked.png`） |
+| `plot_hg008_sc_check_explainer.py` | 第 ⑦⑧ 步的詳圖：一顆細胞怎麼判定帶不帶、119 顆細胞熱圖、巢狀檢查（`lab_report/2026-11-07_hg008_sc_check/how_the_tree_was_checked.png`） |
+| `plot_hg008_sc_simple.py` | 簡單版：119 顆單細胞各落在哪一群 clone，附三個是非題（`lab_report/2026-11-07_hg008_sc_check/which_clone_each_cell.png`） |
+| `plot_hg008_sc_matching.py` | 簡單版：單細胞 VCF 怎麼對到選殖株的 SNV、怎麼整個分支一起判（`lab_report/2026-11-07_hg008_sc_check/how_a_cell_is_matched.png`） |
+| `plot_hg008_clones_explainer.py` | 基本知識圖：HG008 的 8 株選殖株是什麼（`lab_report/2026-11-07_hg008_tree_rebuild/what_are_the_8_clones.png`） |
+| `plot_hg008_singlecell_explainer.py` | 基本知識圖：119 顆單細胞怎麼定序、比 8 株選殖株多了什麼（`lab_report/2026-11-07_hg008_sc_check/how_single_cells_were_sequenced.png`） |
 
 ### 樹重建（PhyClone 的 Python 版擴充；已移植到 haploclone）
 
@@ -119,8 +127,10 @@ HG008 的 bulk 資料用共用副本 `/big8_disk/yungjen114/data/HG008/`（`docs
 |---|---|---|
 | `lit_fetch_paper.py` | 依 DOI 抓 PMC 全文或 PubMed 摘要，核對 DOI 後存成文字檔（NCBI 不穩時會失敗） | `research/literature/surveys/tumor_evolution_history_2026-11-05/` |
 | `lit_check_quotes.py` | 檢查引文表的每段引文是否逐字出現在抓下來的文字 | 同上 |
-| `colo829_hap_snv_ratio.py` | COLO829 公開 VCF：兩條單倍型的 SNV 數、密度、同源配對比較 | `lab_report/2026-11-06_colo829_hap_snv_ratio/` |
+| `colo829_hap_snv_ratio.py` | COLO829 公開 VCF：兩條單倍型的 SNV 數、密度（另出只算體染色體的版本）、同源配對比較 | `lab_report/2026-11-06_colo829_hap_snv_ratio/` |
 | `plot_colo829_hap_snv_ratio.py` | 上一支的圖 | 同上 |
+| `colo829_hp_depth_snv.py` | COLO829 T2T VCF：每條 HP 的深度（SNV 位點 DP）和該 HP 每 Mb 的 SNV 數，依 CN 片段與同源對比較 | `lab_report/2026-11-10_colo829_hp_depth_snv/` |
+| `plot_colo829_hp_depth_snv.py` | 上一支的圖 | 同上 |
 | `plot_colo829_t2t_overview.py` | 畫 COLO829 T2T（Sohn 2026）資料長什麼樣子：14 對同源 contig 上每個 SNV 的位置，加一筆 VCF 紀錄的解說 | `lab_report/2026-11-06_colo829_hap_snv_ratio/t2t_overview.png` |
 | `draw_colo829_hap_explainer.py` | 上一個實驗的白話圖解（真實突變位置），輸出 HTML | 同上 |
 | `colo829_event_evidence.py` | COLO829 不靠 SNV 數的證據：覆蓋度抽樣、ONT 雜合位點、同 read 定相 | `lab_report/2026-11-06_colo829_loss_events/` |
@@ -128,6 +138,7 @@ HG008 的 bulk 資料用共用副本 `/big8_disk/yungjen114/data/HG008/`（`docs
 | `colo829_event_summary.py` | 上兩支的彙總表與圖 | 同上 |
 | `colo829_major_minor_timing.py` | 2:1 區把 2 份那條的突變分早晚，檢驗「1 份那條 = 早期 + 晚期 ÷ 2」 | 同上 |
 | `prcgap_hap_snv_ratio.py` | PRCGAP 公開結果：8 株逐染色體與拷貝數相同區段的兩條 SNV 比較，附圖 | `lab_report/2026-11-06_prcgap_hap_snv_ratio/` |
+| `prcgap_snv_vs_hap_depth.py` | PRCGAP 8 株：SNV 密度和該 haplotype tumor depth 的關係（bin 分組、同區段兩條配對回歸），附圖 | `lab_report/2026-11-10_prcgap_snv_vs_hap_depth/` |
 | `snv_hp_independence.py` | COLO829、HG008：相鄰 SNV 落在同一條 HP 的比例，依距離和打亂基準比較 | `lab_report/2026-11-07_snv_hp_independence/` |
 | `plot_snv_hp_independence.py` | 上一支的圖 | 同上 |
 | `hg008_giab_hap_concordance.py` | HG008：比較 PRCGAP 和 GIAB 的單倍型判定，每條染色體可整條對調 | `lab_report/2026-11-07_hg008_giab_hap_concordance/` |
