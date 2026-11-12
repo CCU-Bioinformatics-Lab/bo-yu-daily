@@ -6,6 +6,8 @@
 
 用到的會議：2026-11-04（決議 2、未決事項 2、3）。標記：〔實測〕本實驗計算；〔推論〕本檔推論。
 
+**產生步驟：** 見 `HOW_TREE_WAS_BUILT.md`（2026-11-11，附程式行號）。
+
 **狀態：主架構已有單細胞支持，末端還沒有驗證。** 見 `../2026-11-07_hg008_sc_check/`。除了 3E4 的 7 株、{SC14, SC24, SC28, SC9}、{SC14, SC28} 這三層有支持；{2D6, 2E6} 只有部分支持；{SC24, SC9}、SC6 的位置和多數 private 枝沒有驗證。
 
 ## 目前的樹〔推論〕
@@ -54,3 +56,7 @@ python3 -I tools/hg008_tree_rebuild.py $D $T
 python3 -I tools/hg008_clone_events.py $D $T
 python3 -I tools/hg008_vs_diplosim.py $T diplosim/target/release/diplosim $T/diplosim 300
 ```
+
+## 原分析對話
+
+產生本結果的 Claude Code 對話已保存在 `/big8_disk/boyu114/analysis_transcripts/hg008_tree/`（不在 repo 內；說明見該處 `README.md`）。2026-11-11 週會要求保留，供日後 bulk 方法參考。

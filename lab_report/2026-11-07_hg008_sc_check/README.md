@@ -8,6 +8,34 @@
 
 ![每一欄是一顆細胞](sc_clades.png)
 
+## 先備知識：單細胞怎麼定序出來（2026-11-11 補）
+
+![119 顆單細胞怎麼定序出來](how_single_cells_were_sequenced.png)
+
+- 細胞：MGH 0823p23 批（第 23 代）的冷凍細胞，和 NIST 的 8 株選殖株是不同培養路線。〔repo〕GIAB `README_Bioskryb-Ultima.md`、`README_Bioskryb.md`
+- BioSkryb 用 ResolveDNA 把 120 顆細胞各自的 DNA 放大做成 library；先做低深度 Illumina（每顆的拷貝數，本機沒下載），同一批 library 再轉成 Ultima 格式，UG100 單端 300 bp 定序；119/120 通過品管。〔repo〕同上
+- 深度：平均覆蓋 12.1–47.6×，中位 23.1×。〔實測〕`single_cell_vcf/NIST_Bioskryb_QC_measures.csv`
+- 呼叫：GRCh38 比對，DeepVariant 1.4.0，VEP 註解，PASS 過濾。〔repo〕VCF header
+- 比選殖株多的：細胞層級的比例（111／48／16／8）、沒有擴增期間的新突變、不同培養與平台的獨立檢查。少的：放大漏測與錯誤、short read 不能定相 HP。〔推論〕
+- 圖：`python3 tools/plot_hg008_singlecell_explainer.py lab_report/2026-11-07_hg008_sc_check/how_single_cells_were_sequenced.png`
+
+## 簡單版：單細胞怎麼證明一個分支存在（2026-11-12 補）
+
+**說法（使用者 2026-11-12 確認）：** 單細胞是一個 VCF。拿 8 株選殖株的體細胞 SNV，到細胞的 VCF 裡查「同位置、同 ALT」有沒有被 call（GT 不是 0/0）。一個分支的 SNV 大部分都查到，就表示這顆細胞帶這個分支。單細胞證明的是「分支存在」，不是逐一證明每個突變。
+- 不比 read 數：細胞和選殖株的深度不同。細胞 VCF 是單一細胞的 DeepVariant call，沒有和正常組織比，所以 germline 和體細胞突變混在一起（SC01 有 3,610,962 列 PASS）；只查清單上的位置，就只看到體細胞突變。〔實測〕〔程式〕`tools/hg008_sc_tree_check.py:39-56`
+
+![單細胞怎麼證明一個分支存在](how_a_cell_is_matched.png)
+
+圖：`python3 tools/plot_hg008_sc_matching.py lab_report/2026-11-07_hg008_sc_check/how_a_cell_is_matched.png`
+
+## 簡單版：119 顆細胞各落在哪一群（2026-11-12 補）
+
+![119 顆單細胞各落在哪一群](which_clone_each_cell.png)
+
+- 每顆細胞依序問：有沒有那 127、14、68 個突變（「有」＝ rel ≥ 0.5）。走到哪裡停，就落在哪一群：H 8、G A B 63、E F 32、C D 16。〔實測〕`tables/cell_by_branch.tsv`
+- 有 4 顆在邊界（SC256、SC257、SC83 的 14 個；SC317 的 68 個；rel 0.32–0.49），歸到上一層。
+- 圖：`python3 tools/plot_hg008_sc_simple.py lab_report/2026-11-07_hg008_sc_check/tables/cell_by_branch.tsv lab_report/2026-11-07_hg008_sc_check/which_clone_each_cell.png`
+
 ## 1. 結論
 
 - **樹的主架構有單細胞支持。** 119 顆細胞分成 3 層巢狀分枝：111 顆帶「除了 3E4 的 7 株」、其中 48 顆帶 {SC14, SC24, SC28, SC9}、其中 16 顆帶 {SC14, SC28}。〔實測〕
@@ -103,3 +131,7 @@ python3 -I tools/hg008_sc_tree_check.py $T/snv_classes_vaf0.25_qual20.tsv $V $O/
 python3 -I tools/hg008_sc_clade_test.py $T/snv_classes_vaf0.25_qual20.tsv $T/clades_vaf0.25_qual20.tsv $O/tables/sc_calls.tsv.gz $V $O/tables
 python3 tools/plot_hg008_sc_clades.py $O/tables/cell_by_branch.tsv $O/sc_clades.png
 ```
+
+## 原分析對話
+
+產生本結果的 Claude Code 對話已保存在 `/big8_disk/boyu114/analysis_transcripts/hg008_tree/`（不在 repo 內；說明見該處 `README.md`）。2026-11-11 週會要求保留，供日後 bulk 方法參考。
