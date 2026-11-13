@@ -54,6 +54,11 @@
 | `plot_vmr_repeat_cause.py` | t50 depth VMR 偏高的原因圖 |
 | `plot_depth_vmr_explainer.py` | 解釋 depth VMR 與 φ（「預設」那一格的輸入已刪，畫不出來） |
 | `plot_diplosim_demo.py` | 同一 seed 三種參數的示範圖 |
+| `plot_diplosim_truth_tree.py` | 畫一次 diplosim 輸出的真值樹：每條邊新增幾個 SNV、各在 HP1／HP2 幾個，每個 clone 的比例與 CCF（`python3 tools/plot_diplosim_truth_tree.py <diplosim 輸出目錄> <out.png>`；範例 `diplosim/docs/figs/truth_tree_seed7.png`） |
+| `diplosim_to_haploclone.py` | 把一次 diplosim 輸出轉成 haploclone 輸入（`data.tsv`、A1 用的 `data_hp.tsv`），真值另存 `truth.tsv`、`truth_tree.tsv`（`lab_report/2026-11-12_diplosim_haploclone_first_run/`） |
+| `eval_diplosim_haploclone.py` | haploclone MAP 結果對 diplosim 真值：clone 數、ARI、pair accuracy、CCF 誤差（同上） |
+| `run_diplosim_haploclone_batch.py` | 批次：多棵 diplosim 樹 × haploclone base／A1 × 多個 seed，平行執行，輸出 `results.tsv`（`lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/`） |
+| `summarize_diplosim_haploclone_batch.py` | 上一支的成對統計：每棵樹 A1 − base、t 95% CI、seed 間差異 |
 | `draw_error_knobs.py`、`draw_tag_knobs.py` | 11-04 投影片的錯誤旋鈕、tag 旋鈕示意圖（不是資料） |
 | `draw_diplosim_purity_holdout_plan.py` | holdout 計畫示意圖 |
 

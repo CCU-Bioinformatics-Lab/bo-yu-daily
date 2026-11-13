@@ -143,15 +143,15 @@
 4. **真實資料驗證**：HG008 bulk 直接重建 → 和參考樹比較。bulk 用共用副本 `/big8_disk/yungjen114/data/HG008`，不重新下載。
 5. 分享 HG008 樹（只含高信心結構；11-11 已寄出）。報告加 AI 環境改善頁。COLO829 T2T 論文等老師再問；術語字典暫緩（使用者 2026-11-11）。
 
-## 附錄 D：待辦對照 repo 現況（2026-11-11）
+## 附錄 D：待辦對照 repo 現況（2026-11-11，11-13 更新）
 
 | 待辦 | 現況 | 證據 |
 |---|---|---|
-| 深讀八株研究與 COLO829 T2T | **前置完成（11-11）。** 已建 P12（PRCGAP）、P13（COLO829 T2T）資料夾：全文、來源、摘要。兩篇作者都沒有比較兩條 haplotype 的 SNV 數；PRCGAP 的親源分析只做 B-ALL 染色體增減。補充資料未讀；參數方案未列 | 〔repo〕`research/literature/papers/P12_prcgap_8lines_2026/`、`P13_colo829_t2t_2026/` |
+| 深讀八株研究與 COLO829 T2T | **完成（11-12）。** 已建 P12（PRCGAP）、P13（COLO829 T2T）資料夾：全文、來源、摘要。兩篇作者都沒有比較兩條 haplotype 的 SNV 數；PRCGAP 的親源分析只做 B-ALL 染色體增減。HP 分配由使用者 11-12 直接定案為固定 50%、每個 SNV 獨立，所以不再列參數方案、不帶週會 | 〔repo〕`research/literature/papers/P12_prcgap_8lines_2026/`、`P13_colo829_t2t_2026/`；commit e8b141c；`diplosim/DECISIONS.md` 2026-11-12 |
 | 理解 HG008 樹的產生方法 | **完成（11-12 補當時理由，見 HOW_TREE_WAS_BUILT.md「當時的理由」）。原分析對話已保存（11-11）於 `/big8_disk/boyu114/analysis_transcripts/hg008_tree/`；步驟清單與流程圖已完成（`lab_report/2026-11-07_hg008_tree_rebuild/HOW_TREE_WAS_BUILT.md`、`how_tree_was_built.png`）。** 8 株二元樹；119 顆單細胞支持 3 層巢狀分枝（111、48、16 顆），末端多未驗證 | 〔實測〕`lab_report/2026-11-07_hg008_tree_rebuild/`、`2026-11-07_hg008_sc_check/` |
 | ↳ 群數口徑 | **已釐清（使用者 2026-11-11）。** 總共 5 群 clone；其中共同祖先在樣本裡沒有細胞，119 顆單細胞落在另外 4 群（H、GAB、EF、CD；H 只部分支持）。會中「五群」與投影片一致。分享時寫「5 群 clone，單細胞支持其中 4 群」 | 〔repo〕`report/2026_11_11_slides/project/slides/hg008-clone-tree.html`；`report/2026_11_11_slides/BRIEF.md` 11-10 p8 列 |
 | ↳ 共同祖先 SNV 數 | **已更正。** 正文原寫「約 1,784 個」，是語音轉寫錯誤；使用者 2026-11-11 確認為 7,784 個，與投影片一致 | 〔repo〕`report/2026_11_11_slides/project/slides/hg008-clone-tree.html` |
-| SNV-only 模擬驗證 | **未開始。** diplosim 已能 SNV-only（實驗時關 CNA）；還沒接 haploclone 跑整條流程 | 〔repo〕`diplosim/DECISIONS.md` 2026-11-07 |
-| HG008 bulk 重建 vs 參考樹 | **未開始。** | — |
+| SNV-only 模擬驗證 | **第一輪完成（11-12，11-13 複查）。** 10 棵樹 × 2 seed：樹關係正確率 A1 − base −0.011（CI −0.036 到 +0.013），沒看到 HP 改善樹形（未證明等價）；CCF 誤差 A1 略小（−0.002）；haploclone 從 5 群找回 3–5 群。全部 1+1 時 HP 只讓 CCF 稍準，不提供 SNV 之間的關係。下一步 A2（拷貝數區域）或 C4（同 read 共現）是設計選擇，帶週會 | 〔實測〕`lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/`（投影片說法見 §7） |
+| HG008 bulk 重建 vs 參考樹 | **進行中（11-13 起）。** 已完成規劃與圖示流程圖；D1–D4（SNV 來源、HP 來源、區域、平台）帶週會。NIST 名單在參考樹分支上只有 139 個 SNV，幾乎全在 111／119 細胞那一支，48、16 顆兩層是 0，所以只用 NIST 比不到深層分支。全基因組 43% 是 1+1。ClairS 0.5.1 從原始碼裝好，ONT tumor（63×）配 normal N-D（94×）全基因組 11-13 14:59 開跑；haploclone 重建尚未開始 | 〔實測〕`lab_report/2026-11-13_hg008_bulk_rebuild/`；ClairS 輸出 `/bip8_disk/boyu114/hg008_clairs_ont/` |
 | 分享樹與論文 | **HG008 樹已寄出（使用者 2026-11-11）**，寫法為「5 群 clone，單細胞支持其中 4 群」，附資料路徑。COLO829 T2T 論文先不分享，等老師再問（使用者 2026-11-11） | 〔會議〕使用者回報 |
-| AI 環境改善頁、術語字典 | 環境改善頁已在 11-11 投影片（`ai-env.html`）；術語字典暫緩（使用者 2026-11-11） | 〔repo〕`report/2026_11_11_slides/project/slides/ai-env.html` |
+| AI 環境改善頁、術語字典 | 11-11 投影片已有一版（`ai-env.html`）；下週投影片要再做一頁本週的版本，**未開始**。術語字典暫緩（使用者 2026-11-11） | 〔repo〕`report/2026_11_11_slides/project/slides/ai-env.html` |

@@ -1,0 +1,22 @@
+CNV PASS tiling 2500 Mb: 1+1 1085 Mb (43.4%), 0+1 937 Mb (37.5%), 1+0 352 Mb (14.1%), 2+0 75 Mb (3.0%), 1+2 34 Mb (1.4%)
+NIST SNV 9810 by CN state: 1+1 4785 (48.8%), 0+1 2072 (21.1%), no_call 1813 (18.5%), 1+0 733 (7.5%), 1+2 168 (1.7%), 2+0 137 (1.4%)
+
+class	clones	in_NIST	in_NIST_1+1
+truncal	7784	7616	3850
+private	3593	0	0
+low_qual	2841	221	98
+shared_lost	655	586	224
+shared_clean	301	139	96
+shared_absent_in_loh	245	158	0
+shared_no_cn	2	0	0
+NIST SNV not in any clone call: 1090
+
+shared_clean by clade pattern	clones	in_NIST	in_NIST_1+1
+2D6,2E6,SC14,SC24,SC28,SC6,SC9	127	126	88
+SC14,SC28	68	0	0
+2D6,2E6	31	2	2
+SC24,SC9	17	0	0
+SC14,SC24,SC28,SC9	14	0	0
+2E6,3E4,SC14,SC24,SC28,SC6,SC9	6	0	0
+2D6,2E6,SC14,SC24,SC28,SC9	4	4	2
+2D6,2E6,3E4,SC14,SC24,SC28,SC9	3	3	0
