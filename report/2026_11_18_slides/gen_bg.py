@@ -1,4 +1,6 @@
-"""Background result pages of the 2026-11-18 deck: page 3 ref-tree (HG008 reference tree), page 4 papers (two papers + 50%).
+"""Background result page of the 2026-11-18 deck: papers (two papers + 50%). The HG008 reference-tree pages moved to gen_ref.py.
+
+Shared pictograms (tube, mark, dice) are also used by gen_ref.py.
 
 Sources (BRIEF R1-R3):
 - ref-tree: lab_report/2026-11-07_hg008_tree_rebuild/HOW_TREE_WAS_BUILT.md and README.md (tree shape, branch SNV
@@ -32,18 +34,6 @@ def tube(s, x, top, w=16, h=32, label=None):
     s.line(x - r - 3, top, x + r + 3, top, "ink2", 2.5)
     if label:
         s.text(x, top + h + 22, label, "b", "middle")
-
-
-def branch(s, x1, y1, x2, y2, style, c="ink", sw=5):
-    """solid = single cells support, half = partly, dash = not checked."""
-    if style == "solid":
-        s.line(x1, y1, x2, y2, c, sw)
-    elif style == "half":
-        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-        s.line(x1, y1, mx, my, c, sw)
-        s.line(mx, my, x2, y2, c, sw - 1.5, dash=True)
-    else:
-        s.line(x1, y1, x2, y2, "line2", 2.5, dash=True)
 
 
 def pill(s, x, y, text, col="ink2", fill=None):
@@ -80,105 +70,6 @@ def fraction(s, x, y, num, den, col="ink"):
     s.text(x, y - 6, num, "b", "middle", col)
     s.line(x - 12, y, x + 12, y, col, 2)
     s.text(x, y + 22, den, "b", "middle", col)
-
-
-# ---- page 3: ref-tree --------------------------------------------------------------
-
-LEAVES = "HGABEFCD"
-
-
-def ref_tree():
-    s = S("ref-tree", 1200, 450)
-
-    # top strip: where each data set comes from
-    for i in range(8):
-        tube(s, 18 + i * 22, 8, w=14, h=30)
-    s.text(200, 22, "8 株選殖株：第 14、19 代", "b")
-    s.text(200, 48, "PacBio long read → 排出樹形", "s", "start", "ink2")
-    for i in range(6):
-        s.cell(664 + (i % 3) * 22, 14 + (i // 3) * 22, r=10)
-    s.text(740, 22, "119 顆單細胞：第 23 代（和 bulk 同代）", "b")
-    s.text(740, 48, "short read（單細胞例外）→ 檢查分支", "s", "start", "ink2")
-    s.line(0, 72, 1200, 72, "line", 2)
-
-    # left: the tree from the 8 clones (shape and counts from the lab_report, C-7)
-    x0, dx = 50, 62
-    X = {k: x0 + i * dx for i, k in enumerate(LEAVES)}
-    yR, y7, y6, y4, y2, leaf = 150, 200, 250, 300, 345, 368
-    xAB = (X["A"] + X["B"]) / 2
-    xEF = (X["E"] + X["F"]) / 2
-    xCD = (X["C"] + X["D"]) / 2
-    xCDEF = (xEF + xCD) / 2
-    x6 = (xAB + xCDEF) / 2
-    x7 = (X["G"] + x6) / 2
-    xR = (X["H"] + x7) / 2
-    for a, b, y in [(X["H"], x7, yR), (X["G"], x6, y7), (xAB, xCDEF, y6), (X["A"], X["B"], y4),
-                    (xEF, xCD, y4), (X["E"], X["F"], y2), (X["C"], X["D"], y2)]:
-        s.line(a, y, b, y, "ink2", 2.5)
-    s.line(xR, yR - 22, xR, yR, "ink2", 2.5)
-    s.text(xR + 12, 108, "共同祖先：8 株都有", "s", "start", "ink2")
-    s.text(xR + 12, 134, "7,784 個 SNV", "b", "start", "ink2")
-    branch(s, x7, yR, x7, y7, "solid", RED)
-    branch(s, x6, y7, x6, y6, "dash")
-    branch(s, xAB, y6, xAB, y4, "half", "ink2")
-    branch(s, xCDEF, y6, xCDEF, y4, "solid", PUR)
-    branch(s, xCD, y4, xCD, y2, "solid", GOLD)
-    branch(s, xEF, y4, xEF, y2, "dash")
-    for k, y0 in [("H", yR), ("G", y7), ("A", y4), ("B", y4), ("E", y2), ("F", y2), ("C", y2), ("D", y2)]:
-        branch(s, X[k], y0, X[k], leaf, "dash")
-        tube(s, X[k], leaf, w=14, h=30, label=k)
-
-    def num(x, ya, yb, t, col, a="end"):
-        s.text(x, (ya + yb) / 2 + 7, t, "b", a, col)
-    num(x7 - 10, yR, y7, "127", RED)
-    num(x6 + 10, y7, y6, "4", "mute", "start")
-    num(xAB - 10, y6, y4, "31", "ink2")
-    num(xCDEF - 10, y6, y4, "14", PUR)
-    num(xEF - 10, y4, y2, "17", "mute")
-    num(xCD - 10, y4, y2, "68", GOLD)
-
-    # legend for line styles + the caveat pill
-    pill(s, 336, 128, "參考樹，不是真值", "stdis")
-    for i, (st, lab, c) in enumerate([("solid", "單細胞支持", "ink"), ("half", "部分支持", "ink2"), ("dash", "未驗證", "ink")]):
-        ly = 180 + i * 30
-        branch(s, 420, ly - 6, 456, ly - 6, st, c, sw=4)
-        s.text(464, ly, lab, "s")
-
-    # arrow: tree -> cells
-    s.arrow(548, 262, 640, 262, c="ink2", sw=3, head=12)
-    s.text(594, 248, "比對", "s", "middle", "ink2")
-
-    # right: nested carrier sets from the 119 single cells (actual result)
-    s.rect(650, 92, 548, 326, "panel", "line2", r=12, sw=2)
-    s.text(668, 122, "119 顆", "h")
-    s.text(756, 122, "每顆細胞查：帶不帶這支的 SNV", "s", "start", "ink2")
-    sets = [(RED, "111 顆", "帶綠色那支（127 個）", 668, 140, 512, 228),
-            (PUR, "48 顆", "其中帶紫色（14 個）", 690, 196, 468, 160),
-            (GOLD, "16 顆", "其中帶黃色（68 個）", 712, 252, 424, 92)]
-    for col, n, lab, x, y, w, h in sets:
-        s.rect(x, y, w, h, col, None, r=10, op=0.10)
-        s.rect(x, y, w, h, None, col, r=10, sw=3)
-        s.star(x + 22, y + 26, 10, col)
-        s.text(x + 40, y + 33, n, "h", "start", col)
-        s.text(x + 116, y + 33, lab, "s", "start", "ink2")
-    # cells in the innermost set carry all three stars
-    for i in range(5):
-        s.cell(752 + i * 40, 318, r=15, fill="on", stars=(RED, PUR, GOLD))
-    mark(s, 990, 312, True)
-    s.text(1008, 318, "違反 0 顆", "b", "start", "c4")
-    s.text(668, 404, "另 8 顆不帶綠色：落在 H 這側", "s", "start", "ink2")
-    tag(s, 1062, 404, "實際結果", "real")
-    return s
-
-
-def notes_ref_tree():
-    return ("這頁要看的是 HG008 參考樹怎麼來。左上是 8 株選殖株，第 14、19 代從單顆細胞長出，用 PacBio long read 定序；"
-            "依每個 SNV 是哪幾株有，排出左邊這棵樹，數字是 SNV 個數。"
-            "右上是 119 顆單細胞，和 bulk 同是第 23 代；它是 short read，屬於例外。"
-            "右邊框裡，111 顆帶綠色那支，其中 48 顆帶紫色，其中 16 顆帶黃色，沒有細胞違反。"
-            "所以實線三支有單細胞支持，虛線的末端還沒驗證。"
-            "這棵樹是 AI 協助算的，我核對了程式和這三個細胞數。它是參考樹，不是真值。"
-            "樹有了，接著看 HP 比例要怎麼設。")
 
 
 # ---- page 4: papers -----------------------------------------------------------------
@@ -273,11 +164,9 @@ def notes_papers():
 
 
 def main():
-    write_page("ref-tree", page("ref-tree", "選殖株排出樹形；和 bulk 同代的單細胞支持三層巢狀分支",
-                                ref_tree(), notes=notes_ref_tree()))
     write_page("papers", page("papers", "兩篇論文都沒比較兩條 haplotype，所以 HP 先用 50%、每個 SNV 獨立",
                               papers(), notes=notes_papers()))
-    for f in (notes_ref_tree, notes_papers):
+    for f in (notes_papers,):
         print(f.__name__, len(f()), "chars")
 
 

@@ -42,11 +42,12 @@ FONT = "Noto Sans TC, Arial, sans-serif"
 MONO = "JetBrains Mono, Courier New, monospace"
 
 DECK_TITLE = "2026-11-18 HP 加進樹重建：模擬與 HG008"
-ORDER = ["outline", "tasks", "ref-tree", "papers", "sim-method", "sim-result", "sim-why", "hg-plan", "hg-nist", "hg-clairs", "hg-rebuild", "decide", "ai-env"]
+ORDER = ["outline", "tasks", "ref-tree", "ref-check", "papers", "sim-method", "sim-result", "sim-why", "hg-plan", "hg-nist", "hg-clairs", "hg-rebuild", "decide", "ai-env"]
 SECTIONS = {
  "outline": "接回上次會議",
  "tasks": "本週任務",
  "ref-tree": "結果：HG008 參考樹",
+ "ref-check": "結果：HG008 參考樹",
  "papers": "結果：論文與 HP 比例",
  "sim-method": "模擬驗證：方案",
  "sim-result": "模擬驗證：結果",

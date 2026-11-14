@@ -14,6 +14,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from slidekit import S, page, write_page, tag
 from lib import width
+from gen_bg import dice, fraction  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 R4 = ROOT / "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base"
@@ -72,68 +73,99 @@ def check(s, x, y, ok=True):
 # ---- p5 sim-method ----------------------------------------------------------------------
 
 def p5():
-    s = S("p5", 1200, 505)
-    boxes = [(0, 205, "1 已知樹（模擬）"), (245, 205, "2 計數"), (490, 230, "3 重建"),
-             (760, 195, "4 和真值比"), (995, 205, "5 得分")]
-    for i, (x, w, t) in enumerate(boxes):
-        s.rect(x, 0, w, 245, "panel", None, r=10)
-        s.text(x + w / 2, 30, t, "h", "middle")
-        if i:
-            px = boxes[i - 1][0] + boxes[i - 1][1]
-            s.arrow(px + 4, 115, x - 4, 115, c="ink2", sw=3)
-    # 1 known tree
-    tree7(s, 102, 62)
-    for sx, sy in [(78, 76), (126, 76), (58, 125), (146, 125)]:
-        s.star(sx, sy, 7)
-    s.text(102, 192, "5 clone、1,000 SNV", "s", "middle")
-    s.text(102, 218, "全部 1+1（各一份）", "s", "middle")
-    # 2 counts
-    doc(s, 290, 46, 112, 124)
-    for k, hp in enumerate(["hp1", "hp2", "hp1", "hp2"]):
-        y = 72 + k * 26
-        s.rect(300, y - 7, 14, 14, hp, None, r=3)
-        s.rect(322, y - 5, 44, 10, "panel3", None, r=3)
-        s.rect(366, y - 5, 18 + 6 * (k % 2), 10, "mut", None, r=3)
-    s.text(347, 192, "ref／alt 計數＋HP", "s", "middle")
-    s.text(347, 216, "直接產生，沒有 read", "s", "middle")
-    s.text(347, 240, "HP 完全已知", "s", "middle")
-    # 3 rebuild: same program, two inputs
-    for k, (lab, hp) in enumerate([("加 HP", True), ("不加 HP", False)]):
-        y = 82 + k * 78
-        s.rect(500, y - 22, 104, 40, "on", "line2", r=8, sw=2)
-        if hp:
-            s.rect(506, y - 14, 7, 24, "hp1", None, r=2)
-            s.rect(515, y - 14, 7, 24, "hp2", None, r=2)
-        s.text(560 if hp else 552, y + 6, lab, "b", "middle")
-        s.arrow(608, y - 2, 632, y - 2, c="ink2", sw=2.5)
-        tree_small(s, 672, y - 30, ["c1", "c2", "c3"], dx=22, dy=24, r=7)
-    s.text(605, 216, "同一個程式，兩種輸入", "s", "middle")
-    s.text(605, 240, "每棵樹各跑 2 次", "s", "middle")
-    # 4 compare with truth
-    tree_small(s, 812, 62, ["c1", "c2", "c3"], dx=22, dy=32, r=8)
-    s.text(812, 158, "真值", "s", "middle")
-    s.text(857, 102, "↔", "h", "middle")
-    tree_small(s, 902, 62, ["c1", "c2", "c3"], dx=22, dy=32, r=8)
-    s.text(902, 158, "重建", "s", "middle")
-    s.text(857, 192, "SNV 分群", "s", "middle")
-    s.text(857, 216, "樹形、CCF", "s", "middle")
-    # 5 scores
-    for k, (lab, w) in enumerate([("樹關係正確率", 66), ("ARI", 58), ("CCF 誤差", 22)]):
-        y = 74 + k * 36
-        s.text(1007, y + 6, lab, "s")
-        s.rect(1124, y - 7, 62, 14, "panel2", None, r=3)
-        s.rect(1124, y - 7, w * 62 / 66, 14, "ink2", None, r=3)
-    s.text(1097, 192, "加 HP − 不加 HP", "s", "middle")
-    s.text(1097, 218, "CCF：帶 SNV 細胞比例", "s", "middle")
+    s = S("p5", 1200, 560)
+    # the question (user 11-14: say what the simulator makes, then what we ask haploclone)
+    s.rect(0, 0, 1200, 50, "hl", None, r=10)
+    s.text(600, 33, "問題：全部 1+1、只有 SNV 時，加上 HP1／HP2，haploclone 能不能重建出一模一樣的樹？", "b", "middle")
 
-    # lower row: three metric sketches
-    y0 = 262
-    s.rect(0, y0, 590, 243, "panel", None, r=10)
-    s.text(16, y0 + 32, "樹關係正確率：任兩個 SNV 的關係", "h")
-    tag(s, 510, y0 + 32, "示意", "demo")
+    # frame A: diplosim makes data with a known answer (5 steps); frame B: haploclone (2 steps)
+    fy, fh = 64, 236
+    s.rect(0, fy, 772, fh, "panel", None, r=10)
+    s.text(14, fy + 28, "diplosim：產生已知答案", "h")
+    s.rect(788, fy, 412, fh, "panel", None, r=10)
+    s.text(802, fy + 28, "haploclone：重建，再和真值比", "h")
+    cw, gap, cy = 142, 10, fy + 44
+    xs = [10 + i * (cw + gap) for i in range(5)]
+    for i, x in enumerate(xs):
+        s.rect(x, cy, cw, 182, "on", None, r=8)
+        s.circle(x + 16, cy + 16, 11, "ink2")
+        s.text(x + 16, cy + 22, str(i + 1), "s", "middle", "on")
+    labels = [("隨機產生樹", "5 個 clone"), ("分支放 SNV", "共 1,000 個"), ("隨機選 HP", "HP1、HP2 各半"),
+              ("全部 1+1", "兩條各一份"), ("產生計數", "ref／alt 分 HP")]
+    for x, (t1, t2) in zip(xs, labels):
+        s.text(x + cw / 2, cy + 146, t1, "b", "middle")
+        s.text(x + cw / 2, cy + 172, t2, "s", "middle", "ink2")
+    # 1 a random tree (tree 7 shape)
+    tree7(s, xs[0] + 71, cy + 30, dx=34, dy=40, r=10)
+    # 2 new SNVs on each branch
+    tree7(s, xs[1] + 71, cy + 30, dx=34, dy=40, r=10)
+    for sx, sy in [(-17, 50), (17, 50), (-34, 90), (34, 90)]:
+        s.star(xs[1] + 71 + sx - 8, cy + sy - 2, 7)
+    # 3 each SNV goes to HP1 or HP2, 50 % each, independently
+    x = xs[2]
+    dice(s, x + 72, cy + 4, 24)
+    fraction(s, x + 118, cy + 20, "1", "2")
+    s.text(x + 10, cy + 74, "HP1", "s", "start", "hp1")
+    s.text(x + 10, cy + 112, "HP2", "s", "start", "hp2")
+    s.bar(x + 50, cy + 62, 82, "hp1", h=12)
+    s.bar(x + 50, cy + 100, 82, "hp2", h=12)
+    for sx in (66, 112):
+        s.star(x + sx, cy + 68, 7)
+    s.star(x + 88, cy + 106, 7)
+    # 4 every position 1+1
+    x = xs[3]
+    s.text(x + 10, cy + 70, "HP1", "s", "start", "hp1")
+    s.text(x + 10, cy + 108, "HP2", "s", "start", "hp2")
+    s.bar(x + 50, cy + 58, 70, "hp1", h=14)
+    s.bar(x + 50, cy + 96, 70, "hp2", h=14)
+    s.text(x + 130, cy + 70, "1", "b", "middle")
+    s.text(x + 130, cy + 108, "1", "b", "middle")
+    # 5 read counts per SNV, split by HP (alt only on the SNV's HP)
+    x = xs[4]
+    for k, (hp, alt) in enumerate([("hp1", 30), ("hp2", 0)]):
+        y = cy + 48 + k * 34
+        s.rect(x + 10, y - 9, 16, 18, hp, None, r=3)
+        s.rect(x + 32, y - 6, 66, 12, "panel3", None, r=3)
+        if alt:
+            s.rect(x + 98, y - 6, alt, 12, "mut", None, r=3)
+    s.text(x + 32, cy + 112, "ref", "s", "start", "ink2")
+    s.text(x + 98, cy + 112, "alt", "s", "start", "mut")
+    for i in range(4):
+        s.arrow(xs[i] + cw + 1, cy + 80, xs[i + 1] - 1, cy + 80, c="ink2", sw=2, head=6)
+    s.arrow(774, cy + 80, 796, cy + 80, c="ink2", sw=3, head=9)
+
+    # 6 two inputs to the same program; 7 compare with the truth
+    x6, x7 = 798, 1000
+    for x, w, n, t1, t2 in [(x6, 192, 6, "兩種輸入", "同一個程式"), (x7, 192, 7, "和真值比", "樹拓樸、屬哪一群")]:
+        s.rect(x, cy, w, 182, "on", None, r=8)
+        s.circle(x + 16, cy + 16, 11, "ink2")
+        s.text(x + 16, cy + 22, str(n), "s", "middle", "on")
+        s.text(x + w / 2, cy + 146, t1, "b", "middle")
+        s.text(x + w / 2, cy + 172, t2, "s", "middle", "ink2")
+    for k, (lab, hp) in enumerate([("不加 HP", False), ("加 HP", True)]):
+        y = cy + 50 + k * 54
+        s.rect(x6 + 14, y - 18, 100, 36, "on", "line2", r=8, sw=2)
+        if hp:
+            s.rect(x6 + 20, y - 11, 6, 22, "hp1", None, r=2)
+            s.rect(x6 + 28, y - 11, 6, 22, "hp2", None, r=2)
+        s.text(x6 + 70 if hp else x6 + 64, y + 6, lab, "s", "middle")
+        s.arrow(x6 + 118, y, x6 + 136, y, c="ink2", sw=2)
+        tree_small(s, x6 + 166, y - 22, ["c1", "c2", "c3"], dx=14, dy=16, r=5)
+    s.arrow(x6 + 192 + 1, cy + 80, x7 - 1, cy + 80, c="ink2", sw=2, head=6)
+    tree_small(s, x7 + 56, cy + 34, ["c1", "c2", "c3"], dx=20, dy=28, r=8)
+    s.text(x7 + 56, cy + 124, "真值", "s", "middle")
+    s.text(x7 + 96, cy + 72, "↔", "h", "middle")
+    tree_small(s, x7 + 140, cy + 34, ["c1", "c2", "c3"], dx=20, dy=28, r=8)
+    s.text(x7 + 140, cy + 124, "重建", "s", "middle")
+
+    # lower row: the two scores
+    y0 = 316
+    s.rect(0, y0, 760, 243, "panel", None, r=10)
+    s.text(16, y0 + 32, "樹拓樸形狀是否一樣：看任兩個 SNV 的關係", "h")
+    tag(s, 680, y0 + 32, "示意", "demo")
     cases = [("同群", "A", "A"), ("祖先", "A", "B"), ("後代", "B", "A"), ("不同支", "B", "C")]
     for i, (lab, n1, n2) in enumerate(cases):
-        cx = 80 + i * 143
+        cx = 96 + i * 186
         P = {"R": (cx - 6, y0 + 66), "A": (cx - 34, y0 + 108), "C": (cx + 22, y0 + 108), "B": (cx - 34, y0 + 150)}
         for p, q in [("R", "A"), ("R", "C"), ("A", "B")]:
             edge(s, P[p], P[q], 2.5)
@@ -146,113 +178,142 @@ def p5():
             s.text(nx + 30, ny + dy + 6, num, "s")
         s.text(cx, y0 + 190, lab, "b", "middle")
     s.text(16, y0 + 228, "得分＝關係和真值相同的 SNV 對比例", "s")
-    s.star(398, y0 + 222, 7)
-    s.text(408, y0 + 228, "1", "s")
-    s.text(424, y0 + 228, "SNV1", "s")
-    s.star(494, y0 + 222, 7)
-    s.text(504, y0 + 228, "2", "s")
-    s.text(520, y0 + 228, "SNV2", "s")
+    s.star(568, y0 + 222, 7)
+    s.text(578, y0 + 228, "1", "s")
+    s.text(594, y0 + 228, "SNV1", "s")
+    s.star(664, y0 + 222, 7)
+    s.text(674, y0 + 228, "2", "s")
+    s.text(690, y0 + 228, "SNV2", "s")
 
-    s.rect(605, y0, 280, 243, "panel", None, r=10)
-    s.text(620, y0 + 32, "ARI：只比 SNV 分群", "h")
-    rows = [("真值", [(712, ["c1"]), (772, ["c2"]), (832, ["c3"])]),
-            ("重建", [(712, ["c1"]), (802, ["c2", "c3"])])]
+    ax = 776
+    s.rect(ax, y0, 1200 - ax, 243, "panel", None, r=10)
+    s.text(ax + 16, y0 + 32, "SNV 屬於哪一個 clone 群", "h")
+    rows = [("真值", [(ax + 150, ["c1"]), (ax + 222, ["c2"]), (ax + 294, ["c3"])]),
+            ("重建", [(ax + 150, ["c1"]), (ax + 258, ["c2", "c3"])])]
     for k, (lab, groups) in enumerate(rows):
         y = y0 + 78 + k * 64
-        s.text(620, y + 7, lab, "b")
+        s.text(ax + 16, y + 7, lab, "b")
         for gx, cols in groups:
             rx = 26 * len(cols) + (4 if len(cols) > 1 else 0)
             s.raw(f'<ellipse cx="{gx}" cy="{y}" rx="{rx}" ry="22" style="fill:none;stroke:var(--ink2);stroke-width:2"/>')
             dots = [c for c in cols for _ in range(2)]
             for j, c in enumerate(dots):
                 s.circle(gx + (j - (len(dots) - 1) / 2) * 22, y, 8, c, "cellline", 1.2)
-    s.text(745, y0 + 200, "不看樹形", "b", "middle")
-    tag(s, 620, y0 + 228, "示意", "demo")
+    s.text(ax + 212, y0 + 200, "不看樹形", "b", "middle")
+    tag(s, ax + 16, y0 + 228, "示意", "demo")
 
-    s.rect(900, y0, 300, 243, "panel", None, r=10)
-    s.text(915, y0 + 32, "事先定的規則", "h")
-    tag(s, 1060, y0 + 32, "示意", "demo")
-    X = lambda v: 1050 + v * 3000
-    s.rect(X(-0.02), y0 + 50, X(0.02) - X(-0.02), 92, "hl", None, r=4)
-    s.line(X(0), y0 + 50, X(0), y0 + 142, "line2", 2, dash=True)
-    s.line(X(-0.042), y0 + 128, X(0.042), y0 + 128, "ink2", 2)
-    for v, lab in [(-0.02, "−0.02"), (0, "0"), (0.02, "+0.02")]:
-        s.line(X(v), y0 + 122, X(v), y0 + 134, "ink2", 2)
-        s.text(X(v), y0 + 160, lab, "s", "middle")
-    s.text(X(-0.013) - 8, y0 + 108, "95% CI", "s", "end")
-    s.line(X(-0.013), y0 + 102, X(0.009), y0 + 102, "ink", 4)
-    s.circle(X(-0.002), y0 + 102, 7, "ink")
-    for k, t in enumerate(["CI 包含 0", "平均差 < 0.02"]):
-        check(s, 918, y0 + 192 + k * 28)
-        s.text(944, y0 + 192 + k * 28, t, "s")
-    s.text(1185, y0 + 206, "→ 沒差", "b", "end")
-
-    notes = '這頁講模擬驗證怎麼做，以及跑之前定好的規則。上排從左到右：模擬產生一棵已知的樹，5 個 clone、1,000 個 SNV，全部 1+1，也就是 HP1、HP2 各一份。模擬直接產生 ref、alt 計數和 HP，沒有 read，HP 完全已知。同一個程式跑加 HP、不加 HP 兩種輸入，每棵樹用兩個亂數起點，也就是 seed，各跑一次，再和真值比、算分數。下排是示意。左邊是主要分數：任兩個 SNV 的關係是同群、祖先、後代或不同支，算和真值一樣的比例。中間 ARI 只看分群。右邊是事先定的規則：95% 信賴區間，也就是 CI，包含 0，而且平均差小於 0.02，就算沒差。'
-    write_page("sim-method", page("sim-method", "已知樹 → 加 HP／不加 HP 重建 → 和真值比，差距小於 0.02 算沒差", s, notes=notes))
+    notes = ('這頁要看的是模擬怎麼產生答案、要問什麼。最上面是問題：全部 1+1、只有 SNV 時，加上 HP1、HP2，haploclone 能不能重建出一模一樣的樹。左邊是 diplosim 五步：隨機產生 5 個 clone 的樹；每個分支放新的 SNV，共 1,000 個；每個 SNV 隨機一半放 HP1、一半放 HP2；每個位置 HP1、HP2 各一份；最後產生每個 SNV 的 ref、alt 計數，alt 只在 SNV 那條 HP 上。右邊同一個程式跑不加 HP 和加 HP，再和真值比：下面左邊是樹拓樸是否一樣，右邊是每個 SNV 屬於哪一群。')
+    write_page("sim-method", page("sim-method", "模擬已知樹：全部 1+1、SNV 各半放 HP，看加 HP 能否重建得一樣", s, notes=notes))
 
 
 # ---- p6 sim-result ----------------------------------------------------------------------
 
+# Tree 7, haploclone seed 1 (= lab_report/2026-11-12_diplosim_haploclone_first_run/map/, same rows as the batch
+# results.tsv sim_seed 7 hc_seed 1). Truth clone -> colour as in tree7(): 6 root, 7 (0.42) c1, 9 (0.49) c2,
+# 8 (0.34) c3, 5 (0.08) vessel. Each reconstructed clone lists (truth clone, SNV count) from map_*.tsv x truth.tsv.
+T7COL = {"6": "ink", "7": "c1", "9": "c2", "8": "c3", "5": "vessel"}
+T7_TRUTH = {"6": (None, 1.00, 500), "7": ("6", 0.42, 50), "8": ("7", 0.34, 190), "9": ("6", 0.49, 91), "5": ("9", 0.08, 169)}
+T7_REC = {
+    "base": {"0": (None, 1.00, [("6", 500)]), "1": ("0", 0.48, [("9", 84), ("7", 30), ("8", 7)]),
+             "2": ("1", 0.08, [("5", 169)]), "3": ("0", 0.34, [("8", 183), ("7", 20), ("9", 7)])},
+    "a1": {"0": (None, 1.00, [("6", 500)]), "1": ("0", 0.48, [("9", 89), ("7", 27), ("8", 12)]),
+           "2": ("1", 0.08, [("5", 169)]), "3": ("1", 0.34, [("8", 178), ("7", 23), ("9", 2)])},
+}
+T7_SCORE = {"base": (0.952, 0.951), "a1": (0.927, 0.949)}   # pair_acc, ARI (results.tsv, tree 7 seed 1)
+
+
 def p6():
-    d = tree_diffs()
-    s = S("p6", 1200, 505)
-    s.rect(0, 0, 800, 505, "panel", None, r=10)
-    X = lambda v: 470 + v * 3750
-    tag(s, 14, 34, "實際結果", "real")
-    s.rect(X(-0.02), 72, X(0.02) - X(-0.02), 356, "hl", None, r=4)
-    s.text(X(0), 64, "±0.02 內算沒差", "s", "middle")
-    s.line(X(0), 72, X(0), 428, "line2", 2, dash=True)
-    # seed variation ruler
-    s.line(X(-0.0115), 30, X(0.0115), 30, "stgap", 4)
-    for v in (-0.0115, 0.0115):
-        s.line(X(v), 22, X(v), 38, "stgap", 3)
-    s.text(X(0.0115) + 12, 36, "換 seed 重跑，平均差 0.023", "s", "start", "stgap")
-    for i, v in enumerate(d):
-        y = 92 + i * 30
-        s.text(150, y + 6, f"第 {i + 1} 棵", "s", "end")
-        s.line(160, y, 780, y, "line", 1)
-        s.circle(X(v), y, 7, "ink2")
-    y = 404
-    s.text(150, y + 7, "平均", "b", "end")
-    s.line(X(-0.0357), y, X(0.0131), y, "ink", 5)
-    for v in (-0.0357, 0.0131):
-        s.line(X(v), y - 10, X(v), y + 10, "ink", 3)
-    s.circle(X(-0.0113), y, 10, "ink")
-    s.text(X(0.0131) + 22, y + 7, "−0.011（CI −0.036 到 +0.013）", "s")
-    s.line(X(-0.08), 440, X(0.08), 440, "ink2", 2)
-    for v in (-0.06, -0.04, -0.02, 0, 0.02, 0.04, 0.06):
-        s.line(X(v), 434, X(v), 446, "ink2", 2)
-        s.text(X(v), 466, "0" if v == 0 else f"{'+' if v > 0 else '−'}{abs(v):.2f}", "s", "middle")
-    s.text(X(0), 495, "← 不加 HP 較好　樹關係正確率：加 HP − 不加 HP　加 HP 較好 →", "s", "middle")
+    s = S("p6", 1200, 520)
+    # ---- left: one case, tree 7 -------------------------------------------------------------
+    s.rect(0, 0, 784, 520, "panel", None, r=10)
+    s.text(16, 32, "例：第 7 棵樹", "h")
+    tag(s, 680, 32, "實際結果", "real")
+    R, Y = 22, (100, 216, 332)
 
-    # right: secondary measures
-    s.rect(820, 0, 380, 228, "panel", None, r=10)
+    def draw(cx, nodes, pos, comp=None, wrong=()):
+        for k, (par, ccf, _) in nodes.items():
+            if par is not None:
+                (x1, y1), (x2, y2) = pos[par], pos[k]
+                bad = (par, k) in wrong
+                y0 = y1 + R + (44 if comp else 32)          # start below the parent's labels
+                s.line(x1, y0, x2, y2 - R, "mut" if bad else "ink2", 3, dash=bad)
+                if bad:
+                    mx, my = (x1 + x2) / 2, (y0 + y2 - R) / 2
+                    s.xmark(mx - 14, my, 8, "mut", 3)
+                    s.text(mx - 28, my + 7, "接錯", "s", "end", "mut")
+        for k, (par, ccf, n) in nodes.items():
+            x, y = pos[k]
+            if comp:
+                parts = n
+                col = T7COL[max(parts, key=lambda p: p[1])[0]]
+                tot = sum(c for _, c in parts)
+            else:
+                col, tot = T7COL[k], n
+            s.circle(x, y, R, col, "cellline", 1.5)
+            s.text(x, y + 6, "1" if ccf == 1 else f"{ccf:.2f}".lstrip("0"), "s", "middle", "on")
+            if comp:
+                bx, bw = x - 36, 72
+                cur = bx
+                for tc, c in parts:
+                    w = bw * c / tot
+                    s.rect(cur, y + R + 6, w, 11, T7COL[tc], None, r=0)
+                    cur += w
+                s.rect(bx, y + R + 6, bw, 11, None, "cellline", r=2, sw=1)
+                s.text(x, y + R + 38, f"{tot} 個", "s", "middle", "ink2")
+            else:
+                s.text(x, y + R + 24, f"{tot} 個", "s", "middle", "ink2")
 
-    def mini(y, title, lo, mean, hi, scale, note, lab):
-        s.text(836, y, title, "b")
-        Xm = lambda v: 1010 + v * scale
-        s.line(Xm(0), y + 16, Xm(0), y + 54, "line2", 2, dash=True)
-        s.line(Xm(lo), y + 35, Xm(hi), y + 35, "ink", 4)
-        s.circle(Xm(mean), y + 35, 8, "ink")
-        s.text(Xm(0), y + 76, "0", "s", "middle")
-        s.text(836, y + 41, lab, "s")
-        s.text(1184, y + 76, note, "s", "end")
+    cols = [(130, "真值"), (392, "不加 HP"), (654, "加 HP")]
+    for cx, lab in cols:
+        s.text(cx, 72, lab, "b", "middle", "hp1" if lab == "加 HP" else None)
+    cx = cols[0][0]
+    draw(cx, T7_TRUTH, {"6": (cx, Y[0]), "7": (cx - 62, Y[1]), "9": (cx + 62, Y[1]), "8": (cx - 62, Y[2]), "5": (cx + 62, Y[2])})
+    cx = cols[1][0]
+    draw(cx, T7_REC["base"], {"0": (cx, Y[0]), "3": (cx - 62, Y[1]), "1": (cx + 62, Y[1]), "2": (cx + 62, Y[2])}, comp=True)
+    cx = cols[2][0]
+    draw(cx, T7_REC["a1"], {"0": (cx, Y[0]), "1": (cx, Y[1]), "3": (cx - 62, Y[2]), "2": (cx + 62, Y[2])}, comp=True,
+         wrong={("1", "3")})
+    # what went wrong in both
+    s.line(262, 52, 262, 484, "line2", 1.5, dash=True)
+    s.text(16, 446, "綠色 .42 那群（50 個）", "s", "start", "c1")
+    s.text(16, 472, "兩種重建都拆進兩群", "s", "start", "ink2")
+    for k, (cx, _) in enumerate(cols[1:]):
+        mode = ("base", "a1")[k]
+        pa, ari = T7_SCORE[mode]
+        s.text(cx - 96, 446, "樹拓樸", "s", "start", "ink2")
+        s.text(cx + 96, 446, f"{pa:.3f}", "b", "end")
+        s.text(cx - 96, 474, "屬哪一群", "s", "start", "ink2")
+        s.text(cx + 96, 474, f"{ari:.3f}", "b", "end")
+    s.text(16, 508, "圓的顏色＝主要來自哪個真值 clone；色條＝這群的 SNV 從哪些真值 clone 來", "s", "start", "ink2")
 
-    mini(32, "ARI（SNV 分群）", -0.0015, 0.0232, 0.0479, 2900, "8／10 棵較高", "+0.023")
-    mini(140, "CCF 誤差（越小越準）", -0.0035, -0.0019, -0.0003, 22000, "7／10 棵較準", "−0.002")
+    # ---- right: overall scores over 10 trees --------------------------------------------------
+    rx = 800
+    s.rect(rx, 0, 400, 520, "on", "line2", r=10, sw=2)
+    s.text(rx + 16, 32, "10 棵樹總體：分得好不好", "h")
+    bx, bw = rx + 120, 200
 
-    s.rect(820, 246, 380, 259, "panel", None, r=10)
-    s.text(836, 280, "主要分數對事先規則", "b")
-    for k, (ok, t) in enumerate([(True, "CI 包含 0"), (True, "平均差 0.011 < 0.02"),
-                                 (False, "CI 下限 −0.036 超出 ±0.02")]):
-        check(s, 838, 320 + k * 32, ok)
-        s.text(866, 320 + k * 32, t, "s")
-    s.line(836, 404, 1184, 404, "line2", 1.5)
-    s.text(836, 436, "符合事先規則，", "b")
-    s.text(836, 466, "但不足以證明兩者一樣", "b")
-    s.text(836, 494, "→ 沒看到 HP 改善樹形", "s", "start", "ink2")
+    def block(y, title, base, a1, line1, line2):
+        s.text(rx + 16, y, title, "b")
+        for k, (lab, v, c) in enumerate([("不加 HP", base, "ink2"), ("加 HP", a1, "hp1")]):
+            yy = y + 30 + k * 32
+            s.text(rx + 16, yy + 6, lab, "s", "start", c)
+            s.rect(bx, yy - 9, bw, 18, "panel", None, r=3)
+            s.rect(bx, yy - 9, bw * v, 18, c, None, r=3)
+            s.text(bx + bw + 8, yy + 6, f"{v:.2f}", "s", "start")
+        s.text(rx + 16, y + 104, line1, "s", "start", "ink2")
+        s.text(rx + 16, y + 128, line2, "s", "start", "ink2")
+    block(72, "樹拓樸一樣的比例", 0.917, 0.906, "差 −0.011，CI 含 0", "加 HP 較高 5 棵、較低 5 棵")
+    block(244, "SNV 屬於哪一群", 0.917, 0.940, "差 +0.023，CI 含 0", "加 HP 較高 8 棵")
+    s.text(rx + 16, 404, "CCF 誤差：0.008 → 0.006（只準 0.002）", "s", "start", "ink2")
+    s.rect(rx + 14, 420, 372, 86, "hl", None, r=10)
+    s.text(rx + 200, 454, "兩種都分得好（約 0.9）", "b", "middle")
+    s.text(rx + 200, 486, "加 HP 沒有明顯更好", "b", "middle")
 
-    notes = '這頁要看的是：加 HP 沒有讓樹形變好。左邊每個點是一棵樹，往右是加 HP 較好；10 棵裡左右各 5 棵。最下面黑線是平均負 0.011 和 95% CI。黃色帶是事先定的正負 0.02。上面灰線是換 seed 重跑的平均差 0.023，和加不加 HP 的差一樣大。右下：符合事先規則，但 CI 下限超出黃色帶，所以只說沒看到改善，不說兩者一樣。右上兩個次要分數：ARI 略高但 CI 含 0；CCF 誤差只少 0.002。'
+    notes = ('這頁要看的是：加 HP 沒有讓樹變好。左邊用第 7 棵樹當例子：最左是真值，中間不加 HP，右邊加 HP。'
+             '圓的顏色是主要來自哪個真值 clone，下面色條是這群的 SNV 從哪裡來。'
+             '綠色 0.42 那群在兩種重建都被拆進兩群；加 HP 還把黃色那群接錯到紫色下面。'
+             '兩種的樹拓樸分數是 0.952 和 0.927，屬哪一群都是 0.95。'
+             '右邊是 10 棵樹的平均：兩種都約 0.9，分得好；樹拓樸差 −0.011，屬哪一群差 +0.023，CI 都含 0，所以加 HP 沒有明顯更好；CCF 只準 0.002。')
     write_page("sim-result", page("sim-result", "全部 1+1 時，10 棵樹沒看到 HP 改善樹形，CCF 只準 0.002", s, notes=notes))
 
 
@@ -323,7 +384,7 @@ def p7():
     s.rect(0, 318, 520, 187, "panel", None, r=10)
     check(s, 16, 352)
     s.text(42, 352, "能證明", "b")
-    s.text(42, 380, "這組設定下，加 HP 沒改善樹關係，CCF 略準", "s")
+    s.text(42, 380, "這組設定下，加 HP 沒改善樹拓樸，CCF 略準", "s")
     check(s, 16, 422, False)
     s.text(42, 422, "不能證明", "b")
     s.text(42, 450, "其他設定也一樣（深度、clone 數、拷貝數變化）", "s")

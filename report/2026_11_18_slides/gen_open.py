@@ -78,11 +78,6 @@ def bulk(s, cx, cy, rx=40, ry=30):
     s.cluster(cx, cy, rx, ry, lambda u, v: palette[int((u + 1) * 2.3 + (v + 1) * 1.7) % 5], r=6)
 
 
-def envelope(s, x, y, w=70, h=48):
-    s.rect(x, y, w, h, "on", "cellline", r=4, sw=2)
-    s.path(f"M{x} {y} L{x + w / 2} {y + h * .55} L{x + w} {y}", "cellline", 2)
-
-
 def magnifier(s, x, y, r=16):
     s.circle(x, y, r, None, "ink2", 3.5)
     s.line(x + r * .7, y + r * .7, x + r * 1.6, y + r * 1.6, "ink2", 5)
@@ -109,7 +104,7 @@ def p_outline():
         ("ok", "讀兩篇論文", "作者結論整理完"),
         ("ok", "模擬驗證", "10 棵樹比完"),
         ("now", "HG008 bulk 驗證", "第一輪重建完成"),
-        ("ok", "分享參考樹", "11-11 已寄出"),
+        ("ok", "AI 環境改善", f"第 {ORDER.index('ai-env') + 1} 頁"),
     ]
     for i, (st, head, sub) in enumerate(items):
         x = x0 + i * (cw + gap)
@@ -144,10 +139,9 @@ def p_outline():
             tree(s, x + 178, iy + 26, .7, cols=("c2", "panel2", "panel2"))
             s.text(x + 178, iy + 150, "找回兩層", "s", "middle", "hp1")
         else:
-            envelope(s, x + 40, iy + 50)
-            tree(s, x + 75, iy + 4, .55)
-            s.arrow(x + 122, iy + 74, x + 160, iy + 74, c="ink2", sw=3)
-            s.person(x + 186, iy + 40, 70, "panel3", "cellline")
+            doc(s, x + 50, iy + 30, head="hp1")
+            s.arrow(x + 118, iy + 74, x + 148, iy + 74, c="ink2", sw=3)
+            gear(s, x + 180, iy + 74)
         s.text(cx, y0 + 262, head, "b", "middle")
         s.text(cx, y0 + 296, sub, "s", "middle", "hp1" if st == "now" else None)
 
@@ -158,10 +152,6 @@ def p_outline():
     s.path(f"M{xa + 10} {yb} L{xa + 10} {yb + 16} L{xb - 10} {yb + 16} L{xb - 10} {yb}", "hp1", 3)
     s.line((xa + xb) / 2, yb + 16, (xa + xb) / 2, yb + 34, "hp1", 3)
     s.text((xa + xb) / 2, yb + 62, "主問題的兩條路線：模擬、HG008", "b", "middle", "hp1")
-    # Item 5 also carries the AI-environment page.
-    x5 = x0 + 4 * (cw + gap)
-    s.text(x5 + cw / 2, yb + 30, "＋AI 環境頁", "s", "middle")
-    s.text(x5 + cw / 2, yb + 58, "本次報告", "s", "middle")
     # Legend.
     badge(s, 30, yb + 44, "ok", r=15)
     s.text(54, yb + 51, "完成", "s")
@@ -173,7 +163,7 @@ def p_outline():
              "第二項，兩篇論文讀完，作者結論整理好了。"
              "第三項，模擬驗證，10 棵樹已經比完。"
              "第四項，HG008 的 bulk 驗證，藍色箭頭表示還在進行：第一輪重建跑完，找回兩層，還有兩層找不回來。"
-             "第五項，參考樹在上次會後已經寄出，AI 環境頁放在這次報告最後。"
+             "第五項，AI 環境改善，放在這次報告最後一頁。"
              "下面藍色括號標出第三、第四項，就是回答主問題的兩條路線：模擬一條、HG008 一條，兩條分開報告。")
     title = "把 HP 加進樹重建，在模擬和 HG008 上各看到什麼？"
     write_page(pid, page(pid, title, s, "", notes))

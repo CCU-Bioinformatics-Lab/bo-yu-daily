@@ -242,26 +242,9 @@ def hg_nist():
     s.rect(0, 0, 660, TH, "panel", None, r=10)
     s.text(16, 30, "參考樹：NIST 名單抓到幾個", "h")
     tag(s, 330, 30, "實際結果", "real")
-    X = {k: 56 + i * 64 for i, k in enumerate(LEAVES)}
-    yR, y7, y6, y4, y2, leaf = 70, 132, 190, 250, 300, 318
-    xAB, xEF, xCD = (X["A"] + X["B"]) / 2, (X["E"] + X["F"]) / 2, (X["C"] + X["D"]) / 2
-    xCDEF = (xEF + xCD) / 2
-    x6 = (xAB + xCDEF) / 2
-    x7 = (X["G"] + x6) / 2
-    xR = (X["H"] + x7) / 2
-    for a, b, y in [(X["H"], x7, yR), (X["G"], x6, y7), (xAB, xCDEF, y6), (X["A"], X["B"], y4),
-                    (xEF, xCD, y4), (X["E"], X["F"], y2), (X["C"], X["D"], y2)]:
-        s.line(a, y, b, y, "ink2", 2.5)
-    s.line(xR, yR - 18, xR, yR, "ink2", 2.5)
-    branch(s, x7, yR, x7, y7, "solid", c="c1")
-    branch(s, x6, y7, x6, y6, "dash")
-    branch(s, xAB, y6, xAB, y4, "half")
-    branch(s, xCDEF, y6, xCDEF, y4, "solid", c="c2")
-    branch(s, xCD, y4, xCD, y2, "solid", c="c3")
-    branch(s, xEF, y4, xEF, y2, "dash")
-    for k, y0 in [("H", yR), ("G", y7), ("A", y4), ("B", y4), ("E", y2), ("F", y2), ("C", y2), ("D", y2)]:
-        branch(s, X[k], y0, X[k], leaf, "dash")
-        tube(s, X[k], leaf, w=16, h=30, label=k)
+    # the 11-11 deck's clone tree (report/2026_11_11_slides/gen_res2.py p_tree; user 11-14 comment on this page):
+    # ancestor on top, H down-left (dashed), G A B down-right, then E F and C D straight below.
+    # Beside each arrow: NIST count / clone-SNV count.
 
     def num(x, y, n, tot, a="start"):
         """NIST count (green if any, red if none) over the clone-SNV count."""
@@ -270,21 +253,40 @@ def hg_nist():
         x0 = x if a == "start" else x - w1 - w2
         s.text(x0, y, t1, "b", "start", "c4" if n else "mut")
         s.text(x0 + w1, y, t2, "s", "start", "ink2")
-    num(x7 + 10, (yR + y7) / 2 + 7, 126, 127)
-    num(x6 + 10, (y7 + y6) / 2 + 7, 4, 4)
-    num(xAB - 10, (y6 + y4) / 2 + 7, 2, 31, "end")
-    num(xCDEF + 10, (y6 + y4) / 2 + 7, 0, 14)
-    num(xEF - 10, (y4 + y2) / 2 + 3, 0, 17, "end")
-    num(xCD + 10, (y4 + y2) / 2 + 3, 0, 68)
-    s.text(650, 340, "末端 0／3,593", "s", "end", "mut")
+
+    r = 28
+    root, gH, g2, g3, g4 = (300, 78), (150, 170), (450, 170), (450, 262), (450, 350)
+    s.circle(*root, r, "paper", "cellline", 2.2)
+    s.text(root[0] - 40, root[1] + 7, "共同祖先", "b", "end")
+    for (p, q, col, n, tot, left) in [((root[0] - 22, root[1] + 18), (gH[0] + 16, gH[1] - 24), "line2", 0, 792, True),
+                                      ((root[0] + 22, root[1] + 18), (g2[0] - 16, g2[1] - 24), "c1", 126, 127, False),
+                                      ((g2[0], g2[1] + r), (g3[0], g3[1] - r), "c2", 0, 14, False),
+                                      ((g3[0], g3[1] + r), (g4[0], g4[1] - r), "c3", 0, 68, False)]:
+        s.arrow(*p, *q, c=col, sw=4, head=11)
+        mx, my = (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
+        if left:
+            num(mx - 16, my + 7, n, tot, "end")
+        else:
+            num(mx + 16, my - 2 if p[0] != q[0] else my + 7, n, tot)
+    for (x, y), tint, letters, dashed in [(gH, None, "H", True), (g2, "c1", "G、A、B", False),
+                                         (g3, "c2", "E、F", False), (g4, "c3", "C、D", False)]:
+        if tint:
+            s.circle(x, y, r, tint, None, op=0.16)
+        s.circle(x, y, r, None if tint else "paper", "cellline", 2.2, dash=dashed)
+        ks = letters.split("、")
+        for i, L in enumerate(ks):
+            tube(s, x + (i - (len(ks) - 1) / 2) * 17, y - 13, w=12, h=24)
+        s.text(x - 40, y + 7, f"選殖株 {letters}", "b", "end")
+    # the merged small branches and the tips
+    s.text(16, 262, "併在群裡的小分支：", "s", "start", "ink2")
+    num(16, 290, 4, 4)
+    num(90, 290, 2, 31)
+    num(176, 290, 0, 17)
+    s.text(16, 330, "各株末端（含 H）0／3,593", "s", "start", "mut")
     # legend
     lx, ly = 430, 60
     s.text(lx, ly, "NIST 名單", "b", "start", "c4")
     s.text(lx + width("NIST 名單", 20), ly, "／選殖株 SNV", "s", "start", "ink2")
-    for k, (st, lab) in enumerate([("solid", "單細胞支持"), ("half", "部分支持"), ("dash", "未驗證")]):
-        yy = ly + 34 + k * 28
-        branch(s, lx, yy - 6, lx + 36, yy - 6, st, sw=4)
-        s.text(lx + 46, yy, lab, "s")
 
     # right: cell fraction per layer, and what an assembly sees
     px = 680
@@ -338,8 +340,8 @@ def hg_nist():
         s.text(x + 18, by + 76, body, "t")
 
     notes = ("這頁要看的是：只用 NIST 名單，就沒有深層分支可比。"
-             "左邊參考樹每支標兩個數字：NIST 名單有幾個，斜線後是選殖株找到幾個。"
-             "綠色那支 127 個裡有 126 個；往下紫色、黃色兩層一個都沒有，末端也是 0。"
+             "左邊是上週那棵參考樹，每個箭頭標兩個數字：NIST 名單有幾個，斜線後是選殖株找到幾個。"
+             "綠色 127 個裡有 126 個；往下紫色、黃色兩層一個都沒有，H 和各株末端也是 0。"
              "右邊是細胞比例：111 顆那層約 0.93，和全部的 1.0 很難分開；48 顆、16 顆兩層名單裡沒有。"
              "我們推論名單來自腫瘤組裝，組裝只代表多數細胞。"
              "所以能證明名單只到 111 顆那層，不能證明深層沒有 SNV。所以改從 read 直接找，下一頁看結果。")

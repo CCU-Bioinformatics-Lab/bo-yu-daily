@@ -32,6 +32,8 @@
     "sim-why",
     "hg-plan",
     "hg-nist",
+    "hg-clairs",
+    "hg-rebuild",
     "decide",
     "ai-env"
   ],
