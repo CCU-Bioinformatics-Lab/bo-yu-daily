@@ -25,7 +25,7 @@
 | 目錄 | 結論 | 狀態 |
 |---|---|---|
 | `2026-11-12_diplosim_haploclone_first_run/` | 第一次試跑（5 clone、1,000 SNV、1 個 seed）：binomial 下找回 5 群中的 4 群（ARI 0.95）；CCF 夾在中間的 clone 被拆掉。A1（HP）沒有比 base 好；全部 1+1 時 HP 只讓 CCF 稍準，不提供樹形資訊，預期之內。只有一棵樹 | 被下一列取代 |
-| `2026-11-12_diplosim_haploclone_hp_vs_base/` | 10 棵樹 × 2 seed：樹關係正確率 A1 − base −0.011（CI −0.036 到 +0.013），符合事先定的「沒差」；CCF 誤差 A1 略小（−0.002，CI 不含 0）；ARI +0.023（CI 含 0）。haploclone 從 5 群找回 3–5 群。SNV-only、1+1、單一 sample 下沒看到 HP 改善樹形（CI 下限 −0.036，未證明等價；11-13 複查通過，投影片說法見 §7） | 現行 |
+| `2026-11-12_diplosim_haploclone_hp_vs_base/` | 10 棵樹 × 2 seed：樹關係正確率 A1 − base −0.011（CI −0.036 到 +0.013），符合事先定的「沒差」；CCF 誤差 A1 略小（−0.002，CI 不含 0）；ARI +0.023（CI 含 0）。haploclone 從 5 群找回 3–5 群。SNV-only、1+1、單一 sample 下沒看到 HP 改善樹形（CI 下限 −0.036，未證明等價；11-13 複查通過，投影片說法見 §7）。11-14 補：和最近 clone 的 CCF 差 ≥ 0.20 全部分好、< 0.10 大多分不好，加不加 HP 一樣（§8） | 現行 |
 
 ## 真實資料驗證：HG008 bulk → haploclone（11-11 主軸第 4 項）
 

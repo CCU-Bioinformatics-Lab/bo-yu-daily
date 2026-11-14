@@ -14,7 +14,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from slidekit import S, page, write_page, tag
 from lib import width
-from gen_bg import dice, fraction  # noqa: E402
+from gen_bg import dice, fraction, mark  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 R4 = ROOT / "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base"
@@ -219,7 +219,6 @@ T7_REC = {
     "a1": {"0": (None, 1.00, [("6", 500)]), "1": ("0", 0.48, [("9", 89), ("7", 27), ("8", 12)]),
            "2": ("1", 0.08, [("5", 169)]), "3": ("1", 0.34, [("8", 178), ("7", 23), ("9", 2)])},
 }
-T7_SCORE = {"base": (0.952, 0.951), "a1": (0.927, 0.949)}   # pair_acc, ARI (results.tsv, tree 7 seed 1)
 
 
 def p6():
@@ -273,54 +272,58 @@ def p6():
     cx = cols[2][0]
     draw(cx, T7_REC["a1"], {"0": (cx, Y[0]), "1": (cx, Y[1]), "3": (cx - 62, Y[2]), "2": (cx + 62, Y[2])}, comp=True,
          wrong={("1", "3")})
-    # what went wrong in both
+    # what went wrong in both (clone-level view; user 11-14: SNV-pair scores looked "good" but the trees are not)
     s.line(262, 52, 262, 484, "line2", 1.5, dash=True)
-    s.text(16, 446, "綠色 .42 那群（50 個）", "s", "start", "c1")
-    s.text(16, 472, "兩種重建都拆進兩群", "s", "start", "ink2")
+    s.text(16, 446, ".42 和 .49 只差 0.07", "s", "start", "c1")
+    s.text(16, 472, "兩種重建都分不開", "s", "start", "ink2")
     for k, (cx, _) in enumerate(cols[1:]):
-        mode = ("base", "a1")[k]
-        pa, ari = T7_SCORE[mode]
-        s.text(cx - 96, 446, "樹拓樸", "s", "start", "ink2")
-        s.text(cx + 96, 446, f"{pa:.3f}", "b", "end")
-        s.text(cx - 96, 474, "屬哪一群", "s", "start", "ink2")
-        s.text(cx + 96, 474, f"{ari:.3f}", "b", "end")
+        s.text(cx - 96, 446, "找回", "s", "start", "ink2")
+        s.text(cx + 96, 446, "3／5 群", "b", "end")
+        s.text(cx - 96, 474, "樹形完全對", "s", "start", "ink2")
+        mark(s, cx + 84, 467, False, r=8)
     s.text(16, 508, "圓的顏色＝主要來自哪個真值 clone；色條＝這群的 SNV 從哪些真值 clone 來", "s", "start", "ink2")
 
-    # ---- right: overall scores over 10 trees --------------------------------------------------
+    # ---- right: clone-level results over 10 trees x 2 seeds ----------------------------------------
+    # clone_recovery_by_ccf_gap.txt (found = one cluster holds >= 80 % of the clone's SNVs and >= 80 % of the
+    # cluster is that clone): base 67 / 100, A1 69 / 100 clones; exact topology: tree 5 base seed 1, A1 seed 2.
     rx = 800
     s.rect(rx, 0, 400, 520, "on", "line2", r=10, sw=2)
-    s.text(rx + 16, 32, "10 棵樹總體：分得好不好", "h")
+    s.text(rx + 16, 32, "10 棵樹 × 2 seed（各 20 次）", "h")
     bx, bw = rx + 120, 200
+    s.text(rx + 16, 76, "5 群平均找回幾群", "b")
+    for k, (lab, v, c) in enumerate([("不加 HP", 3.35, "ink2"), ("加 HP", 3.45, "hp1")]):
+        yy = 108 + k * 34
+        s.text(rx + 16, yy + 6, lab, "s", "start", c)
+        s.rect(bx, yy - 9, bw, 18, "panel", None, r=3)
+        s.rect(bx, yy - 9, bw * v / 5, 18, c, None, r=3)
+        for g in range(1, 5):
+            s.line(bx + bw * g / 5, yy - 9, bx + bw * g / 5, yy + 9, "on", 2)
+        s.text(bx + bw + 8, yy + 6, f"{v:.2f}", "s", "start")
+    s.text(rx + 16, 182, "找回＝那群的 SNV 八成以上收在一起", "s", "start", "ink2")
+    s.text(rx + 16, 206, "　　　且不混別群（八成以上是它）", "s", "start", "ink2")
+    s.text(rx + 16, 254, "樹形和真值完全一樣", "b")
+    for k, (lab, c) in enumerate([("不加 HP", "ink2"), ("加 HP", "hp1")]):
+        yy = 288 + k * 36
+        s.text(rx + 16, yy + 6, lab, "s", "start", c)
+        for i in range(20):
+            s.rect(bx + i * 10, yy - 8, 8, 16, "c4" if i == 0 else "panel2", None, r=2)
+        s.text(bx + bw + 8, yy + 6, "1／20", "s", "start")
+    s.text(rx + 16, 380, "CCF 誤差：0.008 → 0.006（只準 0.002）", "s", "start", "ink2")
+    s.rect(rx + 14, 412, 372, 94, "hl", None, r=10)
+    s.text(rx + 200, 448, "兩種都只找回約 2／3 的群", "b", "middle")
+    s.text(rx + 200, 482, "樹形幾乎都錯，加 HP 沒更好", "b", "middle")
 
-    def block(y, title, base, a1, line1, line2):
-        s.text(rx + 16, y, title, "b")
-        for k, (lab, v, c) in enumerate([("不加 HP", base, "ink2"), ("加 HP", a1, "hp1")]):
-            yy = y + 30 + k * 32
-            s.text(rx + 16, yy + 6, lab, "s", "start", c)
-            s.rect(bx, yy - 9, bw, 18, "panel", None, r=3)
-            s.rect(bx, yy - 9, bw * v, 18, c, None, r=3)
-            s.text(bx + bw + 8, yy + 6, f"{v:.2f}", "s", "start")
-        s.text(rx + 16, y + 104, line1, "s", "start", "ink2")
-        s.text(rx + 16, y + 128, line2, "s", "start", "ink2")
-    block(72, "樹拓樸一樣的比例", 0.917, 0.906, "差 −0.011，CI 含 0", "加 HP 較高 5 棵、較低 5 棵")
-    block(244, "SNV 屬於哪一群", 0.917, 0.940, "差 +0.023，CI 含 0", "加 HP 較高 8 棵")
-    s.text(rx + 16, 404, "CCF 誤差：0.008 → 0.006（只準 0.002）", "s", "start", "ink2")
-    s.rect(rx + 14, 420, 372, 86, "hl", None, r=10)
-    s.text(rx + 200, 454, "兩種都分得好（約 0.9）", "b", "middle")
-    s.text(rx + 200, 486, "加 HP 沒有明顯更好", "b", "middle")
-
-    notes = ('這頁要看的是：加 HP 沒有讓樹變好。左邊用第 7 棵樹當例子：最左是真值，中間不加 HP，右邊加 HP。'
+    notes = ('這頁要看的是：加不加 HP，樹都重建得不好。左邊用第 7 棵樹當例子：最左是真值，中間不加 HP，右邊加 HP。'
              '圓的顏色是主要來自哪個真值 clone，下面色條是這群的 SNV 從哪裡來。'
-             '綠色 0.42 那群在兩種重建都被拆進兩群；加 HP 還把黃色那群接錯到紫色下面。'
-             '兩種的樹拓樸分數是 0.952 和 0.927，屬哪一群都是 0.95。'
-             '右邊是 10 棵樹的平均：兩種都約 0.9，分得好；樹拓樸差 −0.011，屬哪一群差 +0.023，CI 都含 0，所以加 HP 沒有明顯更好；CCF 只準 0.002。')
-    write_page("sim-result", page("sim-result", "全部 1+1 時，10 棵樹沒看到 HP 改善樹形，CCF 只準 0.002", s, notes=notes))
+             '.42 和 .49 只差 0.07，兩種都分不開，5 群只找回 3 群；加 HP 還把黃色那群接錯。'
+             '右邊是 10 棵樹、各 2 個 seed：5 群平均只找回約 3.4 群，樹形和真值完全一樣的，兩種都只有 20 次裡 1 次。加 HP 沒有更好；CCF 只準 0.002。')
+    write_page("sim-result", page("sim-result", "全部 1+1 時，加不加 HP 都只找回約 2／3 的群，樹形 20 次只對 1 次", s, notes=notes))
 
 
 # ---- p7 sim-why -------------------------------------------------------------------------
 
 def p7():
-    s = S("p7", 1200, 505)
+    s = S("p7", 1200, 456)
     # a: truth tree 7
     s.rect(0, 0, 370, 300, "panel", None, r=10)
     s.text(14, 32, "第 7 棵真值樹", "h")
@@ -337,7 +340,7 @@ def p7():
 
     # b: rebuild result
     s.rect(385, 0, 395, 300, "panel", None, r=10)
-    s.text(399, 32, "重建：5 群只找回 4 群", "h")
+    s.text(399, 32, "重建：5 群只找回 3 群", "h")
     tag(s, 640, 32, "實際結果", "real")
     node(s, 470, 150, "c1", 32)
     for k in range(3):
@@ -349,7 +352,7 @@ def p7():
         s.text(672, y + 7, lab, "b", "start", c)
     s.text(562, 155, "拆開併入", "s", "middle")
     s.text(582, 256, "拆開方式：第一次試跑所見", "s", "middle", "ink2")
-    s.text(582, 284, "加 HP、不加 HP 都是 4 群", "s", "middle")
+    s.text(582, 284, "0.49 群混進 0.42 的 SNV，也不算找回", "s", "middle")
 
     # c: two arrangements
     s.rect(795, 0, 405, 300, "panel", None, r=10)
@@ -380,37 +383,19 @@ def p7():
     s.bar(815, 278, 34, "hp2", h=10)
     s.text(860, 277, "全部 1+1：HP 分不出這兩種", "s")
 
-    # bottom left: can / cannot prove
-    s.rect(0, 318, 520, 187, "panel", None, r=10)
-    check(s, 16, 352)
-    s.text(42, 352, "能證明", "b")
-    s.text(42, 380, "這組設定下，加 HP 沒改善樹拓樸，CCF 略準", "s")
-    check(s, 16, 422, False)
-    s.text(42, 422, "不能證明", "b")
-    s.text(42, 450, "其他設定也一樣（深度、clone 數、拷貝數變化）", "s")
-    s.text(42, 478, "HP 對樹重建一定沒用", "s")
+    # bottom: can / cannot prove, full width (user 11-14 removed the simulation-vs-HG008 block; F-9)
+    s.rect(0, 318, 1200, 138, "panel", None, r=10)
+    check(s, 16, 356)
+    s.text(42, 356, "能證明", "b")
+    s.text(42, 392, "這組設定下（全部 1+1、1,000 SNV），", "s")
+    s.text(42, 420, "加 HP 沒改善樹拓樸，CCF 略準", "s")
+    s.line(600, 336, 600, 438, "line2", 1.5, dash=True)
+    check(s, 616, 356, False)
+    s.text(642, 356, "不能證明", "b")
+    s.text(642, 392, "其他設定也一樣（深度、clone 數、拷貝數變化）", "s")
+    s.text(642, 420, "HP 對樹重建一定沒用", "s")
 
-    # bottom right: simulation vs HG008
-    s.rect(535, 318, 665, 187, "panel", None, r=10)
-    s.text(770, 348, "模擬設定", "b", "middle")
-    s.text(1030, 348, "HG008", "b", "middle")
-    rows = [("coverage", (100, None, "400×"), (16, 29, "63×／116×")),
-            ("purity", (90, 70, "0.7–0.9"), (100, None, "推測約 1，未實測")),
-            ("1+1 區域", (100, None, "全部"), (43, None, "43%（全基因組）"))]
-    for k, (lab, sim, hg) in enumerate(rows):
-        y = 392 + k * 42
-        s.text(552, y + 6, lab, "b")
-        for x0, (full, part, txt) in [(670, sim), (930, hg)]:
-            s.rect(x0, y - 8, 100, 16, "panel2", None, r=3)
-            if lab == "purity" and part:
-                s.rect(x0 + part, y - 8, full - part, 16, "ink2", None, r=3)
-            else:
-                s.rect(x0, y - 8, full, 16, "ink2", None, r=3)
-                if part:
-                    s.rect(x0 + full, y - 8, part - full, 16, "line2", None, r=3)
-            s.text(x0 + 108, y + 6, txt, "s")
-
-    notes = '這頁講為什麼 HP 幫不上。左上是第 7 棵真值樹，0.42 和 0.49 兩群 CCF 很接近。中間是實際結果：加不加 HP 都只找回 4 群；第一次試跑時看得到，0.42 那群被拆開，併入 0.49 和 0.34 兩群。右上是我們的推論：兩群排成兄弟或一條線，CCF 都說得通；全部 1+1 時，HP 分不出這兩種。左下：這組設定下能說沒改善，不能推到其他設定。右下和 HG008 比：深度、1+1 比例都不同；purity 是腫瘤細胞占的比例，HG008 是細胞株，推測接近 1，但沒有實測。所以結果不能直接搬過去，接下來看真實資料 HG008。'
+    notes = '這頁講為什麼 HP 幫不上。左上是第 7 棵真值樹，0.42 和 0.49 兩群 CCF 很接近。中間是實際結果：0.42 那群被拆開，併入 0.49 和 0.34 兩群；0.49 那群因此混雜，也不算找回，所以加不加 HP 都只找回 3 群。右上是我們的推論：兩群排成兄弟或一條線，CCF 都說得通；全部 1+1 時，HP 分不出這兩種。下面：這組設定下能說沒改善，但不能推到其他設定，也不能說 HP 一定沒用。接下來看真實資料 HG008。'
     write_page("sim-why", page("sim-why", "兩個原因讓 HP 幫不上：CCF 接近的群被併掉；兄弟或一條線分不出來", s, notes=notes))
 
 
