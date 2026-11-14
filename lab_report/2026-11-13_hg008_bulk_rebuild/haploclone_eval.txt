@@ -1,0 +1,50 @@
+
+== run_base_h1: 2 clones
+clone	parent	CCF	SNVs	truncal	L111	L48	L16	other_clade	none
+0	root	0.960	5267	3790	133	0	0	174	1170
+1	0	0.450	549	55	3	5	2	8	476
+truncal: 3845 SNVs, majority clone 0 (3790/3845), CCF 0.960 vs cells 1.000 -> check 2 match; spread {'0': 3790, '1': 55}
+L111: 136 SNVs, majority clone 0 (133/136), CCF 0.960 vs cells 0.933 -> check 2 match; spread {'0': 133, '1': 3}
+L48: 5 SNVs, majority clone 1 (5/5), CCF 0.450 vs cells 0.403 -> check 2 match; spread {'1': 5}
+L16: 2 SNVs, majority clone 1 (2/2), CCF 0.450 vs cells 0.134 -> check 2 no match; spread {'1': 2}
+check 1 (L111 split from truncal, as its descendant): NO (truncal clone 0, L111 clone 0)
+
+== run_base_h2: 2 clones
+clone	parent	CCF	SNVs	truncal	L111	L48	L16	other_clade	none
+0	root	0.960	5295	3793	132	0	0	177	1193
+1	0	0.440	521	52	4	5	2	5	453
+truncal: 3845 SNVs, majority clone 0 (3793/3845), CCF 0.960 vs cells 1.000 -> check 2 match; spread {'0': 3793, '1': 52}
+L111: 136 SNVs, majority clone 0 (132/136), CCF 0.960 vs cells 0.933 -> check 2 match; spread {'0': 132, '1': 4}
+L48: 5 SNVs, majority clone 1 (5/5), CCF 0.440 vs cells 0.403 -> check 2 match; spread {'1': 5}
+L16: 2 SNVs, majority clone 1 (2/2), CCF 0.440 vs cells 0.134 -> check 2 no match; spread {'1': 2}
+check 1 (L111 split from truncal, as its descendant): NO (truncal clone 0, L111 clone 0)
+
+== run_a1_h1: 3 clones
+clone	parent	CCF	SNVs	truncal	L111	L48	L16	other_clade	none
+0	root	0.970	5191	3792	128	0	0	177	1094
+1	0	0.590	264	49	7	2	0	2	204
+2	0	0.340	361	4	1	3	2	3	348
+truncal: 3845 SNVs, majority clone 0 (3792/3845), CCF 0.970 vs cells 1.000 -> check 2 match; spread {'0': 3792, '1': 49, '2': 4}
+L111: 136 SNVs, majority clone 0 (128/136), CCF 0.970 vs cells 0.933 -> check 2 match; spread {'0': 128, '1': 7, '2': 1}
+L48: 5 SNVs, majority clone 2 (3/5), CCF 0.340 vs cells 0.403 -> check 2 match; spread {'1': 2, '2': 3}
+L16: 2 SNVs, majority clone 2 (2/2), CCF 0.340 vs cells 0.134 -> check 2 no match; spread {'2': 2}
+check 1 (L111 split from truncal, as its descendant): NO (truncal clone 0, L111 clone 0)
+
+== run_a1_h2: 3 clones
+clone	parent	CCF	SNVs	truncal	L111	L48	L16	other_clade	none
+0	root	0.970	5229	3816	130	0	0	178	1105
+1	0	0.440	519	29	6	5	1	2	476
+2	1	0.200	68	0	0	0	1	2	65
+truncal: 3845 SNVs, majority clone 0 (3816/3845), CCF 0.970 vs cells 1.000 -> check 2 match; spread {'0': 3816, '1': 29}
+L111: 136 SNVs, majority clone 0 (130/136), CCF 0.970 vs cells 0.933 -> check 2 match; spread {'0': 130, '1': 6}
+L48: 5 SNVs, majority clone 1 (5/5), CCF 0.440 vs cells 0.403 -> check 2 match; spread {'1': 5}
+L16: 2 SNVs, majority clone 1 (1/2), CCF 0.440 vs cells 0.134 -> check 2 no match; spread {'1': 1, '2': 1}
+check 1 (L111 split from truncal, as its descendant): NO (truncal clone 0, L111 clone 0)
+
+pair-relation agreement between runs
+run_base_h1	run_base_h2	0.945
+run_base_h1	run_a1_h1	0.870
+run_base_h1	run_a1_h2	0.884
+run_base_h2	run_a1_h1	0.871
+run_base_h2	run_a1_h2	0.882
+run_a1_h1	run_a1_h2	0.968

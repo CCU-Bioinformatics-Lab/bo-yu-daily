@@ -1,0 +1,69 @@
+{
+  "v": 4,
+  "attachments": {},
+  "cover": "outline",
+  "createdOnFiles": {
+    "at": "2026-11-13T17:00:00+08:00",
+    "v": 1
+  },
+  "designSystems": [],
+  "faces": {
+    "jetbrains-mono": {
+      "family": "JetBrains Mono",
+      "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+    },
+    "noto-sans-tc": {
+      "family": "Noto Sans TC",
+      "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"
+    },
+    "noto-serif-tc": {
+      "family": "Noto Serif TC",
+      "href": "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap"
+    }
+  },
+  "lists": "css",
+  "order": [
+    "outline",
+    "tasks",
+    "ref-tree",
+    "papers",
+    "sim-method",
+    "sim-result",
+    "sim-why",
+    "hg-plan",
+    "hg-nist",
+    "decide",
+    "ai-env"
+  ],
+  "sections": {
+    "s0": {
+      "description": "接回 11-11 會議",
+      "start": "outline"
+    },
+    "s1": {
+      "description": "本週四件事",
+      "start": "tasks"
+    },
+    "s2": {
+      "description": "HG008 參考樹與論文",
+      "start": "ref-tree"
+    },
+    "s3": {
+      "description": "模擬驗證",
+      "start": "sim-method"
+    },
+    "s4": {
+      "description": "HG008 真實資料驗證",
+      "start": "hg-plan"
+    },
+    "s5": {
+      "description": "請老師決定",
+      "start": "decide"
+    },
+    "s6": {
+      "description": "AI 環境改善",
+      "start": "ai-env"
+    }
+  },
+  "title": "2026-11-18 HP 加進樹重建：模擬與 HG008"
+}

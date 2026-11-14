@@ -1,0 +1,33 @@
+ClairS PASS SNV 15137; NIST SNV 9810; both 8886 (NIST recall 90.6%); ClairS-only 6251, of which inside NIST benchmark region 2305
+AF: in NIST median AF 0.545; ClairS-only median AF 0.400
+
+class	clones	in_NIST	in_ClairS	ClairS AF
+truncal	7784	7616	7663	median AF 0.565
+private	3593	0	14	median AF 0.138
+low_qual	2841	221	314	median AF 0.610
+shared_lost	655	586	587	median AF 0.434
+shared_clean	301	139	146	median AF 0.451
+shared_absent_in_loh	245	158	170	median AF 0.945
+shared_no_cn	2	0	1	median AF 1.000
+
+shared_clean by clade	clones	in_NIST	in_ClairS	ClairS AF
+2D6,2E6,SC14,SC24,SC28,SC6,SC9	127	126	123	median AF 0.455
+SC14,SC28	68	0	3	median AF 0.125
+2D6,2E6	31	2	3	median AF 0.235
+SC24,SC9	17	0	0	n/a
+SC14,SC24,SC28,SC9	14	0	6	median AF 0.196
+2E6,3E4,SC14,SC24,SC28,SC6,SC9	6	0	0	n/a
+2D6,2E6,SC14,SC24,SC28,SC9	4	4	4	median AF 0.626
+2D6,2E6,3E4,SC14,SC24,SC28,SC9	3	3	3	median AF 0.440
+
+private by clone	clones	in_ClairS
+3E4	792	10
+SC6	620	0
+2E6	516	0
+SC28	394	1
+2D6	386	0
+SC24	344	0
+SC14	316	3
+SC9	225	0
+
+ClairS-only AF histogram: {'0.00-0.05': 0, '0.05-0.10': 41, '0.10-0.15': 356, '0.15-0.20': 464, '0.20-0.25': 475, '0.25-0.30': 557, '0.30-0.35': 546, '0.35-0.40': 621, '0.40-0.45': 643, '0.45-0.50': 400, '0.50-0.55': 526, '0.55-0.60': 391, '0.60-0.65': 183, '0.65-0.70': 189, '0.70-0.75': 136, '0.75-0.80': 74, '0.80-0.85': 100, '0.85-0.90': 77, '0.90-0.95': 44, '0.95-1.00': 13}
