@@ -126,12 +126,16 @@ def prop_bar(s, x, y, w, parts, h=22):
 P23 = [(8, "unphased"), (63, "c1"), (32, "c2"), (16, "c3")]   # 119 cells: outside 111 / 111 only / 48 only / 16
 QUESTIONS = [("SNV 從哪來？", "從 read 找"), ("HP 從哪來？", "read 標 HP"),
              ("只用 1+1 嗎？", "只用 1+1"), ("ONT 還是 PacBio？", "兩個都跑")]
+# hg-plan only: the option not taken and why (README "待週會決定" D1-D4)
+NOT_TAKEN = ["沒選 NIST 名單：深層分支 0 個", "沒選組裝標籤：和模擬口徑不同",
+             "沒選全部區域：要另帶拷貝數", "先跑 ONT；PacBio 較深，再補"]
+HP_H = 560   # hg-plan is taller to fit the not-taken line under each question
 
 
 # ---- p8 hg-plan --------------------------------------------------------------------------
 
 def hg_plan():
-    s = S("hg-plan", 1200, H)
+    s = S("hg-plan", 1200, HP_H)
     # top lane: bulk -> rebuilt tree
     s.rect(0, 0, 1200, 222, "panel", None, r=10)
     s.text(16, 30, "bulk 腫瘤 → 重建樹", "h")
@@ -167,18 +171,19 @@ def hg_plan():
 
     # bottom left: the four questions with current leaning
     qx, qy, qw = 0, 240, 340
-    s.rect(qx, qy, qw, H - qy, "panel", None, r=10)
+    s.rect(qx, qy, qw, HP_H - qy, "panel", None, r=10)
     s.text(qx + 16, qy + 32, "四件事", "h")
     s.text(qx + qw - 14, qy + 32, "11-13 先定", "s", "end", "c4")
     for i, (q, lean) in enumerate(QUESTIONS):
-        y = qy + 84 + i * 50
+        y = qy + 76 + i * 56
         badge(s, qx + 26, y - 7, i + 1)
         s.text(qx + 50, y, q, "t")
         s.text(qx + qw - 14, y, lean, "s", "end", "c4")
+        s.text(qx + 50, y + 26, NOT_TAKEN[i], "s", "start", "mute")
 
     # bottom middle: the reference (not truth)
     rx, rw = 360, 420
-    s.rect(rx, qy, rw, H - qy, "panel2", None, r=10)
+    s.rect(rx, qy, rw, HP_H - qy, "panel2", None, r=10)
     s.text(rx + 16, qy + 32, "參考樹（不是真值）", "h")
     # row 1: 8 clone lines -> tree shape
     for k in range(8):
@@ -199,7 +204,7 @@ def hg_plan():
 
     # bottom right: compare
     cx0, cwid = 800, 400
-    s.rect(cx0, qy, cwid, H - qy, "panel", "c4", r=10, sw=2.5)
+    s.rect(cx0, qy, cwid, HP_H - qy, "panel", "c4", r=10, sw=2.5)
     s.text(cx0 + 16, qy + 32, "比對", "h")
     mini_tree(s, cx0 + 80, qy + 52, .72)
     s.text(cx0 + 80, qy + 136, "重建", "s", "middle")
@@ -219,9 +224,9 @@ def hg_plan():
     s.arrow(rx + rw + 2, qy + 196, cx0 - 2, qy + 196, c="ink2", sw=3, head=11)
 
     notes = ("這頁要看的是：bulk 重建的樹和參考樹在右下角的比對會合。"
-             "上排從左到右：bulk 腫瘤樣本、列出 SNV、用已定相的 germline 把 read 標成 HP1 或 HP2、分 HP 數 read、只留 HP1、HP2 各一份的區域，再各跑一次加 HP 和不加 HP。"
+             "上排從左到右：bulk 樣本、列出 SNV、用已定相 germline 把 read 標成 HP1 或 HP2、分 HP 數 read、只留各一份的區域，再跑加 HP 和不加 HP。"
              "下排中間是參考樹，不是真值：8 株選殖株給樹形，119 顆單細胞給分支比例。比對看樹形和比例，重建那條是示意。"
-             "左下四件事我在 11 月 13 日先定，好讓這週跑出結果：從 read 找 SNV，read 標 HP，只用 1+1，ONT 和 PacBio 都跑。")
+             "左下四件事我在 11 月 13 日先定，灰字是沒選的方案和理由：NIST 名單在深層分支是 0 個；組裝標籤和模擬口徑不同；全部區域要另帶拷貝數；ONT 先跑，PacBio 較深再補。")
     write_page("hg-plan", page("hg-plan", "HG008：bulk 重建和參考樹在比對步驟會合，四件事已先定", s, notes=notes))
     return notes
 

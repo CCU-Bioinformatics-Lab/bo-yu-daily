@@ -17,10 +17,10 @@ from gen_hg import LAYER  # noqa: E402
 H = 500
 
 
-def verdict_boxes(s, by, boxes):
-    """能證明 / 不能證明 / next, as on hg-nist."""
+def verdict_boxes(s, by, boxes, bottom=H):
+    """能證明 / 不能證明 / next, as on hg-nist. A body with "\n" is drawn as several lines."""
     for x, w, ok, head, body in boxes:
-        s.rect(x, by, w, H - by, "on", "c4" if ok else ("mut" if ok is False else "ink2"), r=10, sw=2)
+        s.rect(x, by, w, bottom - by, "on", "c4" if ok else ("mut" if ok is False else "ink2"), r=10, sw=2)
         if ok:
             s.path(f"M{x + 18} {by + 32} L{x + 26} {by + 40} L{x + 42} {by + 22}", "c4", 4)
         elif ok is False:
@@ -28,7 +28,8 @@ def verdict_boxes(s, by, boxes):
         else:
             s.arrow(x + 16, by + 31, x + 44, by + 31, c="ink2", sw=3, head=10)
         s.text(x + 54, by + 38, head, "b", "start", "c4" if ok else ("mut" if ok is False else "ink"))
-        s.text(x + 18, by + 76, body, "t")
+        for j, line in enumerate(body.split("\n")):
+            s.text(x + 18, by + 76 + j * 30, line, "t")
 
 
 # ---- hg-clairs ------------------------------------------------------------------------------
@@ -136,7 +137,7 @@ CHECKS = [((False, False), (True, True)), ((False, False), (True, True)),
 
 
 def hg_rebuild():
-    s = S("hg-rebuild", 1200, 520)
+    s = S("hg-rebuild", 1200, 664)
     top, bot = 80, 350
 
     def Y(v):
@@ -205,6 +206,9 @@ def hg_rebuild():
     # annotation for the PacBio + HP clone at 0.90
     s.text(1068, Y(.90) + 6, "111 顆的 35%", "s", "start", LAYER["111"])
     s.text(1184, Y(.46) + 6, "黃帶：0.40±0.1", "s", "end", "ink2")
+    verdict_boxes(s, 536, [(0, 392, True, "能證明", "全部細胞那層的 CCF 估得準\nONT 的 48 顆層也對上"),
+                           (404, 392, False, "不能證明", "方法做不到：能對答案的\n深層 SNV 只有 5、2 個"),
+                           (808, 392, False, "不能證明", "差異來自平台：平台、\n腫瘤、正常深度一起變")], bottom=664)
     # legend (top)
     lx = 150
     s.circle(lx, 24, 9, "unphased", "on", 1.5)
@@ -214,10 +218,11 @@ def hg_rebuild():
     s.text(lx + 640, 30, "圓越大，SNV 越多", "s", "start", "ink2")
 
     notes = ("這頁要看的是：重建找回了全部細胞和約四成細胞這兩層，111 顆和 16 顆兩層找不回來。"
-             "縱軸是 CCF，就是帶這個突變的細胞比例。最左邊是參考樹的四層，右邊四組是重建，各跑兩個 seed。"
-             "黑點是全部細胞那群，綠色外圈表示 111 顆那層也被併在裡面。紫點是 48 顆那層所在的群：ONT 落在黃帶裡，PacBio 偏低。"
-             "PacBio 加 HP 多一個 0.90 的群，收了 111 顆那層約三成五，但混了更多全部細胞的 SNV。"
-             "下面兩列是事先定的檢查：111 顆分開都沒有；48 顆的 CCF，ONT 對上、PacBio 沒有。灰點無法驗證。")
+             "縱軸是 CCF，帶突變的細胞比例。左邊是參考樹四層，右邊四組重建，各兩個 seed。"
+             "黑點是全部細胞那群，綠圈表示 111 顆那層也併在裡面。紫點是 48 顆那層：ONT 在黃帶裡，PacBio 偏低。"
+             "PacBio 加 HP 多一個 0.90 的群，收了 111 顆那層約三成五。"
+             "兩列事先定的檢查：111 顆都沒分開；48 顆的 CCF，ONT 對上、PacBio 沒有。"
+             "最下面：能對答案的深層 SNV 太少，不能說方法做不到；換平台時深度也變了，差異不能只怪平台。")
     write_page("hg-rebuild", page("hg-rebuild", "重建找回全部細胞和約四成細胞兩層；111、16 顆兩層找不回來", s, notes=notes))
     return notes
 
