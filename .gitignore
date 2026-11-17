@@ -16,3 +16,6 @@ research/**/*.pdf
 research/**/*.xlsx
 research/literature/papers/*/fulltext.md
 research/literature/surveys/*/fulltext_cache/
+
+# HG008 SNV-pair table (4.5 MB); rebuild with count_pairs.py
+lab_report/2026-11-15_hg008_snv_pairs/pairs.tsv

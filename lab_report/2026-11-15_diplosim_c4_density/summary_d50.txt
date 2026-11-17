@@ -1,0 +1,20 @@
+10 trees x 2 haploclone seeds; true clones 5
+mode       found   exact   diff vs a1 [95% CI]        better/worse  improves?
+a1          1.95    0/20
+a1c4pool    2.35    0/20   +0.40 [-0.07, +0.87]      4/1          no
+
+non-truncal clones found, by CCF gap to the nearest other clone (both seeds)
+  a1         <0.05 2/20 (10%)   0.05-0.1 0/14 (0%)   0.1-0.2 5/26 (19%)   >=0.2 14/20 (70%)
+  a1c4pool   <0.05 4/20 (20%)   0.05-0.1 0/14 (0%)   0.1-0.2 4/26 (15%)   >=0.2 19/20 (95%)
+
+per tree found (mean of 2 seeds):
+  tree  1: a1 2.0  a1c4pool 3.0
+  tree  2: a1 1.0  a1c4pool 1.0
+  tree  3: a1 3.5  a1c4pool 3.0
+  tree  4: a1 3.0  a1c4pool 3.0
+  tree  5: a1 2.0  a1c4pool 3.5
+  tree  6: a1 1.0  a1c4pool 2.0
+  tree  7: a1 2.0  a1c4pool 2.0
+  tree  8: a1 2.0  a1c4pool 2.0
+  tree  9: a1 0.0  a1c4pool 1.0
+  tree 10: a1 3.0  a1c4pool 3.0

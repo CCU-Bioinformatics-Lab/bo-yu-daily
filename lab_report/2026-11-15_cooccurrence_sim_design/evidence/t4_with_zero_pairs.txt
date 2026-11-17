@@ -1,0 +1,10 @@
+labelled pairs within 100kb incl. pairs with 0 spanning reads (absent from pairs.tsv)
+bin | n_pairs | frac>=1 read obs | obs mean | pred mean | P(>=1) pred (Poisson)
+30-40kb | 182 | 0.984 | 6.74 | 6.40 | 0.993
+40-50kb | 212 | 0.769 | 1.75 | 1.73 | 0.783
+50-60kb | 194 | 0.309 | 0.51 | 0.39 | 0.307
+60-75kb | 262 | 0.042 | 0.05 | 0.04 | 0.041
+75-100kb | 488 | 0.008 | 0.01 | 0.01 | 0.007
+
+other pairs 75-100kb with reads (anomaly):
+[('chr7:54.2Mb', 76)]

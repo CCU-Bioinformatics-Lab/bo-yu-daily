@@ -1,0 +1,30 @@
+regions=40 x 1Mb in 1+1 segments; primary MAPQ>=20 reads starting in region: n=102016
+ref span median=22890 mean=21719 N50=35951.0 q90=44723 q99=60412 max=245381.0
+ frac reads >10kb = 0.6459 ; frac of bases in reads >10kb = 0.9671
+ frac reads >20kb = 0.5383 ; frac of bases in reads >20kb = 0.8917
+ frac reads >50kb = 0.0522 ; frac of bases in reads >50kb = 0.1355
+ frac reads >100kb = 0.0000 ; frac of bases in reads >100kb = 0.0003
+ implied depth = sum(span)/40Mb = 55.4x
+
+== Task4: predicted reads spanning pair = mean(depth of 2 SNVs from data_hp ref+alt) x S(d), S(d)=E[(L-d)+]/E[L]
+S(d) for d=1,5,10,20,50,100kb: [np.float64(0.9586), np.float64(0.8239), np.float64(0.6698), np.float64(0.396), np.float64(0.0154), np.float64(0.0001)]
+
+-- labelled: bin | n_pairs | obs median/mean | pred median/mean | obs/pred mean ratio
+0-1kb | 310 | 54.0/55.7 | 53.6/55.6 | 1.00
+1-5kb | 203 | 54.0/52.9 | 52.7/52.0 | 1.02
+5-10kb | 131 | 44.0/43.6 | 43.4/42.8 | 1.02
+10-20kb | 201 | 29.0/29.6 | 28.9/29.2 | 1.01
+20-30kb | 208 | 15.0/15.7 | 15.8/16.0 | 0.98
+30-50kb | 342 | 4.0/4.7 | 3.6/4.3 | 1.10
+50-75kb | 71 | 1.0/1.6 | 0.3/0.4 | 4.08
+75-100kb | 4 | 1.0/1.0 | 0.0/0.0 | 110.57
+
+-- other: bin | n_pairs | obs median/mean | pred median/mean | obs/pred mean ratio
+0-1kb | 9028 | 41.0/40.9 | 40.0/39.4 | 1.04
+1-5kb | 24751 | 36.0/35.6 | 36.0/35.5 | 1.00
+5-10kb | 15755 | 29.0/27.8 | 31.5/29.7 | 0.94
+10-20kb | 6029 | 26.0/23.2 | 26.9/24.8 | 0.93
+20-30kb | 928 | 18.0/17.4 | 13.4/12.1 | 1.44
+30-50kb | 879 | 8.0/7.6 | 3.4/3.5 | 2.18
+50-75kb | 39 | 1.0/1.7 | 0.3/0.4 | 4.79
+75-100kb | 76 | 27.0/27.0 | 0.0/0.0 | 4491.59

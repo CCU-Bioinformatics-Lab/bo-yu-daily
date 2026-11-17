@@ -1,0 +1,8 @@
+chr16:55.8 sites=12 tumourVAF_med=0.410 tumour_depth_med=43 | normal(N-D 94x) VAF_med=0.027 depth_med=58 sites_with_alt>=2=6/12
+chr15:101.8 sites=12 tumourVAF_med=0.379 tumour_depth_med=30 | normal(N-D 94x) VAF_med=0.000 depth_med=48 sites_with_alt>=2=1/12
+chr15:82.4 sites=12 tumourVAF_med=0.515 tumour_depth_med=49 | normal(N-D 94x) VAF_med=0.057 depth_med=54 sites_with_alt>=2=10/12
+chr16:88.1 sites=12 tumourVAF_med=0.122 tumour_depth_med=51 | normal(N-D 94x) VAF_med=0.008 depth_med=114 sites_with_alt>=2=2/12
+chr20:29.9 sites=12 tumourVAF_med=0.664 tumour_depth_med=12 | normal(N-D 94x) VAF_med=0.000 depth_med=2 sites_with_alt>=2=0/12
+chr20:26.6 sites=12 tumourVAF_med=0.247 tumour_depth_med=44 | normal(N-D 94x) VAF_med=0.043 depth_med=126 sites_with_alt>=2=12/12
+chr7:54.3 sites=12 tumourVAF_med=0.365 tumour_depth_med=64 | normal(N-D 94x) VAF_med=0.023 depth_med=109 sites_with_alt>=2=11/12
+truncal_ctrl sites=30 tumourVAF_med=0.485 tumour_depth_med=59 | normal(N-D 94x) VAF_med=0.000 depth_med=91 sites_with_alt>=2=4/30

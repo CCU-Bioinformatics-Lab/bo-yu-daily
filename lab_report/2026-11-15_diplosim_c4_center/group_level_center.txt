@@ -1,0 +1,4 @@
+mode       found(clone level)  count_ok  tree_ok   (10 trees x 2 seeds)
+a1             2.80             0/20      0/20
+a1c4           3.00             0/20      0/20
+a1c4pool       3.05             0/20      0/20

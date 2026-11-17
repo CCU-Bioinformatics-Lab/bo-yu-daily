@@ -1,0 +1,11 @@
+chr16:55811907-55827280 reads=77 MAPQ q10/q50=60/60 frac<20=0.000 frac<5=0.000 frac==60=0.974 depth_mid_MQ20= 39
+chr15:101874129-101892548 reads=65 MAPQ q10/q50=47/60 frac<20=0.031 frac<5=0.015 frac==60=0.877 depth_mid_MQ20= 29
+chr15:82469612-82487933 reads=86 MAPQ q10/q50=60/60 frac<20=0.000 frac<5=0.000 frac==60=0.919 depth_mid_MQ20= 50
+chr16:88159049-88184761 reads=153 MAPQ q10/q50=57/60 frac<20=0.007 frac<5=0.007 frac==60=0.895 depth_mid_MQ20= 64
+chr15:75253793-75296517 reads=147 MAPQ q10/q50=17/60 frac<20=0.109 frac<5=0.088 frac==60=0.830 depth_mid_MQ20= 41
+chr20:29914918-29959578 reads=228 MAPQ q10/q50=1/5 frac<20=0.724 frac<5=0.482 frac==60=0.127 depth_mid_MQ20= 99
+chr18:15330619-15357970 reads=105 MAPQ q10/q50=60/60 frac<20=0.029 frac<5=0.000 frac==60=0.905 depth_mid_MQ20= 40
+chr7:54321360-54323683 reads=63 MAPQ q10/q50=60/60 frac<20=0.032 frac<5=0.016 frac==60=0.952 depth_mid_MQ20= 56
+chr20:26604023-26607900 reads=59 MAPQ q10/q50=0/11 frac<20=0.627 frac<5=0.424 frac==60=0.220 depth_mid_MQ20= 33
+chr12:11414-94894 reads=389 MAPQ q10/q50=5/60 frac<20=0.159 frac<5=0.098 frac==60=0.702 depth_mid_MQ20= 141
+genome-wide 30 random 20kb autosomal reads=2261 MAPQ q10/q50=60/60 frac<20=0.014 frac<5=0.012 frac==60=0.973 depth_mid_MQ20 median= 35.0

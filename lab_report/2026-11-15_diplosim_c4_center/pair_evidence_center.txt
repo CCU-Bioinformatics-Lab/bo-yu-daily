@@ -1,0 +1,33 @@
+tree  close clone pair (CCF, relation)        same-HP pairs  n11  n10  n01   # close = gap < 0.1, non-truncal
+   2  4(0.16) - 8(0.12) sib                 3          0    6    4
+   2  4(0.16) - 9(0.22) anc                 5          9    2    3
+   2  7(0.31) - 9(0.22) sib                 0          0    0    0
+   2  8(0.12) - 9(0.22) sib                 7          0   29   11
+   4  3(0.10) - 9(0.12) sib                 0          0    0    0
+   6  5(0.34) - 7(0.34) anc                 0          0    0    0
+   7  7(0.42) - 8(0.34) anc                 2         17    1    0
+   7  7(0.42) - 9(0.49) sib                 1          0   16   13
+   8  5(0.07) - 9(0.09) sib                 2          0    4    2
+   9  7(0.89) - 8(0.81) anc                 6         56    6    1
+  10  8(0.24) - 9(0.28) sib                 0          0    0    0
+total same-HP pairs between close clones: {'sib': 13, 'anc': 13}
+
+Are SNVs of close-clone pairs put in different MAP clusters? (same-HP pairs with n10+n01 > 0)
+  tree 2 clones 8/9 (200/193 SNVs, 7 pairs) a1        pairs split: seed1 0/7 seed2 0/7
+  tree 2 clones 8/9 (200/193 SNVs, 7 pairs) a1c4      pairs split: seed1 7/7 seed2 7/7
+  tree 2 clones 8/9 (200/193 SNVs, 7 pairs) a1c4pool  pairs split: seed1 7/7 seed2 7/7
+  tree 2 clones 4/8 (106/200 SNVs, 3 pairs) a1        pairs split: seed1 0/3 seed2 0/3
+  tree 2 clones 4/8 (106/200 SNVs, 3 pairs) a1c4      pairs split: seed1 1/3 seed2 1/3
+  tree 2 clones 4/8 (106/200 SNVs, 3 pairs) a1c4pool  pairs split: seed1 2/3 seed2 1/3
+  tree 7 clones 7/9 (50/91 SNVs, 1 pairs) a1        pairs split: seed1 0/1 seed2 0/1
+  tree 7 clones 7/9 (50/91 SNVs, 1 pairs) a1c4      pairs split: seed1 1/1 seed2 1/1
+  tree 7 clones 7/9 (50/91 SNVs, 1 pairs) a1c4pool  pairs split: seed1 1/1 seed2 1/1
+  tree 7 clones 7/8 (50/190 SNVs, 2 pairs) a1        pairs split: seed1 1/2 seed2 0/2
+  tree 7 clones 7/8 (50/190 SNVs, 2 pairs) a1c4      pairs split: seed1 0/2 seed2 0/2
+  tree 7 clones 7/8 (50/190 SNVs, 2 pairs) a1c4pool  pairs split: seed1 0/2 seed2 0/2
+  tree 8 clones 5/9 (84/77 SNVs, 2 pairs) a1        pairs split: seed1 0/2 seed2 0/2
+  tree 8 clones 5/9 (84/77 SNVs, 2 pairs) a1c4      pairs split: seed1 1/2 seed2 1/2
+  tree 8 clones 5/9 (84/77 SNVs, 2 pairs) a1c4pool  pairs split: seed1 1/2 seed2 1/2
+  tree 9 clones 7/8 (84/207 SNVs, 6 pairs) a1        pairs split: seed1 4/6 seed2 5/6
+  tree 9 clones 7/8 (84/207 SNVs, 6 pairs) a1c4      pairs split: seed1 3/6 seed2 2/6
+  tree 9 clones 7/8 (84/207 SNVs, 6 pairs) a1c4pool  pairs split: seed1 3/6 seed2 3/6

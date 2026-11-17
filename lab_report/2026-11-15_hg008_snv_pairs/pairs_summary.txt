@@ -1,0 +1,100 @@
+SNVs 5816; pairs <= 100 kb: 60564; SNVs in a pair: 4181
+
+[both labeled] pairs with >=1 spanning read: 1470; >=5: 1201; same HP: 879 (>=5 reads: 768)
+  layer pairs: [(('truncal', 'truncal'), 1303), (('L111', 'truncal'), 89), (('other_clade', 'truncal'), 39), (('other_clade', 'other_clade'), 29), (('L111', 'L111'), 8), (('L16', 'truncal'), 1), (('L48', 'L48'), 1)]
+  distance median 14673 bp; reads per pair median 30
+
+[other] pairs with >=1 spanning read: 57485; >=5: 56927; same HP: 45415 (>=5 reads: 45364)
+  layer pairs: [(('none', 'none'), 57156), (('none', 'truncal'), 310), (('none', 'other_clade'), 14), (('L111', 'none'), 5)]
+  distance median 4004 bp; reads per pair median 32
+
+[truncal x L111] pairs with >=1 spanning read: 89
+   {'snv1': 'chr2_956285_C_T', 'snv2': 'chr2_986119_T_A', 'dist': 29834, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 10, 'AA': 4, 'AR': 0, 'RA': 0, 'RR': 6, 'other': 0}
+   {'snv1': 'chr2_22174664_C_A', 'snv2': 'chr2_22230249_G_A', 'dist': 55585, 'hp1': 'NA', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 1, 'AA': 0, 'AR': 0, 'RA': 0, 'RR': 1, 'other': 0}
+   {'snv1': 'chr2_33740797_G_A', 'snv2': 'chr2_33761636_G_A', 'dist': 20839, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 19, 'AA': 0, 'AR': 5, 'RA': 10, 'RR': 4, 'other': 0}
+   {'snv1': 'chr2_41906926_C_T', 'snv2': 'chr2_41945448_C_A', 'dist': 38522, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 4, 'AA': 4, 'AR': 0, 'RA': 0, 'RR': 0, 'other': 0}
+   {'snv1': 'chr2_57972594_G_A', 'snv2': 'chr2_57992788_G_A', 'dist': 20194, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 21, 'AA': 9, 'AR': 2, 'RA': 0, 'RR': 10, 'other': 0}
+   {'snv1': 'chr2_57973676_G_A', 'snv2': 'chr2_57992788_G_A', 'dist': 19112, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 25, 'AA': 13, 'AR': 2, 'RA': 0, 'RR': 10, 'other': 0}
+   {'snv1': 'chr3_99015996_G_A', 'snv2': 'chr3_99061440_A_T', 'dist': 45444, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 6, 'AA': 4, 'AR': 0, 'RA': 0, 'RR': 2, 'other': 0}
+   {'snv1': 'chr3_99465544_C_T', 'snv2': 'chr3_99470704_A_C', 'dist': 5160, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 41, 'AA': 15, 'AR': 3, 'RA': 0, 'RR': 22, 'other': 1}
+   {'snv1': 'chr3_99465564_C_G', 'snv2': 'chr3_99470704_A_C', 'dist': 5140, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 41, 'AA': 15, 'AR': 2, 'RA': 0, 'RR': 23, 'other': 1}
+   {'snv1': 'chr3_99465616_C_G', 'snv2': 'chr3_99470704_A_C', 'dist': 5088, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 41, 'AA': 15, 'AR': 2, 'RA': 0, 'RR': 23, 'other': 1}
+   {'snv1': 'chr3_99465628_C_T', 'snv2': 'chr3_99470704_A_C', 'dist': 5076, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 38, 'AA': 14, 'AR': 2, 'RA': 0, 'RR': 21, 'other': 1}
+   {'snv1': 'chr3_99465696_C_T', 'snv2': 'chr3_99470704_A_C', 'dist': 5008, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 41, 'AA': 15, 'AR': 2, 'RA': 0, 'RR': 23, 'other': 1}
+   {'snv1': 'chr3_99465859_C_T', 'snv2': 'chr3_99470704_A_C', 'dist': 4845, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 42, 'AA': 15, 'AR': 2, 'RA': 0, 'RR': 24, 'other': 1}
+   {'snv1': 'chr3_99466040_C_T', 'snv2': 'chr3_99470704_A_C', 'dist': 4664, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 43, 'AA': 16, 'AR': 2, 'RA': 0, 'RR': 24, 'other': 1}
+   {'snv1': 'chr3_99466139_C_G', 'snv2': 'chr3_99470704_A_C', 'dist': 4565, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 42, 'AA': 16, 'AR': 2, 'RA': 0, 'RR': 24, 'other': 0}
+   {'snv1': 'chr3_99466154_C_T', 'snv2': 'chr3_99470704_A_C', 'dist': 4550, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 43, 'AA': 16, 'AR': 2, 'RA': 0, 'RR': 24, 'other': 1}
+   {'snv1': 'chr3_99466165_C_T', 'snv2': 'chr3_99470704_A_C', 'dist': 4539, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 43, 'AA': 16, 'AR': 2, 'RA': 0, 'RR': 24, 'other': 1}
+   {'snv1': 'chr3_99466310_C_T', 'snv2': 'chr3_99470704_A_C', 'dist': 4394, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 43, 'AA': 16, 'AR': 2, 'RA': 0, 'RR': 24, 'other': 1}
+   {'snv1': 'chr3_101671804_A_T', 'snv2': 'chr3_101699085_C_A', 'dist': 27281, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 20, 'AA': 5, 'AR': 0, 'RA': 2, 'RR': 13, 'other': 0}
+   {'snv1': 'chr3_101671804_A_T', 'snv2': 'chr3_101699110_C_G', 'dist': 27306, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 20, 'AA': 5, 'AR': 0, 'RA': 2, 'RR': 12, 'other': 1}
+   {'snv1': 'chr3_101671804_A_T', 'snv2': 'chr3_101706643_G_T', 'dist': 34839, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 10, 'AA': 4, 'AR': 0, 'RA': 1, 'RR': 5, 'other': 0}
+   {'snv1': 'chr3_101671804_A_T', 'snv2': 'chr3_101706978_A_C', 'dist': 35174, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 10, 'AA': 4, 'AR': 0, 'RA': 1, 'RR': 5, 'other': 0}
+   {'snv1': 'chr3_101671804_A_T', 'snv2': 'chr3_101708636_A_G', 'dist': 36832, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 8, 'AA': 4, 'AR': 0, 'RA': 1, 'RR': 3, 'other': 0}
+   {'snv1': 'chr3_101671804_A_T', 'snv2': 'chr3_101710249_G_A', 'dist': 38445, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 6, 'AA': 3, 'AR': 0, 'RA': 1, 'RR': 2, 'other': 0}
+   {'snv1': 'chr3_101671804_A_T', 'snv2': 'chr3_101710253_G_A', 'dist': 38449, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 6, 'AA': 3, 'AR': 0, 'RA': 1, 'RR': 2, 'other': 0}
+   {'snv1': 'chr3_103399544_T_A', 'snv2': 'chr3_103426379_T_A', 'dist': 26835, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 13, 'AA': 0, 'AR': 4, 'RA': 8, 'RR': 1, 'other': 0}
+   {'snv1': 'chr3_120482351_C_T', 'snv2': 'chr3_120489464_T_A', 'dist': 7113, 'hp1': 'NA', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 50, 'AA': 17, 'AR': 1, 'RA': 3, 'RR': 28, 'other': 1}
+   {'snv1': 'chr3_162797986_T_C', 'snv2': 'chr3_162800835_T_G', 'dist': 2849, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 43, 'AA': 18, 'AR': 2, 'RA': 1, 'RR': 21, 'other': 1}
+   {'snv1': 'chr3_185401488_G_A', 'snv2': 'chr3_185431033_G_A', 'dist': 29545, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 15, 'AA': 0, 'AR': 6, 'RA': 8, 'RR': 1, 'other': 0}
+   {'snv1': 'chr5_10018001_A_G', 'snv2': 'chr5_10038392_G_T', 'dist': 20391, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 22, 'AA': 11, 'AR': 0, 'RA': 0, 'RR': 11, 'other': 0}
+   {'snv1': 'chr6_65636613_A_G', 'snv2': 'chr6_65669132_G_C', 'dist': 32519, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 7, 'AA': 0, 'AR': 3, 'RA': 3, 'RR': 1, 'other': 0}
+   {'snv1': 'chr6_68380745_T_A', 'snv2': 'chr6_68417659_C_T', 'dist': 36914, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 4, 'AA': 1, 'AR': 0, 'RA': 0, 'RR': 3, 'other': 0}
+   {'snv1': 'chr7_1568053_C_A', 'snv2': 'chr7_1586589_G_A', 'dist': 18536, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 27, 'AA': 10, 'AR': 0, 'RA': 1, 'RR': 15, 'other': 1}
+   {'snv1': 'chr7_14756334_C_T', 'snv2': 'chr7_14803490_T_C', 'dist': 47156, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 2, 'AA': 0, 'AR': 2, 'RA': 0, 'RR': 0, 'other': 0}
+   {'snv1': 'chr8_54516886_G_A', 'snv2': 'chr8_54519193_A_G', 'dist': 2307, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 60, 'AA': 0, 'AR': 29, 'RA': 27, 'RR': 4, 'other': 0}
+   {'snv1': 'chr8_111799868_G_T', 'snv2': 'chr8_111846361_C_A', 'dist': 46493, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 2, 'AA': 0, 'AR': 0, 'RA': 2, 'RR': 0, 'other': 0}
+   {'snv1': 'chr8_111829551_T_A', 'snv2': 'chr8_111846361_C_A', 'dist': 16810, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 17, 'AA': 0, 'AR': 8, 'RA': 9, 'RR': 0, 'other': 0}
+   {'snv1': 'chr8_111846361_C_A', 'snv2': 'chr8_111853570_C_A', 'dist': 7209, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 29, 'AA': 0, 'AR': 10, 'RA': 19, 'RR': 0, 'other': 0}
+   {'snv1': 'chr8_111846361_C_A', 'snv2': 'chr8_111866845_G_C', 'dist': 20484, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 17, 'AA': 5, 'AR': 0, 'RA': 0, 'RR': 12, 'other': 0}
+   {'snv1': 'chr8_136952245_G_C', 'snv2': 'chr8_136983670_A_T', 'dist': 31425, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 5, 'AA': 3, 'AR': 0, 'RA': 0, 'RR': 2, 'other': 0}
+   {'snv1': 'chr8_136983670_A_T', 'snv2': 'chr8_137030963_A_C', 'dist': 47293, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 1, 'AA': 0, 'AR': 1, 'RA': 0, 'RR': 0, 'other': 0}
+   {'snv1': 'chr11_1727288_A_T', 'snv2': 'chr11_1750438_C_A', 'dist': 23150, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 20, 'AA': 0, 'AR': 9, 'RA': 11, 'RR': 0, 'other': 0}
+   {'snv1': 'chr11_1727288_A_T', 'snv2': 'chr11_1750445_C_T', 'dist': 23157, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 21, 'AA': 0, 'AR': 10, 'RA': 11, 'RR': 0, 'other': 0}
+   {'snv1': 'chr11_1980380_G_A', 'snv2': 'chr11_2016065_G_A', 'dist': 35685, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 3, 'AA': 0, 'AR': 0, 'RA': 3, 'RR': 0, 'other': 0}
+   {'snv1': 'chr11_2266660_C_T', 'snv2': 'chr11_2280077_A_G', 'dist': 13417, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 41, 'AA': 0, 'AR': 25, 'RA': 15, 'RR': 1, 'other': 0}
+   {'snv1': 'chr11_2266660_C_T', 'snv2': 'chr11_2280078_G_T', 'dist': 13418, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 41, 'AA': 0, 'AR': 25, 'RA': 15, 'RR': 1, 'other': 0}
+   {'snv1': 'chr11_5323819_C_T', 'snv2': 'chr11_5324309_C_T', 'dist': 490, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 65, 'AA': 1, 'AR': 42, 'RA': 22, 'RR': 0, 'other': 0}
+   {'snv1': 'chr11_5755533_C_T', 'snv2': 'chr11_5759176_A_T', 'dist': 3643, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 59, 'AA': 1, 'AR': 23, 'RA': 33, 'RR': 2, 'other': 0}
+   {'snv1': 'chr11_5755533_C_T', 'snv2': 'chr11_5763776_A_C', 'dist': 8243, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 47, 'AA': 1, 'AR': 22, 'RA': 23, 'RR': 1, 'other': 0}
+   {'snv1': 'chr11_14682954_T_G', 'snv2': 'chr11_14692694_G_T', 'dist': 9740, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 48, 'AA': 0, 'AR': 14, 'RA': 23, 'RR': 10, 'other': 1}
+   {'snv1': 'chr11_17434220_C_T', 'snv2': 'chr11_17454445_G_A', 'dist': 20225, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 25, 'AA': 0, 'AR': 11, 'RA': 11, 'RR': 3, 'other': 0}
+   {'snv1': 'chr11_20759793_C_T', 'snv2': 'chr11_20790847_G_A', 'dist': 31054, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 20, 'AA': 0, 'AR': 9, 'RA': 10, 'RR': 1, 'other': 0}
+   {'snv1': 'chr11_21756591_C_T', 'snv2': 'chr11_21760201_C_T', 'dist': 3610, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 70, 'AA': 2, 'AR': 32, 'RA': 34, 'RR': 2, 'other': 0}
+   {'snv1': 'chr11_22087638_G_T', 'snv2': 'chr11_22104668_G_A', 'dist': 17030, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 23, 'AA': 0, 'AR': 6, 'RA': 17, 'RR': 0, 'other': 0}
+   {'snv1': 'chr11_22104668_G_A', 'snv2': 'chr11_22142097_C_T', 'dist': 37429, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 1, 'AA': 0, 'AR': 0, 'RA': 0, 'RR': 1, 'other': 0}
+   {'snv1': 'chr11_24422453_G_A', 'snv2': 'chr11_24465163_G_A', 'dist': 42710, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 3, 'AA': 0, 'AR': 1, 'RA': 2, 'RR': 0, 'other': 0}
+   {'snv1': 'chr11_69920832_C_T', 'snv2': 'chr11_69957448_A_C', 'dist': 36616, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 2, 'AA': 0, 'AR': 0, 'RA': 2, 'RR': 0, 'other': 0}
+   {'snv1': 'chr13_48842525_G_T', 'snv2': 'chr13_48884811_G_A', 'dist': 42286, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 2, 'AA': 1, 'AR': 0, 'RA': 0, 'RR': 1, 'other': 0}
+   {'snv1': 'chr13_86526915_T_A', 'snv2': 'chr13_86553621_G_T', 'dist': 26706, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 9, 'AA': 7, 'AR': 0, 'RA': 0, 'RR': 2, 'other': 0}
+   {'snv1': 'chr14_25037901_T_C', 'snv2': 'chr14_25064006_A_C', 'dist': 26105, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 21, 'AA': 9, 'AR': 0, 'RA': 0, 'RR': 12, 'other': 0}
+   {'snv1': 'chr14_41903362_A_T', 'snv2': 'chr14_41948903_T_A', 'dist': 45541, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 1, 'AA': 0, 'AR': 0, 'RA': 1, 'RR': 0, 'other': 0}
+   {'snv1': 'chr14_41948903_T_A', 'snv2': 'chr14_41966445_G_C', 'dist': 17542, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 33, 'AA': 13, 'AR': 1, 'RA': 0, 'RR': 19, 'other': 0}
+   {'snv1': 'chr14_87063716_C_G', 'snv2': 'chr14_87082328_C_T', 'dist': 18612, 'hp1': 'NA', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 22, 'AA': 10, 'AR': 1, 'RA': 2, 'RR': 9, 'other': 0}
+   {'snv1': 'chr15_27384145_C_T', 'snv2': 'chr15_27430585_G_T', 'dist': 46440, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 1, 'AA': 0, 'AR': 1, 'RA': 0, 'RR': 0, 'other': 0}
+   {'snv1': 'chr15_27430585_G_T', 'snv2': 'chr15_27468880_G_A', 'dist': 38295, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 2, 'AA': 0, 'AR': 1, 'RA': 1, 'RR': 0, 'other': 0}
+   {'snv1': 'chr15_45707163_T_C', 'snv2': 'chr15_45741866_G_T', 'dist': 34703, 'hp1': 'HP1', 'hp2': 'NA', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 6, 'AA': 2, 'AR': 0, 'RA': 0, 'RR': 4, 'other': 0}
+   {'snv1': 'chr15_45741866_G_T', 'snv2': 'chr15_45790587_T_G', 'dist': 48721, 'hp1': 'NA', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 1, 'AA': 0, 'AR': 0, 'RA': 0, 'RR': 1, 'other': 0}
+   {'snv1': 'chr15_67959619_A_T', 'snv2': 'chr15_67965782_C_T', 'dist': 6163, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 29, 'AA': 0, 'AR': 14, 'RA': 13, 'RR': 2, 'other': 0}
+   {'snv1': 'chr15_67959619_A_T', 'snv2': 'chr15_67989479_C_G', 'dist': 29860, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 6, 'AA': 4, 'AR': 0, 'RA': 0, 'RR': 2, 'other': 0}
+   {'snv1': 'chr15_95370835_C_A', 'snv2': 'chr15_95371946_C_A', 'dist': 1111, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 47, 'AA': 26, 'AR': 1, 'RA': 2, 'RR': 17, 'other': 1}
+   {'snv1': 'chr15_98104506_C_T', 'snv2': 'chr15_98105907_G_A', 'dist': 1401, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 42, 'AA': 21, 'AR': 1, 'RA': 0, 'RR': 20, 'other': 0}
+   {'snv1': 'chr16_56053865_C_T', 'snv2': 'chr16_56098441_G_A', 'dist': 44576, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 6, 'AA': 0, 'AR': 4, 'RA': 1, 'RR': 1, 'other': 0}
+   {'snv1': 'chr16_56098441_G_A', 'snv2': 'chr16_56128582_C_T', 'dist': 30141, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 6, 'AA': 0, 'AR': 6, 'RA': 0, 'RR': 0, 'other': 0}
+   {'snv1': 'chr16_60622267_C_G', 'snv2': 'chr16_60648319_T_A', 'dist': 26052, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 20, 'AA': 6, 'AR': 2, 'RA': 0, 'RR': 11, 'other': 1}
+   {'snv1': 'chr16_60622267_C_G', 'snv2': 'chr16_60648327_G_C', 'dist': 26060, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 20, 'AA': 7, 'AR': 2, 'RA': 0, 'RR': 11, 'other': 0}
+   {'snv1': 'chr16_60648319_T_A', 'snv2': 'chr16_60713075_G_A', 'dist': 64756, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 1, 'AA': 0, 'AR': 0, 'RA': 1, 'RR': 0, 'other': 0}
+   {'snv1': 'chr16_60648327_G_C', 'snv2': 'chr16_60713075_G_A', 'dist': 64748, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 1, 'AA': 0, 'AR': 0, 'RA': 1, 'RR': 0, 'other': 0}
+   {'snv1': 'chr16_73485190_G_T', 'snv2': 'chr16_73514456_G_A', 'dist': 29266, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 9, 'AA': 5, 'AR': 0, 'RA': 0, 'RR': 4, 'other': 0}
+   {'snv1': 'chr16_73485190_G_T', 'snv2': 'chr16_73515077_C_T', 'dist': 29887, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 8, 'AA': 4, 'AR': 1, 'RA': 0, 'RR': 3, 'other': 0}
+   {'snv1': 'chr18_6446659_G_T', 'snv2': 'chr18_6472017_T_A', 'dist': 25358, 'hp1': 'HP2', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 7, 'AA': 4, 'AR': 0, 'RA': 0, 'RR': 3, 'other': 0}
+   {'snv1': 'chrX_89720807_T_A', 'snv2': 'chrX_89729220_C_A', 'dist': 8413, 'hp1': 'HP1', 'hp2': 'NA', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 32, 'AA': 1, 'AR': 14, 'RA': 15, 'RR': 1, 'other': 1}
+   {'snv1': 'chrX_89729220_C_A', 'snv2': 'chrX_89745954_C_T', 'dist': 16734, 'hp1': 'NA', 'hp2': 'HP1', 'layer1': 'L111', 'layer2': 'truncal', 'reads': 17, 'AA': 0, 'AR': 8, 'RA': 5, 'RR': 2, 'other': 2}
+   {'snv1': 'chrX_138508458_T_C', 'snv2': 'chrX_138539162_T_C', 'dist': 30704, 'hp1': 'NA', 'hp2': 'NA', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 5, 'AA': 0, 'AR': 0, 'RA': 0, 'RR': 5, 'other': 0}
+   {'snv1': 'chrX_145067569_T_G', 'snv2': 'chrX_145104282_C_A', 'dist': 36713, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 10, 'AA': 0, 'AR': 6, 'RA': 3, 'RR': 1, 'other': 0}
+   {'snv1': 'chrX_145067579_C_T', 'snv2': 'chrX_145104282_C_A', 'dist': 36703, 'hp1': 'HP2', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 9, 'AA': 0, 'AR': 6, 'RA': 2, 'RR': 1, 'other': 0}
+   {'snv1': 'chrX_145100095_C_G', 'snv2': 'chrX_145104282_C_A', 'dist': 4187, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 31, 'AA': 18, 'AR': 1, 'RA': 0, 'RR': 12, 'other': 0}
+   {'snv1': 'chrX_145588179_C_A', 'snv2': 'chrX_145643410_A_G', 'dist': 55231, 'hp1': 'NA', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 1, 'AA': 0, 'AR': 0, 'RA': 0, 'RR': 1, 'other': 0}
+   {'snv1': 'chrX_145603462_G_C', 'snv2': 'chrX_145643410_A_G', 'dist': 39948, 'hp1': 'HP1', 'hp2': 'HP1', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 4, 'AA': 3, 'AR': 0, 'RA': 0, 'RR': 1, 'other': 0}
+   {'snv1': 'chrX_146311021_G_T', 'snv2': 'chrX_146312660_C_T', 'dist': 1639, 'hp1': 'HP1', 'hp2': 'HP2', 'layer1': 'truncal', 'layer2': 'L111', 'reads': 44, 'AA': 1, 'AR': 17, 'RA': 21, 'RR': 3, 'other': 2}

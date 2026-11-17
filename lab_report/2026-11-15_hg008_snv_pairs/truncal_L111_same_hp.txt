@@ -1,0 +1,29 @@
+[same HP] pairs 37  distinct L111 SNVs 20  truncal SNVs 36
+   reads (summed over pairs; a read can be in several pairs): both alt 330  truncal-only 38  L111-only 3  both ref 442
+[different HP] pairs 34  distinct L111 SNVs 28  truncal SNVs 30
+   reads (summed over pairs; a read can be in several pairs): both alt 6  truncal-only 321  L111-only 342  both ref 30
+[HP unknown] pairs 18  distinct L111 SNVs 15  truncal SNVs 18
+   reads (summed over pairs; a read can be in several pairs): both alt 107  truncal-only 63  L111-only 47  both ref 129
+
+[same HP, one pair per L111 SNV] L111 SNVs 20: both alt 150  truncal-only 10  L111-only 2  both ref 178
+   truncal-only / (both alt + truncal-only) = 0.062  (expected about 1 - 0.93 = 0.07 if L111 sits under truncal)
+   chr2_41906926_C_T chr2_41945448_C_A reads 4 T+L/T/L/none (4, 0, 0, 0)
+   chr3_99015996_G_A chr3_99061440_A_T reads 6 T+L/T/L/none (4, 0, 0, 2)
+   chr3_99466040_C_T chr3_99470704_A_C reads 43 T+L/T/L/none (16, 2, 0, 24)
+   chr3_101671804_A_T chr3_101699085_C_A reads 20 T+L/T/L/none (5, 2, 0, 13)
+   chr5_10018001_A_G chr5_10038392_G_T reads 22 T+L/T/L/none (11, 0, 0, 11)
+   chr6_68380745_T_A chr6_68417659_C_T reads 4 T+L/T/L/none (1, 0, 0, 3)
+   chr7_1568053_C_A chr7_1586589_G_A reads 27 T+L/T/L/none (10, 1, 0, 15)
+   chr8_111846361_C_A chr8_111866845_G_C reads 17 T+L/T/L/none (5, 0, 0, 12)
+   chr8_136952245_G_C chr8_136983670_A_T reads 5 T+L/T/L/none (3, 0, 0, 2)
+   chr13_48842525_G_T chr13_48884811_G_A reads 2 T+L/T/L/none (1, 0, 0, 1)
+   chr14_25037901_T_C chr14_25064006_A_C reads 21 T+L/T/L/none (9, 0, 0, 12)
+   chr14_41948903_T_A chr14_41966445_G_C reads 33 T+L/T/L/none (13, 0, 1, 19)
+   chr15_67959619_A_T chr15_67989479_C_G reads 6 T+L/T/L/none (4, 0, 0, 2)
+   chr15_98104506_C_T chr15_98105907_G_A reads 42 T+L/T/L/none (21, 0, 1, 20)
+   chr16_60622267_C_G chr16_60648319_T_A reads 20 T+L/T/L/none (6, 2, 0, 11)
+   chr16_60622267_C_G chr16_60648327_G_C reads 20 T+L/T/L/none (7, 2, 0, 11)
+   chr16_73485190_G_T chr16_73514456_G_A reads 9 T+L/T/L/none (5, 0, 0, 4)
+   chr18_6446659_G_T chr18_6472017_T_A reads 7 T+L/T/L/none (4, 0, 0, 3)
+   chrX_145100095_C_G chrX_145104282_C_A reads 31 T+L/T/L/none (18, 1, 0, 12)
+   chrX_145603462_G_C chrX_145643410_A_G reads 4 T+L/T/L/none (3, 0, 0, 1)
