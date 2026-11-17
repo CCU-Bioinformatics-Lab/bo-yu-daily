@@ -1,0 +1,552 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-11",
+  "headline": "HG008 參考樹的 9 個步驟都對得到程式行號，已能向老師說明；但 QUAL 20 門檻是看到衝突太多以後才加的，屬於事後調整，靠「5 種門檻排出同一棵樹」和單細胞獨立檢查撐住",
+  "items": [
+    {
+      "title": "HG008 參考樹怎麼排出來？9 步都對得到程式",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "11-11 週會本週主軸第 1 項：寫出 HG008 參考樹的 9 步清單，每步附程式行號與實際數字，畫 6 張圖解；查出 QUAL 20 是第一次結果衝突太多後才加的門檻",
+      "question": "11-11 週會要求：用 AI 產出的 HG008 參考樹，要先能說明它怎麼產生（O5），並保留原分析對話。這是本週主軸第 1 項，會議估約兩天。",
+      "approach": "- 先把 11-07 產生這棵樹的原分析對話複製到 repo 外的 `/big8_disk/boyu114/analysis_transcripts/hg008_tree/`（對話裡有個人環境資訊，repo 是公開的，所以只在 repo 裡寫路徑）。\n- 讀 `tools/hg008_tree_rebuild.py`、`tools/hg008_sc_clade_test.py` 與兩份 lab_report，寫成 `HOW_TREE_WAS_BUILT.md`：每一步標〔程式〕行號或〔實測〕數字。\n- 使用者逐張看圖、逐步追問（「拷貝數檢查到底檢查什麼」「為什麼只看 2 到 7 株」「bootstrap 是什麼」「0.89 是怎麼知道的」），圖改到使用者看懂為止。\n- 需要時寫小腳本回頭核對數字，例如把 LOH 過濾掉的 SNV 分類、列出 bootstrap 1,000 次實際出現哪幾棵樹。",
+      "result": "- **流程：** 8 株選殖株（PacBio long read）負責排樹，119 顆單細胞（PTA short read）負責獨立檢查。兩種資料不是合在一起建樹。\n- **第 ② 步門檻：** VAF 0.25 是第一版就有的；QUAL 20 是 11-07 第一次結果出現 729 個 SNV 和樹衝突以後才加的，由 AI 在分析中決定。\n- **第 ④ 步拷貝數檢查：** 只檢查 2–7 株共有的 SNV。目的是確認「其他株沒有這個 SNV」不是因為那株在這個位置發生 LOH 或拷貝數減少。637 個 SNV 是「A 株正常、只有 B 株發生 LOH」而被過濾。\n- **第 ⑥ 步穩定度：** bootstrap 1,000 次只出現三種樹（947／48／5 次）；5 種門檻組合排出的 6 個分支都相同。\n- **第 ⑦⑧ 步單細胞檢查：** 每顆細胞先用 8 株共有的 7,784 個 SNV 量「偵測率」（例如 SC01 測到 6,936 個，0.89；119 顆在 0.70–0.94）。某分支測到的比例 ≥ 偵測率的一半算「帶」，≤ 兩成算「不帶」。\n- **6 張圖：** 9 步總流程、8 株選殖株是什麼、單細胞怎麼定序、第 ⑤ 步排樹、第 ⑥ 步穩定度、第 ⑦⑧ 步單細胞檢查。",
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-11/how_tree_was_built.png",
+          "caption": "HG008 參考樹的 9 步總流程：左邊 8 株選殖株排樹，右邊 119 顆單細胞獨立檢查"
+        }
+      ],
+      "interpretation": "這棵樹現在可以用程式和數字逐步說明，符合 O5「用 AI 產出的結果前，先能說明它怎麼產生」。QUAL 門檻是看過結果才定的，報告時要照實說；反方向的證據有兩個：換 5 種門檻排出同一棵樹，而且低 QUAL 的衝突組合沒有任何單細胞帶有。",
+      "gaps": "除了門檻，其他步驟當時為什麼這樣選，還沒有逐一回原對話查。新圖還沒放進投影片。HOW_TREE_WAS_BUILT.md、6 張圖和 6 支繪圖腳本都還沒 commit。偵測率把「技術漏測」和「真的因 LOH 弄丟」當成同一件事，是簡化假設。本週主軸第 4 項（HG008 bulk 直接重建再比這棵樹）還沒開始。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-07_hg008_tree_rebuild/HOW_TREE_WAS_BUILT.md",
+          "lab_report/2026-11-07_hg008_tree_rebuild/README.md",
+          "lab_report/2026-11-07_hg008_sc_check/README.md",
+          "tools/plot_hg008_tree_method.py",
+          "tools/plot_hg008_clones_explainer.py",
+          "tools/plot_hg008_singlecell_explainer.py",
+          "tools/plot_hg008_tree_ordering.py",
+          "tools/plot_hg008_tree_stability.py",
+          "tools/plot_hg008_sc_check_explainer.py",
+          "tools/README.md",
+          "tools/hg008_tree_rebuild.py",
+          "tools/hg008_sc_clade_test.py"
+        ],
+        "commands": [
+          "python3 tools/plot_hg008_tree_method.py lab_report/2026-11-07_hg008_tree_rebuild/how_tree_was_built.png"
+        ],
+        "outputs": [
+          "lab_report/2026-11-07_hg008_tree_rebuild/how_tree_was_built.png",
+          "lab_report/2026-11-07_hg008_tree_rebuild/what_are_the_8_clones.png",
+          "lab_report/2026-11-07_hg008_sc_check/how_single_cells_were_sequenced.png",
+          "lab_report/2026-11-07_hg008_tree_rebuild/how_tree_is_ordered.png",
+          "lab_report/2026-11-07_hg008_tree_rebuild/how_tree_stability_was_checked.png",
+          "lab_report/2026-11-07_hg008_sc_check/how_the_tree_was_checked.png",
+          "/big8_disk/boyu114/analysis_transcripts/hg008_tree/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "選殖株（clonal cell line）",
+          "plain": "把一顆細胞單獨種下去養大成一整株，整株的突變來自同一顆祖先細胞"
+        },
+        {
+          "term": "QUAL",
+          "plain": "變異偵測軟體給每個突變的可信度分數，越低越可能是假的"
+        },
+        {
+          "term": "bootstrap",
+          "plain": "從所有 SNV 裡隨機重抽一批，重新排樹，重複很多次，看樹會不會變"
+        },
+        {
+          "term": "偵測率",
+          "plain": "一顆單細胞本來應該帶的突變，實際測到幾成"
+        },
+        {
+          "term": "PTA",
+          "plain": "把單顆細胞的微量 DNA 放大到夠定序的方法，會有部分片段放大失敗"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 12688,
+          "session_id": "a833ffd4",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-11 15:49",
+          "ref": "a833ffd4:12688"
+        },
+        {
+          "line": 13560,
+          "session_id": "a833ffd4",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-11 16:28",
+          "ref": "a833ffd4:13560"
+        },
+        {
+          "line": 13562,
+          "session_id": "a833ffd4",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-11 16:28",
+          "ref": "a833ffd4:13562"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] HG008 樹改成共 5 群，單細胞支持 4 群",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "11-09 定的「嚴格只能分 4 群」改口：共同祖先也是一個 clone，所以共 5 群，單細胞支持其中 4 群；投影片在第 7 頁後新增這棵樹，寄給老師的信也用這個寫法",
+      "question": "11-09 投影片寫 HG008 樹「可靠的是 4 群」。使用者問：共同祖先不也算一種 clone 嗎？",
+      "approach": "- 11-10：在第 7 頁後新增一頁 HG008 推出來的樹（PhyClone 畫法，每個圓是一個 clone）。新增前先 commit 備份整份投影片。\n- 使用者指出 H 那支沒寫專屬 SNV 數，補上「+792 個 SNV」。\n- 使用者指出共同祖先也是 clone：把共同祖先的框改成和其他 clone 一樣的圓，標「樣本裡 0 顆細胞」。\n- 11-11：使用者發現另一頁的語音還寫「4 群」，改成「共 5 群 clone，單細胞支持其中 4 群」後重新發佈。",
+      "result": "- **說法：** 共 5 群 clone（含共同祖先），單細胞支持其中 4 群。\n- **為什麼共同祖先沒有細胞：** 119 顆單細胞全部落在下面 4 群，沒有一顆只帶 8 株共有的 7,784 個 SNV。共同祖先是從各群共有的突變推回去的。\n- **H 專屬：** 792 個 SNV，和 7,784 用同一組門檻（VAF 0.25、QUAL 20）。\n- **會議紀錄更正：** 11-11 會議整理寫共同祖先「約 1,784 個」SNV，是語音轉寫錯誤，使用者確認改成 7,784。\n- **寄信：** 使用者 11-11 已把 HG008 樹寄出，寫法是「5 群 clone，單細胞支持其中 4 群」，附兩個資料路徑。",
+      "interpretation": "「幾群」的口徑現在固定：數 clone 時含共同祖先，數單細胞支持時不含。之後報告與信件都用這一句，不會再出現 4 群和 5 群兩種說法。",
+      "gaps": "其他頁或學習網站是否還有寫「4 群」的地方，沒有全面搜過。G 和其他 6 株之間只差 4 個 SNV，不到 10 個 SNV 的檢查門檻，這一層仍標「未確定」。",
+      "artifacts": {
+        "files": [
+          "report/2026_11_11_slides/gen_res2.py",
+          "report/2026_11_11_slides/BRIEF.md",
+          "report/2026_11_11_slides/project/deck.json",
+          "report/2026_11_11_slides/project/slides/hg008-clone-tree.html",
+          "meeting_record/2026_11_11_meeting_summary.md"
+        ],
+        "commands": [
+          "git commit 481a6fb docs(report): back up the 11-11 deck before adding the HG008 tree page after page 7"
+        ],
+        "outputs": [
+          "https://claude.ai/artifact/7DDuxKrKST1AAzuiCmL4eu"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "共同祖先（MRCA）",
+          "plain": "所有樣本都來自的那一群祖先細胞，8 株都有的突變就是它的突變"
+        },
+        {
+          "term": "clone",
+          "plain": "帶有同一組突變的一群細胞"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 6129,
+          "session_id": "753a1170",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-10 16:11",
+          "ref": "753a1170:6129"
+        },
+        {
+          "line": 9257,
+          "session_id": "a833ffd4",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-11 13:33",
+          "ref": "a833ffd4:9257"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 第 9 頁方案 B 改成 HP1 比例 30–60% 隨機",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "第 9 頁的 diplosim 方案：A 維持每個 SNV 各 50%，B 從「加座標模擬 1 kb 內成簇」改成「每個樣本的 HP1 比例在 30–60% 之間隨機產生」；同時查了 4 個用座標的模擬器，HP 都假設兩條機會相等",
+      "question": "使用者以為第 9 頁推薦 B（加座標），問為什麼。其實頁面傾向的是 A。使用者接著問：用座標的模擬器各在做什麼？它們對 SNV 落在哪條 HP 有沒有生物依據？",
+      "approach": "- 先回答：第 9 頁傾向 A，因為 1 kb 以上沒有否定獨立；B 只影響 2.5–4.5% 的 SNV，卻要大改程式加座標。\n- 開 4 個 subagent，各查一個工具（SISTEM、HeteroGenesis、SMC-Het、TNSim），讀程式與論文，逐條對照腫瘤演化假說清單。主 agent 抽查每個工具最關鍵的行號。\n- 結果寫成 `11_SIMULATOR_EVOLUTION_ASSUMPTIONS.md`。\n- 使用者要求重新設計第 9 頁：A 照樣各 50%，B 改成隨機範圍 30–60%。",
+      "result": "- **4 個模擬器：** 只有 SISTEM 用有選擇的細胞生長長出樹；其他 3 個的樹由使用者給或人工設計。\n- **HP 怎麼選：** 4 個都假設兩條機會相等，SNV 彼此獨立，沒有 kataegis 那種同一條上的成簇。SISTEM、HeteroGenesis 依份數加權；SMC-Het 每個 node、每條染色體剛好一半；TNSim 預設有 1/3 的 SNV 一次讓兩條都突變，不符合生物機制。\n- **父母與 chrX：** 4 個都不分父母，也沒有「失活的 X 突變較多」。\n- **第 9 頁：** B 改成「每個樣本的 HP1 比例在 30% 到 60% 之間隨機亂數產生」。檢查腳本抓到「抽」字違反 T-4 規則，改成「隨機亂數產生」後 9 頁 0 錯誤。",
+      "interpretation": "現有工具都沒有比 diplosim 的「獨立 50%」更有生物依據的 HP 規則，所以參考它們不會改變 A 的地位。B 換成「範圍」以後，比較的是「固定 50%」和「每個樣本偏一點」，正好對上 11-11 會議記下的未決事項「固定 50% 或某個範圍」。",
+      "gaps": "B 的 30–60% 範圍目前沒有文獻或實測依據，週會還沒決定用哪個方案。SMC-Het 的 51 個實際設計檔、SISTEM 的 Supplementary、TNSim 的論文全文都沒讀到。SISTEM 淺拷貝造成 multiplicity 高估的影響有多大，沒有量。這些改動都還沒 commit。",
+      "artifacts": {
+        "files": [
+          "research/simulation_pipeline_research/notes/11_SIMULATOR_EVOLUTION_ASSUMPTIONS.md",
+          "research/simulation_pipeline_research/notes/09_HOW_SIMULATORS_ARE_BUILT.md",
+          "research/simulation_pipeline_research/notes/10_SNV_COORDINATES.md",
+          "report/2026_11_11_slides/gen_plan.py",
+          "report/2026_11_11_slides/project/slides/options.html"
+        ],
+        "outputs": [
+          "report/2026_11_11_slides/live_backup/2026-11-10_before_options_redesign/options.html"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "cis 成簇",
+          "plain": "距離很近的幾個突變一起落在同一條 HP 上"
+        },
+        {
+          "term": "kataegis",
+          "plain": "一小段 DNA 上短時間出現一大串突變，通常在同一條上"
+        },
+        {
+          "term": "淺拷貝",
+          "plain": "程式複製資料時只複製外層，兩份其實共用同一塊內容，改一份另一份也會變"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 2055,
+          "session_id": "b509bd20",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-10 14:34",
+          "ref": "b509bd20:2055"
+        },
+        {
+          "line": 3133,
+          "session_id": "b509bd20",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-10 14:57",
+          "ref": "b509bd20:3133"
+        },
+        {
+          "line": 3162,
+          "session_id": "b509bd20",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-10 15:01",
+          "ref": "b509bd20:3162"
+        }
+      ]
+    },
+    {
+      "title": "哪條 HP 的深度高，SNV 就比較多嗎？兩條都在時幾乎沒有變多",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "COLO829 T2T：深度變 2 倍、4 倍，每 Mb 的 SNV 只多 2%、11%；PRCGAP 8 株：同一區段兩條深度差 2 倍內時，斜率 0.04–0.31（成正比是 1），只有 HCC1954 是 0.71",
+      "question": "使用者問：如果某條 HP 的深度（拷貝數）比較高，SNV 是不是也比較偏向那條？這會影響模擬時 SNV 選 HP 要不要看拷貝數。",
+      "approach": "- **COLO829 T2T：** 用 Sohn 2026 公開的體細胞 SNV（二倍體組裝座標），VCF 的 DP 是單條 HP 的深度。依拷貝數分段算每 Mb 的 SNV，再比同源對兩條的深度占比和密度占比。\n- **PRCGAP 8 株：** PRCGAP 沒有每個 SNV 的 HP 深度，改用每條 haplotype 50 kb bin 的 tumor depth。在同一個 20 Mb 區段裡，看 log2(hap1／hap2 深度) 和 log2(hap1／hap2 SNV 密度) 的斜率。\n- COLO829 已在 11-06 結案，這次只回答使用者指定的單一問題。",
+      "result": "- **COLO829：** 每 Mb 的 SNV，CN1（深度約 63）8.9、CN2（約 120）9.1、CN4（約 230）9.9。兩條都在的同源對，密度占比都接近 0.5，不跟著深度占比走（例：深度占比 0.66 時，密度占比 0.52）。\n- **SNV 總數偏向深度高的那條，原因是 LOH：** 流失的那條深度約 0，突變也看不到（chr1 2,954 比 0）。\n- **PRCGAP 全部區段斜率約 0.5，** 主要來自一條幾乎消失的區段。只看兩條深度差 2 倍內的區段，斜率掉到下表的數字。",
+      "tables": [
+        {
+          "caption": "PRCGAP 8 株：同一 20 Mb 區段裡，SNV 密度比對深度比的斜率（1 = 成正比，0 = 無關）",
+          "columns": [
+            "細胞株",
+            "用到的 SNV",
+            "斜率（全部區段）",
+            "斜率（深度差 2 倍內）",
+            "95% CI（2 倍內）"
+          ],
+          "rows": [
+            [
+              "COLO829",
+              "26,028",
+              "0.51",
+              "0.04",
+              "−0.02–0.09"
+            ],
+            [
+              "HG008",
+              "6,086",
+              "0.66",
+              "0.13",
+              "−0.06–0.31"
+            ],
+            [
+              "H1437",
+              "38,093",
+              "0.49",
+              "0.08",
+              "0.03–0.12"
+            ],
+            [
+              "H2009",
+              "107,862",
+              "0.55",
+              "0.18",
+              "0.15–0.22"
+            ],
+            [
+              "H209",
+              "21,108",
+              "0.56",
+              "0.26",
+              "0.17–0.35"
+            ],
+            [
+              "H2126",
+              "102,191",
+              "0.57",
+              "0.28",
+              "0.25–0.31"
+            ],
+            [
+              "HCC1937",
+              "9,254",
+              "0.59",
+              "0.31",
+              "0.17–0.44"
+            ],
+            [
+              "HCC1954",
+              "13,057",
+              "0.64",
+              "0.71",
+              "0.63–0.80"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-11/depth_vs_density.png",
+          "caption": "COLO829 T2T：各拷貝數的深度與每 Mb SNV 數；虛線是「和深度成正比」的預期"
+        },
+        {
+          "type": "img",
+          "src": "figures/2026-11-11/snv_vs_hap_depth.png",
+          "caption": "PRCGAP 8 株：同一區段兩條 haplotype 的深度比與 SNV 密度比"
+        }
+      ],
+      "interpretation": "兩條 HP 都還在時，拷貝數多的那條 SNV 只略多或沒有多。這和「多數 SNV 發生在拷貝數增加之前，之後跟著一起被複製」相符（推論，這次沒驗證）。對第一階段 SNV-only 的 diplosim 來說，SNV 選 HP 先不看拷貝數，目前沒有資料反對。",
+      "gaps": "深度高時偵測 SNV 的能力也比較強，這次沒有和拷貝數效應分開。PRCGAP 是未經同儕審查的預印本，HP1／HP2 跨染色體可能對調。HCC1954 的 0.71 沒有追原因。逐 bin 比較跨不同區段，區域突變率差異沒有扣掉。兩份 lab_report 都還沒 commit。",
+      "artifacts": {
+        "files": [
+          "tools/colo829_hp_depth_snv.py",
+          "tools/plot_colo829_hp_depth_snv.py",
+          "tools/prcgap_snv_vs_hap_depth.py",
+          "lab_report/2026-11-10_colo829_hp_depth_snv/README.md",
+          "lab_report/2026-11-10_prcgap_snv_vs_hap_depth/README.md",
+          "lab_report/INDEX.md"
+        ],
+        "commands": [
+          "python3 tools/plot_colo829_hp_depth_snv.py lab_report/2026-11-10_colo829_hp_depth_snv",
+          "python3 tools/prcgap_snv_vs_hap_depth.py /big8_disk/boyu114/benchmark_data/prcgap_sakamoto2026/extracted lab_report/2026-11-10_prcgap_snv_vs_hap_depth"
+        ],
+        "outputs": [
+          "lab_report/2026-11-10_colo829_hp_depth_snv/density_by_cn.tsv",
+          "lab_report/2026-11-10_colo829_hp_depth_snv/pairs_depth.tsv",
+          "lab_report/2026-11-10_prcgap_snv_vs_hap_depth/summary.tsv",
+          "lab_report/2026-11-10_prcgap_snv_vs_hap_depth/per_decile.tsv"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "深度（depth）",
+          "plain": "某個位置被多少條 read 蓋到；拷貝越多，深度越高"
+        },
+        {
+          "term": "斜率",
+          "plain": "深度比每多一倍，SNV 比多多少；1 代表等比例增加，0 代表完全不跟著變"
+        },
+        {
+          "term": "LOH",
+          "plain": "兩條中的一條不見了，只剩一條"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 3828,
+          "session_id": "e2aa23ba",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-10 15:18",
+          "ref": "e2aa23ba:3828"
+        },
+        {
+          "line": 4943,
+          "session_id": "714c2594",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-10 15:31",
+          "ref": "714c2594:4943"
+        }
+      ]
+    },
+    {
+      "title": "PRCGAP 與 COLO829 T2T 兩篇論文，作者到底回答了什麼？先建資料夾寫結論",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "本週主軸第 2 項的前置：替兩篇關鍵論文建 P12、P13 資料夾，放全文與摘要；兩篇作者都沒有比較兩條 haplotype 的 SNV 數量",
+      "question": "11-11 週會要求深讀 PRCGAP 八株與 COLO829 T2T 兩篇論文：先寫作者結論，再列 SNV 的 HP 分配參數方案（O2：再分析資料前先讀論文）。",
+      "approach": "- 兩篇在 repo 裡都還沒有論文資料夾。PRCGAP 用 11-06 已下載的 bioRxiv v2 全文 HTML；COLO829 T2T 從 PMC JATS XML 轉文字。\n- 每篇寫 `source.md`（出處、讀取層級）與 `summary.md`（作者問的問題、主要結論）。全文只留本機，不進 repo。",
+      "result": "- **P12 PRCGAP（Sakamoto 2026，bioRxiv 預印本）：** 作者問的是用每位病人正常細胞的 diploid 組裝當參考，能不能一次做完 SNV、SV、拷貝數、甲基化的 haplotype 解析。作者沒有比較兩條 haplotype 的 SNV 數量。\n- **P13 COLO829 T2T（Sohn 2026，Cell）：** 組裝的是配對正常的 COLO829BL，不是癌細胞。作者問的是傳統參考看不到的區域裡有多少體細胞變異。作者沒有比較兩條 haplotype 的 SNV 數量，也沒有親源資訊。",
+      "interpretation": "兩篇都沒有直接回答「SNV 落在 HP1 還是 HP2」。所以本 repo 用它們的資料算出的 HP 比例都是「再分析」，不能寫成作者結論（O2）。",
+      "gaps": "補充資料都沒下載（PRCGAP Supplementary Fig. 11、12、Table 9；COLO829 T2T Figure S5、S6）。「SNV 的 HP 分配參數方案」還沒列。使用者 11-11 決定 COLO829 T2T 先不分享。",
+      "artifacts": {
+        "files": [
+          "research/literature/papers/P12_prcgap_8lines_2026/source.md",
+          "research/literature/papers/P12_prcgap_8lines_2026/summary.md",
+          "research/literature/papers/P13_colo829_t2t_2026/source.md",
+          "research/literature/papers/P13_colo829_t2t_2026/summary.md",
+          "research/index.md"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "diploid 組裝",
+          "plain": "把一個人的爸爸那套和媽媽那套染色體各自拼成完整序列"
+        },
+        {
+          "term": "T2T",
+          "plain": "從染色體一端拼到另一端，中間沒有缺口"
+        },
+        {
+          "term": "再分析",
+          "plain": "用別人公開的資料自己算，不是原作者的結論"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 9984,
+          "session_id": "a833ffd4",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-11 14:06",
+          "ref": "a833ffd4:9984"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "[翻案] 11-11 週會五項主軸寫進 CLAUDE.md",
+      "what": "為什麼：使用者要求讓本週所有工作都圍繞 11-11 週會的重點。做了什麼：在 meeting_record/2026_11_11_meeting_summary.md 加附錄 A（本週被指出的問題 O1–O6）、附錄 B（報告前自我檢查）、附錄 C（本週主軸五項與順序）、附錄 D（待辦對照 repo 現況）；CLAUDE.md 加「本週主軸」五項、O1–O6 六條研究規則、把「目前暫停」整理成突變速率、COLO829 後續實驗、HCC1395 三項，並把只模擬 SNV、不加 CNA／LOH 寫進研究範圍；新增 memory week-focus-2026-11-11。會議整理正文的「約 1,784 個」共同祖先 SNV 是語音轉寫錯誤，使用者確認改成 7,784。使用者寄出 HG008 樹後，第 5 項標「11-11 已寄出」。兩個翻案：(1) COLO829 T2T 論文原列為要分享，使用者改成「等老師再問」；(2) agent 提議起草術語字典，使用者說先不用：原因是當天用投影片轉影片的 skill 報告，語音裡出現老師不熟或 AI 自創的術語，問題在用詞，不在缺字典。結果：CLAUDE.md 第 5 項現寫「術語字典暫緩、COLO829 T2T 論文先不分享」。狀態：都已寫入，未 commit。",
+      "why_demoted": "被 5 項上限擠掉，分數 13。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "meeting_record/2026_11_11_meeting_summary.md",
+          "meeting_record/index.md",
+          "CLAUDE.md",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/week-focus-2026-11-11.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 9758,
+          "session_id": "a833ffd4",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-11 14:01",
+          "ref": "a833ffd4:9758"
+        },
+        {
+          "line": 10351,
+          "session_id": "a833ffd4",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-11 14:13",
+          "ref": "a833ffd4:10351"
+        }
+      ]
+    },
+    {
+      "title": "前人怎麼量突變速率？分成 7 類方法",
+      "what": "為什麼：突變速率在 11-07 暫停，但使用者 11-10 要求先做文獻研究：前人怎麼偵測突變速率、速率會不會影響 SNV 落在 HP1 或 HP2。做了什麼：寫 research/literature/surveys/mutation_rate_detection_2026-11-10/（summary、source、williams_verification、multiplicity_verification），把方法分成 7 類：單細胞養大成 clone 前後相減、天然 clone（crypt）、duplex 單分子、單細胞系譜樹、跨人迴歸、bulk VAF 1/f 尾巴、CN multiplicity 定時。結果：能直接給「速率」的都要已知起點和終點；只有一個 bulk sample 時只能用模型反推，VAF 1/f 方法得到的是有效突變率 μ/β，點不成直線就算不出來；CN multiplicity 只給事件先後順序。符合 long read 的只有 HiDEF-seq（正常組織）。速率作用在整個細胞，改變的是一條邊有幾個 SNV，不是 HP1／HP2 比例；只有兩條同源染色體狀態不同的機制（目前強證據只有失活的 X）會讓比例偏離 50%；APOBEC 爆發可能造成局部 cis 聚集。學習網站新增 ch_g（VAF 模型怎麼估速率）與 ch_h（CN multiplicity 定時），照網站既有的故事風格由淺到深。使用者另問了「中性腫瘤是什麼」等概念題。狀態：文獻整理完成；11-11 週會沒有重啟突變速率，維持暫停，所以不延伸實驗。未 commit。",
+      "why_demoted": "被 5 項上限擠掉，分數 13；主題在 11-11 週會維持暫停。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/mutation_rate_detection_2026-11-10/summary.md",
+          "research/literature/surveys/mutation_rate_detection_2026-11-10/source.md",
+          "research/literature/surveys/mutation_rate_detection_2026-11-10/williams_verification.md",
+          "research/literature/surveys/mutation_rate_detection_2026-11-10/multiplicity_verification.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_g.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_h.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/build_site.py",
+          "research/index.md"
+        ],
+        "outputs": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/index.html"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 7406,
+          "session_id": "bfa59517",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-10 20:06",
+          "ref": "bfa59517:7406"
+        },
+        {
+          "line": 7895,
+          "session_id": "bfa59517",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-10 21:04",
+          "ref": "bfa59517:7895"
+        }
+      ]
+    },
+    {
+      "title": "用 daily-log 寫完 11-09 日誌並推進游標",
+      "what": "為什麼：每晚 cron 自動跑 daily-log。做了什麼：11-09 23:00 的 session 掃描 11-08 23:00 到 11-09 23:00，列 8 個候選，分成呈現 5 項、記錄 3 項，複製記憶架構圖到 daily/figures/2026-11-09/，寫 daily/.data/2026-11-09.json 並渲染 daily/2026-11-09.html，推進游標到 2026-11-09T23:00:09。11-10 23:00 的 cron session 只有開頭 3 段就結束，沒有產出 11-10 的日誌，所以 11-10 的工作併進本份（游標從 11-09 23:00 起算）。狀態：完成，未 commit。",
+      "why_demoted": "分數 5，例行工作。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-11-09.json",
+          "daily/2026-11-09.html",
+          "daily/figures/2026-11-09/memory_architecture.png"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1555,
+          "session_id": "5bb8fd2d",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-09 23:04",
+          "ref": "5bb8fd2d:1555"
+        }
+      ]
+    },
+    {
+      "title": "查 big8_disk 的個人目錄用量前十名",
+      "what": "為什麼：使用者想知道共用硬碟 /big8_disk 的空間被誰用掉（11-04 曾因多人重複下載擔心硬碟用完）。做了什麼：用 du -sx 量各頂層目錄，排出個人目錄前十名，並對其中一個目錄查最後修改日期與 repo 裡有沒有人引用它的檔案；之後關掉兩個還在跑的搜尋 shell。結果：/big8_disk 總共 27T，已用 24T（93%），剩 2.0T；本人目錄 455 GB，排第 6。另有 data/（約 5.7 TB）等共用資料目錄不算個人。沒有讀取權限的子目錄沒算進去，別人的實際用量可能更高。全部只讀，沒有刪任何檔。狀態：只回報，沒有後續動作。",
+      "why_demoted": "環境類工作，分數 -2。",
+      "status": "done",
+      "artifacts": {
+        "commands": [
+          "cd /big8_disk && timeout 590 du -sx --block-size=1G */ | sort -rn"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 3624,
+          "session_id": "c886edd1",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-10 15:10",
+          "ref": "c886edd1:3624"
+        }
+      ]
+    }
+  ],
+  "issues": [],
+  "advisor": [
+    {
+      "kind": "policy",
+      "text": "11-11 週會：SNV 的 HP 分配用固定 50% 還是某個範圍，尚未決定；先深讀 PRCGAP 與 COLO829 T2T，再列參數方案帶到週會"
+    },
+    {
+      "kind": "policy",
+      "text": "11-11 週會：用 AI 產出的 HG008 參考樹，要先能說明它怎麼產生，保留原分析對話；分享時只寫高信心結構"
+    },
+    {
+      "kind": "policy",
+      "text": "11-11 週會：模擬驗證（diplosim → haploclone）和真實資料驗證（HG008 bulk → 比參考樹）分開跑、分開報告；HG008 不模擬"
+    }
+  ],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "11-09 23:00 ~ 11-11 23:00",
+  "scan": {
+    "last_scanned": "2026-11-11T23:00:15",
+    "sessions": [
+      "5bb8fd2d",
+      "b509bd20",
+      "c886edd1",
+      "e2aa23ba",
+      "714c2594",
+      "f4dab928",
+      "753a1170",
+      "bfa59517",
+      "f1e5ee35",
+      "a833ffd4",
+      "1df43c96",
+      "60d634bf"
+    ],
+    "layers": {
+      "show": 5,
+      "record": 4,
+      "border": 0
+    }
+  }
+}

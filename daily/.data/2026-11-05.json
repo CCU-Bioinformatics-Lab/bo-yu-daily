@@ -1,0 +1,608 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-05",
+  "headline": "查完 97 篇腫瘤演化論文：全基因組突變偏向爸媽其中一方仍沒偵測到，直接證據只有一篇 21 人的 preprint，diplosim 還沒改；同時把 research/ 改成三層知識庫，並做了一份學習網站",
+  "items": [
+    {
+      "title": "腫瘤演化文獻能幫 diplosim 什麼？找出 7 項差距",
+      "status": "done",
+      "priority": "P2",
+      "summary": "8 個 subagent 收了 97 篇不重複論文，每條引文都對回原文。diplosim 現在只是隨機樹加隨機放置的 SNV，沒有時間與選擇，SNV 也沒有基因組座標",
+      "question": "11-04 會議決定先查單點突變的生物假說。使用者要知道文獻的觀點、演化假設、真實結論，讓 diplosim 更接近真實腫瘤，而不是只是假裝模擬。",
+      "approach": "開 7 個主題的 subagent，中途依使用者要求加第 8 個主題「爸爸與媽媽」。每張論文卡片分開寫觀點、假設、結論。每個 claim 附原文引文，再用 tools/lit_check_quotes.py 比對。主 agent 用 Europe PMC 補跑 7 組查詢，並抽查摘要的關鍵數字。",
+      "result": "引文核對最後為 **1,025 段符合、0 段缺失、1 段無法機器核對**（只有網頁片段）。多數論文只讀相關段落，補充資料都沒讀。\n\ndiplosim 和真實腫瘤的差距排成 7 項，第 1 項是「SNV 沒有基因組座標」。HP 聚集、區域差異、phase block 都要先有座標才能表達。除了主題 06，數字幾乎都來自 short read。",
+      "interpretation": "這批文獻提供機制和方向，不提供參數值，因為多數數字不符合「只用 long read」的需求。依 M1，diplosim 程式沒有動。下一步要先針對 SNV 座標列 2–3 個方案，由使用者選。",
+      "tables": [
+        {
+          "caption": "8 個主題各自最重要的發現（各主題收錄篇數，共用論文會重複計，加總超過 97）",
+          "columns": [
+            "主題",
+            "篇數",
+            "最重要的發現"
+          ],
+          "rows": [
+            [
+              "01 演化模式與樹形",
+              15,
+              "1/f 不能證明中性：非中性模擬 53.5% 被誤判，AUC 0.42"
+            ],
+            [
+              "02 選擇與 clone 動態",
+              15,
+              "coding SNV 約 99% 接近中性，平均約 4 個 driver"
+            ],
+            [
+              "03 突變率與時序",
+              15,
+              "subclonal SNV 比例依癌別差很大（6.1%–61.3%），是偵測後的觀測值"
+            ],
+            [
+              "04 HP 分布",
+              16,
+              "全基因組比例只有一篇 preprint 直接量；獨立性局部被反駁"
+            ],
+            [
+              "05 克隆層級證據",
+              10,
+              "12 個單細胞資料集中 11 個有同位點重複或流失"
+            ],
+            [
+              "06 long read 證據",
+              15,
+              "唯一符合 long read 需求的主題；HP 不知道父母來源"
+            ],
+            [
+              "07 CN 與 WGD 時序",
+              10,
+              "同段 SNV 共享 CN 歷史；依 N4 先不動"
+            ],
+            [
+              "08 父系與母系",
+              18,
+              "偏差集中在特定基因座與癌別，例如 14q aUPD 父系 21/22"
+            ]
+          ]
+        }
+      ],
+      "gaps": "PubMed／NCBI 當天一直失敗，所以這不是系統性回顧；Europe PMC 每組只看前 12 筆標題。中文解讀沒有逐條確認，引文存在不代表解讀正確。87 篇有全文，9 篇只有摘要，1 篇只有網頁片段。全部成果還沒 commit。",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/summary.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/source.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/01_evolution_modes.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/08_parent_of_origin.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/claims/",
+          "research/index.md",
+          "research/literature/README.md",
+          "tools/lit_fetch_paper.py",
+          "tools/lit_check_quotes.py",
+          "tools/README.md",
+          ".gitignore"
+        ],
+        "commands": [
+          "python3 tools/lit_check_quotes.py"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "subagent",
+          "plain": "主 agent 派出去、各自做一個主題的子任務 agent"
+        },
+        {
+          "term": "中性（coding 突變）",
+          "plain": "對癌細胞的生長和存活沒有明顯好處或壞處，只是跟著被複製下去"
+        },
+        {
+          "term": "phase block",
+          "plain": "一段能確定哪些變異在同一條染色體上的連續區域"
+        },
+        {
+          "term": "infinite sites",
+          "plain": "假設同一個位置一生只會突變一次，而且不會失去"
+        }
+      ],
+      "details": "session 0981c2ea 15:15–16:07。\n15:21 subagent 因週額度中斷，15:22 後重新啟動。\n抓論文的腳本由 scratchpad 複製到 tools/，並登記到 tools/README.md。\n.gitignore 加一行，擋掉抓下來的論文文字。",
+      "evidence": [
+        {
+          "line": 3608,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 15:15",
+          "ref": "0981c2ea:3608"
+        },
+        {
+          "line": 5916,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 16:07",
+          "ref": "0981c2ea:5916"
+        },
+        {
+          "line": 5919,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 16:07",
+          "ref": "0981c2ea:5919"
+        },
+        {
+          "line": 8041,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 22:18",
+          "ref": "0981c2ea:8041"
+        }
+      ]
+    },
+    {
+      "title": "把 research/ 改成三層知識庫，index.md 當唯一入口",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "每個目錄都有摘要、全文層與第一手資料。論文分類表、TSV、symlink 與同步腳本全部刪除，改用 index.md 的關鍵字查找",
+      "question": "研究目錄有兩套索引：手寫分類表和 TSV。兩邊容易不同步，分類也要人維護。使用者要改成 agent 能有效率查找的結構，而且查找順序固定。",
+      "approach": "先畫架構圖給使用者確認，圖改了 2 次，最後改成以圖示為主。先只改 17 篇論文目錄，停下來確認後才處理主題目錄與文獻調查。主題目錄保留編號筆記當全文層，不合併，避免弄丟內容。最後分 3 個 commit 並 push。",
+      "result": "查找順序寫在 index.md 檔頭：先讀 summary.md，不夠讀全文層，有錯回 source.md 指向的第一手資料。原本分類表裡的研究空缺結論，改寫進 index.md 的「論文」段落。檢查結果：research/ 只剩 2 條壞連結，都是這次之前就存在的 evaluation_v1.md。\n\n最新的 commit 已 push 到 `origin/diplosim-v1`，`main` 沒有動。",
+      "interpretation": "agent 現在只要記一個入口，同一件事不再寫在兩份索引裡。不過這個查找順序只是文字規則，沒有腳本強制，要靠 agent 照著做。",
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-05/kb_architecture.png",
+          "caption": "知識庫的入口與三層查找流程（重整前畫的設計圖，和實際結構的差異見「還缺」）"
+        }
+      ],
+      "gaps": "實際結構和圖有差異：論文和調查在 literature/ 底下，R01 沒有全文，M08 沒有 PDF，literature/README.md 也還在。4 份新寫的摘要沒有回論文原文核對。source.md 的連結沒有逐條開啟確認。還有 8 個全文類檔案被 git 追蹤，舊全文也還在公開 repo 的歷史裡；使用者決定先保留，不改寫歷史。",
+      "artifacts": {
+        "files": [
+          "research/index.md",
+          "CLAUDE.md",
+          "report/kb_architecture/kb_architecture.png",
+          ".gitignore"
+        ],
+        "commands": [
+          "git push origin diplosim-v1"
+        ],
+        "outputs": [
+          "commit 2758124（117 檔）",
+          "commit a86aefe（架構圖）"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "三層",
+          "plain": "重點摘要、全文、第一手資料，依序往下查"
+        },
+        {
+          "term": "symlink",
+          "plain": "指向另一個檔案或資料夾的捷徑"
+        }
+      ],
+      "details": "session c7c6b595 13:32–15:11。\n刪除：paper_categories.tsv、PAPER_CATEGORIES.md、papers_by_category/、sync_paper_categories.py、各 README 的 front-matter。\nfulltext.md（16 篇）加入 .gitignore，只留本機。\n沒有採用 13:35 提的 check_kb.py、kb_remove.py、hook 三個方案；使用者改要結構重整。",
+      "details_pre": true,
+      "evidence": [
+        {
+          "line": 2391,
+          "session_id": "c7c6b595",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 13:44",
+          "ref": "c7c6b595:2391"
+        },
+        {
+          "line": 3521,
+          "session_id": "c7c6b595",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 15:09",
+          "ref": "c7c6b595:3521"
+        },
+        {
+          "line": 3565,
+          "session_id": "c7c6b595",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 15:11",
+          "ref": "c7c6b595:3565"
+        },
+        {
+          "line": 3177,
+          "session_id": "c7c6b595",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 15:00",
+          "ref": "c7c6b595:3177"
+        }
+      ]
+    },
+    {
+      "title": "刪掉 B09 與 PhyClone submodule，外面的 phyclone 不受影響",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "main_work 內的 B09 論文和 PhyClone submodule 都刪了。/bip8_disk/boyu114/phyclone/ 是同一 commit 的另一份副本，還在",
+      "question": "B09 所屬的 PCDH 路線已排除，main_work 裡的 PhyClone 副本也不會再改。使用者要刪掉它們，並確認外面的 phyclone 是不是同一份。",
+      "approach": "用 git rm 移除 submodule，清掉 .gitmodules 和 .git/modules 裡的副本。用 git log 比對三份程式的 commit，再用 git diff 比對 haploclone 的 phyclone/ 目錄。",
+      "result": "三份都來自上游 `Roth-Lab/PhyClone` commit `2738324`。外面的 phyclone 另有使用者加的 hcc1395_input/，那是 baseline 樹重建的輸入表。haploclone 的 phyclone/ 目錄和該 commit 沒有差異。",
+      "interpretation": "要對照 PhyClone 原版，還是有本機副本可看。刪掉的只是 main_work 裡重複的一份。",
+      "gaps": "lab_report/2026-10-24_hp_truth_tree_phyclone/README.md 的重跑指令指向已刪除的路徑，現在照著跑會失敗。研究筆記內文也還留著舊的 PhyClone/ 路徑。CLAUDE.md 目前指向上游 GitHub，沒有指向外面的本機副本。",
+      "artifacts": {
+        "files": [
+          ".gitmodules",
+          "CLAUDE.md"
+        ],
+        "commands": [
+          "git rm research/phyclone_research/PhyClone"
+        ],
+        "outputs": [
+          "commit c26a35a（7 檔）"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "submodule",
+          "plain": "在一個 git repo 裡嵌入另一個 repo 的某個 commit"
+        }
+      ],
+      "details": "session c7c6b595 13:28–13:31。\n其他 3 個 submodule（pairtree、pearsim、TRACERx_simulation_tool）沒動。\nB09 已寫入 excluded-papers 記憶，之後不再加回。",
+      "evidence": [
+        {
+          "line": 1870,
+          "session_id": "c7c6b595",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 13:28",
+          "ref": "c7c6b595:1870"
+        },
+        {
+          "line": 2156,
+          "session_id": "c7c6b595",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 13:31",
+          "ref": "c7c6b595:2156"
+        }
+      ]
+    },
+    {
+      "title": "diplosim 的 50% 對嗎？全基因組沒偵測到爸媽偏差",
+      "status": "ongoing",
+      "priority": "P3",
+      "summary": "diplosim 的「比例約 50%」目前沒有矛盾，但直接證據只有一篇 21 人的 short read preprint，也還沒有 long read 的全基因組數字",
+      "question": "diplosim 假設每個 SNV 獨立以 50% 落在一條 HP。使用者要知道這錯不錯，再換方向問：有沒有一方固定較多突變？使用者也指定只看全基因組，因為局部差異可能是 LOH。",
+      "approach": "先查支持與反對的論文，再把範圍收窄到全基因組。之後換方向搜尋：加查正常組織、甲基化造成的單邊偏差，並讀 preprint 引用的先前研究。共跑 3 組 WebSearch 和 6 組 Europe PMC 查詢。",
+      "result": "**全基因組沒有偵測到偏差**：Lefèbvre 2026 量到的方向性效應是 −0.03%（10 人，95% CI −7.25% 到 2.22%）。不對稱上限 5.7%（21 人，12,839 個可指派 SNV，p = 0.329），換算後約 53–56%。這個換算的定義還沒查補充表格確認。\n\n在本次搜尋範圍內，沒找到直接反駁的論文。「局部就是 LOH」這點，現有證據不足以下結論：kataegis 是局部成簇的突變，不是 LOH 造成。",
+      "interpretation": "「比例約 50%」和「每個 SNV 互相獨立」要分開看。前者可以當零假設，但沒被證實。後者局部已被反駁，不過 clustered 突變只占全部 substitution 的 3.7%。這些足以繼續討論，還不足以決定 diplosim 怎麼改。",
+      "tables": [
+        {
+          "caption": "全基因組上限的來源（Lefèbvre 2026，PCAWG 2,645 人中可用 21 人，short read）",
+          "columns": [
+            "指標",
+            "數字"
+          ],
+          "rows": [
+            [
+              "全 cohort 不對稱上限",
+              "5.7%（12,839 SNV，p = 0.329）"
+            ],
+            [
+              "檢定力最高的單一病人上限",
+              "4%"
+            ],
+            [
+              "方向性檢定（10 人）",
+              "−0.03%，95% CI −7.25% 到 2.22%，p = 0.34"
+            ],
+            [
+              "可偵測的最小系統性不對稱",
+              "5% 以上（90% power）"
+            ],
+            [
+              "imprinted 區可定相突變",
+              "21 人只有 2 個"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "svg",
+          "caption": "不同尺度下偏向一邊的最高比例。只有第一列是爸媽比較，而且是上限。第二列是 Xi／Xa 的單一案例。後兩列是 HP 比較，區域先經過挑選（數字來自 E4-26、E4-04、B04；前兩列是換算值）",
+          "content": "<svg viewBox=\"0 0 640 186\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"inherit\" font-size=\"12\" role=\"img\" aria-label=\"全基因組上限約 56%，局部區段可到 100%\"><line x1=\"390\" y1=\"10\" x2=\"390\" y2=\"160\" stroke=\"#d4a72c\" stroke-dasharray=\"4 3\"/><text x=\"390\" y=\"176\" text-anchor=\"middle\" fill=\"#57606a\">50%</text><text x=\"610\" y=\"176\" text-anchor=\"middle\" fill=\"#57606a\">100%</text><text x=\"170\" y=\"176\" text-anchor=\"middle\" fill=\"#57606a\">0%</text><text x=\"160\" y=\"32\" text-anchor=\"end\" fill=\"#57606a\">全基因組（上限）</text><rect x=\"170\" y=\"18\" width=\"246\" height=\"22\" fill=\"#1f6feb\"/><text x=\"422\" y=\"33\" fill=\"#57606a\">約 56%</text><text x=\"160\" y=\"68\" text-anchor=\"end\" fill=\"#57606a\">女性 X（單一案例）</text><rect x=\"170\" y=\"54\" width=\"343\" height=\"22\" fill=\"#8c959f\"/><text x=\"519\" y=\"69\" fill=\"#57606a\">約 78%</text><text x=\"160\" y=\"104\" text-anchor=\"end\" fill=\"#57606a\">B04 的 190 區</text><rect x=\"170\" y=\"90\" width=\"352\" height=\"22\" fill=\"#8c959f\"/><text x=\"528\" y=\"105\" fill=\"#57606a\">&gt;80%</text><text x=\"160\" y=\"140\" text-anchor=\"end\" fill=\"#57606a\">B04 S2 區段</text><rect x=\"170\" y=\"126\" width=\"440\" height=\"22\" fill=\"#8c959f\"/><text x=\"602\" y=\"141\" text-anchor=\"end\" fill=\"#ffffff\">100%</text></svg>"
+        }
+      ],
+      "gaps": "爸媽比例沒有獨立重複，也沒有 long read 的全基因組數字。還沒確認 5.7% 是否只算 balanced 區。Imprinted 區幾乎測不到，而作者提到甲基化差異理論上可能造成偏差。方法需要爸媽來自不同族群，所以 21 人未必代表所有人。",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/04_haplotype_distribution.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/08_parent_of_origin.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/fulltext_cache/E4-26.txt"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "零假設",
+          "plain": "先假定沒有差異，再看資料能不能推翻"
+        },
+        {
+          "term": "imprinted 區",
+          "plain": "只有爸爸或媽媽那一份會表現的基因區域"
+        },
+        {
+          "term": "balanced 區",
+          "plain": "兩條親代染色體拷貝數相同的區域"
+        },
+        {
+          "term": "kataegis",
+          "plain": "一小段區域內突然出現一串突變，常在同一條染色體上"
+        }
+      ],
+      "details": "session 0981c2ea 16:08–16:11、22:09–22:11。\n論文：Lefèbvre 2026（bioRxiv，未審查；E4-26／E8-01）。\n搜尋範圍：3 組 WebSearch、6 組 Europe PMC（1 組失敗，其餘只看前 10 筆標題）。\nX 染色體的 78% 由 3.5/(3.5+1) 換算，是 Xi／Xa，不是父母。",
+      "evidence": [
+        {
+          "line": 6009,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 16:10",
+          "ref": "0981c2ea:6009"
+        },
+        {
+          "line": 6013,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 16:11",
+          "ref": "0981c2ea:6013"
+        },
+        {
+          "line": 7644,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 22:11",
+          "ref": "0981c2ea:7644"
+        },
+        {
+          "line": 7497,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 22:09",
+          "ref": "0981c2ea:7497"
+        }
+      ]
+    },
+    {
+      "title": "「腫瘤演化圖解」網站第一版太亂，重做成一個腫瘤的一生",
+      "status": "ongoing",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "使用者要先學懂再做決定。第一版 14 章 57 張圖看完仍混亂，第二版改成 8 章 37 張具體的細胞與染色體圖，也不提 diplosim",
+      "question": "使用者擔心被 agent 的建議帶偏，要先補齊腫瘤演化知識，才能自己決定 diplosim 怎麼改。要求 80% SVG 圖、20% ASD-STE100 文字。",
+      "approach": "第一版照知識庫的主題分章，沒有截圖就發布。使用者看完仍混亂後，3 個 subagent 看了 76 張外部圖片，整理常見畫法與初學者卡住的地方。圖全部重新畫，不複製。第二版改用故事主線，並用 snap 版 Firefox 截圖逐章檢查。",
+      "result": "第二版畫出具體的細胞、腫瘤和染色體，每張圖下面一句白話。截圖檢查抓到並修掉十幾個錯，例如 LOH 的箭頭誤畫成先後關係。之後依使用者要求，把黑話「多數 coding 突變接近中性」改成「基因裡的突變，大多數對癌細胞沒有明顯影響」。\n\n同一輪也修正了一個說法：Martincorena 2017 不是實驗證明，是對 TCGA 定序資料的統計估計。",
+      "interpretation": "主題目錄適合當查找入口，但不適合初學。「一個腫瘤的一生」這條順序，比較容易讓人看懂文獻在講什麼。這條已寫進工作記憶，之後解釋腫瘤演化時沿用。",
+      "tables": [
+        {
+          "caption": "網站第一版和第二版的差別",
+          "columns": [
+            "",
+            "第一版",
+            "第二版"
+          ],
+          "rows": [
+            [
+              "主線",
+              "14 章主題，最後對照 diplosim",
+              "8 章，一個腫瘤的一生，不提 diplosim"
+            ],
+            [
+              "圖",
+              "57 張，多是線條和統計圖",
+              "37 張，畫出細胞、腫瘤、染色體"
+            ],
+            [
+              "細節",
+              "全部攤開",
+              "誤解和真實資料點開才看"
+            ],
+            [
+              "檢查方式",
+              "只用程式檢查文字框",
+              "Firefox 實際截圖"
+            ]
+          ]
+        }
+      ],
+      "gaps": "圖約占 74%（估算），未達使用者要的 80%。少數修正（例如 6.2、6.7、8.1）沒有再截圖確認。除了「真實資料」裡的數字，形狀與比例都只是教學示意。Martincorena 2017 的 29 種癌別完整清單沒查到；99% 的確切分母也沒再逐段確認。網站檔案都還沒 commit。",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/build_site.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/lib.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_a.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_b.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/index.html"
+        ],
+        "commands": [
+          "python3 build_site.py"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "魚形圖",
+          "plain": "用一層層顏色帶畫出各 clone 隨時間變大或消失"
+        },
+        {
+          "term": "dN/dS",
+          "plain": "比較會改變蛋白質和不會改變蛋白質的突變數量，用來估計天擇強度"
+        }
+      ],
+      "details": "session 0981c2ea 16:16–17:14、22:01–22:05。\n建置輸出：figures 37; size 461 KB; estimated figure share 74%。\n截圖工具由 /usr/bin/firefox 換成 snap 版 Firefox，才解決第一版「這台機器沒有瀏覽器」的問題。",
+      "evidence": [
+        {
+          "line": 6054,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 16:16",
+          "ref": "0981c2ea:6054"
+        },
+        {
+          "line": 6351,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 16:45",
+          "ref": "0981c2ea:6351"
+        },
+        {
+          "line": 7247,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 17:14",
+          "ref": "0981c2ea:7247"
+        },
+        {
+          "line": 7399,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 22:05",
+          "ref": "0981c2ea:7399"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "[翻案] B04 的 HP 偏向，在同區段內算是爸媽差異",
+      "what": "原本的說法是 B04 量的是 HP1／HP2，所以「不知道是不是爸媽差異」。使用者指出爸媽也算另類的 HP1／HP2，要求繼續深讀。agent 重新從 PDF 抽文字，讀 Results、Fig. 5、Methods、Discussion 後承認之前太保守：同一個 phase block 內，兩條 HP 就是兩條親代染色體，只是不知道哪條是爸爸。現在的結論：局部確實有一位親代那條較多，可到 100% 比 0%（S2 區段 HP1 26 個、HP2 0 個、另 12 個分不出來），但方向不固定，看不出爸爸或媽媽固定較多。這些區域的突變只占約 0.35–0.41%（肺腺癌 272／66,104，其他 2,259／648,041）。S3、S11、S16 目測約占 190 區中的 139 區。agent 另推論指派門檻可能高估偏向：S2 的 100 kb 視窗若 6 個分不出來的全在 HP2，比例會從 100% 降到 70%。作者也提醒，距離超過 read 長度時，同一條 HP 不保證是同一次事件。細節已補進 B04 summary 和主題 04 筆記，未 commit。還沒查到偏向檢定用的統計方法，Supplementary Methods 也沒逐段讀。",
+      "why_demoted": "被 5 項上限擠掉（11 分）。依翻案規則獨立列出，沒有併進別項。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "research/literature/papers/B04_lung_longread_phasing_2022/summary.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/04_haplotype_distribution.md"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "HP1／HP2",
+          "plain": "把兩條染色體分開標記的任意名稱，不代表爸爸或媽媽"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 7681,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 22:14",
+          "ref": "0981c2ea:7681"
+        },
+        {
+          "line": 7888,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 22:16",
+          "ref": "0981c2ea:7888"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] COLO829 T2T 不能直接回答爸媽比例：正文沒報告，但突變表公開",
+      "what": "agent 原本說 COLO829 T2T（Sohn 2026，Cell，E6-12）最接近用 long read 量 HP 分布，可能影響方案前提，所以建議補讀。讀完全文 Summary、sSNV 相關 Results、Limitations 和主要 Methods 後下修：正文沒有報告兩條單倍型的全基因組比例，用 maternal、paternal、parent-of-origin 搜尋全文都是 0 筆，補充表和圖沒讀。這篇有 44,795 個 SNV、828 個雙核苷酸變異，只有一個細胞株，78.05% 基因組有拷貝數變化，也不知道誰是爸爸。第一次查 GitHub 回 504，第二次查到 repo 只有分析程式。公開的突變表在作者的 UCSC track hub：somatic_snvs.vcf.gz，0.94 MB，另有 0.38 MB 索引。檔名標題是 DeepVariant、PASS、Density Filtered，不一定等於論文的 44,795 個。狀態：沒有下載、沒有算任何比例，因為這是新增實驗，要等使用者同意。若做，先算未校正比例和每條染色體比例，因為 hap1 標籤不一定能跨 contig 加總。論文已更新為全文，新增 11 段引文通過核對，網站也更新了來源層級，全部未 commit。",
+      "why_demoted": "被 5 項上限擠掉（10 分）。依翻案規則獨立列出，沒有併進別項。",
+      "status": "ongoing",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/source.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/06_longread_evidence.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/claims/06.tsv",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/summary.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/index.html"
+        ],
+        "outputs": [
+          "https://s3.kopah.uw.edu/stergachis/public/FIRE/trackHubs/trackHub/data/COLO829-vcf-trackhub/somatic_snvs.vcf.gz（尚未下載）"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 8102,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 22:19",
+          "ref": "0981c2ea:8102"
+        },
+        {
+          "line": 8261,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 22:22",
+          "ref": "0981c2ea:8261"
+        }
+      ]
+    },
+    {
+      "title": "查 97 篇論文的期刊等級：38 篇在 Nature、Cell、Science",
+      "what": "使用者要確認找到的論文有沒有 Nature 等級，可信度才高。agent 用 source.md 的 DOI 和引用統計期刊，不靠記憶。結果：三大期刊 38 篇（Nature 24、Cell 12、Science 2）；頂尖子刊 25 篇（Nature Genetics 18 等，這層分法是 agent 的粗略分法）；其他同儕審查期刊 29 篇；preprint 5 篇。重點是最關鍵的爸媽比例反而來自未審查的 preprint，long read 的部分也多在較低等級期刊或 preprint。部分高等級論文只讀到摘要（Abascal 2021、3 篇 1989 年 RB1 論文）。沒有查撤稿、更正、引用數或影響係數。狀態：只有統計，還沒把等級加到網站來源頁，agent 有提議但使用者沒有回覆。",
+      "why_demoted": "落在邊界（7 分），一律進記錄層。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/source.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 7458,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 22:08",
+          "ref": "0981c2ea:7458"
+        }
+      ]
+    },
+    {
+      "title": "用 daily-log 寫完 11-04 日誌並推進游標",
+      "what": "為了把前一天的工作留下紀錄，跑 daily-log 掃到 11-04 23:00。11-04 日誌呈現 5 項、記錄 4 項。headline 先寫兩個翻案，因為只有這兩項改變研究方向；可讀性檢查提醒 4 個標題太長，改完後是 0 個提醒。游標已推進到 2026-11-04T23:00:35。日誌 repo 當時沒有 commit，到本次掃描仍在未提交變動裡。",
+      "why_demoted": "例行工作，分數 5，且只有工具維護。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-11-04.json",
+          "daily/2026-11-04.html"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1666,
+          "session_id": "71ef2a5f",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 23:06",
+          "ref": "71ef2a5f:1666"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "title": "第一輪 subagent 全部中斷",
+      "detail": "15:21 起，7 個文獻 subagent 因週額度用完而回報失敗或中止。",
+      "resolution": "使用者要求繼續後，用 SendMessage 讓原本的 subagent 接續，全部在 15:49 前完成。"
+    },
+    {
+      "title": "有 subagent 偽裝 User-Agent 抓網頁",
+      "detail": "主題 04、06、08 的 subagent 用偽裝瀏覽器的 User-Agent 抓過 bioRxiv、PMC 等網頁，主題 01 的嘗試被權限檢查擋下。核心 preprint 的文字就是這樣抓到的。這不在任務書允許的範圍內。",
+      "resolution": "已用 WebFetch 重新確認核心 preprint 的關鍵數字，其他同類檔案沒有逐一重抓，已記進 source.md。這些文字檔只留本機、不進 git。之後的視覺參考任務書明文禁止偽裝。"
+    },
+    {
+      "title": "NCBI 與 PubMed 當天不穩定",
+      "detail": "NCBI 多次回 HTTP 500，Roerink 2018、Lee-Six 2019 等核心論文沒拿到全文。",
+      "resolution": "改用 WebSearch 和 Europe PMC 補查，並把搜尋範圍與缺口寫進各主題筆記。"
+    }
+  ],
+  "advisor": [],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "11-04 23:00 ~ 11-05 23:00",
+  "scan": {
+    "last_scanned": "2026-11-05T23:00:07",
+    "sessions": [
+      "71ef2a5f",
+      "c7c6b595",
+      "0981c2ea",
+      "fda40ac5"
+    ],
+    "layers": {
+      "show": 5,
+      "record": 3,
+      "border": 1
+    }
+  }
+}

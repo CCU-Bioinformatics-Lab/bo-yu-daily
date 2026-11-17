@@ -1,0 +1,658 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-07",
+  "headline": "HG008 的 8 株 clone 重建出候選樹，119 顆單細胞支持主幹以下三層分枝，末端還沒驗證；相鄰 SNV 在 1 kb 以上沒否定獨立，所以第一階段只模擬 SNV、維持獨立 50%，要不要改 diplosim 留到 11-11 會議決定",
+  "items": [
+    {
+      "title": "腫瘤演化學習網站改成六幕故事，圖增加到 93 張",
+      "status": "ongoing",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "網站改成「正常細胞 → 變成腫瘤 → 各癌種 → 怎麼看 → 建樹 → 模擬」六幕，新增建樹規則、突變速度、16 個癌種、建樹流程、模擬器各章，共 93 張圖",
+      "question": "使用者想更了解建樹軟體靠哪些生物假設（ISA 以外還有什麼），也想知道突變速率。看完第一版後，又要求網站照故事走：正常細胞怎麼變成腫瘤、各癌種怎麼演化、建樹軟體怎麼從 bulk 推出 clone 和樹、模擬器怎麼建。",
+      "approach": "分三輪做，都用 Firefox 截圖逐張檢查。\n\n- 第一輪：新增第 8 章「建樹的規則」（Dollo、perfect phylogeny、sum rule、crossing rule、分群）和第 9 章「突變的速度」，共 12 張圖。\n- 第二輪：使用者要求每則規則加「bulk 定序視角」和「腫瘤演化樹視角」。先寫成文字框，使用者說都是文字，改成每則一張左右兩半的圖。\n- 第三輪：照故事重排全部 56 張舊圖，導覽改成依「幕」分組。開 3 個 subagent 收集各癌種演化、建樹流程假設、模擬器怎麼建，主 agent 抽查程式行號後畫成三個新章節。",
+      "result": "網站共 93 張圖，新增 37 張，重疊檢查 0 個問題。新收集的三份資料都登記在 `research/index.md`：16 個癌種、41 篇論文；建樹七步驟與 12 個工具比較；模擬器的四層建法（樹 → 突變 → 比例 → read），新找到 MACHINA、HeteroGenesis、SMC-Het 三個通過範圍測試的生成器。\n\n照使用者的決定，模擬器那章只講公開生成器，不放 diplosim。",
+      "interpretation": "網站現在能當一份從頭講到尾的背景教材。但它不在 11-04 會議的待辦上，晚上使用者也決定 11-11 報告不放學習網站，所以它的價值是讓使用者自己理解，不是本週進度。",
+      "gaps": "全部改動都沒有 commit。癌種章節第一版有多處錯誤，晚上回原文查證後重畫（見記錄層）。8.1–8.6 兩個視角的說明是 agent 依圖推論寫的，沒有新增論文出處，8.2「depth 和 HP 比例會跟著變」和 8.6「depth 越低，團越寬」最需要補來源。手機版排版沒有截圖確認。",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/build_site.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/lib.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_c.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_d.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_e.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_f.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/source.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/summary.md",
+          "research/literature/surveys/cancer_type_evolution_2026-11-07/summary.md",
+          "research/methods_tree_reconstruction_pipeline_2026-11-07.md",
+          "research/simulation_pipeline_research/notes/09_HOW_SIMULATORS_ARE_BUILT.md",
+          "research/index.md"
+        ],
+        "outputs": [
+          "https://claude.ai/artifact/X9wunWVDa91z4Peqnps2AK"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "Dollo",
+          "plain": "每個突變只出現一次，但之後可以跟著掉落的那段 DNA 一起消失"
+        },
+        {
+          "term": "sum rule",
+          "plain": "兄弟 clone 的細胞比例加起來，不能超過父親 clone"
+        },
+        {
+          "term": "crossing rule",
+          "plain": "多塊樣本時，祖先在每一塊的比例都要不小於後代；只有一塊樣本用不上"
+        },
+        {
+          "term": "四層建法",
+          "plain": "模擬器都先畫樹，再放突變，再算比例，最後才產生 read"
+        }
+      ],
+      "details": "第一輪 session 3f963cce 17:49-18:03；第二、三輪 session c3a9f005 19:09-20:06。\n建置：cd research/literature/surveys/tumor_evolution_history_2026-11-05/site && python3 build_site.py\n新增 Petljak 2019（E10-01）進 source.md；詞典加 Dollo、perfect phylogeny、sum rule、crossing rule、APOBEC。",
+      "evidence": [
+        {
+          "line": 8948,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 19:42",
+          "ref": "c3a9f005:8948"
+        },
+        {
+          "line": 7525,
+          "session_id": "3f963cce",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 18:03",
+          "ref": "3f963cce:7525"
+        },
+        {
+          "line": 9889,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 20:02",
+          "ref": "c3a9f005:9889"
+        }
+      ]
+    },
+    {
+      "title": "HG008 能重建出可信的樹嗎？主架構三層有單細胞支持，末端還沒有",
+      "status": "done",
+      "priority": "P3",
+      "summary": "8 株 clone 重建出候選樹，119 顆 p23 單細胞支持三層巢狀分枝（111 → 48 → 16 顆），巢狀檢查 0 違反；末端分枝大多沒驗證。和 diplosim 的「差距明顯」撤回",
+      "question": "11-06 發現 HG008 的克隆結構只是 repo 的推論，所以要用 8 株單細胞衍生 clone 重建樹，再用 119 顆單細胞獨立檢查。這是目前唯一有單細胞 SNV、能檢查克隆結構的資料。",
+      "approach": "- 下載：119 個單細胞 VCF 中有 4 條連線幾乎卡住（約 14 KB/s）。依使用者指示中止，改成慢於 100 KB/s 超過 2 分鐘就換連線續傳。313 個檔案全部完成，clone 的 56 個 md5 都正確。\n- 重建：只用拷貝數乾淨的 SNV，依各株共有的 SNV 排出巢狀關係。判定為「在 SC6 丟失」的 SNV 不當分枝。\n- 對照 diplosim：把單子節點合併成 8 個葉節點後再比，比法才公平。\n- 單細胞檢查：分析前先定好判讀方式。帶某分枝的細胞要兩極分布；細胞要符合樹的包含關係；單細胞全來自 p23，可排除 clone 的批次混淆。",
+      "result": "單細胞支持主架構，事先定的巢狀檢查沒有任何違反。帶者的相對偵測率中位數 0.93–0.99，不帶者 0.00。判定為「在 SC6 丟失」的 367 個 SNV，119 顆細胞都帶，證明它們是 truncal。\n\n和 diplosim 的公平對照：樹的不平衡度、末端枝比例都在模擬範圍內。只有末端枝長度的變異係數落在第 3 百分位，比 diplosim 整齊。所以先前「差距明顯」的說法撤回，那主要是比法不公平。\n\n和 10-27 舊報告比，共同部分相同，細胞數也同為 111、48、16。新樹多解析了 SC6 和 {SC24, SC9} 兩處。舊報告已依使用者要求刪除。",
+      "interpretation": "目前可以說：HG008 定序了 8 株 clone，加上單細胞證據後，至少分成 4 個譜系群。這棵樹是推論出來的候選樹，不是真值。它只支持「克隆結構的主架構」這一層，回答不了時間、選擇，也不能當病人腫瘤的演化史。diplosim 和它「不矛盾」，但只有一棵樹，不能說 diplosim 是對的。",
+      "tables": [
+        {
+          "caption": "各分枝的單細胞檢查結果（119 顆 p23 細胞）",
+          "columns": [
+            "分枝",
+            "帶的細胞",
+            "證據",
+            "強度"
+          ],
+          "rows": [
+            [
+              "主幹（8 株共有）",
+              "119",
+              "clone＋單細胞",
+              "強"
+            ],
+            [
+              "除了 3E4 的 7 株",
+              "111",
+              "clone＋單細胞",
+              "強"
+            ],
+            [
+              "SC14, SC24, SC28, SC9",
+              "48",
+              "clone＋單細胞",
+              "強"
+            ],
+            [
+              "SC14, SC28",
+              "16",
+              "clone＋單細胞",
+              "強"
+            ],
+            [
+              "2D6, 2E6",
+              "0（部分位點出現在約 65 顆）",
+              "clone 為主",
+              "中"
+            ],
+            [
+              "SC24, SC9",
+              "1 顆帶部分位點",
+              "clone",
+              "弱"
+            ],
+            [
+              "SC6 的位置",
+              "分不出",
+              "只有 4 個 SNV",
+              "弱"
+            ],
+            [
+              "8 條 private 枝",
+              "幾乎沒有",
+              "clone",
+              "弱"
+            ]
+          ]
+        },
+        {
+          "caption": "HG008 和 diplosim 的樹形對照（抽 8 葉）",
+          "columns": [
+            "統計量",
+            "HG008",
+            "diplosim 中位數（95% 範圍）",
+            "HG008 百分位"
+          ],
+          "rows": [
+            [
+              "不平衡度（Colless）",
+              "13",
+              "9（3–17）",
+              "87"
+            ],
+            [
+              "非 truncal SNV 落在末端枝的比例",
+              "0.85",
+              "0.71（0.46–0.88）",
+              "94"
+            ],
+            [
+              "內部枝／末端枝平均長度比",
+              "0.24",
+              "0.55（0.18–1.59）",
+              "6"
+            ],
+            [
+              "末端枝長度的變異係數",
+              "0.38",
+              "0.70（0.37–1.18）",
+              "3"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-07/sc_clades.png",
+          "caption": "每一欄是一顆單細胞，每一列是一條分枝的相對偵測率"
+        }
+      ],
+      "gaps": "末端分枝大多沒驗證；{2D6, 2E6} 只有部分支持；SC6 位置只靠 4 個 SNV。約 5 顆細胞同時帶互斥訊號，可能是兩顆細胞混在一起，沒用原始 read 確認。SC293 帶 {SC24, SC9} 的位點，卻幾乎不帶更早的分枝，原因沒查。chr5 157–181 Mb、chr12 6–23 Mb 的拷貝數型態和樹不符。3E4 側的判斷和混合細胞是看到結果後才追加的檢查。「像」的定義還沒定，三層結構還沒正式和 diplosim 比。diplosim 做不出整段的拷貝數變化，也沒測過分枝上的 CN 事件。",
+      "artifacts": {
+        "files": [
+          "tools/hg008_tree_rebuild.py",
+          "tools/hg008_vs_diplosim.py",
+          "tools/download_hg008_clones_sc.py",
+          "tools/hg008_sc_clade_test.py",
+          "tools/plot_hg008_sc_clades.py",
+          "tools/draw_hg008_clone_tree.py",
+          "docs/index.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_b.py"
+        ],
+        "outputs": [
+          "lab_report/2026-11-07_hg008_tree_rebuild/",
+          "lab_report/2026-11-07_hg008_sc_check/",
+          "/big8_disk/boyu114/benchmark_data/GIAB/HG008/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "巢狀檢查",
+          "plain": "帶小分枝突變的細胞，也一定要帶包住它的大分枝突變"
+        },
+        {
+          "term": "批次混淆",
+          "plain": "分枝可能只是同一批培養造成的假象，不是真的演化關係"
+        },
+        {
+          "term": "private 枝",
+          "plain": "只有一株 clone 自己有的突變"
+        },
+        {
+          "term": "百分位",
+          "plain": "HG008 的值在 diplosim 抽出來的很多棵樹裡排第幾"
+        }
+      ],
+      "details": "commit：3cef2d4（樹重建、diplosim 對照、下載腳本）、c39d100（單細胞檢查、刪 10-27 舊報告）、69b78ce（網站圖 6.10、6.11）。\nsc_calls.tsv.gz（7.8 MB）被 .gitignore 擋下，要用報告裡的指令重新產生。\n舊報告可從 git 取回：git show 07ff507:lab_report/2026-10-27_hg008_sc_tree_check/README.md",
+      "evidence": [
+        {
+          "line": 840,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 13:59",
+          "ref": "64791139:840"
+        },
+        {
+          "line": 2593,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 14:42",
+          "ref": "64791139:2593"
+        },
+        {
+          "line": 2890,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 14:53",
+          "ref": "64791139:2890"
+        }
+      ]
+    },
+    {
+      "title": "相鄰的 SNV 會不會擠在同一條 HP？1 kb 以上沒看到，1 kb 內會",
+      "status": "done",
+      "priority": "P3",
+      "summary": "COLO829、HG008 間隔 1 kb 以上的相鄰 SNV，落在同一條 HP 的比例都接近 0.5；100 bp 內則有 85–97% 在同一條。HG008 的組裝標籤和 GIAB 一致 97.4%",
+      "question": "使用者問：如果老師問「HP1、HP2 各 50% 有什麼證據」，要拿什麼回答？diplosim 的假設其實有兩件事：比例約 50%，以及每個 SNV 各自獨立選一條。比例 11-06 查過，獨立性還沒人驗證過。",
+      "approach": "先固定比法和判讀門檻，再算。只用兩株、拷貝數 1+1 的區域，看相鄰兩個 SNV 落在同一條 HP 的比例，依距離分組。如果獨立，比例應約 0.5。\n\n使用者接著問組裝標籤算不算強證據，所以另外把 HG008 的 PRCGAP 判定和 GIAB benchmark 逐 SNV 對照，並畫成學習網站圖 7.9、7.10。",
+      "result": "16 個主要檢定校正後都不顯著。1 kb 內的配對只占少數，約為 COLO829 SNV 的 2.5%、HG008 的 4.5%。\n\nGIAB 對照：6,302 個可比較的 SNV 中 6,139 個一致（97.4%），容許每條染色體整條對調；23 條染色體有 14 條編號相反。",
+      "interpretation": "第一階段可以繼續用「獨立 50%」，並標明這是忽略局部聚集的簡化。組裝標籤能證明「兩個突變在同一條拷貝上」，但不能證明來自爸爸或媽媽，也不能把各染色體的 hap1 直接加總。這些結果只支持觀測特徵這一層。",
+      "tables": [
+        {
+          "caption": "相鄰 SNV 落在同一條 HP 的比例（拷貝數 1+1 區域）",
+          "columns": [
+            "距離",
+            "結果",
+            "解讀"
+          ],
+          "rows": [
+            [
+              "100 bp 內",
+              "HG008 96.7%、COLO829 84.6%",
+              "明確不獨立"
+            ],
+            [
+              "1–10 kb",
+              "COLO829 0.48；HG008 0.59–0.63",
+              "HG008 偏高，但校正後不顯著、配對少"
+            ],
+            [
+              "10 kb–1 Mb",
+              "全部接近 0.5",
+              "沒有偏向"
+            ],
+            [
+              "≥ 1 Mb",
+              "HG008 0.57（n=150）",
+              "校正後不顯著，證據不足"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-07/same_hap_by_distance.png",
+          "caption": "相鄰 SNV 在同一條 HP 的比例，依距離分組"
+        }
+      ],
+      "gaps": "COLO829 沒通過事先定的對照（1 kb 內 0.658，門檻 0.8），所以「COLO829 也沒偏離」的證據比 HG008 弱。程式把 0–100 bp 當一格，沒有分開相鄰 1 bp 的雙鹼基突變；COLO829 是紫外線造成的黑色素瘤，訊號可能大多來自 CC>TT，要扣掉相鄰突變重算才知道。拷貝數不同的區域沒檢查。只有兩株細胞株，過濾偏向 clonal 突變。97.4% 是兩份組裝互相吻合，不是和絕對真值比，先前說它是「獨立驗證」說得太強。",
+      "artifacts": {
+        "files": [
+          "tools/snv_hp_independence.py",
+          "tools/plot_snv_hp_independence.py",
+          "tools/hg008_giab_hap_concordance.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_b.py"
+        ],
+        "outputs": [
+          "lab_report/2026-11-07_snv_hp_independence/",
+          "lab_report/2026-11-07_hg008_giab_hap_concordance/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "獨立",
+          "plain": "每個突變落在哪條 HP，不受旁邊突變影響，像連續丟硬幣"
+        },
+        {
+          "term": "組裝標籤",
+          "plain": "hap1、hap2 只是組裝時取的編號，不代表爸爸或媽媽"
+        },
+        {
+          "term": "kataegis",
+          "plain": "DNA 一小段局部受損，一次留下一串突變，所以會擠在同一條上"
+        },
+        {
+          "term": "雙鹼基突變",
+          "plain": "相鄰兩個鹼基一起被換掉，看起來像兩個緊貼的 SNV"
+        }
+      ],
+      "details": "commit：5b82a73（獨立性檢查）、07ff507（GIAB 對照、網站圖 7.9、7.10）。\n使用者 14:11 拍板「做獨立性檢查」。GIAB 抽查過 34 個位點，29 個判定 benchmark 正確。",
+      "evidence": [
+        {
+          "line": 1508,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 14:16",
+          "ref": "64791139:1508"
+        },
+        {
+          "line": 2224,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 14:30",
+          "ref": "64791139:2224"
+        },
+        {
+          "line": 2227,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 14:30",
+          "ref": "64791139:2227"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 這週只做 SNV、突變速率暫緩，diplosim 方案留到 11-11 會議",
+      "status": "done",
+      "priority": "P1",
+      "summary": "DECISIONS.md 記下第一階段只模擬 SNV、維持獨立 50%；突變速率暫緩；爸媽 SNV 知識文件寫好，方案 A／B／C 不在週中選，帶到 11-11 會議",
+      "question": "11-04 會議要求先聚焦單點突變，但 diplosim 預設仍會產生 CNA，突變速率也在待辦上。今天要決定這週到底做哪些、不做哪些。",
+      "approach": "- 14:08 使用者同意先只模擬單點突變。15:00 寫進 `diplosim/DECISIONS.md`：用 `--prop-pos-gained 0 --prop-pos-lost 0` 關掉 CNA，不改程式和預設值。\n- 19:33 使用者說突變速率先別管，只專注爸媽 SNV 和腫瘤演化假說。寫進 memory，會議 summary §4 標「暫緩」。\n- 21:35 寫爸媽 SNV 知識文件，整理 H1–H10 假說、證據和適用範圍，列方案 A（維持獨立 50%）、B（加 SNV 座標與局部聚集）、C（真值多記親源）。\n- 使用者要求多 subagent 查「有沒有模擬器有 SNV 座標」，3 個 agent 查了約 30 個工具。\n- 21:54 使用者說現在決定實作太早，應該先整理優缺點帶到下週報告。方案段落改成「待 11-11 會議討論」。",
+      "result": "座標調查：多數工具的 SNV 座標只是模擬結束後才貼上的標籤，diplosim 也是（照抄 CONIPHER）。座標真的會影響拷貝數或 HP 的只有 SISTEM、HeteroGenesis、SMC-Het。決定 SNV 落在哪條的方式幾乎都是隨機選一份，和 diplosim 一樣。沒找到同時有「座標＋逐點 HP＋clone tree＋long read BAM」的工具。\n\n會議 summary §4 待辦表已更新到 11-07。",
+      "interpretation": "這是本週方向的收斂：只做 SNV、只看兩條 HP 上的分布和假說，其他（CNA、突變速率）往後放。翻案有兩處：突變速率從待辦改成暫緩；模擬器設計不再在週中請使用者選，改成帶到會議由老師決定。目前傾向方案 A，但這不是決定。",
+      "gaps": "預設參數仍會產生 CNA，忘了加兩個參數就會混進 CNA；要不要改預設值未決。H3「爸媽本身突變率有差」完全沒測過，查過的 long read 資料都沒有親源標籤。方案 A／B／C 還沒選。知識文件先寫了「diplosim 沒有座標」，查證後改成「有標籤座標，但沒有步驟讀它」。",
+      "artifacts": {
+        "files": [
+          "diplosim/DECISIONS.md",
+          "meeting_record/2026_11_04_meeting_summary.md",
+          "research/literature/surveys/parental_snv_2026-11-07/summary.md",
+          "research/simulation_pipeline_research/notes/10_SNV_COORDINATES.md",
+          "research/index.md"
+        ],
+        "commands": [
+          "diplosim --n-clones 6 --n-snv 500 --out DIR --prop-pos-gained 0 --prop-pos-lost 0"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "單點突變",
+          "plain": "DNA 上只有一個鹼基被換掉，像書裡改掉一個字"
+        },
+        {
+          "term": "CNA",
+          "plain": "一整段 DNA 多印一份或被撕掉"
+        },
+        {
+          "term": "標籤座標",
+          "plain": "模擬完才貼上的位置，模擬過程沒有任何步驟會用到它"
+        },
+        {
+          "term": "parent-of-origin",
+          "plain": "突變來自爸爸那條還是媽媽那條"
+        }
+      ],
+      "details": "commit：69b78ce（DECISIONS.md）。知識文件與座標筆記未 commit。\nmemory：focus-parental-snv.md、design-choices-go-to-meeting.md。\nSISTEM 座標程式：genome.py:68-82、mutation.py:141-169；diplosim 標籤座標：diplosim/src/output.rs:20-31。",
+      "evidence": [
+        {
+          "line": 3120,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 15:00",
+          "ref": "64791139:3120"
+        },
+        {
+          "line": 8621,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 19:33",
+          "ref": "c3a9f005:8621"
+        },
+        {
+          "line": 11882,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 21:54",
+          "ref": "c3a9f005:11882"
+        },
+        {
+          "line": 11856,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 21:52",
+          "ref": "c3a9f005:11856"
+        }
+      ]
+    },
+    {
+      "title": "SEQC2／HCC1395 能拿來驗證 diplosim 嗎？不能，只有背景",
+      "status": "done",
+      "priority": "P3",
+      "summary": "4 個 subagent 查完 SEQC2：沒有公開每個 SNV 屬於哪個 clone，樹和「五個克隆群」都是 short read 推論，單細胞只有 CN。只能當背景",
+      "question": "使用者想用多個 subagent 重點搜尋 SEQC2／HCC1395 的腫瘤演化資料，看能不能讓 diplosim 更貼近真實 bulk 資料和真值樹。也想確認會議上說的「五個克隆群」出自哪裡。",
+      "approach": "4 個 subagent 分頭查：克隆數與樹的輸入、單細胞證據、long read 與 haplotype 資料、單點突變的生物學。主 agent 回原文核對關鍵數字。依 11-04 暫停 HCC1395 驗證的決定，不改 diplosim、不提調參。",
+      "result": "- 沒有真值樹：PhyloWGS 的輸入輸出沒公開，Fig. 4a 只有 7 個 CCF。\n- 「五個克隆群」是 Fang 2021 Extended Data Fig. 9a，SuperFreq（WES）的結果。各方法的克隆數對不起來，HATCHet 在 21 份 WGS 中是 1／2／3 個 clone＝6／14／1 份。\n- 單細胞只有 10x scCNV，1,270 顆，每顆約 0.03×，看不到 SNV；原始資料在 ENA、SRA 都找不到。\n- long read 有 6 組公開原始資料，但都沒有逐 SNV 的 HP 或 multiplicity 表。\n- 相鄰 SNV 在同一條 HP 的比例：< 100 bp 98%，≥ 5 kb 約 50%，方向和 HG008、COLO829 一致。",
+      "interpretation": "要驗證克隆結構，目前仍只有 HG008。HCC1395 的結果只能當觀測和機制層的參考。另外查到老師在 11-04 重視的是單細胞分群依據，提到的具體資料是 HG008；說 HCC1395 有五個克隆群的是使用者。",
+      "gaps": "D 部分（單點突變生物學）因額度中斷，HKU 和 CASTLE 兩批 HCC1395 的比較沒做（屬於暫停範圍）。`docs/tumor_sample.md` 有 4 處需要更正（例如 HKU 用的是 ATCC 買的 gDNA，不是自己培養），使用者說先不要改。ATCC 曾通報 HCC1395 某個 lot 有輕度交叉污染，各研究用哪個 lot 不知道。「六個克隆」還沒對上出處。",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/seqc2_hcc1395_evolution_2026-11-07/summary.md",
+          "research/literature/surveys/seqc2_hcc1395_evolution_2026-11-07/source.md",
+          "research/literature/surveys/independent_evidence_2026-11-06/summary.md",
+          "meeting_record/2026_11_04_meeting_summary.md",
+          "research/index.md"
+        ],
+        "outputs": [
+          "research/literature/surveys/seqc2_hcc1395_evolution_2026-11-07/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "SuperFreq",
+          "plain": "一套 exome 分析流程，找出突變後依比例分成 clone 並追蹤"
+        },
+        {
+          "term": "scCNV",
+          "plain": "單細胞只量拷貝數，深度太低看不到單點突變"
+        },
+        {
+          "term": "multiplicity",
+          "plain": "一個突變在細胞裡有幾份拷貝"
+        }
+      ],
+      "details": "session 3f963cce 15:06-17:45；老師原話查詢在 64791139 15:03。\n核對更正：subagent 說 PacBio 深度 13.8×，那是 variant depth；`PACB_T_DP` 是「variant, total」，總深度平均 47×、中位數 44×，和論文 40× 相符。\nED Fig. 9a 裁成 PNG 只放 scratchpad，因版權不進公開 repo。",
+      "evidence": [
+        {
+          "line": 6297,
+          "session_id": "3f963cce",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 17:03",
+          "ref": "3f963cce:6297"
+        },
+        {
+          "line": 5969,
+          "session_id": "3f963cce",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 15:32",
+          "ref": "3f963cce:5969"
+        },
+        {
+          "line": 6521,
+          "session_id": "3f963cce",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 17:44",
+          "ref": "3f963cce:6521"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "[翻案] 16 張癌種圖沒查過原文：回原文核對後改成主幹加分枝的樹",
+      "what": "使用者發現學習網站「16 種癌症」的圖都是直線，問這些樹有沒有確認過。agent 承認沒有：內容經過論文推論、subagent 摘要（多數只讀摘要）、再挑事件畫圖三層轉手，16 種裡只核對過神經母細胞瘤 1p36 的兩個數字；而且直線時間軸會讓人以為每種癌都是直線演化。使用者要求三件事一起做，且一定要依事實推論、不能亂畫。開 5 個 agent 回原文核對 41 篇論文（約一半讀全文），每個事件附引句並判定支持／部分支持／不支持／原文沒提，結果存 verification.md。圖改成主幹＋分枝的樹，每條邊標證據類型（直、樹、排、鐘、模、縱），原文沒細節就畫虛線；7 張狀態標籤改成「還在爭論」。查出並修正的錯誤包括：胰臟癌 PanIN 原文沒支持、「2/3 一次打掉多個 driver」實際只有 16%；1p36 偏向寫反；肝癌、膀胱癌把正常組織的 clone 畫成腫瘤祖先；肺癌主幹誤含 KRAS；腎癌、GBM、卵巢癌的時間標籤放錯位置；四張圖的「沒找到親代偏向」改成「原文沒有分析」。已發佈，未 commit。新增 memory：畫圖前逐項對原文。限制：引句是 agent 抓的，主 agent 沒逐句重抓；約一半只讀摘要。",
+      "why_demoted": "被 5 項上限擠掉（分數 12，低於呈現層；屬於學習網站的能力類工作）。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/cancer_type_evolution_2026-11-07/verification.md",
+          "research/literature/surveys/cancer_type_evolution_2026-11-07/summary.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_e_trees.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/tree_draw.py"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 10339,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 20:50",
+          "ref": "c3a9f005:10339"
+        },
+        {
+          "line": 10363,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 20:52",
+          "ref": "c3a9f005:10363"
+        }
+      ]
+    },
+    {
+      "title": "11-11 投影片大綱定稿，F-2 改成圖 80%，兩位審查提出 26 點",
+      "what": "準備 11-11 會議報告。agent 依 CLAUDE.md 交付順序排大綱，使用者指示：學習網站不放、T2 要說清楚 HG008 的樹是推論出來的、要請老師決定的事放最後；風格要像學習網站，圖 80%、文字 20%，畫圖前先用 subagent 搜參考構圖。依規定先把新指令併進 report/report_rule.md 的 F-2（主圖約 80%、圖外文字約 80 字，原為至少一半、150 字），再寫 report/2026_11_11_slides/OUTLINE.md（14 頁）。P-1 大綱審查開兩個 subagent：邏輯審查 15 點（10 點必改），生物資訊教授審查 11 點（6 必改）。重點包括：p7「扣掉拷貝數」說錯，COLO829、HG008 只扣掉流失片段；HP0 不能畫成第三條染色體；SNV 階段假說是 7 個不是 4 個；T2 缺方案頁；LOH 區多為 2–4 份不是只剩一份。另外查出 SNV 獨立性程式沒分開雙鹼基突變。結束在：審查結果存進 REVIEW_v1.md，4 項會改大綱結構的修改等使用者確認，頁面還沒開始做，未 commit。",
+      "why_demoted": "被 5 項上限擠掉（分數 11；大綱還在審查階段，頁面未做）。",
+      "status": "ongoing",
+      "artifacts": {
+        "files": [
+          "report/report_rule.md",
+          "report/2026_11_11_slides/OUTLINE.md",
+          "report/2026_11_11_slides/REVIEW_v1.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 12107,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 22:02",
+          "ref": "c3a9f005:12107"
+        },
+        {
+          "line": 12491,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 22:08",
+          "ref": "c3a9f005:12491"
+        },
+        {
+          "line": 12514,
+          "session_id": "c3a9f005",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 22:09",
+          "ref": "c3a9f005:12514"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 會議待辦刪掉「subagent 對抗式審查」",
+      "what": "11-04 會議 summary 的未決事項裡有一項「subagent 對抗式審查」，agent 先前把它列成要問老師的事。使用者說那欄刪掉，那是他和老師閒聊，不是待辦。agent 從 meeting_record/2026_11_04_meeting_summary.md 的未決事項和 meeting_record/index.md 的關鍵字刪除，並註明是閒聊；原始紀錄 2026_11_04_meeting_record.md 保留不動。已 commit 於 f51e136。之後不再把它列為待辦或待問老師的事。",
+      "why_demoted": "落在邊界（分數 7），一律進記錄層。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "meeting_record/2026_11_04_meeting_summary.md",
+          "meeting_record/index.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 3199,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 15:02",
+          "ref": "64791139:3199"
+        }
+      ]
+    },
+    {
+      "title": "用 daily-log 寫完 11-06 日誌並推進游標",
+      "what": "11-06 23:00 的排程跑 daily-log，涵蓋 11-05 23:00 到 11-06 23:00。候選 10 項，呈現 7 項（第 5 到第 7 名同分，規則不切開，全部保留）、記錄 3 項。複製三張圖到 daily/figures/2026-11-06/，寫 daily/.data/2026-11-06.json，渲染 HTML 並推進游標到 2026-11-06T23:00:06。HG008 下載狀態當時查不到，那一項標 ongoing。日誌沒有 commit 或 push。",
+      "why_demoted": "日誌維護工作，沒有使用者訊息（分數 5）。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-11-06.json",
+          "daily/2026-11-06.html"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 4967,
+          "session_id": "3c4d553c",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 23:02",
+          "ref": "3c4d553c:4967"
+        }
+      ]
+    },
+    {
+      "title": "結束兩個卡住的背景 shell",
+      "what": "使用者問還有沒有 shell 在跑。session 3f963cce 的 agent 查了自己帳號的程序，說沒有。之後 session 303be265 找到兩個 /clear 前留下的 shell 卡住約 3.5 小時：一個從根目錄 / 往下找 *COSMIC*SBS* 檔案，一個每 15 秒檢查 samtools mpileup 跑完沒（pgrep -f 比對到自己的指令列，所以永遠不會停），等著跑 xc.py。使用者同意後 kill 3014698、3017380–3017382、3111959，ps 確認都已結束。xc.py（HKU 對 CASTLE 比較）從沒執行過，屬於 HCC1395 暫停範圍，沒有補跑。",
+      "why_demoted": "環境維護（infra 扣分），沒有落地檔案（分數 -2）。",
+      "status": "done",
+      "evidence": [
+        {
+          "line": 7663,
+          "session_id": "303be265",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-07 18:58",
+          "ref": "303be265:7663"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "title": "單細胞 VCF 下載有 4 條連線幾乎卡住",
+      "detail": "整個下載跑了約 16 小時。6 條連線中 4 條只有約 14–17 KB/s，比正常的約 4.3 MB/s 慢約 300 倍。agent 先說「約 90 個」完成，實際是 86 個，把傳輸中的也算進去了。",
+      "resolution": "依使用者指示中止卡住的連線。腳本改成：慢於 100 KB/s 超過 2 分鐘就換新連線續傳、跳過已完整的檔案、完成後核對大小。最後 313 個檔案全部成功。"
+    },
+    {
+      "title": "額度用完，HCC1395 的 D 部分 subagent 中斷",
+      "detail": "15:38 碰到 5 小時額度上限，D 部分（單點突變生物學）停在 HKU 對 CASTLE 一節。",
+      "resolution": "17:01 恢復後主 agent 補完核對；HKU 對 CASTLE 比較屬於暫停範圍，不補做。"
+    }
+  ],
+  "advisor": [
+    {
+      "kind": "question",
+      "text": "SNV 階段的模擬器方案 A（維持獨立 50%）、B（加 SNV 座標與局部聚集）、C（真值多記親源）要選哪一個？（排進 11-11 報告「要請老師決定的事」）",
+      "answered": false
+    },
+    {
+      "kind": "question",
+      "text": "HG008 的克隆結構怎麼當 diplosim 的驗證目標？「像」要怎麼定義？（11-04 未決事項 3）",
+      "answered": false
+    }
+  ],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "11-06 23:00 ~ 11-07 23:00",
+  "scan": {
+    "last_scanned": "2026-11-07T23:00:10",
+    "sessions": [
+      "64791139",
+      "3c4d553c",
+      "3f963cce",
+      "303be265",
+      "c3a9f005",
+      "6b9cb276"
+    ],
+    "layers": {
+      "show": 5,
+      "record": 4,
+      "border": 1
+    }
+  }
+}

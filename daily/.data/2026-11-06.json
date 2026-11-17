@@ -1,0 +1,656 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-06",
+  "headline": "拷貝數相同的區段裡，COLO829、HG008 等 8 株的 SNV 都接近兩條各半，但親源仍不知道；diplosim 刪掉全部 read 雜訊，只模擬生物過程；驗證改走 HG008 的 clone 與單細胞，樹還沒重建",
+  "items": [
+    {
+      "title": "體細胞 SNV 在 HP1、HP2 是否各半？COLO829、HG008、PRCGAP 控制拷貝數後都接近一半",
+      "status": "done",
+      "priority": "P3",
+      "summary": "COLO829 的 61:39 主要來自 LOH，HG008 體染色體比值 0.97。8 株的 229 個拷貝數相同區段，只有 7 個校正後顯著；但親源沒有量",
+      "question": "diplosim 假設每個 SNV 獨立以 50% 落在兩條 HP 上。11-04 會議要求先查這個假設。COLO829 的原始比例是 61:39，這是真的偏向嗎？其他腫瘤也一樣嗎？",
+      "approach": "分三步，資料都以 long read 為主。\n\n- COLO829：不只數 SNV，也用 ONT 深度、雜合位點比例、同一條 read 的定相，和跨染色體的 read 判斷事件。\n- HG008：用 GIAB benchmark，只算兩條都留著的片段，再除以長度。\n- PRCGAP 8 株（Sakamoto 2026 預印本）：第一版逐染色體比較的結果不合理，查出拷貝數和長度兩個問題，改成只比拷貝數相同的 20 Mb 區段。",
+      "result": "COLO829 約 765 Mb 只剩一條，所以總數一定不平衡。扣掉超過 5 Mb 沒有 SNV 的片段後，密度是 **9.34 比 9.31 個／Mb**。\n\nHG008 原始 44:56，兩條都留著的體染色體是 **2.31 比 2.39 個／Mb，比值 0.97（95% CI 0.93–1.01）**。chrX 比值 0.66，chr5 比值 1.32，都校正後仍顯著。\n\n8 株合計 229 個區段，**7 個校正後顯著**。較多那條占 51.9%–58.3%，這個數字永遠取較多的一條，所以一定高於 50%。7 株的區段差異比純隨機大（卡方／自由度 1.8–4.4），HG008 最接近 1（1.21）。\n\n驗證：HG008 的 PRCGAP 判定和 GIAB 比對，SNV 吻合 99.9%（涵蓋 GIAB 的 64.5%），單倍型一致 97.4%。比對時約一半染色體的 hap1、hap2 是對調的。",
+      "interpretation": "「約 50%」可以繼續當暫定假設，但「每段都均勻」不成立。全基因組的 hap1:hap2 不能直接加總，因為標籤在染色體之間沒有對應。這些結果只支持觀測特徵這一層，不支持克隆結構或演化路徑，也沒有改 diplosim。",
+      "tables": [
+        {
+          "caption": "8 株的拷貝數相同區段（20 Mb，體染色體；較多那條占比一定高於 50%）",
+          "columns": [
+            "細胞株",
+            "嚴格過濾 SNV",
+            "區段數",
+            "區段內 SNV",
+            "卡方／自由度",
+            "較多那條占比",
+            "顯著區段"
+          ],
+          "rows": [
+            [
+              "COLO829",
+              27471,
+              33,
+              7762,
+              2.44,
+              "54.5%",
+              1
+            ],
+            [
+              "HG008",
+              6699,
+              43,
+              2520,
+              1.21,
+              "55.8%",
+              0
+            ],
+            [
+              "H1437",
+              40083,
+              15,
+              4795,
+              2.32,
+              "53.6%",
+              1
+            ],
+            [
+              "H2009",
+              112957,
+              36,
+              31617,
+              1.82,
+              "51.9%",
+              0
+            ],
+            [
+              "H209",
+              22947,
+              75,
+              11983,
+              2.31,
+              "54.6%",
+              2
+            ],
+            [
+              "H2126",
+              108853,
+              6,
+              6761,
+              4.38,
+              "52.5%",
+              1
+            ],
+            [
+              "HCC1937",
+              9893,
+              5,
+              434,
+              2.03,
+              "55.8%",
+              1
+            ],
+            [
+              "HCC1954",
+              13888,
+              16,
+              1609,
+              3.34,
+              "58.3%",
+              1
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-06/balanced_window_difference.png",
+          "caption": "8 株拷貝數相同的 20 Mb 區段：兩條的 SNV 差異"
+        },
+        {
+          "type": "img",
+          "src": "figures/2026-11-06/density_by_chromosome.png",
+          "caption": "HG008 各染色體兩條單倍型的 SNV 密度"
+        }
+      ],
+      "gaps": "親源完全沒有量，所以不能回答偏向爸爸或媽媽。過濾偏向高 VAF，subclonal 突變幾乎看不到。使用者要求的嚴格版沒有做：兩條同時 gain 或 loss、小於 20 Mb 的 CNV、著絲點和染色體頭尾都還沒排除。7 個顯著區段和區段差異偏大的原因都沒查。除了 HG008，其他 7 株的過濾沒有同等驗證。H2126、HCC1937 區段很少。全部是長期培養的細胞株，PRCGAP 也還沒同儕審查。",
+      "artifacts": {
+        "files": [
+          "tools/colo829_hap_snv_ratio.py",
+          "tools/colo829_event_evidence.py",
+          "tools/colo829_event_summary.py",
+          "tools/colo829_junction_reads.py",
+          "tools/colo829_major_minor_timing.py",
+          "tools/hg008_hap_snv_density.py",
+          "tools/prcgap_hap_snv_ratio.py"
+        ],
+        "commands": [
+          "python3 tools/prcgap_hap_snv_ratio.py /big8_disk/boyu114/benchmark_data/prcgap_sakamoto2026/extracted lab_report/2026-11-06_prcgap_hap_snv_ratio"
+        ],
+        "outputs": [
+          "lab_report/2026-11-06_colo829_hap_snv_ratio/",
+          "lab_report/2026-11-06_colo829_loss_events/",
+          "lab_report/2026-11-06_hg008_hap_snv_ratio/",
+          "lab_report/2026-11-06_prcgap_hap_snv_ratio/",
+          "/big8_disk/boyu114/benchmark_data/prcgap_sakamoto2026/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "LOH",
+          "plain": "一條單倍型的片段不見了，只剩另一條"
+        },
+        {
+          "term": "拷貝數相同區段",
+          "plain": "兩條單倍型份數一樣的片段，這裡比突變數才公平"
+        },
+        {
+          "term": "校正後顯著",
+          "plain": "比了很多段之後，差距仍不太像隨機造成"
+        },
+        {
+          "term": "卡方／自由度",
+          "plain": "區段間差異和純隨機的比值，接近 1 表示接近純隨機"
+        }
+      ],
+      "details": "commit：7b5ddb0、5b74edc、503ead9、5f15608。\n資料：Zenodo 21271691 v1.1，8 個 tar.gz，md5 全部通過，2.9 GB。\nCOLO829 數字見 lab_report/2026-11-06_colo829_hap_snv_ratio/haplotype_totals.tsv（gap 5 Mb 列為 9.342、9.308）。\nHG008 數字見 lab_report/2026-11-06_hg008_hap_snv_ratio/summary.tsv（retained_autosomes）。\n8 株數字見 lab_report/2026-11-06_prcgap_hap_snv_ratio/summary.tsv。",
+      "evidence": [
+        {
+          "line": 3282,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 15:14",
+          "ref": "0981c2ea:3282"
+        },
+        {
+          "line": 9455,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 20:12",
+          "ref": "64791139:9455"
+        },
+        {
+          "line": 9750,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 20:23",
+          "ref": "64791139:9750"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] diplosim 刪掉 HP0、mistag、base error 與假 SNV，只模擬生物過程",
+      "status": "done",
+      "priority": "P1",
+      "summary": "diplosim 刪掉 8 個雜訊參數，包含 10-31、11-01 加的 read 雜訊和 CONIPHER 原有的假 SNV。每條 read 現在都屬於 HP1 或 HP2，15 個測試通過",
+      "question": "原本的結論：diplosim 要補上 HP0、mistag、base error，資料才像真實 BAM（10-31、11-01）。今天重新看，是因為使用者提到老師說過，同時生出真值樹時，不可能有一條叫 unphased 的第三條染色體。",
+      "approach": "使用者直接決定做法：不管雜訊，一切以符合真實生物演化為目標。程式刪掉雜訊步驟、參數和輸出欄，測試改成檢查這些都不存在，再實跑一次（5 個 clone、2,000 個 SNV）。",
+      "result": "**完全推翻先前加雜訊的做法。** 刪掉 `prop_tagged`、`tag_concentration`、`mistag_rate`、`mistag_concentration`、`base_error`、`fract_noise`、`n_noise_clones`、`depth_dispersion`。\n\n15 個測試通過。實跑結果：每個位點的 HP1＋HP2 都等於總 read 數，alt read 都在 SNV 所在的那條 HP 上。\n\n保留 depth 的 Poisson 和 alt 的 Binomial 抽樣，因為那是 bulk 定序本身的取樣。",
+      "interpretation": "往後不再提議這類 read 雜訊。`CLAUDE.md` 的 N1 改成：HP0、mistag、read 錯誤是真實資料的觀測限制，模擬器不產生。下一步要讓模擬更真實，要加的是生物機制，不是雜訊。",
+      "gaps": "HCC1395 的 PPC 和 purity holdout 工具要切回 `3e3d70e` 之前才能重跑。舊報告和 11-04 投影片仍是改動前的結果，沒有更新。`tools/conipher_sim_check.py` 也讀 NOISE 欄，判斷應該不受影響，但沒有實際跑過。",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md",
+          "diplosim/DECISIONS.md",
+          "diplosim/docs/porting_map.md",
+          "diplosim/src/hp.rs",
+          "diplosim/src/lib.rs",
+          "diplosim/src/noise.rs",
+          "diplosim/src/output.rs",
+          "diplosim/src/params.rs",
+          "diplosim/src/sequencing.rs",
+          "diplosim/tests/behaviour.rs",
+          "tools/README.md"
+        ],
+        "commands": [
+          "cargo build --release"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "HP0",
+          "plain": "標不出屬於哪一條單倍型的 read"
+        },
+        {
+          "term": "mistag",
+          "plain": "read 被標到錯的單倍型"
+        },
+        {
+          "term": "觀測限制",
+          "plain": "真實定序量不到的部分，不是腫瘤本身的生物事實"
+        }
+      ],
+      "details": "commit：3e3d70e。src/noise.rs 整個刪除；輸出少了 HP0_REF、HP0_ALT、NOISE 欄。在 haploclone 目錄搜尋 HP0_REF、prop_tagged 沒有引用。",
+      "evidence": [
+        {
+          "line": 10613,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 21:33",
+          "ref": "64791139:10613"
+        },
+        {
+          "line": 10840,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 21:35",
+          "ref": "64791139:10840"
+        },
+        {
+          "line": 10981,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 21:37",
+          "ref": "64791139:10981"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 單細胞資料可以當驗證參考，即使不是 long read",
+      "status": "done",
+      "priority": "P1",
+      "summary": "需求表加一個例外：單細胞可當驗證參考。short read 的 bulk 和 cohort 統計仍然排除，輸入仍只用 long read",
+      "question": "原本的規則：輸入和驗證參考都只用 long read，HG008 的 119 顆單細胞（UG100）因此不符合。今天重新看，是因為這條和老師在 11-04 重視單細胞分群的方向衝突。",
+      "approach": "盤點時把這個衝突列成待決問題，由使用者決定。",
+      "result": "**規則放寬一個例外，不是整條取消。** 使用者決定單細胞可當驗證參考。short read 的 bulk 和 cohort 統計仍然排除。",
+      "interpretation": "HG008 的 119 顆單細胞可以用來交叉檢查克隆結構，所以 8 株 clone 加單細胞的驗證路徑成立。決定已寫進 `CLAUDE.md`、`diplosim/DECISIONS.md` 和盤點文件。",
+      "gaps": "這是使用者的決定，對話裡沒有老師本人確認的紀錄。PTA 的擴增錯誤和 dropout 怎麼處理還沒定。",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md",
+          "diplosim/DECISIONS.md",
+          "research/literature/surveys/independent_evidence_2026-11-06/summary.md"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "驗證參考",
+          "plain": "拿來檢查模擬像不像真實的資料，不是模擬器的輸入"
+        },
+        {
+          "term": "PTA",
+          "plain": "單細胞 DNA 擴增方法，會帶來擴增錯誤和漏抓"
+        }
+      ],
+      "details": "commit：3e3d70e（包含這項決定）。",
+      "evidence": [
+        {
+          "line": 10529,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 20:44",
+          "ref": "64791139:10529"
+        },
+        {
+          "line": 10453,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 20:39",
+          "ref": "64791139:10453"
+        }
+      ]
+    },
+    {
+      "title": "學習網站進版控，圖 7.7、7.8 加入 COLO829 與 HG008",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "腫瘤演化調查和學習網站進版控。圖 7.7、7.8 加入兩個細胞株的結果，也補上「個／Mb」的單位圖",
+      "question": "11-05 的調查和網站都還沒 commit。使用者也要求把今天的細胞株結果畫進網站，並用圖解釋看不懂的單位。",
+      "approach": "先 commit 調查與網站。COLO829 依使用者要求先畫一張獨立的視覺圖，再放進網站。圖 7.8 上方加單位圖，接著依序放整體和區域的結果。",
+      "result": "`a4e7828` 收進 31 個檔、5,117 行，包含 8 個主題筆記、claims 表和網站原始檔。圖 7.8 現在依序講單位、整體比較和區域比較。",
+      "interpretation": "突變比例這條線的結論，現在有一處圖解可以直接看。網站依使用者先前的要求，不放模擬器決策。",
+      "gaps": "靜態圖 `explainer.png` 沒有重新截圖，少了「不同批細胞不一樣」的補充，要以網頁版為準。手機版有截圖，但沒有打開檢查。",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_b.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/build_site.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/index.html",
+          "tools/draw_colo829_hap_explainer.py"
+        ],
+        "outputs": [
+          "lab_report/2026-11-06_colo829_hap_snv_ratio/explainer.html"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "個／Mb",
+          "plain": "每一百萬個鹼基有幾個突變，用來比較長度不同的片段"
+        }
+      ],
+      "details": "commit：a4e7828、3304c4f。網站重建：在 site/ 目錄跑 python3 build_site.py。",
+      "evidence": [
+        {
+          "line": 1853,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 13:53",
+          "ref": "0981c2ea:1853"
+        },
+        {
+          "line": 7072,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 15:51",
+          "ref": "64791139:7072"
+        }
+      ]
+    },
+    {
+      "title": "盤點 HG008 與 HCC1395 的獨立證據：只有 HG008 值得往下走",
+      "status": "done",
+      "priority": "P2",
+      "summary": "兩個來源都沒有完整的演化真值樹。HG008 的 8 株 clone 和 119 顆單細胞可以驗證克隆結構；HCC1395 的樹是從 bulk 推論的",
+      "question": "使用者擔心又陷入實驗迴圈，要先回到 11-04 會議，列全部大項。最大的缺口是：除了 BAM 統計，還有什麼獨立證據能驗證模擬？",
+      "approach": "只讀 repo 文件、論文和資料目錄，不下載也不做新實驗。每筆證據只回答：它量了什麼、能驗證哪一層、符不符合需求表。",
+      "result": "**只有 HG008 能支持克隆結構這一層。** HCC1395／SEQC2 的 Fig. 4a 是 bulk 推論的 PhyloWGS 樹，單細胞只有 CNV，新實驗也暫停，所以不再展開。\n\n會議提到的「五個克隆群」在 Fang 2021 對不上：Fig. 4a 畫了 8 個節點，文字搜尋 five 只看到定序和資料分組。",
+      "interpretation": "這回答了 11-04 的未決事項 2。演化路徑這一層只有片段，例如 clone 的巢狀關係、不同代的 WGD 比例（p21 9／40、p53 28／40、p101 20／20）。未決事項 3（怎麼用克隆分群驗證模擬）還沒解決。",
+      "tables": [
+        {
+          "caption": "三層能驗證到哪裡（推論）",
+          "columns": [
+            "層",
+            "最好的證據",
+            "狀況"
+          ],
+          "rows": [
+            [
+              "觀測特徵",
+              "NIST benchmark、已有的 long read bulk",
+              "夠用，但不能證明樹"
+            ],
+            [
+              "克隆結構",
+              "8 株 clone 加單細胞交叉檢查",
+              "可行，要先取得資料"
+            ],
+            [
+              "演化路徑",
+              "clone 巢狀關係、WGD 時間序列、CN 事件前後的 multiplicity",
+              "只有片段"
+            ]
+          ]
+        }
+      ],
+      "gaps": "Fang 2021 的 Extended Data 圖沒有逐張看，「五個克隆群」的來源還沒確定。「像」要怎麼定義、比較單位是什麼都還沒定。8 株也不等於 8 個遺傳 clone。",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/independent_evidence_2026-11-06/summary.md",
+          "research/index.md"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "克隆結構",
+          "plain": "腫瘤裡有哪些細胞家族，以及它們之間怎麼分枝"
+        },
+        {
+          "term": "WGD",
+          "plain": "細胞的整套基因體複製加倍"
+        }
+      ],
+      "details": "commit：3fe3d90。會議依據：2026-11-04（議題 3、4，決議 2，未決事項 2、3）。",
+      "evidence": [
+        {
+          "line": 10071,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 20:33",
+          "ref": "64791139:10071"
+        },
+        {
+          "line": 10445,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 20:39",
+          "ref": "64791139:10445"
+        },
+        {
+          "line": 9959,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 20:32",
+          "ref": "64791139:9959"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] HG008 的克隆結構只是 repo 推論，要重建樹",
+      "status": "ongoing",
+      "priority": "P1",
+      "summary": "原本當成事實講的克隆結構，其實來自 10-27 的報告，輸入已刪。已開始下載 72 個 clone 檔和 119 個單細胞 VCF，樹還沒重建",
+      "question": "原本的說法：盤點和方案 A 直接用「HG008 的克隆結構」當比較對象。今天使用者追問這是怎麼知道的。",
+      "approach": "回查來源，再對照 yungjen114 的共用目錄和 GIAB 官方目錄，列出缺什麼。使用者決定把必要資料放到自己的 big8，重建樹之後再和 diplosim 比。下載腳本會核對 MD5 和 gzip 完整性。",
+      "result": "**下修：它是 repo 先前推出來、部分有單細胞支持的候選結構，不是公認真值。** 官方目錄和讀過的文件裡沒看到現成的克隆樹。10-27 的輸入已刪，也沒進 git，所以建樹過程不能重現。\n\n共用副本只有 p23 bulk long read、NIST benchmark 和組裝，能驗證整體突變，不能驗證克隆結構。",
+      "interpretation": "先不再把它當標準答案。之後的順序是：驗證資料、從 8 株重建樹、用單細胞獨立檢查、再判斷 diplosim 能驗證到哪一層。A、B、C 三個方案由這個順序取代，最接近方案 B。",
+      "gaps": "寫這份日誌時，`download.log` 只有清單那一行，沒辦法確認下載是否完成。樹的重建、單細胞檢查和 diplosim 比較都還沒開始。「像」還沒定義。`tools/download_hg008_clones_sc.py` 還沒 commit，也還沒進 `tools/README.md`；`docs/index.md` 的路徑也還沒加。",
+      "artifacts": {
+        "files": [
+          "tools/download_hg008_clones_sc.py"
+        ],
+        "commands": [
+          "python3 -I tools/download_hg008_clones_sc.py /big8_disk/boyu114/benchmark_data/GIAB/HG008 6"
+        ],
+        "outputs": [
+          "/big8_disk/boyu114/benchmark_data/GIAB/HG008/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "clone（衍生株）",
+          "plain": "從單一細胞養大的細胞群"
+        },
+        {
+          "term": "passage（p23 等）",
+          "plain": "細胞培養繼代的次數，clone 來自 p14、p19，bulk 和單細胞是 p23"
+        }
+      ],
+      "details": "下載內容：8 株的 DeepSomatic、PURPLE、CNVkit、Severus 分析結果，以及 119 顆單細胞 VCF（10-26 統計約 64 GB）。CRAM 約 4.8 TB 沒有下載。",
+      "evidence": [
+        {
+          "line": 10997,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 21:38",
+          "ref": "64791139:10997"
+        },
+        {
+          "line": 11289,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 21:40",
+          "ref": "64791139:11289"
+        },
+        {
+          "line": 11328,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 21:44",
+          "ref": "64791139:11328"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] COLO829 到此結案，並撤回「chr1 的 0 是過濾假象」",
+      "status": "dropped",
+      "priority": "P1",
+      "summary": "使用者判定已是實驗迴圈，COLO829 不再追查；另外作者的圖 S2B 顯示 chr1 那條確實缺失，先前的假象說法撤回",
+      "question": "原本打算接著查 COLO829 的事件細節，並提了 A、B、C 三個後續。我也曾說 hap2 chr1 的 0 是作者過濾造成的假象。使用者問：為什麼要一直查它是不是真的 LOH？",
+      "approach": "用「結果能不能改變決定」重新判斷。chr1 的說法則回頭看作者的圖 S2B 和跨染色體的 read。",
+      "result": "**後續全部撤回，COLO829 結案。** 查 LOH 只是為了回答 61:39 是不是真的偏向，而密度 9.34 比 9.31 個／Mb 已經足夠回答。一個細胞株不足以推翻或設定模擬器的參數。\n\n**chr1 假象的說法完全撤回。** 圖 S2B 顯示 Sohn 那批細胞確實沒有這條。chr1p 第 3 份的數量在三批細胞不同：約 0、0.3、1，所以 2,954 比 0 不能代表所有 COLO829。",
+      "interpretation": "不再做 COLO829 的後續實驗，「每個 SNV 獨立 50%」先當暫定假設。以後遇到類似題目，先問結果能不能改變決定。這條已寫進記憶和 `lab_report/INDEX.md`。",
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-06/allelic_states.png",
+          "caption": "COLO829 每段的等位基因狀態，以及 2:1 區的突變位置（結案前最後的結果）"
+        }
+      ],
+      "gaps": "2:1 區份數少的那條比預測少約 10%（1,425 比 1,588），原因未定，只列為限制。實際親源沒有量。Document S1 被 PMC 擋下，沒有繞過，圖 S3–S12 沒看。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-06_colo829_loss_events/HANDOFF.md",
+          "lab_report/2026-11-06_colo829_loss_events/README.md",
+          "lab_report/INDEX.md"
+        ],
+        "outputs": [
+          "lab_report/2026-11-06_colo829_loss_events/early_late_major_minor.tsv"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "實驗迴圈",
+          "plain": "每個結果都帶出下一個小問題，但都不會改變決定"
+        },
+        {
+          "term": "2:1 區",
+          "plain": "一條單倍型 2 份、另一條 1 份的區域"
+        }
+      ],
+      "details": "commit：5b74edc、503ead9、5f15608。ONT 跨染色體 read：R10 24 條、PAO 5 條，把 chr1 接到 chr10。",
+      "evidence": [
+        {
+          "line": 5606,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 15:36",
+          "ref": "64791139:5606"
+        },
+        {
+          "line": 5612,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 15:37",
+          "ref": "64791139:5612"
+        },
+        {
+          "line": 3314,
+          "session_id": "0981c2ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 15:14",
+          "ref": "0981c2ea:3314"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "收集腫瘤演化核心假說：ISA 只能當近似，並畫成學習網站圖 3.6",
+      "what": "使用者要找有大量實證、可當主要論證的腫瘤演化假說，例如 ISA。開 subagent 查單株起源、依序累積、雙擊、passenger、ITH、突變時序等，主 agent 再逐句回全文核對，寫成 09_core_hypotheses.md，每條標親核或代理。結論：嚴格 ISA 有反例（Kuipers 2017 為 11／12 組；Demeulemeester 2022 有 21% 的 PCAWG 樣本，共 18,495 個雙等位突變），只能當 SNV 分群的近似。可當主要論證的有：coding passenger（約 99%）、subclone 普遍（95.1%）、TSG 雙擊（long read 17 對 in trans、2 對 in cis）、突變隨年齡累積。不能當前提的有：中性比例、Big Bang 泛化、腫瘤內速率固定、WGD 多早、chromothripsis 一次發生。不利點：Tarabichi 2021 主張建樹應限多樣本，而本研究目標是單一 bulk，要準備回應。subagent 回報 Kuipers「約 8,000 個平行突變」在全文找不到，已刪掉。之後把 ISA 畫成圖 3.6，放在第 3 章圖 3.5 之後，並加進詞典。已 commit 於 3304c4f，不是系統性回顧。",
+      "why_demoted": "被 5 項上限擠掉（分數低於呈現層，使用者訊息 3 則、沒有拍板句）。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/09_core_hypotheses.md",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_a.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/source.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 8352,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 16:59",
+          "ref": "64791139:8352"
+        },
+        {
+          "line": 8387,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 16:59",
+          "ref": "64791139:8387"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 學習網站拿掉 PRCGAP 六株，圖 7.8 只留 COLO829 與 HG008",
+      "what": "20:07 才把 8 株結果加進圖 7.8（3304c4f）。使用者接著問哪些細胞株真的能驗證突變屬於哪一邊。答案是只有 HG008 有獨立比對（和 GIAB 一致 97.4%），COLO829 只有部分（同一條 read 連接，4,393 個突變連得起來 3,968 個），另外 6 株只有 PRCGAP 自己的判定。使用者因此決定從網站拿掉 H1437、H2009、H209、H2126、HCC1937、HCC1954。圖 7.8 現在是 COLO829 1／33、HG008 0／43，合計 76 段 1 段顯著（COLO829 chr15 80–100 Mb，131 比 83）。lab_report 的 8 株報告保留。同時確認 PRCGAP 現成資料沒有親源：376 個檔案沒有親源欄，只有 B-ALL 段落寫父源母源，而那批親代資料未公開。用 imprinted DMR 自己推算只對 HG008 最可行，使用者決定先不做，以免再進實驗迴圈。已 commit 於 3fe3d90。",
+      "why_demoted": "被 5 項上限擠掉（分數低於呈現層，使用者訊息 1 則）。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/ch_b.py",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/site/index.html",
+          "research/literature/surveys/tumor_evolution_history_2026-11-05/summary.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 9765,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 20:26",
+          "ref": "64791139:9765"
+        },
+        {
+          "line": 9950,
+          "session_id": "64791139",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-06 20:30",
+          "ref": "64791139:9950"
+        }
+      ]
+    },
+    {
+      "title": "用 daily-log 寫完 11-05 日誌並推進游標",
+      "what": "11-05 23:00 跑 daily-log，整理 11-05 的工作。掃描、分層後寫成呈現 5 項、記錄 4 項，主題是 97 篇腫瘤演化文獻調查、research/ 三層知識庫和學習網站，複製一張架構圖進 daily/figures/2026-11-05/，渲染成 HTML 後推進游標。工作目錄的 daily/ 依約定沒有 commit。",
+      "why_demoted": "日誌本身的維護工作，分數最低，沒有使用者訊息。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-11-05.json",
+          "daily/2026-11-05.html"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 5073,
+          "session_id": "fda40ac5",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-05 23:03",
+          "ref": "fda40ac5:5073"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "title": "PRCGAP 第一版逐染色體比較不能用",
+      "detail": "HG008 chr13 算出 1.66，GIAB 是 1.06；HCC1954 沒有只剩一條單倍型的染色體。查出拷貝數影響（HCC1937 相關 0.95、HCC1954 0.90）和 contig 長度錯誤（chr13 hap2 143 比 99 Mb）。",
+      "resolution": "主比較改成拷貝數相同的 20 Mb 區段，逐染色體表只當對照，熱圖刪掉。"
+    },
+    {
+      "title": "PRCGAP 的過濾欄位沒有文件",
+      "detail": "`Normal_depth`、`Normal_VAF` 全是 0，第一次過濾得到 0 列；`point_mutation_other` 沒有說明。",
+      "resolution": "拿掉正常樣本深度過濾，用 HG008 和 GIAB 的比對選過濾條件（吻合率 68.6% → 99.9%）。這個選法只在 HG008 驗證過。"
+    },
+    {
+      "title": "Zenodo 舊版下載失敗",
+      "detail": "v1 下載因 curl 56 中斷，之後找到分株的 v1.1。",
+      "resolution": "刪掉 v1 的部分檔案，改下載 v1.1，md5 全部通過。"
+    }
+  ],
+  "advisor": [
+    {
+      "kind": "policy",
+      "text": "bulk 模擬定序資料不應該有 unphased read 等雜訊，因為生出真值樹時，不可能有第三條叫 unphased 的染色體（使用者轉述老師的話）"
+    }
+  ],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "11-05 23:00 ~ 11-06 23:00",
+  "scan": {
+    "last_scanned": "2026-11-06T23:00:06",
+    "sessions": [
+      "0981c2ea",
+      "fda40ac5",
+      "64791139",
+      "3c4d553c"
+    ],
+    "layers": {
+      "show": 7,
+      "record": 3,
+      "border": 0
+    }
+  }
+}

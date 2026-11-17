@@ -1,0 +1,534 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-04",
+  "headline": "研究方向收窄：HCC1395 的 PPC 與調參暫停，同 read 共現不再列為需求，下一步先查單點突變的生物假說；repo 同時整理成 agent 找得到重點的樣子，刪掉已排除路線與 longbulksim，加上 lab_report、tools、會議三份索引",
+  "items": [
+    {
+      "title": "main_work 的 agent 環境哪裡不穩、不快？列 12 項做了 9 項",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "加了 lab_report 與 tools 索引，HG008 改引實驗室共用副本，CLAUDE.md 依工作階段重組，刪掉術語檔與投影片舊版；S4（核心腳本測試）與 E7（權限白名單）決定不做",
+      "question": "使用者要讓 repo 裡的 AI agent 更有效率、更穩定，請 agent 盤點目前哪些地方會讓 agent 拿到錯的資訊、弄丟東西，或要讀太多無關內容。",
+      "approach": "agent 先實測再列清單：掃文件裡寫的路徑是否存在、比對工作記憶和 11-04 會議、數 git 追蹤的檔案、量各檔大小。清單分成穩定性 S1–S5 和效率 E1–E7 兩類，依影響排序。之後一次做一組，每組做完 commit，再分析下一組。改 CLAUDE.md 前先寫草稿，逐一核對 15 個規則編號都還在，使用者確認後才替換。",
+      "result": "做了 9 項：S1（.gitignore，見記錄層）、S2 資料盤點（docs/tumor_sample.md 標出 phyclone_dataset、smchet_dataset 已不存在，HG008 改引 /big8_disk/yungjen114/data/HG008）、S3 過時記憶、E1 lab_report/INDEX.md（53 個實驗各一列，寫結論與狀態）、E2 tools/README.md（共用核心、主流程指令）、E3 刪 research/CONTEXT.md（1,567 行、193 個詞條）與 TERMINOLOGY.md、E4 CLAUDE.md 依階段重組（9.8 KB → 8.4 KB）、E5 主流程指令寫進 tools/README（部分）、E6 刪投影片舊版 132 個檔，report_rule.md 改成用 git 備份。不做：S4（使用者決定暫停 HCC1395 驗證）、E7（auto mode 下一般指令本來就不必按允許）。S5（未 commit 的改動）沒處理。",
+      "interpretation": "agent 進來先看到研究目標，再從一張「要找什麼 → 先看哪個檔」的表跳到四份索引，不必再翻十幾份 README 拼出現況。CLAUDE.md 的規則改成依「現在在做什麼」分組，同一條規則只出現一次，之後會議再加規則時比較不會互相重疊。",
+      "tables": [
+        {
+          "caption": "改善清單的處理結果",
+          "columns": [
+            "編號",
+            "問題",
+            "處理"
+          ],
+          "rows": [
+            [
+              "S1",
+              "lab_report、report、research 被 .gitignore 擋住，刪了救不回來",
+              "已做（記錄層第 3 項）"
+            ],
+            [
+              "S2",
+              "資料盤點寫了不存在的路徑",
+              "已做，HG008 改引共用副本"
+            ],
+            [
+              "S3",
+              "工作記憶和最新會議衝突",
+              "已做"
+            ],
+            [
+              "S4",
+              "diplosim_ppc_hcc1395.py 沒有測試",
+              "不做：HCC1395 驗證暫停"
+            ],
+            [
+              "S5",
+              "未 commit 的改動堆在多處",
+              "沒處理"
+            ],
+            [
+              "E1",
+              "lab_report 沒有索引",
+              "已做，53 列"
+            ],
+            [
+              "E2",
+              "tools 沒有說明",
+              "已做"
+            ],
+            [
+              "E3",
+              "術語檔 1,567 行",
+              "已刪"
+            ],
+            [
+              "E4",
+              "CLAUDE.md 規則累加、重疊",
+              "已做，依階段重組"
+            ],
+            [
+              "E5",
+              "主流程指令沒寫下來",
+              "部分，寫進 tools/README"
+            ],
+            [
+              "E6",
+              "投影片舊版太多",
+              "已刪 132 檔，改用 git 備份"
+            ],
+            [
+              "E7",
+              "沒有權限白名單",
+              "不做：auto mode 已涵蓋"
+            ]
+          ]
+        }
+      ],
+      "gaps": "11-04 投影片 7 個修改頁、8 個新頁與 diplosim_features_igv.png 仍未 commit（S5）。CLAUDE.md 新版還沒在實際任務裡用過，分組好不好用沒驗證。E5 只寫了 diplosim → PPC → 畫圖這一條主流程，haploclone 的指令沒寫。",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md",
+          "lab_report/INDEX.md",
+          "tools/README.md",
+          "docs/tumor_sample.md",
+          "docs/data_input.md",
+          "docs/index.md",
+          "research/INDEX.md",
+          "report/report_rule.md",
+          "report/VISUAL_SPEC.md"
+        ],
+        "outputs": [
+          "commit 30cf966（lab_report、tools 索引）",
+          "commit 73d1e64（HG008 共用副本、會議）",
+          "commit 6ca6597（CLAUDE.md 重組）",
+          "commit b7976d4（刪術語檔）",
+          "commit 0822e32（刪投影片舊版）",
+          "commit 06b1a01（投影片改用 git 備份）"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "lab_report/INDEX.md",
+          "plain": "每個實驗一列，寫結論和現在是否還算數"
+        },
+        {
+          "term": "共用副本",
+          "plain": "實驗室成員已下載好的資料，直接讀，不再自己下載"
+        },
+        {
+          "term": "auto mode",
+          "plain": "Claude Code 的模式，一般指令不必每次按允許"
+        },
+        {
+          "term": "S／E 編號",
+          "plain": "agent 列的改善清單：S 是穩定性，E 是效率"
+        }
+      ],
+      "details": "session c88a3caf 11-04 15:29–16:27。\n15:30 清單提出 → 15:32 使用者給 HG008 路徑 → 15:41 commit 73d1e64\n15:45 commit 30cf966（E1、E2）\n15:48–16:03 S1 與清 PDF（記錄層）\n16:05 E4 草稿：15 個編號齊全、26 條關鍵規則有對應 → 16:09 commit 6ca6597\n16:13 E3 → b7976d4；16:16 E6 → 0822e32（先撤回一次重 commit，排除 11-04 投影片）；16:21 → 06b1a01\n16:26 push 5 個 commit 到 origin/diplosim-v1",
+      "evidence": [
+        {
+          "line": 6401,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 15:30",
+          "ref": "c88a3caf:6401"
+        },
+        {
+          "line": 8293,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 16:06",
+          "ref": "c88a3caf:8293"
+        },
+        {
+          "line": 9004,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 16:25",
+          "ref": "c88a3caf:9004"
+        }
+      ]
+    },
+    {
+      "title": "刪掉 longbulksim、已排除路線與 10 支沒人用的腳本",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "刪掉 PCDH、FS-CRP、TRACERx／PCAWG 路線的 lab report 與腳本，整個 longbulksim 目錄與 17 個依它做的 lab report，以及 tools 裡 10 支找不到使用者的腳本；tools 重新進 git",
+      "question": "使用者問 lab_report 裡哪些對「模擬符合癌細胞演化的 long read bulk」沒用，可以先刪。這些舊路線的檔案會讓 agent 搜尋時撈到過時結論。",
+      "approach": "agent 逐一查每個目錄的排除理由與誰引用它，分三類：已排除路線、被 diplosim 取代的 longbulksim 實驗、已整理進同組 README 的 sweep。C4／PhyClone 那組（約 8.9 GB）是 haploclone 的證據，建議保留。使用者決定刪已排除路線。接著調查 tools 的重複利用率：一支腳本被幾個 lab report、幾支腳本、幾份投影片用到。最後使用者要求整個 longbulksim 目錄刪掉，並清掉文件裡所有提到它的文字。每刪一個檔，引用它的文件原處加註「已刪」與取回方法。",
+      "result": "tools 原有 80 個檔，33 支（41%）被 2 個以上的地方用到，37 支只用過一次，10 支找不到使用者；這 10 支刪掉，其中 4 支從沒進過 git，無法取回。重複利用最高的是 diplosim_ppc_hcc1395.py（19 個實驗、7 支腳本）。longbulksim 刪 31 個檔（tag longbulksim-v0.8-frozen 保留程式），連帶刪 17 個 lab report（13 個從沒進 git）和 6 支 import 它的腳本。tools 從 .gitignore 拿掉後補進 29 個漏追蹤的檔，剩 70 個檔全部在 git 裡。",
+      "interpretation": "現在 repo 裡留下的實驗與腳本，都屬於 diplosim 模擬或 haploclone 樹重建這兩條主線，agent 不會再把凍結的 longbulksim 當成現行模擬器。刪除時發現一半以上的實驗目錄沒進 git，這直接引出記錄層的 .gitignore 修正。",
+      "figures": [
+        {
+          "type": "svg",
+          "content": "<svg viewBox=\"0 0 640 150\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"14\"><text x=\"0\" y=\"20\" fill=\"#333\">tools/ 80 個檔：被幾個地方用到</text><rect x=\"0\" y=\"40\" width=\"264\" height=\"40\" fill=\"#2a6f97\"/><rect x=\"264\" y=\"40\" width=\"296\" height=\"40\" fill=\"#8fb8d6\"/><rect x=\"560\" y=\"40\" width=\"80\" height=\"40\" fill=\"#d1495b\"/><text x=\"132\" y=\"66\" fill=\"#fff\" text-anchor=\"middle\">≥2 處：33 支</text><text x=\"412\" y=\"66\" fill=\"#123\" text-anchor=\"middle\">1 處：37 支</text><text x=\"600\" y=\"66\" fill=\"#fff\" text-anchor=\"middle\">0：10</text><text x=\"600\" y=\"105\" fill=\"#d1495b\" text-anchor=\"middle\">全部刪除</text><text x=\"0\" y=\"135\" fill=\"#555\" font-size=\"12\">用途 = 引用它的 lab report、呼叫它的腳本、引用它的投影片</text></svg>",
+          "caption": "tools/ 腳本的重複利用情況（刪除前）"
+        }
+      ],
+      "gaps": "4 支沒進過 git 的腳本刪了就救不回來，包括 diplosim/DECISIONS.md 裡 3 張方案圖的產生腳本，圖還在但改不了。17 支腳本各自寫了一份中文字型設定、6 支各自寫 read_tsv，這個重複沒有重構。C4／PhyClone 那組約 8.9 GB 的中間檔沒動。",
+      "artifacts": {
+        "files": [
+          "diplosim/DECISIONS.md",
+          "diplosim/docs/conipher_steps.md",
+          "research/simulation_pipeline_research/notes/05_OTHER_SIMULATORS.md",
+          "research/simulation_pipeline_research/truth_evidence_2026-10-25/README.md",
+          ".gitignore"
+        ],
+        "outputs": [
+          "commit 16a913e（已排除路線）",
+          "commit bbb763b（tools 重新追蹤、刪 10 支）",
+          "commit d56b779（刪 longbulksim）"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "longbulksim",
+          "plain": "之前用 Python 寫的模擬器，10-29 起由 diplosim 取代"
+        },
+        {
+          "term": "已排除路線",
+          "plain": "先前評估後決定不走的方向：PCDH 甲基化 barcode、FS-CRP 生成器、short read 的 TRACERx／PCAWG 統計"
+        },
+        {
+          "term": "重複利用",
+          "plain": "一支腳本被兩個以上的實驗、腳本或投影片用到"
+        }
+      ],
+      "details": "session c88a3caf 11-04 14:24–15:17。\n14:26 列 23 個可刪目錄（約 580 MB）與 ①刪 ②搬 _archive ③刪中間檔 三個做法 → 14:29 使用者：已排除路線都刪 → 14:32 相關腳本也刪 → 14:37 commit 16a913e\n14:45 tools 重複利用率 → 14:55 刪 10 支、tools 重新追蹤 → 14:58 commit bbb763b\n15:03 刪 longbulksim 並清文字 → 15:07 a–d 類全刪、e 不刪 → 15:12 整個目錄刪 → 15:17 commit d56b779\n2026-10-30 PPC 的真實資料表也在被刪的目錄裡，11-04 投影片與 11-01 重跑指令改指向內容相同的 2026-10-31_diplosim_ppc_hcc1395_lost045",
+      "evidence": [
+        {
+          "line": 3007,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 14:26",
+          "ref": "c88a3caf:3007"
+        },
+        {
+          "line": 4182,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 14:55",
+          "ref": "c88a3caf:4182"
+        },
+        {
+          "line": 4297,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 14:56",
+          "ref": "c88a3caf:4297"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 先停 HCC1395 的觀察與驗證，改查單點突變的生物假說",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "10-31 到 11-03 的主線（diplosim 對 HCC1395 的 PPC、purity holdout、調參）暫停，既有結果只當歷史參考；檔案保留不刪",
+      "question": "agent 建議下一步替 diplosim_ppc_hcc1395.py 補測試（S4），因為它被 19 個實驗使用。使用者認為目前進度推得太快，HCC1395 這條線應該先停。",
+      "approach": "使用者決定 S4 不做，並暫停 HCC1395 的觀察與驗證。agent 把「取消」理解成暫停並記錄決定、檔案保留，在 4 個檔與工作記憶寫明，避免之後的 agent 又提議新的 HCC1395 實驗。",
+      "result": "diplosim/DECISIONS.md 新增暫停那一列；CLAUDE.md 研究目標加上「目前暫停：HCC1395 的觀察與驗證」，寫明不要提議新的 PPC、purity holdout 或調參；lab_report/INDEX.md 與 tools/README.md 標出這條線已暫停。已 commit（b24f825）並 push。",
+      "interpretation": "這推翻了 10-31 到 11-03 的工作方向：那幾天的重點是讓 diplosim 的 BAM 統計量對上 HCC1395。11-04 會議指出，統計量相似不能證明演化樹或演化過程正確（N3），所以現在先查單點突變的癌症演化假說（N2），一次只加一個機制（N4），HCC1395 的比對等之後再回來。",
+      "gaps": "單點突變的假說文件還沒開始寫。diplosim 目前已經有 CNA、第二次 CNA、WGD，和 N4「先單點突變」的順序不同；要不要退回、怎麼退，還沒決定。",
+      "artifacts": {
+        "files": [
+          "diplosim/DECISIONS.md",
+          "CLAUDE.md",
+          "lab_report/INDEX.md",
+          "tools/README.md"
+        ],
+        "outputs": [
+          "commit b24f825"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "PPC",
+          "plain": "用 diplosim 模擬很多次，看真實值有沒有落在模擬的範圍內"
+        },
+        {
+          "term": "purity holdout",
+          "plain": "用一個 purity 定好參數，再看其他 purity 是否還對得上"
+        },
+        {
+          "term": "單點突變",
+          "plain": "只改一個鹼基的突變（SNV），不含拷貝數變化"
+        }
+      ],
+      "details": "session c88a3caf 11-04 16:12–16:13。\n使用者原話與 agent 的解讀見 evidence。工作記憶新增 hcc1395-validation-paused。",
+      "evidence": [
+        {
+          "line": 8371,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 16:12",
+          "ref": "c88a3caf:8371"
+        },
+        {
+          "line": 8375,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 16:12",
+          "ref": "c88a3caf:8375"
+        }
+      ]
+    },
+    {
+      "title": "agent 為什麼常拿到過時資訊？修入口文件，plan.md 搬到 haploclone",
+      "status": "done",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "結構檢查找到 7 個缺點；先做 A 方案：更正 CLAUDE.md 與 research/INDEX.md，plan.md 搬到 haploclone，資料盤點移進 docs/，補上 10-28 會議 summary",
+      "question": "使用者想知道 main_work 的檔案結構能不能讓 AI agent 快速、正確找到重點。",
+      "approach": "agent 用 ls、du、git ls-files 實測結構，並掃文件裡寫到的路徑是否存在。列出 7 個缺點和 A（修入口）、B（加 lab_report 索引）、C（歸檔舊東西）三個方案，照使用者要求畫成一張決策 PNG。使用者選 A。使用者另外要求 plan.md 搬到 haploclone，並刪掉 PhyClone 等字眼，避免 agent 只照 PhyClone 原版去改。",
+      "result": "7 個缺點裡最嚴重的兩個：CLAUDE.md 第 13 行還寫 diplosim「目前是空目錄」；plan.md（1,047 行、68 KB）最後更新在 10-21，沒標哪些段落已失效。另有 7 個斷掉的路徑引用。A 方案做完：CLAUDE.md 改成 diplosim 是現行模擬器，research/INDEX.md 補上 diplosim 並標 longbulksim 已凍結，plan.md 搬到 haploclone rust/docs/plan.md，data_input.md 與 tumor_sample.md 移進 docs/ 並新增 docs/index.md（問題 → 章節 → 一句話答案），新增 10-28 會議 summary。",
+      "interpretation": "入口文件是 agent 每次對話最先讀的東西，寫錯一行就會讓後面整串判斷偏掉。這次修完，B 與 C 方案在同一天下午也接著做了（見第 1、2 項）。",
+      "gaps": "決策 PNG 只存在暫存目錄，沒放進 repo。plan.md 搬過去後內容沒有重寫，仍是 10-21 的設計，只在檔頭加「現況」。",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md",
+          "research/INDEX.md",
+          "docs/index.md",
+          "docs/data_input.md",
+          "docs/tumor_sample.md",
+          "meeting_record/2026_10_28_meeting_summary.md",
+          "/bip8_disk/boyu114/haploclone/rust/docs/plan.md"
+        ],
+        "outputs": [
+          "commit cf8d155",
+          "haploclone commit 1af6322"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "入口文件",
+          "plain": "agent 開工時第一個讀的檔：CLAUDE.md 與 research/INDEX.md"
+        },
+        {
+          "term": "haploclone",
+          "plain": "PhyClone 的 Rust 移植，HP 擴充在這裡做"
+        },
+        {
+          "term": "斷掉的路徑引用",
+          "plain": "文件裡寫的檔案路徑，實際上已不存在"
+        }
+      ],
+      "details": "session c88a3caf 11-04 14:00–14:36。\n14:01 結構檢查 → 14:04 決策 PNG → 14:08 選 A → 14:14 plan.md 搬 haploclone → 14:20 docs/ 與 index.md → 14:36 commit cf8d155",
+      "evidence": [
+        {
+          "line": 1503,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 14:01",
+          "ref": "c88a3caf:1503"
+        },
+        {
+          "line": 2302,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 14:14",
+          "ref": "c88a3caf:2302"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 同一條 read 上的共現不再列為需求",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "CLAUDE.md 需求表拿掉「要能產生 HP1／HP2 與同 read 共現」，只留 long read、真值樹、單一 bulk sample",
+      "question": "重組 CLAUDE.md 時，agent 發現需求表還寫著「要能產生 HP1／HP2 與同 read 共現」，但 diplosim 只輸出計數、沒有 read，產生不了共現。這條需求還算不算數？",
+      "approach": "agent 在草稿裡列出兩個選項（保留並之後補 read 層級，或從需求表拿掉），請使用者決定。使用者選拿掉。agent 在需求表後面加一句括號註明是使用者決定，避免之後的 agent 以為漏寫又加回來。",
+      "result": "需求表改成：只用 long read（輸入與驗證參考都是）；要有真值樹；只優化一個 bulk sample。diplosim/DECISIONS.md 接續 10-31「共現暫緩」那一列，記下這次從需求表拿掉。commit 6ca6597、b24f825。",
+      "interpretation": "10-31 只是把共現「延後」，需求表上它仍是必要條件；今天正式拿掉，diplosim 不必再為了共現補 read 層級。評估資料、benchmark 或方法時，也不再因為缺共現而排除。",
+      "gaps": "haploclone 的 HP 設計（rust/docs/plan.md）裡和共現有關的段落沒有跟著標註。如果之後要回頭做共現，lab_report 裡 longbulksim_pair_relations 已經跟著 longbulksim 刪掉，要從 git 取回。",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md",
+          "diplosim/DECISIONS.md"
+        ],
+        "outputs": [
+          "commit 6ca6597",
+          "commit b24f825"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "同 read 共現",
+          "plain": "兩個 SNV 出現在同一條 read 上，可以直接看出它們在不在同一條 HP、同一個 clone"
+        },
+        {
+          "term": "需求表",
+          "plain": "CLAUDE.md 裡評估任何資料或方法前必須逐條對照的條件"
+        }
+      ],
+      "details": "session c88a3caf 11-04 16:06–16:09。",
+      "evidence": [
+        {
+          "line": 8330,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 16:09",
+          "ref": "c88a3caf:8330"
+        },
+        {
+          "line": 8356,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 16:09",
+          "ref": "c88a3caf:8356"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "整理 11-04 會議紀錄，CLAUDE.md 加研究目標",
+      "what": "為什麼：11-04 會議紀錄只有原始 txt（2026_11_4_meeting_record.txt），沒有 summary，CLAUDE.md 也寫死只讀 10-21、10-28 兩次會議。做了什麼：檔名改成 2026_11_04_meeting_record.md 並轉 LF（md5 一致）；新增 2026_11_04_meeting_summary.md，問題 N1–N5：N1 模擬的真值要和觀測分開、N2 改機制前先查生物假說、N3 BAM 相似不等於演化樹正確、N4 一次加一個機制先單點突變、N5 專案層要寫研究目標、報告加 AI 環境改善頁；新增 meeting_record/index.md（日期、會議目的、關鍵字、決議）；CLAUDE.md 新增「研究目標」一節，並改成一律以 index 裡日期最新的會議為準。結果：整理時發現 diplosim 不符 N1（output.rs:97-101 只輸出 mistag、HP0 之後的 HP 計數，每個計數真正來自哪條 HP 沒留在真值裡）與 N4（已經有 CNA、第二次 CNA、WGD）。狀態：commit 73d1e64；兩個缺口只記進 summary 待辦，沒改程式，等使用者決定。",
+      "why_demoted": "被 5 項上限擠掉（11 分）。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "meeting_record/index.md",
+          "meeting_record/2026_11_04_meeting_record.md",
+          "meeting_record/2026_11_04_meeting_summary.md",
+          "CLAUDE.md"
+        ],
+        "outputs": [
+          "commit 73d1e64"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 6231,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 15:26",
+          "ref": "c88a3caf:6231"
+        },
+        {
+          "line": 6270,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 15:26",
+          "ref": "c88a3caf:6270"
+        }
+      ]
+    },
+    {
+      "title": "daily 首頁 13 個斷連結：render.py 改成連到週彙整",
+      "what": "為什麼：10-19 到 11-01 的單日頁整理進 weekly/ 後被刪，daily/README.md 與 index.html 留下 13 個斷連結，11-02 頁的「上一篇」也斷了；而且 render.py --all 會把刪掉的頁重新產生回來。做了什麼：先 commit 11-02、11-03 日誌（954739d）；改 daily-log skill 的 scripts/render.py：單日頁不在且 weekly/ 有涵蓋那天的週彙整（依檔名 起_迄.html 判斷）時，首頁、README、上一篇／下一篇都改連到週彙整並標「已整理進週彙整」，--all 跳過這些日期。先在複本上跑 --all 驗證無斷連結、刪掉的頁沒回來，再重產真的 daily/。結果：commit db9fa20（15:56 改寫歷史前的編號是 efb15e9），11-02 的「下一篇 11-03」也補上。狀態：skill repo 的 render.py 改動在磁碟上（cron 會直接用新版），但沒 commit，因為那個 repo 還有使用者自己未 commit 的 SKILL.md、RECOVERY.md、collect_day.sh 改動。",
+      "why_demoted": "被 5 項上限擠掉（10 分）。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "/home/boyu114/.claude/skills/daily-log/scripts/render.py",
+          "daily/index.html",
+          "daily/README.md",
+          "daily/2026-11-02.html"
+        ],
+        "outputs": [
+          "commit 954739d",
+          "commit db9fa20"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 4836,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 15:01",
+          "ref": "c88a3caf:4836"
+        }
+      ]
+    },
+    {
+      "title": "公開 repo 放寬 .gitignore，並從歷史清掉論文 PDF",
+      "what": "為什麼：.gitignore 擋著 /lab_report/、/report/、/research/，但裡面已有上千個檔被追蹤，新的 README 默默進不了 git；刪 longbulksim 時 17 個目錄有 13 個救不回來。14:39 使用者原本想「可以 commit 但不 push」，14:43 決定先不管，15:46 再處理。做了什麼：agent 用 gh 查到 CCU-Bioinformatics-Lab/bo-yu-daily 是 PUBLIC，列 3 個方案（①改私人 repo ②本機第二個 git ③維持公開只放寬 .gitignore），使用者選 ③。.gitignore 改成只擋 lab_report 的 *.h5、*.gz、*.nwk、*.log 與 research 的 PDF、xlsx；加入 489 個檔（77 MB，最大 952 KB，掃過金鑰與 email），commit 07530bc。使用者問 PDF 會不會上傳：目前不會，但歷史裡已有 5 份論文 PDF 在 GitHub 上；使用者因版權顧慮決定清掉。先做 bundle 備份（/bip8_disk/boyu114/git_backups/main_work_2026-11-04_before_pdf_purge.bundle，236 MB），改寫歷史拿掉論文 PDF 8 份、補充表格 xlsx 6 份（第一次漏了 3 份用搬移進入歷史的 PDF，第二次逐 commit 掃完整檔案樹），文件裡 26 個舊 commit 編號全部換新（main_work 17 檔、haploclone 2 檔、工作記憶），使用者確認後 force push main 與 diplosim-v1。結果：GitHub 兩個 branch 的歷史只剩自己畫的 loss_tree.pdf；但用完整 SHA 仍打得開舊 commit，repo 沒有 fork。刪掉本機 refs/original/，整理 233 個舊 commit 的清單給 GitHub Support。另發現 haploclone 的 origin 是 Roth-Lab/PhyClone，rust-port 沒有任何異地備份；使用者決定先不處理，因為可能重寫。狀態：GitHub Support 申請要使用者自己送出；daily/ 裡的舊 commit 編號沒改；haploclone commit bdb1891 未 push。",
+      "why_demoted": "被 5 項上限擠掉（9 分）；屬於環境類，扣分。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          ".gitignore",
+          "/bip8_disk/boyu114/git_backups/main_work_2026-11-04_before_pdf_purge.bundle",
+          "/bip8_disk/boyu114/git_backups/github_support_purge_list_2026-11-04.txt"
+        ],
+        "commands": [
+          "gh repo view CCU-Bioinformatics-Lab/bo-yu-daily --json visibility",
+          "git push --force-with-lease origin main diplosim-v1"
+        ],
+        "outputs": [
+          "commit 07530bc",
+          "commit 6947774",
+          "commit 5e86bf0",
+          "haploclone commit bdb1891"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 7361,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 15:46",
+          "ref": "c88a3caf:7361"
+        },
+        {
+          "line": 7633,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 15:53",
+          "ref": "c88a3caf:7633"
+        },
+        {
+          "line": 8049,
+          "session_id": "c88a3caf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-04 15:59",
+          "ref": "c88a3caf:8049"
+        }
+      ]
+    },
+    {
+      "title": "用 daily-log 寫完 11-03 日誌並推進游標",
+      "what": "為什麼：11-03 23:00 cron 跑 daily-log。做了什麼：掃 11-02 23:00 到 11-03 23:00，寫 daily/.data/2026-11-03.json（呈現 3 項、記錄 3 項），過 validate、verify_evidence、render，推進游標到 11-03 23:00:13。結果：daily/2026-11-03.html 產出；headline 寫 LOH 那一項而不是分數最高的報告頁，因為只有它推翻了 11-02 的結論；可讀性提醒 6 個標題太長，把結果半句移到 summary 後為 0 個提醒。狀態：這份日誌在 11-04 14:58 跟 11-02 一起 commit（954739d）。",
+      "why_demoted": "日誌例行工作，沒有使用者訊息。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-11-03.json",
+          "daily/2026-11-03.html"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1305,
+          "session_id": "48260f96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-03 23:03",
+          "ref": "48260f96:1305"
+        }
+      ]
+    }
+  ],
+  "issues": [],
+  "advisor": [],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "11-03 23:00 ~ 11-04 23:00",
+  "scan": {
+    "last_scanned": "2026-11-04T23:00:35",
+    "sessions": [
+      "48260f96",
+      "c88a3caf",
+      "e1070575",
+      "71ef2a5f"
+    ],
+    "layers": {
+      "show": 5,
+      "record": 4,
+      "border": 0
+    }
+  }
+}

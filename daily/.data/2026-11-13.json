@@ -1,0 +1,624 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-13",
+  "headline": "HG008 只用 NIST 名單比不到深層分支；改用 ClairS 從 read 找 SNV 後，確認深層分支的突變在 bulk 裡，只是多數低於偵測門檻，重建已開跑",
+  "items": [
+    {
+      "title": "11-18 週會投影片做好了嗎？11 頁已發佈，ClairS 頁待補",
+      "status": "ongoing",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "11-18 週會投影片：先寫大綱，兩位審查者提 20 多點，修完做成 11 頁發佈；ClairS 那頁還沒加",
+      "question": "下週三（11-18）週會要報告本週五項主軸的進度。主問題是：「把 HP 加進樹重建，在模擬和 HG008 上各看到什麼？」",
+      "approach": "- 先建 `report/2026_11_18_slides/BRIEF.md`，照 CLAUDE.md「交付」的順序排 12 頁大綱。\n- 使用者確認四件事：主問題與頁序可以、日期 11-18、自我檢查只寫在 BRIEF、AI 環境頁只放這週已做的改善。\n- 照投影片規則 P-1，開兩個 subagent 審大綱：一位抓邏輯漏洞，一位扮生物資訊教授。\n- 修完大綱後，四個 subagent 分段畫頁面，再開一個 subagent 檢查全冊。\n- agent 自己再看決定頁，拿掉沒有依據的說法，然後發佈。",
+      "result": "- **審查：** 兩位審查者共提 20 多點，數字都和 lab_report 對得上。主要缺口有三個：決定頁用了 D1–D4 這類內部代號；HG008 還沒有重建結果，大綱沒交代；模擬設定（coverage 400、HP 全知、全部 1+1）和 HG008 沒有並排比較。\n- **使用者決定：** 頁面全部白話；AI 流程的兩個問題（被「現成好用」帶偏、lab_report 的圖寫成全文字）不放進報告，之後再處理。\n- **成品：** 11 頁，`check_slides` 0 個錯誤。全冊檢查後修了 5 處，例如：HG008 的 purity 改成「推測約 1，未實測」；SNV 來源的傾向改成「從 read 找，用 NIST 核對」。\n- **決定頁：** agent 拿掉兩個說法：「HG008 有 57% 不是 1+1」被當成好處，實際兩條份數不同的區域只約 2%；subagent 自己定的傾向，改成「未定」。\n- **發佈：** 已發佈到 claude.ai Slides，目前只有使用者看得到。",
+      "interpretation": "報告的主線已經可以講：模擬這條線有完整的方法、結果、原因；HG008 這條線講到「NIST 名單不夠」為止。ClairS 和重建的結果出來後，要補一頁，總頁數改成 12。",
+      "gaps": "ClairS 那頁還沒做，第 2 頁的頁碼引用和頁尾總頁數要跟著改。附錄 B 和 11-04 §2.2 的自我檢查還沒逐條跑。投影片資料夾和 DECISIONS.md 的改動都還沒 commit。HG008 重建結果出來後，第 9 頁「還沒重建」的標題要改。",
+      "artifacts": {
+        "files": [
+          "report/2026_11_18_slides/BRIEF.md",
+          "report/2026_11_18_slides/REVIEW_v1.md",
+          "report/2026_11_18_slides/slidekit.py",
+          "report/2026_11_18_slides/gen_open.py",
+          "report/2026_11_18_slides/gen_bg.py",
+          "report/2026_11_18_slides/gen_sim.py",
+          "report/2026_11_18_slides/gen_hg.py",
+          "report/2026_11_18_slides/gen_close.py",
+          "report/2026_11_18_slides/project/deck.json",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/open-workflow-gaps-2026-11-13.md"
+        ],
+        "commands": [
+          "python3 tools/check_slides.py report/2026_11_18_slides/ --titles",
+          "python3 report/2026_11_18_slides/preview.py"
+        ],
+        "outputs": [
+          "report/2026_11_18_slides/project/slides/（11 頁 html）",
+          "claude.ai Slides artifact（連結記在 BRIEF.md）"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "P-1 審查",
+          "plain": "投影片規則：做頁面之前，先請兩個角色檢查大綱"
+        },
+        {
+          "term": "標題串讀",
+          "plain": "只讀每頁標題，看能不能把整個故事講完"
+        },
+        {
+          "term": "purity",
+          "plain": "樣本裡腫瘤細胞所占的比例"
+        }
+      ],
+      "details": "頁序：outline、tasks、ref-tree、papers、sim-method、sim-result、sim-why、hg-plan、hg-nist、decide、ai-env\n講稿上限：這份簡報放寬到 275 字（使用者 11-13，只記在 BRIEF）\n決定頁「兩條份數不同」：1+2 1.4%、2+1 0.5%，合計約 2%（補進 hg008_bulk_rebuild README 第 56 行）",
+      "evidence": [
+        {
+          "line": 3862,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 16:20",
+          "ref": "ec9172ea:3862"
+        },
+        {
+          "line": 5005,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 16:52",
+          "ref": "ec9172ea:5005"
+        },
+        {
+          "line": 5039,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 16:58",
+          "ref": "ec9172ea:5039"
+        }
+      ]
+    },
+    {
+      "title": "HG008 的 bulk 只用 NIST 名單，比得到參考樹的哪幾層？只有最上層",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "本週主軸第 4 項開工：盤點資源、畫圖示版流程圖；NIST 名單落在參考樹分支上的 139 個 SNV 幾乎全在最上層，48 顆和 16 顆那兩層都是 0",
+      "question": "第 4 項要用 HG008 的 bulk long read 重建樹，再和參考樹（8 株選殖株＋119 顆單細胞）比。開跑前要先知道：手上有哪些資料、用什麼軟體、SNV 名單從哪裡來？",
+      "approach": "- 盤點共用副本：tumor BAM（ONT 63×、PacBio 116×，都是第 23 代）、NIST somatic SNV v0.4、NIST 拷貝數 v0.6、已 phase 的 germline。\n- 畫流程圖。第一版全是文字，使用者要求改成圖示風格，於是重畫，舊圖刪掉。\n- 列出四個要帶到週會的選擇：SNV 從哪來、HP 從哪來、只用 1+1 嗎、用哪個平台。\n- 使用者要求先算兩個數字：NIST 名單在參考樹分支上有幾個 SNV，和 1+1 區占多少。",
+      "result": "- **NIST 名單：** 9,810 個單鹼基 SNV，每個都標了 hap 和拷貝數。\n- **落在參考樹分支上：** 139 個，幾乎都在最上層。7 株共有那支有 126／127；48 顆細胞那層 0／14；16 顆那層 0／68；各株獨有的 0／3,593。\n- **1+1 區：** 全基因組 43.4%；單拷貝 LOH 51.6%；其他不到 5%。NIST 的 SNV 有 48.8% 在 1+1 區。\n- **看全範圍也一樣：** 使用者問「不限 1+1 呢？」。139 本來就是全範圍的數字；把因拷貝數排除的 SNV 加回來，2–4 株共有的深層 SNV 也只多 2 個。",
+      "tables": [
+        {
+          "caption": "參考樹各層在 NIST 名單裡有幾個 SNV",
+          "columns": [
+            "參考樹分支",
+            "單細胞帶有",
+            "選殖株的 SNV",
+            "在 NIST 名單",
+            "在 NIST 且在 1+1"
+          ],
+          "rows": [
+            [
+              "7 株共有（除 3E4）",
+              "111／119",
+              "127",
+              "126",
+              "88"
+            ],
+            [
+              "2D6, 2E6",
+              "未驗證",
+              "31",
+              "2",
+              "2"
+            ],
+            [
+              "SC14, SC24, SC28, SC9",
+              "48／119",
+              "14",
+              "0",
+              "0"
+            ],
+            [
+              "SC14, SC28",
+              "16／119",
+              "68",
+              "0",
+              "0"
+            ],
+            [
+              "SC24, SC9",
+              "未驗證",
+              "17",
+              "0",
+              "0"
+            ],
+            [
+              "各株獨有",
+              "—",
+              "3,593",
+              "0",
+              "0"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-13/plan_flow_icons.png",
+          "caption": "HG008 bulk 重建的規劃：上排是 bulk 到重建的步驟，下排是參考樹，右邊比對；紅框是要決定的四件事"
+        }
+      ],
+      "interpretation": "只用 NIST 名單，bulk 重建實際上沒有分支可以比。能比的只有共同祖先和 111 顆那層，兩者 CCF 是 1.0 對約 0.93，本來就很難分開。原因可能是 NIST 名單來自腫瘤組裝，組裝只代表多數細胞（推論）。所以要比到深層，SNV 必須從 read 直接 call，這直接導向下一項的 ClairS。",
+      "gaps": "「組裝只代表多數細胞」是推論，沒有查 NIST 的方法文件確認。1+1 是用 NIST 拷貝數判斷的，那是多數細胞的狀態，看不到 subclone 的拷貝數；另有 18.5% 的 SNV 沒有拷貝數 call。NIST 拷貝數量的是哪一代、哪個實驗室的樣本，還沒確認是不是 p23。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-13_hg008_bulk_rebuild/README.md",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/make_flow_icons.py",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/count_nist_branch_cn.py",
+          "lab_report/2026-11-07_hg008_tree_rebuild/tables/snv_classes_vaf0.25_qual20.tsv",
+          "lab_report/INDEX.md",
+          "docs/tumor_sample.md"
+        ],
+        "commands": [
+          "python3 -I lab_report/2026-11-13_hg008_bulk_rebuild/count_nist_branch_cn.py"
+        ],
+        "outputs": [
+          "lab_report/2026-11-13_hg008_bulk_rebuild/plan_flow_icons.png",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/nist_branch_cn.txt",
+          "commit cdef38b"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "NIST 名單",
+          "plain": "NIST 公布的 HG008 高信心體細胞突變清單"
+        },
+        {
+          "term": "1+1",
+          "plain": "爸爸那條和媽媽那條各一份，沒有拷貝數變化"
+        },
+        {
+          "term": "LOH",
+          "plain": "其中一條 haplotype 掉了，只剩另一條"
+        },
+        {
+          "term": "選殖株",
+          "plain": "從一顆細胞養大的細胞株"
+        },
+        {
+          "term": "CCF",
+          "plain": "腫瘤細胞裡帶這個突變的比例"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 2515,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 14:20",
+          "ref": "ec9172ea:2515"
+        },
+        {
+          "line": 2707,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 14:22",
+          "ref": "ec9172ea:2707"
+        },
+        {
+          "line": 2755,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 14:24",
+          "ref": "ec9172ea:2755"
+        }
+      ]
+    },
+    {
+      "title": "深層分支的突變在 bulk 裡嗎？在，但 ClairS 多數抓不到",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "從原始碼裝好 ClairS，用 ONT tumor 配 normal 跑全基因組：抓回 NIST 90.6%，深層兩層只抓到 6/14、3/68；逐點數 read 後，兩層的 alt read 都明顯高於背景",
+      "question": "NIST 名單在深層分支上沒有 SNV。從 read 直接 call 能補回來嗎？如果補不回來，是 caller 的偵測極限，還是那些突變根本不在第 23 代的 bulk 裡？",
+      "approach": "- ClairS 官方用 Docker，但使用者的帳號不在 docker 群組；使用者選擇從 GitHub 原始碼裝到 `/bip8_disk/boyu114`（v0.5.1）。\n- 先在 chr22 的 5 Mb 試跑：22 個 PASS SNV，NIST 在這段的 9 個全部抓到。\n- 全基因組：tumor 用 ONT `HG008.bam`（63×），normal 用十二指腸 `HG008-N-D.bam`（94×），chr1–22 和 X，48 個執行緒，約 2.4 小時跑完。\n- 拿參考樹各層的 SNV 位點，到 tumor 和 normal 的原始 read 逐點數 alt read。SC24, SC9 那支幾乎沒有 alt read，當背景對照。",
+      "result": "- **總數：** 15,137 個 PASS SNV，抓回 NIST 名單 90.6%（8,886／9,810）。\n- **深層只多一點：** 48 顆那層 6／14（AF 中位數 0.20），16 顆那層 3／68（0.13）。\n- **read 裡有突變：** 48 顆那層 14 個位點都有 ≥ 2 條 alt read，合併 VAF 0.141；16 顆那層 68 個有 50 個，合併 VAF 0.057，接近預期的 0.067。背景只有 0.001。\n- **漏抓的原因：** 每個位點只有 2–10 條 alt read，低於一般 caller 能判斷的量。",
+      "tables": [
+        {
+          "caption": "參考樹各層：ClairS 抓到幾個、原始 read 裡有沒有",
+          "columns": [
+            "參考樹分支",
+            "位點",
+            "ClairS PASS／LowQual／沒判出",
+            "≥2 條 alt read 的位點",
+            "合併 VAF",
+            "預期 VAF"
+          ],
+          "rows": [
+            [
+              "48 顆那層",
+              "14",
+              "6／4／4",
+              "14",
+              "0.141",
+              "約 0.20"
+            ],
+            [
+              "16 顆那層",
+              "68",
+              "3／9／56",
+              "50",
+              "0.057",
+              "約 0.07"
+            ],
+            [
+              "2D6, 2E6",
+              "31",
+              "3／2／26",
+              "10",
+              "0.051",
+              "—"
+            ],
+            [
+              "SC24, SC9（背景）",
+              "17",
+              "0／0／17",
+              "0",
+              "0.001",
+              "—"
+            ]
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "type": "svg",
+          "caption": "各層位點合併後的 tumor VAF：深層兩層都遠高於背景，但 16 顆那層貼近 ClairS 預設門檻 0.05",
+          "content": "<svg viewBox=\"0 0 560 210\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"13\"><text x=\"10\" y=\"48\">48 顆那層</text><rect x=\"150\" y=\"34\" width=\"226\" height=\"20\" fill=\"#2C5F9E\"/><text x=\"382\" y=\"49\">0.141</text><line x1=\"470\" y1=\"30\" x2=\"470\" y2=\"58\" stroke=\"#D9772B\" stroke-width=\"3\"/><text x=\"10\" y=\"88\">16 顆那層</text><rect x=\"150\" y=\"74\" width=\"91\" height=\"20\" fill=\"#2C5F9E\"/><text x=\"300\" y=\"89\">0.057</text><line x1=\"257\" y1=\"70\" x2=\"257\" y2=\"98\" stroke=\"#D9772B\" stroke-width=\"3\"/><text x=\"10\" y=\"128\">2D6, 2E6</text><rect x=\"150\" y=\"114\" width=\"82\" height=\"20\" fill=\"#8FB3E0\"/><text x=\"300\" y=\"129\">0.051</text><text x=\"10\" y=\"168\">SC24, SC9 背景</text><rect x=\"150\" y=\"154\" width=\"2\" height=\"20\" fill=\"#999\"/><text x=\"160\" y=\"169\">0.001</text><line x1=\"230\" y1=\"22\" x2=\"230\" y2=\"182\" stroke=\"#C0392B\" stroke-dasharray=\"4 3\"/><text x=\"192\" y=\"200\" fill=\"#C0392B\">ClairS 門檻 0.05</text><text x=\"400\" y=\"200\" fill=\"#D9772B\">橘線＝預期 VAF</text><line x1=\"150\" y1=\"182\" x2=\"550\" y2=\"182\" stroke=\"#333\"/></svg>"
+        }
+      ],
+      "interpretation": "深層分支的突變確實在第 23 代的 bulk 裡，ClairS 漏掉是偵測極限，不是突變不存在。所以 bulk 重建要比到深層，SNV 名單要放寬（例如收 LowQual），代價是假陽性變多，這是要帶到週會的新問題。SC24, SC9 這支在 p23 bulk 裡看不到，和參考樹把它標「未驗證」一致。",
+      "gaps": "逐點數 read 是拿已知位點去查，等於先知道答案；真正從 bulk 重建時手上沒有這份名單。每層只有 14–68 個位點。ClairS 只用預設門檻（snv_min_af 0.05）跑，沒試放寬。tumor 和 normal 的 basecaller 版本不同（sup 4.2.0 對 4.3.0），可能多出假 call，沒有量化。PacBio 116× 沒跑。ClairS 多出的 6,251 個 SNV 還沒分辨真假。",
+      "artifacts": {
+        "files": [
+          "/bip8_disk/boyu114/ClairS/",
+          "/bip8_disk/boyu114/hg008_clairs_ont/run.sh",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/count_clairs_branch.py",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/pileup_deep_clades.py",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/README.md",
+          "lab_report/INDEX.md",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/clairs-local-install.md"
+        ],
+        "commands": [
+          "run_clairs -T ONT/HG008.bam -N ONT/HG008-N-D.bam -R GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta -p ont_r10_dorado_sup_5khz_ss -b chr1-22X.bed -t 48",
+          "python3 -I lab_report/2026-11-13_hg008_bulk_rebuild/count_clairs_branch.py",
+          "python3 -I lab_report/2026-11-13_hg008_bulk_rebuild/pileup_deep_clades.py"
+        ],
+        "outputs": [
+          "/bip8_disk/boyu114/hg008_clairs_ont/out/output.vcf.gz",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/clairs_branch.txt",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/pileup_deep_clades.txt"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "ClairS",
+          "plain": "用 long read 找腫瘤體細胞突變的工具，tumor 和 normal 一起看"
+        },
+        {
+          "term": "PASS／LowQual",
+          "plain": "ClairS 判定可信／不夠可信的突變"
+        },
+        {
+          "term": "VAF",
+          "plain": "某個位置上帶突變的 read 占全部 read 的比例"
+        },
+        {
+          "term": "合併 VAF",
+          "plain": "把同一層的所有位點加起來算的 VAF，比單點穩定"
+        },
+        {
+          "term": "偵測極限",
+          "plain": "突變的 read 太少，工具分不出它和定序錯誤"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 5234,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 17:22",
+          "ref": "ec9172ea:5234"
+        },
+        {
+          "line": 5458,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 19:55",
+          "ref": "ec9172ea:5458"
+        },
+        {
+          "line": 2874,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 14:27",
+          "ref": "ec9172ea:2874"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] HG008 的四個選擇不帶週會，使用者直接決定並開跑重建",
+      "status": "ongoing",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "原本要帶到週會的四個選擇，使用者當晚直接決定：ClairS PASS、在 SNV 位點標 HP、只用 1+1、ONT；輸入 5,816 個 SNV 建好，haploclone 已在背景跑",
+      "question": "HG008 這條線的下一步是把 bulk 的 SNV 交給 haploclone 重建。這一步卡在四個設計選擇上，照 M1 規則要帶到週會。agent 建議先寫比對標準，使用者說「直接走重建」。",
+      "approach": "- 使用者直接決定四件事：SNV 用 ClairS PASS；每個 SNV 的 HP 在位點上從 read 判斷；只用 1+1 區；平台用 ONT 63×。\n- 跑之前先把比法寫進 README：主要看 111 顆那層有沒有和共同祖先分成兩群；CCF 和單細胞比例（1、0.93、0.40、0.13）差 ≤ 0.1 算對上；base 和 A1 只有一個 sample，只描述不算 CI。\n- 寫 `build_input.py`：從 tumor BAM 自己數 ref／alt，用 NIST 已 phase 的 germline 給 read 標 HP（read 蓋到 ≥ 2 個 het SNV、≥ 70% 同一邊才算）。\n- 寫 `eval_hg008.py`、`run_haploclone.sh`，設定和模擬驗證相同（binomial、4 條鏈、seed 1、2）。",
+      "result": "- **輸入：** 1+1 區的 ClairS PASS SNV 共 5,816 個，中位深度 54。\n- **參考標籤：** 共同祖先 3,845、111 層 136、48 層 5、16 層 2、其他分支 182、不在選殖株名單 1,646。\n- **purity 核對：** 共同祖先 SNV 的 VAF 中位數 0.482，乘 2 是 0.96，和設定的 1.0 接近。\n- **HP：** 77.2% 的 alt read 判得出 HP；SNV 落在 HP1 2,432、HP2 2,428，判不出 956。709 個 SNV 兩條 HP 都有 alt read。\n- **haploclone：** base／A1 × 2 個 seed 已在背景跑，掃描結束時還沒有結果。",
+      "interpretation": "這是 M1「設計問題帶到週會」的例外：使用者要求現在決定。週會報告要寫明四個選擇是使用者自己定的。跑之前的預期是：共同祖先和 111 層的 CCF 只差約 0.07，可能合成一群；48、16 層在 PASS 裡只剩 5 和 2 個，不會自成一群。所以這次重建最多只能檢查最上層一個分支。",
+      "gaps": "haploclone 還沒跑完，沒有任何重建結果。投影片第 8、10 頁仍寫「四件事請老師決定」，和使用者已經決定的事實不符，要改。709 個 SNV 兩條 HP 都有 alt read，原因（定序錯誤或 phase 錯）沒有查。purity 設 1.0 沒有實測。只用 PASS，深層的 SNV 幾乎都不在輸入裡。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-13_hg008_bulk_rebuild/build_input.py",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/eval_hg008.py",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/run_haploclone.sh",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/README.md",
+          "/bip8_disk/boyu114/haploclone/rust/src/data/hp.rs"
+        ],
+        "commands": [
+          "/bip8_disk/boyu114/miniforge3/envs/clairs/bin/python -I lab_report/2026-11-13_hg008_bulk_rebuild/build_input.py /bip8_disk/boyu114/hg008_haploclone/input --jobs 24",
+          "bash lab_report/2026-11-13_hg008_bulk_rebuild/run_haploclone.sh /bip8_disk/boyu114/hg008_haploclone"
+        ],
+        "outputs": [
+          "/bip8_disk/boyu114/hg008_haploclone/input/data.tsv",
+          "/bip8_disk/boyu114/hg008_haploclone/input/data_hp.tsv",
+          "/bip8_disk/boyu114/hg008_haploclone/input/labels.tsv"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "haplotag",
+          "plain": "看一條 read 蓋到的 germline 變異，判斷它來自哪條 haplotype"
+        },
+        {
+          "term": "A1 模式",
+          "plain": "haploclone 加 HP 的模式：只用 SNV 所在那條 HP 的 read 估 CCF"
+        },
+        {
+          "term": "M1",
+          "plain": "專案規則：設計選擇先列方案，帶到週會決定"
+        },
+        {
+          "term": "seed",
+          "plain": "隨機數的起點；換 seed 再跑一次，看結果穩不穩"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 5488,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 21:47",
+          "ref": "ec9172ea:5488"
+        },
+        {
+          "line": 5826,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 21:54",
+          "ref": "ec9172ea:5826"
+        },
+        {
+          "line": 6016,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 21:56",
+          "ref": "ec9172ea:6016"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 10 棵樹的 HP 結論能講多強？只能說「沒看到改善」",
+      "status": "done",
+      "kind": "research",
+      "priority": "P3",
+      "summary": "複查 11-12 的 40 次重建：數字都能重算出來，但 CI 下限 −0.036 超出 ±0.02，所以結論從「確認沒差」下修成「這組設定下沒看到 HP 改善樹形」",
+      "question": "11-12 的結論是「加 HP 不改善樹形」。下週要放進投影片，先確認這批結果有沒有算錯，結論能講到多強。",
+      "approach": "- 檢查 40 組（10 棵樹 × base／A1 × 2 seed）有沒有都跑完、log 有沒有錯誤。\n- 用 `results.tsv` 重跑摘要，再自己重算平均差和 95% CI。\n- 比對兩個 seed 的 log，確認 seed 真的有生效。\n- 使用者問「是 haploclone 不好，還是 diplosim 太簡單？」，回答後把結論和投影片用的說法存進 README §7。",
+      "result": "- **都通過：** 40 組都有輸出、沒有錯誤；摘要重算一致；三棵兩個 seed 給出同一棵樹，是鏈收斂，不是 seed 沒傳進去。\n- **措辭下修：** 符合事先定的規則（CI 含 0、平均差 < 0.02），但 CI 下限 −0.036 超出 ±0.02，「A1 稍差」的可能排除不掉。投影片寫「這組設定下沒看到 HP 改善樹形」，不寫「確認 HP 沒差」。\n- **原因：** 不是 diplosim 錯，也不只是 haploclone 的問題。全部 1+1 時，HP 只讓每個 SNV 的 CCF 準約 0.002，不提供 SNV 之間的關係。有些 clone 的 CCF 本來就接近（第 7 棵 0.42 和 0.49），加不加 HP 都分不開。",
+      "interpretation": "這個結果可以當模擬路線的結論放進週會，但只能說「沒看到改善」。在 1+1 區、只有 SNV 時，HP 標籤是 50% 隨機落下的，和 clone 無關，改模型也讀不出更多資訊。要讓 HP 幫上樹形，只剩拷貝數不同的區域或同 read 共現兩條路，兩條都會改到之前的決定。",
+      "gaps": "要真正證明「沒差」，需要更多棵樹，讓整條 CI 落在 ±0.02 內，沒有跑。haploclone 換 seed 的差（平均 0.023、最大 0.12）和 A1 與 base 的差一樣大，沒有加鏈或加迭代測收斂。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/README.md",
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/results.tsv",
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/summary.txt",
+          "lab_report/INDEX.md",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/hp-vs-base-slide-wording.md"
+        ],
+        "outputs": [
+          "commit cdef38b"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "95% CI",
+          "plain": "真正的差大概落在這個範圍"
+        },
+        {
+          "term": "base／A1",
+          "plain": "haploclone 不用 HP／用 HP 的兩種模式"
+        },
+        {
+          "term": "鏈收斂",
+          "plain": "不同起點的隨機搜尋最後找到同一個答案"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 1620,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 13:41",
+          "ref": "ec9172ea:1620"
+        },
+        {
+          "line": 1653,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 13:47",
+          "ref": "ec9172ea:1653"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "[翻案] DECISIONS.md 的 50% 依據範圍寫錯，照實際分析更正",
+      "what": "為什麼：投影片全冊檢查時，subagent 發現 `diplosim/DECISIONS.md` 2026-11-12 那一列（HP 分配定案固定 50%）的限制寫「只有兩株細胞株、拷貝數相同區域」，但 COLO829 與 HG008 兩次再分析實際只排除丟失一條 haplotype 的片段（只算留著的片段、體染色體），份數多於 1 的片段沒有另外校正。做了什麼：agent 把三件待決事項列給使用者，使用者 16:58 回「照實際分析改」。agent 把限制改成「兩個比值都只扣掉丟失一條的片段……份數多於 1 的片段沒有另外校正（11-13 更正，原寫『拷貝數相同區域』）」，投影片第 4 頁同步改成「扣掉丟失一條的區域」。結果：定案本身（每個 SNV 獨立、50%）不變，只是依據的範圍寫得更準。狀態：DECISIONS.md 改動未 commit。",
+      "why_demoted": "被 5 項上限擠掉，分數 9。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "diplosim/DECISIONS.md",
+          "report/2026_11_18_slides/gen_bg.py",
+          "report/2026_11_18_slides/BRIEF.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 5033,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 16:52",
+          "ref": "ec9172ea:5033"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] HG008 的 SNV 來源撤回 ClairS-TO，改列 ClairS 配對 normal",
+      "what": "為什麼：HG008 規劃的 D1（SNV 名單從哪來）原本列 NIST benchmark、ClairS-TO 現成結果、兩者合併。使用者 14:19 問「為甚麼是 clairs-to 不是用 clairs」。查證：ClairS-TO 是 tumor-only，沒有 normal 對照，假 call 較多；共用副本裡有實驗室成員用 ONT 63× 跑好的 ClairS-TO 結果，這是當初列它的唯一理由。HG008 有配對 normal（胰臟 N-P、十二指腸 N-D，ONT 與 PacBio 都有），應該用 tumor 配 normal 的 ClairS。做了什麼：README 的 D1 改成三選項：NIST／ClairS 配對 normal（要安裝、重跑）／ClairS-TO 現成結果（標明只因已跑好才列入，11-13 更正）。agent 承認這正是 CLAUDE.md「不要讓既有程式好改決定方向」要避免的情況。之後同一天 NIST 名單被證明比不到深層分支，ClairS 從備選變成主要來源，晚上使用者直接選 ClairS PASS。這個「被現成好用帶偏」的問題記進 memory open-workflow-gaps-2026-11-13，使用者要求不放進報告。狀態：已併入 commit cdef38b。",
+      "why_demoted": "被 5 項上限擠掉，分數 8。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-13_hg008_bulk_rebuild/README.md",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/open-workflow-gaps-2026-11-13.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 2499,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 14:19",
+          "ref": "ec9172ea:2499"
+        }
+      ]
+    },
+    {
+      "title": "更新 11-11 會議附錄 D 並 commit 本週成果",
+      "what": "為什麼：ClairS 在跑時，使用者問還有哪些會議進度可以先做；附錄 D（待辦對照 repo 現況）停在 11-11，第 3、4 項都寫「未開始」，下週報告「接回上次會議」要用這張表。做了什麼：改 meeting_record/2026_11_11_meeting_summary.md 附錄 D 的四列：深讀兩篇論文改成完成（11-12，HP 50% 已由使用者直接定案）；SNV-only 模擬驗證改成第一輪完成（沒看到 HP 改善樹形，CCF 稍準，下一步 A2 或 C4 帶週會）；HG008 bulk 重建改成進行中（規劃完成，NIST 深層分支沒有 SNV，改用 ClairS）；AI 環境改善頁改成本週版本未開始。標題加「11-13 更新」。使用者說「先COMMIT」，agent 檢查沒有 PDF、xlsx、論文全文後，commit cdef38b（branch diplosim-v1，31 個檔，7,211 行）：兩個 diplosim→haploclone lab_report、5 支 tools 腳本與 tools/README.md、HG008 bulk 規劃資料夾、lab_report/INDEX.md、附錄 D。未 push。其他先前 session 留下的改動（11-04、11-11 投影片、學習網站、11-10 兩個實驗等）沒有動。",
+      "why_demoted": "被 5 項上限擠掉，分數 8。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "meeting_record/2026_11_11_meeting_summary.md"
+        ],
+        "outputs": [
+          "commit cdef38b"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 3495,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 16:04",
+          "ref": "ec9172ea:3495"
+        }
+      ]
+    },
+    {
+      "title": "用 daily-log 寫完 11-12 日誌並推進游標",
+      "what": "為什麼：記錄 11-11 23:00 到 11-12 23:00 的工作。做了什麼：在 session c37908f4 跑 collect_day.sh、signals.py、candidates.py，寫 daily/.data/2026-11-12.json，把 truth_tree_seed7.png 和 how_a_cell_is_matched.png 複製到 daily/figures/2026-11-12/，渲染後推進游標。結果：候選 8 項，呈現 5 項、記錄 3 項，游標推進到 2026-11-12T23:00:19。狀態：完成，日誌未 commit、未 push。",
+      "why_demoted": "分數 5，屬於例行工具維護。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-11-12.json",
+          "daily/2026-11-12.html",
+          "daily/figures/2026-11-12/"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1165,
+          "session_id": "c37908f4",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 23:02",
+          "ref": "c37908f4:1165"
+        }
+      ]
+    },
+    {
+      "title": "查 big8_disk 與 bip8_disk 的用量，找出大檔集中在哪裡",
+      "what": "為什麼：使用者在兩個與研究無關的 session 裡查伺服器磁碟用量。做了什麼：只讀，用 du、find 統計 /big8_disk 一位成員目錄的用量，以及 /bip8_disk 各頂層目錄的前十名，再細查其中最大的一個目錄底下超過 5 GB 的檔案與子目錄。結果：/bip8_disk 總容量 13T、用了 9.5T（79%），各目錄加總 9.28 TB；使用者自己的目錄 boyu114 約 0.44 TB，排第 8。/big8_disk 使用率 94%。被細查的目錄裡，大檔多是同一份資料在不同 purity 各標記一次的 BAM，以及 tmp 目錄底下的中間 BAM。狀態：只列出可回收空間的候選，沒有刪除或移動任何檔案；要不要刪，需要檔案擁有者決定。",
+      "why_demoted": "環境類（infra），與研究主軸無關，分數 2。",
+      "status": "done",
+      "evidence": [
+        {
+          "line": 6657,
+          "session_id": "ed8dac43",
+          "project": "-bip8-disk-boyu114",
+          "ts": "11-13 15:19",
+          "ref": "ed8dac43:6657"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "title": "帳號不在 docker 群組，ClairS 不能用官方 Docker 執行",
+      "detail": "bioconda 上也沒有 ClairS 套件，本機只有 ClairS-TO 的環境",
+      "resolution": "使用者選擇照官方 v0.5.1 Dockerfile 的步驟，從原始碼裝到 /bip8_disk/boyu114；用法記進 memory clairs-local-install"
+    }
+  ],
+  "advisor": [
+    {
+      "kind": "policy",
+      "text": "使用者 11-13：HG008 bulk 重建的四個選擇不帶週會，直接決定：SNV 用 ClairS PASS、在 SNV 位點標 HP、只用 1+1、ONT 63×"
+    },
+    {
+      "kind": "policy",
+      "text": "使用者 11-13：AI 工作流程的兩個問題（被現成工具帶偏、lab_report 圖全文字）不放進週會報告，之後再處理"
+    },
+    {
+      "kind": "question",
+      "text": "HG008 深層分支的 SNV 在 bulk 裡但多數只被判 LowQual；要不要放寬 SNV 門檻（代價是假陽性變多）？待週會決定",
+      "answered": false
+    },
+    {
+      "kind": "question",
+      "text": "全部 1+1 時 HP 幫不上樹形；要改哪個舊決定：模擬加拷貝數（改 11-11「只模擬 SNV」）或同 read 共現（改 11-04「先不列需求」）？待週會決定",
+      "answered": false
+    }
+  ],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "11-12 23:00 ~ 11-13 23:00",
+  "scan": {
+    "last_scanned": "2026-11-13T23:00:10",
+    "sessions": [
+      "c37908f4",
+      "ec9172ea",
+      "d3d1df18",
+      "ed8dac43",
+      "77aca6c0"
+    ],
+    "layers": {
+      "show": 5,
+      "record": 5,
+      "border": 0
+    }
+  }
+}

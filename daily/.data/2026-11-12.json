@@ -1,0 +1,470 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-12",
+  "headline": "diplosim 模擬的 10 棵樹交給 haploclone 重建，加 HP 沒有改善樹的關係，只讓 CCF 準約 0.002；在全部 1+1 的 SNV-only 設定下，HP 幫不上樹形",
+  "items": [
+    {
+      "title": "haploclone 重建 diplosim 的樹，加 HP 有幫助嗎？10 棵樹都沒有",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "本週主軸第 3 項：10 棵模擬樹、40 次重建，加 HP（A1）後樹關係正確率差 −0.011（CI 含 0），只有 CCF 準約 0.002",
+      "question": "本週主軸第 3 項是模擬驗證：diplosim 產生已知的樹（含 HP1／HP2），交給 haploclone 重建，看還原多少。核心問題是：加 HP 資訊能不能讓樹重建得更好？",
+      "approach": "- 寫轉檔腳本，把 diplosim 輸出變成 haploclone 的兩種輸入：不用 HP 的 base，和用 HP 的 A1。\n- 先跑 1 棵樹（seed 7，5 個 clone、1,000 個 SNV）試流程。\n- 使用者要求「多跑幾棵樹、幾個 seed」。跑之前先定好比法：10 棵樹（seed 1–10），每棵 base 和 A1 各跑 2 個 haploclone seed；每棵樹算 A1 − base，再看 10 棵的平均差和 95% CI。主要指標是樹關係正確率，「沒差」的標準是 CI 包含 0 且差距小於 0.02。\n- 16 個平行工作，約 35 分鐘跑完 40 次重建。",
+      "result": "- **樹關係：沒差。** A1 − base ＝ −0.011（CI −0.036 到 +0.013），A1 較好 5 棵、較差 5 棵，符合事先定的「沒差」標準。\n- **CCF：A1 略準。** 誤差差 −0.0019（CI −0.0035 到 −0.0003），7 棵 A1 較準，但絕對值只有約 0.002。\n- **分群（ARI）：** +0.023，CI 包含 0，只有趨勢。\n- **haploclone 本身：** 真值都是 5 群，重建出 3–5 群；樹關係正確率 0.85–0.99。錯誤多半出在 CCF 很接近的兩群，或 CCF 很低的小群。\n- **隨機差異：** 同一棵樹換 seed，樹關係正確率平均差 0.023、最大 0.12，和 A1 與 base 的差一樣大。所以只跑一棵樹一次，看不出差別。",
+      "tables": [
+        {
+          "caption": "A1（用 HP）減 base（不用 HP），10 棵模擬樹的平均差",
+          "columns": [
+            "指標",
+            "A1 − base",
+            "95% CI",
+            "A1 較好／較差"
+          ],
+          "rows": [
+            [
+              "樹關係正確率（主要）",
+              "−0.011",
+              "−0.036 到 +0.013",
+              "5／5"
+            ],
+            [
+              "分群正確度 ARI",
+              "+0.023",
+              "−0.0015 到 +0.048",
+              "8／2"
+            ],
+            [
+              "CCF 誤差（越小越好）",
+              "−0.0019",
+              "−0.0035 到 −0.0003",
+              "7 棵 A1 較準"
+            ],
+            [
+              "找回幾群",
+              "+0.1",
+              "−0.13 到 +0.33",
+              "9 棵相同"
+            ]
+          ]
+        }
+      ],
+      "interpretation": "在 SNV-only、全部 1+1、單一 sample 的設定下，HP 只能讓每個 SNV 的 CCF 估得稍準，不會告訴工具 SNV 之間的關係；樹形仍只靠 CCF 加總規則推。這是模型結構決定的，調參數改不了。HP 要幫上樹重建，需要拷貝數不同的區域（A2 模式，要重開 diplosim 的拷貝數），或同一條 read 上的共現（C4，要讓 diplosim 產生 read，11-04 已從需求表拿掉）。選哪條路會改變研究方向，是週會要決定的事。",
+      "gaps": "只測了一組設定：5 個 clone、1,000 個 SNV、coverage 400、purity 0.7–0.9。較低深度、較多 clone 都沒測過。A1 只支援 binomial，所以兩邊都用 binomial，沒有比 beta-binomial。兩份 lab_report、4 支新腳本都還沒 commit。要走 A2 還是 C4，還沒列成方案。",
+      "artifacts": {
+        "files": [
+          "tools/diplosim_to_haploclone.py",
+          "tools/eval_diplosim_haploclone.py",
+          "tools/run_diplosim_haploclone_batch.py",
+          "tools/summarize_diplosim_haploclone_batch.py",
+          "tools/README.md",
+          "lab_report/INDEX.md",
+          "/bip8_disk/boyu114/haploclone/rust/src/data/hp.rs"
+        ],
+        "commands": [
+          "python3 -I tools/run_diplosim_haploclone_batch.py $OUT --sim-seeds 1-10 --hc-seeds 1,2 --jobs 16",
+          "python3 -I tools/summarize_diplosim_haploclone_batch.py $OUT/results.tsv"
+        ],
+        "outputs": [
+          "lab_report/2026-11-12_diplosim_haploclone_first_run/",
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/README.md",
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/results.tsv",
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/summary.txt"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "A1 模式",
+          "plain": "haploclone 加 HP 的模式：只用 SNV 所在那條 HP 的 read 來估 CCF"
+        },
+        {
+          "term": "樹關係正確率",
+          "plain": "任取兩個 SNV，看它們是同群、祖先、後代還是不同分支，猜對的比例"
+        },
+        {
+          "term": "ARI",
+          "plain": "分群和真值有多像，1 是完全一樣"
+        },
+        {
+          "term": "CCF",
+          "plain": "腫瘤細胞裡帶這個突變的比例"
+        }
+      ],
+      "details": "diplosim --n-clones 5 --n-snv 1000 --seed 1..10（其他預設：拷貝數事件 0、prop_snv_on_b 0.5、coverage 400、purity U(0.7,0.9)）\nhaploclone branch rust-port：-d binomial -b 1000 -n 3000 --num-chains 4 --seed 1,2；A1 加 --hp-mode a1 與 data_hp.tsv\n第一次試跑（seed 7）：base beta-binomial ARI 0.864、base binomial 0.951、A1 binomial 0.949；clone 7（50 SNV、CCF 0.42）夾在 0.49 與 0.34 之間被拆掉\ntrace 約 3.8 GB，沒有放進 lab_report",
+      "evidence": [
+        {
+          "line": 5718,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 15:26",
+          "ref": "1df43c96:5718"
+        },
+        {
+          "line": 6057,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 16:32",
+          "ref": "1df43c96:6057"
+        }
+      ]
+    },
+    {
+      "title": "HG008 單細胞怎麼證明分支存在？補當時理由、畫簡單版圖",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "本週主軸第 1 項結束：補齊 HG008 參考樹的當時理由，畫兩張單細胞比對的簡單版圖，並查出共用 bulk 和 119 顆單細胞是同一批（0823p23）",
+      "question": "本週主軸第 1 項要能說明 HG008 參考樹怎麼產生。11-11 已寫出 9 步清單，但還缺「當時為什麼這樣選」；使用者也還看不懂單細胞怎麼拿來檢查樹。",
+      "approach": "- 回 repo 外保存的原分析對話，查 VAF 0.25 和 QUAL 20 兩個門檻當時怎麼定，寫進 `HOW_TREE_WAS_BUILT.md`「當時的理由」。\n- 使用者逐步追問：單細胞資料是什麼格式？是 germline 突變嗎？8 株選殖株和 bulk 是同源嗎？每題都回原檔（GIAB README、VCF 檔頭、比對程式）核對。\n- 照使用者的說法修正後，重畫兩張簡單版圖：一顆細胞的 VCF 怎麼對上選殖株的 SNV，以及每顆細胞落在哪一群。\n- 最後把整個流程從資料到結果整理一遍。",
+      "result": "- **單細胞怎麼用：** 每顆細胞一個 VCF（DeepVariant，只看這顆細胞，所以 germline 和 somatic 混在一起）。拿 8 株選殖株的 somatic SNV 清單，到細胞 VCF 查同位置、同 ALT 有沒有被 call。一次判斷一整個分支：測到比例 ≥ 這顆細胞偵測率的一半，才算帶這個分支。\n- **對照：** 7,784 個共同祖先突變，細胞測到中位數 87%；7 株的 private 突變，119 顆細胞全部判「沒有」。\n- **來源與批次：** 三份資料都來自 HG008-T。共用 bulk 和 119 顆單細胞都是 Liss lab 的 0823p23 批；8 株選殖株是 NIST 第 13 代後自己養的另一條路線。\n- **使用者決定：** NIST 自己的 bulk 先不用，第 4 項用共用副本的 p23 bulk。",
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-12/how_a_cell_is_matched.png",
+          "caption": "一顆單細胞的 VCF 怎麼對上 8 株選殖株的 somatic SNV：同位置、同 ALT，整個分支一起判斷"
+        }
+      ],
+      "interpretation": "第 1 項到此結束，週會可以直接用文件說明這棵樹怎麼來。bulk 和單細胞同批，對第 4 項很重要：bulk 重建的結構可以對照選殖株的主架構，clone 比例要和同批單細胞（8／63／32／16 顆）比，不要和選殖株比。選殖株的末端分支可能是 NIST 培養後才長出來的，bulk 裡不一定找得到，比對時要標成「不一定重建得出來」。",
+      "gaps": "末端分支（{2D6, 2E6}、{SC24, SC9}、各株 private）在 p23 bulk 裡存不存在，沒有資料能回答。H 群主要靠「缺 127 個突變」來認，自己的專屬突變只有 8 顆細胞部分帶有。單細胞比例有抽樣誤差。整體流程還沒做成投影片（使用者說之後再做）。第 4 項 HG008 bulk 重建還沒開始，也還沒查 bulk 的 SNV call 從哪裡來。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-07_hg008_tree_rebuild/HOW_TREE_WAS_BUILT.md",
+          "lab_report/2026-11-07_hg008_sc_check/README.md",
+          "tools/plot_hg008_sc_simple.py",
+          "tools/plot_hg008_sc_matching.py",
+          "tools/hg008_sc_tree_check.py",
+          "meeting_record/2026_11_11_meeting_summary.md",
+          "/big8_disk/yungjen114/data/HG008/README.md"
+        ],
+        "outputs": [
+          "lab_report/2026-11-07_hg008_sc_check/how_a_cell_is_matched.png",
+          "lab_report/2026-11-07_hg008_sc_check/which_clone_each_cell.png",
+          "commit 2130788"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "germline",
+          "plain": "病人天生就有、全身細胞都有的變異"
+        },
+        {
+          "term": "somatic",
+          "plain": "腫瘤後來才長出的突變"
+        },
+        {
+          "term": "選殖株",
+          "plain": "從一顆細胞養大的細胞株，所以每株代表一顆祖先細胞"
+        },
+        {
+          "term": "0823p23",
+          "plain": "GIAB 標示的細胞培養批次與代次"
+        },
+        {
+          "term": "偵測率",
+          "plain": "這顆細胞測到共同祖先突變的比例，用來扣掉單細胞漏測"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 2925,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 13:58",
+          "ref": "1df43c96:2925"
+        },
+        {
+          "line": 2963,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 14:00",
+          "ref": "1df43c96:2963"
+        }
+      ]
+    },
+    {
+      "title": "PRCGAP 與 COLO829 T2T 在解決什麼？都不是 HP 比例",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "本週主軸第 2 項：用 4 個 subagent 深讀兩篇論文的主文、補充資料與程式；兩篇都在補 GRCh38 漏掉的變異，都沒比兩條 HP 的 SNV 數；COLO829 去掉性染色體重算，比值 0.993，結論不變",
+      "question": "11-11 週會要求深讀這兩篇，先寫作者結論，再看能不能定 SNV 的 HP 分配參數。使用者提醒：它們可能和「SNV 在哪條 HP 的比例」沒關係，但也要寫清楚。",
+      "approach": "- 兩篇各派 2 個 subagent：一個讀主文，一個讀補充資料與程式。\n- 回原文和程式抽查 subagent 的關鍵說法，再更新兩篇的 `summary.md` 與 `research/index.md`。\n- 抽查時發現 11-06 COLO829 的比例沒有排除性染色體，使用者要求重算。",
+      "result": "- **PRCGAP（預印本）：** GRCh38 和病人基因組不同，變異會漏掉或放錯，也標不上 HP。作者改用病人正常細胞的 diploid 組裝當參考，讓 SNV、SV、拷貝數、甲基化都標上 HP。主文、補充圖表、程式都沒比兩條 HP 的 SNV 數。8 株都用 Hi-C 或 Pore-C 定相，沒有親代資料。\n- **COLO829 T2T（Cell 2026）：** 補上 GRCh38 缺的著絲點、端粒、衛星重複，畫出一株黑色素瘤完整的突變地圖；發現衛星重複和著絲點是突變熱點。Results 10 節都沒比兩條 HP 的總數，也沒有親源分析。\n- **COLO829 重算：** 病人是男性，chrX 只在 hap1、chrY 只在 hap2。只算體染色體後，hap1 9.24、hap2 9.31 個／Mb，比值 0.993（CI 0.974–1.012）；原本是 9.34 比 9.31。\n- **抽查修正：** COLO829 Methods 的 DEL 門檻寫成 −0.415，程式實際用 −1；PRCGAP 再分析多加的過濾排除了約 23% 只有 PRCGAP 找到的 SNV。",
+      "interpretation": "兩篇的作者都沒有回答 HP 比例，所以沒有現成結論可以引用。對我們有用的是兩個前提：hap1／hap2 只是組裝編號，跨染色體加總不能當成爸爸或媽媽（O1）；COLO829 的 chr1q 時序是「累積比例會被拷貝數改變」的實例（O4）。COLO829 重算後仍接近各半，支持隔天拿 50% 定案。",
+      "gaps": "COLO829 Cell 版的 Document S1 沒拿到（PMC 要瀏覽器驗證），要使用者手動下載。11-11 投影片和舊日誌仍寫 9.34／9.31，下週報告要改用 9.24／9.31。PRCGAP 再分析的 23% 過濾還沒補進那份 lab_report 的 README。chrX、chrY contig 的對應是用長度與深度推論，沒拿序列比對參考基因組驗證。",
+      "artifacts": {
+        "files": [
+          "research/literature/papers/P12_prcgap_8lines_2026/deep_read_main.md",
+          "research/literature/papers/P12_prcgap_8lines_2026/deep_read_supp_code.md",
+          "research/literature/papers/P12_prcgap_8lines_2026/summary.md",
+          "research/literature/papers/P13_colo829_t2t_2026/deep_read_main.md",
+          "research/literature/papers/P13_colo829_t2t_2026/deep_read_supp_code.md",
+          "research/literature/papers/P13_colo829_t2t_2026/summary.md",
+          "research/index.md",
+          "tools/colo829_hap_snv_ratio.py",
+          "lab_report/2026-11-06_colo829_hap_snv_ratio/README.md",
+          "research/literature/surveys/parental_snv_2026-11-07/summary.md"
+        ],
+        "outputs": [
+          "lab_report/2026-11-06_colo829_hap_snv_ratio/haplotype_totals_autosomes.tsv",
+          "commit e8b141c"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "GRCh38",
+          "plain": "目前通用的人類參考基因組，缺著絲點等重複區"
+        },
+        {
+          "term": "T2T",
+          "plain": "從染色體一端到另一端都組完整的基因組"
+        },
+        {
+          "term": "Hi-C／Pore-C 定相",
+          "plain": "用染色體在細胞核裡的接觸關係，把變異分到兩條 HP，但不知道哪條來自爸爸或媽媽"
+        },
+        {
+          "term": "hVAF",
+          "plain": "只看單一 HP 的變異頻率，用來推突變在拷貝數變化之前或之後發生"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 3897,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 14:26",
+          "ref": "1df43c96:3897"
+        },
+        {
+          "line": 4349,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 14:35",
+          "ref": "1df43c96:4349"
+        }
+      ]
+    },
+    {
+      "title": "diplosim 不加旗標就是 SNV-only：拷貝數預設改成 0",
+      "status": "done",
+      "kind": "research",
+      "priority": "P2",
+      "summary": "diplosim 原本照搬 CONIPHER，預設會產生拷貝數變化；把 prop_pos_gained、prop_pos_lost 預設改成 0，並畫出一棵真值樹給使用者看",
+      "question": "11-11 週會定第一階段只模擬 SNV。使用者想確認：diplosim 現在是不是只有 SNV 加上 50% 的 HP？",
+      "approach": "- 不加旗標跑 20 個 SNV，檢查每個位置的拷貝數。\n- 使用者決定「先改 copy number 事件預設值都為 0」，改 `src/params.rs`，並讓原本靠舊預設產生拷貝數的 5 個測試明確設回 0.5／0.3。\n- commit 後用預設值跑一次（5 個 clone、1,000 個 SNV、seed 7），寫腳本把真值樹畫出來。",
+      "result": "- **改之前：** 預設不是 SNV-only。20 個位置只有 4 個是 1+1，其他有 LOH、gain、loss，因為 `prop_pos_gained` 0.5、`prop_pos_lost` 0.3 照搬 CONIPHER。\n- **改之後：** 不加旗標跑 6 個 clone、3,000 個 SNV，非 1+1 的位置 0 個，HP2 比例 0.499。測試 16 個全過，另加一個測試確認預設不產生拷貝數。\n- **真值樹（seed 7）：** truncal 500 個 SNV，下面分兩支；每條邊的 HP1、HP2 都接近各半，合計 504 比 496。",
+      "figures": [
+        {
+          "type": "img",
+          "src": "figures/2026-11-12/truth_tree_seed7.png",
+          "caption": "diplosim 預設值跑出的真值樹（seed 7）：5 個 clone，每條邊標新增 SNV 數與 HP1:HP2"
+        }
+      ],
+      "interpretation": "現在 diplosim 的預設就是第一階段要的設定，跑實驗不必每次記得加旗標。這棵樹也成了第 3 項（haploclone 重建）的第一個測試對象。",
+      "gaps": "和 CONIPHER 原版對照時，要手動加 `--prop-pos-gained 0.5 --prop-pos-lost 0.3`，容易忘。畫圖腳本和範例圖是 commit 之後才加的，還沒 commit。",
+      "artifacts": {
+        "files": [
+          "diplosim/src/params.rs",
+          "diplosim/tests/behaviour.rs",
+          "diplosim/DECISIONS.md",
+          "tools/plot_diplosim_truth_tree.py",
+          "tools/README.md"
+        ],
+        "commands": [
+          "cd diplosim && cargo test -q",
+          "diplosim/target/release/diplosim --n-clones 5 --n-snv 1000 --seed 7 --out $SIM",
+          "python3 tools/plot_diplosim_truth_tree.py $SIM diplosim/docs/figs/truth_tree_seed7.png"
+        ],
+        "outputs": [
+          "diplosim/docs/figs/truth_tree_seed7.png",
+          "commit 8dd2594"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "1+1",
+          "plain": "爸爸那條和媽媽那條各一份，沒有拷貝數變化"
+        },
+        {
+          "term": "truncal",
+          "plain": "所有腫瘤細胞都有的突變，在樹的主幹上"
+        },
+        {
+          "term": "prop_pos_gained／prop_pos_lost",
+          "plain": "多少比例的位置會多一份或少一份"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 4701,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 14:44",
+          "ref": "1df43c96:4701"
+        },
+        {
+          "line": 4853,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 14:45",
+          "ref": "1df43c96:4853"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] HP 分配直接定案為固定 50%，不帶到週會",
+      "status": "done",
+      "kind": "research",
+      "priority": "P1",
+      "summary": "原本要列 2–3 個 HP 分配方案帶到週會，使用者改成當場決定：每個 SNV 獨立、50% 落在 HP2，第一階段 SNV-only 適用",
+      "question": "11-11 週會的待辦是：讀完兩篇論文後，列 SNV 的 HP 分配方案（固定 50% 或某個範圍），帶到下次週會決定。agent 提議開始列方案時，使用者說不用帶到週會，可以直接決定。",
+      "approach": "- 先確認 diplosim 現在怎麼分配 HP：`prop_snv_on_b` 預設已是 0.5，每個 SNV 各自抽。\n- 回 11-07 的獨立性報告核對證據，把「1 kb 內聚集來自局部突變過程」改成推論（當時沒查原因）。\n- 把定案、理由、排除的方案和限制寫進 `diplosim/DECISIONS.md`，並改 CLAUDE.md 兩處與 memory。",
+      "result": "- **定案：** 每個 SNV 獨立，50% 落在 HP2。程式沒改，只把 11-07 的「暫定」改成「定案」。\n- **理由：** COLO829 只算體染色體是 0.993，HG008 是 0.97，CI 都包含 1；兩篇論文作者都沒報告偏向；第一階段沒有 CNA、LOH，模擬出來的比例就等於每次突變的機率。\n- **排除：** 從一個範圍抽比例（沒有資料能定範圍）；加 1 kb 內 cis 聚集（只占 2.5–4.5% 相鄰配對，而且要先加座標，一次加兩個機制，違反 N4）。",
+      "interpretation": "這是 M1「設計問題帶到週會」的例外：使用者要求現在決定。HP 比例不再是待決項，第 3 項可以直接用 50% 跑。週會報告要說明這是使用者自己決定的，不是週會決定的。",
+      "gaps": "證據只來自兩株細胞株、拷貝數相同的區域，沒有親源資訊，也不是病人腫瘤；只能說 50% 沒被否定，不算證實。1 kb 內的局部聚集沒有模擬。之後加 CNA、LOH 或座標時要重新檢討。",
+      "artifacts": {
+        "files": [
+          "diplosim/DECISIONS.md",
+          "diplosim/src/hp.rs",
+          "diplosim/src/params.rs",
+          "CLAUDE.md",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/snv-hp-independence.md"
+        ],
+        "outputs": [
+          "commit 8dd2594"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "prop_snv_on_b",
+          "plain": "每個 SNV 落在 HP2 的機率"
+        },
+        {
+          "term": "cis 聚集",
+          "plain": "相鄰的突變傾向落在同一條 HP"
+        },
+        {
+          "term": "M1",
+          "plain": "專案規則：設計選擇先列方案，帶到週會決定"
+        }
+      ],
+      "evidence": [
+        {
+          "line": 4373,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 14:37",
+          "ref": "1df43c96:4373"
+        },
+        {
+          "line": 4507,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 14:38",
+          "ref": "1df43c96:4507"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "[翻案] VAF 0.25 不是實驗定的，消除矛盾的是 QUAL 20",
+      "what": "為什麼：使用者記得 VAF 0.25 和 QUAL 20 都是做過實驗、不這麼做演化樹會矛盾才定的，並要求找出選 0.25 的原對話。做了什麼：在 /big8_disk/boyu114/analysis_transcripts/hg008_tree/ 的兩份 jsonl 裡搜尋。結果：0.25 是 10-27 第一版對話（2026-10-27_hg008_clone_tree_first.jsonl 第 354–363 筆）定的，當時只畫了 2D6 一株的 VAF 直方圖（峰在 0.5 和 1.0），就寫進 MIN_VAF = 0.25，沒有試其他數字；理由寫在 tools/hg008_clone_tree.py:5-6（選殖株由單顆細胞長成，真 SNV 應在 0.5 或 1.0 附近）。使用者記得的實驗其實是 11-07 定 QUAL 的實驗：沒加 QUAL 時 VAF 0.15／0.25／0.35 的矛盾 SNV 是 1,084／729／496，分支相同；矛盾 SNV 的 QUAL 中位數只有 6–8，加 QUAL 20 後矛盾降到約 40 個（QUAL 0 時 249／520＝48%，QUAL 20 時 40／301＝13%，QUAL 28 時 6／258＝2%）。狀態：HOW_TREE_WAS_BUILT.md「當時的理由」原本寫使用者口述，已改成以對話紀錄為準；週會說法定為「VAF 0.25 是看分布的谷挑的，換 0.15 到 0.35 樹都不變；去掉矛盾主要靠 QUAL 20」。另記限制：門檻用同一批資料看矛盾數挑，只能證明過濾後樹較一致，不能證明被濾掉的都是假 call；10-27 舊報告刪除是因為使用者當時不信任結果，11-07 重做是重現，不是獨立重複。已在 commit 2130788。",
+      "why_demoted": "被 5 項上限擠掉，分數 9。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-07_hg008_tree_rebuild/HOW_TREE_WAS_BUILT.md",
+          "lab_report/2026-11-07_hg008_tree_rebuild/tables/tree_summary.tsv",
+          "tools/hg008_clone_tree.py",
+          "/big8_disk/boyu114/analysis_transcripts/hg008_tree/"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 2449,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 13:46",
+          "ref": "1df43c96:2449"
+        }
+      ]
+    },
+    {
+      "title": "對照 11-11 會議五項主軸盤點進度",
+      "what": "為什麼：第 1 項結束後，使用者要求檢查最新會議還有哪些事要做。做了什麼：讀 meeting_record/index.md 與 2026_11_11_meeting_summary.md 附錄 C、D。結果（11-12 14:09 當下）：第 1 項 HG008 參考樹完成；第 2 項論文深讀做了一半（全文與摘要已有，補充資料未讀，參數方案未列）；第 3 項 diplosim → haploclone 未開始；第 4 項 HG008 p23 bulk 重建未開始，bulk 用共用副本、NIST bulk 先不用；第 5 項樹已寄出，AI 環境改善頁待寫。會議未決事項中「五群結構與高低信心判定依據」「10-27 與 11-07 方法是否相同（重現，不是獨立重複）」已可回答。建議順序：第 2 項 → 第 3 項 → 第 4 項。狀態：當天之後第 2、3 項都往前推了（見呈現層），第 4 項仍未開始。",
+      "why_demoted": "被 5 項上限擠掉，分數 8。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "meeting_record/index.md",
+          "meeting_record/2026_11_11_meeting_summary.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 3257,
+          "session_id": "1df43c96",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-12 14:09",
+          "ref": "1df43c96:3257"
+        }
+      ]
+    },
+    {
+      "title": "用 daily-log 寫完 11-11 日誌並推進游標",
+      "what": "為什麼：記錄 11-09 23:00 到 11-11 23:00 的工作。做了什麼：在 session 60d634bf 跑 collect_day.sh、signals.py、candidates.py，寫 daily/.data/2026-11-11.json，複製 3 張圖到 daily/figures/2026-11-11/，渲染後 collect_day.sh --commit。結果：呈現 5 項、記錄 4 項，游標推進到 2026-11-11T23:00:15。11-10 23:00 的 cron 只跑了開頭就停，所以 11-10 與 11-11 合在 2026-11-11 這份。big8_disk 用量那一項只寫使用者自己的用量。狀態：完成，日誌未 commit、未 push。",
+      "why_demoted": "分數 5，屬於例行工具維護。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-11-11.json",
+          "daily/2026-11-11.html",
+          "daily/figures/2026-11-11/"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1991,
+          "session_id": "60d634bf",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-11 23:07",
+          "ref": "60d634bf:1991"
+        }
+      ]
+    }
+  ],
+  "issues": [],
+  "advisor": [
+    {
+      "kind": "policy",
+      "text": "使用者 11-12：SNV 的 HP 分配不帶到週會，直接定案為固定 50%、每個 SNV 獨立（第一階段 SNV-only）"
+    },
+    {
+      "kind": "policy",
+      "text": "使用者 11-12：HG008 bulk 重建用共用副本的 p23 bulk，NIST 自己的 bulk 先不用"
+    },
+    {
+      "kind": "question",
+      "text": "SNV-only 全部 1+1 時 HP 幫不上樹形；要讓 HP 有用，走拷貝數（A2）還是同 read 共現（C4）？待週會決定",
+      "answered": false
+    }
+  ],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "11-11 23:00 ~ 11-12 23:00",
+  "scan": {
+    "last_scanned": "2026-11-12T23:00:19",
+    "sessions": [
+      "60d634bf",
+      "1df43c96",
+      "c37908f4"
+    ],
+    "layers": {
+      "show": 5,
+      "record": 3,
+      "border": 0
+    }
+  }
+}

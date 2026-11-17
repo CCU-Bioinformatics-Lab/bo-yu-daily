@@ -1,0 +1,418 @@
+{
+ "schema_version": "2",
+ "date": "2026-11-08",
+ "headline": "論文和 8 株細胞株都指向同一件事：SNV 落下時在爸媽兩條大致各半，偏向來自之後的拷貝數改變，所以 11-11 報告第 5 頁改成引用 11 篇新入庫的論文，不再靠自己的統計",
+ "items": [
+  {
+   "title": "SNV 偏向爸爸或媽媽那條嗎？論文說大致各半",
+   "status": "done",
+   "kind": "research",
+   "priority": "P1",
+   "summary": "第 5 頁改用論文回答爸媽比例：新增 11 篇論文 P01–P11 進知識庫，家族研究與腫瘤研究都沒看到全基因組偏向，偏向只出現在失活的 X、成簇突變和少數基因座",
+   "question": "11-11 報告第 5 頁原本用我們自己算的 COLO829、HG008 比例支持「SNV 在兩條各半」。使用者指出，假說應該找論文證明 SNV 是偏一邊還是兩邊都有，不應該再靠自己統計資料。",
+   "approach": "分三輪做，每輪都由 subagent 平行搜尋，主 agent 抽查引句。\n\n- 第一輪：3 個 subagent 搜本地知識庫（97 篇腫瘤演化調查、11-07 爸媽 SNV 假說、個別論文全文）。\n- 第二輪：使用者選「先擴大搜尋」。3 個 subagent 用 PubMed 與網路分頭找直接測量、機制、正常組織與單細胞三類研究。\n- 第三輪：使用者要求先入庫再改頁。3 個 subagent 為 11 篇新論文各建 summary、source 與本機 fulltext，並回全文重新核對上一輪回報的數字。最後改第 5 頁並發布。",
+   "result": "知識庫新增 P01–P11，`research/index.md` 加 11 列；其中 4 篇只讀到摘要。回全文核對時修正了三個上一輪說法：Porubsky 2025 實際是父：母 1.38:1、P = 0.09（不顯著，不是「完全沒偏」）；Demeulemeester 2022 沒有比較兩條親代染色體，不能當「兩條一樣容易突變」的證據；Jónsson 2021 的 272／310 核對不到，沒放上頁面。\n\n新第 5 頁標題是「論文支持 SNV 在兩條大致各半；偏向只在特定情境」，頁面上不再放我們自己的統計。",
+   "tables": [
+    {
+     "caption": "第 5 頁採用的論文證據（數字取自各篇 summary.md）",
+     "columns": [
+      "方向",
+      "論文",
+      "對象",
+      "結果"
+     ],
+     "rows": [
+      [
+       "大致各半",
+       "Lefèbvre 2026（預印本）",
+       "腫瘤 21 人",
+       "父母差異 ≤ 5%"
+      ],
+      [
+       "大致各半",
+       "Sasani 2019（P01）",
+       "三代家族",
+       "受精後突變 52% 父源"
+      ],
+      [
+       "大致各半",
+       "Porubsky 2025（P03）",
+       "四代家族，含 long read",
+       "父：母 1.38:1，P = 0.09"
+      ],
+      [
+       "特定情境偏一條",
+       "Caballero 2023（P05）、Jäger 2013",
+       "失活的 X",
+       "Xi 突變率是 Xa 的 1.78 倍"
+      ],
+      [
+       "特定情境偏一條",
+       "Nik-Zainal 2012、Bergstrom 2022",
+       "成簇突變",
+       "同一條；只占全部 3.7%"
+      ],
+      [
+       "特定情境偏一條",
+       "Kilpivaara 2009（P08）",
+       "JAK2 46/1",
+       "38／45 在 cis"
+      ],
+      [
+       "對照，不是體細胞",
+       "Porubsky 2025",
+       "germline 新生突變",
+       "75–81% 父源"
+      ]
+     ]
+    }
+   ],
+   "interpretation": "diplosim 第一階段「每個 SNV 各自 50% 落在 HP1 或 HP2」現在有論文支持，不再只靠兩株細胞株的實測。但直接在腫瘤裡數全基因組爸媽比例的只有一篇小樣本預印本，這個但書要在頁面上寫清楚。",
+   "gaps": "直接回答腫瘤全基因組比例的只有 Lefèbvre 2026（21 人、short read、未經同儕審查）。P02、P09、P10、P11 只讀到摘要。沒找到用 long read 或親代定序、在腫瘤裡逐條數爸媽 SNV 的研究（搜尋範圍：本地知識庫＋這輪 PubMed／網路）。Foltz 2024 骨髓瘤是 linked read（short read），不符合需求表；SMaHT 有 long read 但是正常組織，兩份都沒下載。第 11 頁方案 A 卡片還引用我們自己的統計，沒改成引論文。",
+   "artifacts": {
+    "files": [
+     "research/literature/papers/P01_postzygotic_pedigree_2019/summary.md",
+     "research/literature/papers/P03_ceph1463_pedigree_2025/summary.md",
+     "research/literature/papers/P04_biallelic_mutations_2022/summary.md",
+     "research/literature/papers/P05_lcl_inactive_x_2023/summary.md",
+     "research/literature/papers/P11_cis_mutators_2026/summary.md",
+     "research/index.md",
+     "research/literature/README.md",
+     "report/2026_11_11_slides/gen_plan.py",
+     "report/2026_11_11_slides/project/slides/hypotheses.html"
+    ],
+    "outputs": [
+     "https://claude.ai/artifact/7DDuxKrKST1AAzuiCmL4eu#slide-5"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "失活的 X（Xi）",
+     "plain": "女性兩條 X 中被關掉的那一條，它累積的突變比較多"
+    },
+    {
+     "term": "成簇突變（kataegis）",
+     "plain": "一小段 DNA 上一口氣出現很多突變，通常都在同一條"
+    },
+    {
+     "term": "germline 新生突變",
+     "plain": "精子或卵子帶來的新突變，約八成來自爸爸；和腫瘤裡的體細胞突變不同"
+    },
+    {
+     "term": "cis",
+     "plain": "兩個變異在同一條染色體上"
+    }
+   ],
+   "details": "session ad54ff4d 16:00-16:46。commit 8081c0c（改頁前備份）、edf318d（P01-P11 與第 5 頁）。新前綴 P＝SNV 落在哪條親代染色體。fulltext.md 只留本機（.gitignore）。",
+   "evidence": [
+    {
+     "line": 8131,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 16:00",
+     "ref": "ad54ff4d:8131"
+    },
+    {
+     "line": 9067,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 16:16",
+     "ref": "ad54ff4d:9067"
+    },
+    {
+     "line": 9862,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 16:29",
+     "ref": "ad54ff4d:9862"
+    }
+   ]
+  },
+  {
+   "title": "11-11 週會投影片做成 16 頁發布，改到剩 11 頁",
+   "status": "ongoing",
+   "kind": "tooling",
+   "priority": "P2",
+   "summary": "大綱審查三輪後，5 個 subagent 分段做出 16 頁並發布；下午使用者逐頁改第 1、10、11 頁、在編輯器刪掉 5 頁，現在剩 11 頁，最新的本地修正還沒上線",
+   "question": "11-11 週會的投影片大綱 11-07 已定稿但還沒做。要照 report_rule 做完、檢查完、發布，讓使用者能在會前逐頁修改。",
+   "approach": "- 早上：大綱照使用者四點意見改成 v2（主問題改成「單點突變階段的模擬，有哪些證據支持、能用什麼驗證？」），兩位審查者再跑兩輪，使用者確認 v3。\n- 中午：5 個 subagent 各做一段（開場、方案、T1 結果、T2 結果、收尾），再開 2 個 subagent 檢查縮圖排版和全冊故事。\n- 下午：使用者逐頁提要求。第 1 頁改成「上次會議重點＋本週完成的任務」；第 10 頁把 phase block 改成「同一個 20 Mb 區段內（組裝定相）」；第 6 頁後加一頁 COLO829 T2T 數據（61:39，扣掉丟失片段後每 Mb 9.34 對 9.31）。使用者在編輯器刪頁時，agent 每次都先逐頁比對線上版，再同步本地並重算頁尾與頁碼。",
+   "result": "14:02 第一次發布，16 頁，`check_slides.py` 0 個錯誤。使用者陸續在編輯器刪掉「還做不到的三件事」「能驗證克隆結構的只有 HG008」「兩個局部例外」「樹形比較」「自我檢查」「請老師決定」，現在是 11 頁。17:06 與 17:08 兩次發布被權限檢查擋下，agent 沒有繞過，最後一輪本地修正（頁尾 n / 11、第 10 頁標題與講稿、橋接句）還沒上線。",
+   "interpretation": "投影片的內容已經能講，但線上版和本地版不一致：線上頁尾還寫「/ 14」，第 10 頁標題和講稿對不上。會前要先決定第 10 頁用哪一版並發布一次。",
+   "gaps": "第 10 頁要選線上置中版（只改標題講稿）還是本地整頁版，使用者還沒回答；發布要使用者授權。自我檢查頁被刪，CLAUDE.md 交付第 5 點要求的自我檢查不在簡報上；第 1 頁的研究目的也被刪，和交付第 1 點不一致。第 10 頁 phase block 討論時發現：分組沒有按 contig，跨區塊的遠距離配對可能編號對不上，會把「1 kb 以上接近 0.5」拉向 0.5，還沒重算。8081c0c 之後的改動都沒 commit。",
+   "artifacts": {
+    "files": [
+     "report/2026_11_11_slides/OUTLINE.md",
+     "report/2026_11_11_slides/BRIEF.md",
+     "report/2026_11_11_slides/REVIEW_v2.md",
+     "report/2026_11_11_slides/REVIEW_deck.md",
+     "report/2026_11_11_slides/slidekit.py",
+     "report/2026_11_11_slides/preview.py",
+     "report/2026_11_11_slides/gen_open.py",
+     "report/2026_11_11_slides/gen_res1.py",
+     "report/2026_11_11_slides/gen_res2.py",
+     "report/2026_11_11_slides/gen_close.py",
+     "report/2026_11_11_slides/project/slides/colo829-t2t.html",
+     "report/2026_11_11_slides/project/slides/ai-env.html"
+    ],
+    "commands": [
+     "python3 tools/check_slides.py report/2026_11_11_slides"
+    ],
+    "outputs": [
+     "https://claude.ai/artifact/7DDuxKrKST1AAzuiCmL4eu"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "P-1 大綱審查",
+     "plain": "大綱改過就要再請審查者看一次，直到問題都解決才開始做頁"
+    },
+    {
+     "term": "組裝定相",
+     "plain": "HP 來自整條染色體組裝出來的兩條序列，不是 read 拼出來的短區塊"
+    }
+   ],
+   "details": "session c3a9f005 08:41-14:02（大綱 v2/v3、製作、發布）；ad54ff4d 15:21-17:33（逐頁修改）。commit 8081c0c 為改第 5 頁前的備份。被刪頁可從 a50b238、edf318d 找回。",
+   "evidence": [
+    {
+     "line": 1215,
+     "session_id": "c3a9f005",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 08:49",
+     "ref": "c3a9f005:1215"
+    },
+    {
+     "line": 7631,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 15:32",
+     "ref": "ad54ff4d:7631"
+    },
+    {
+     "line": 11058,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 17:08",
+     "ref": "ad54ff4d:11058"
+    }
+   ]
+  },
+  {
+   "title": "8 株細胞株的 HP1、HP2 各半嗎？份數相同時是",
+   "status": "done",
+   "kind": "research",
+   "priority": "P3",
+   "summary": "第 9 頁改成 PRCGAP 8 株：只比兩條份數相同的區段，SNV 較多那條占 51.9–58.3%；第 8 頁改成全部 SNV 加總（HP1 占 46–66%），並查 Verkko 原始碼確認 HP1 編號跨染色體不對應",
+   "question": "使用者要第 9 頁放進 PRCGAP 全部 8 株，說明扣掉不正常區域後兩條突變數大致相等；接著問如果不扣，比例會是多少，並要第 8 頁改成全部 SNV 的加總。",
+   "approach": "- 第 9 頁：每株一個天平，只算兩條份數都是 1:1 的 20 Mb 區段，指標是「SNV 較多那條的占比」。後來照使用者要求拿掉純隨機期望值和段數；COLO829 的標籤從「部分核對」改成「未獨立驗證」，因為它沒和 PRCGAP 判定逐一比對過。\n- 第 8 頁：8 株各一條 HP1／HP2 長條，標資料名「PRCGAP（Sakamoto 2026 預印本）」。\n- 使用者追問「組裝時隨機取的」依據。agent 讀 Verkko v2.0–v2.2.1 的 `cluster.py`：每個連通區塊各自用亂數起點切成兩群，第 0 群命名 haplotype1，沒有步驟對齊不同區塊。措辭因此改成「HP1 編號跨染色體不對應」。",
+   "result": "兩種算法的差距很大：只算份數相同區段時 51.9–58.3%，全部區域逐條染色體算時 60.4–76.5%。直接加總的 HP1 占 45.8–65.6%，但因為編號跨染色體不對應（HG008 對 GIAB 有 14／23 條對調），這個數字只能參考。份數相同的區段只占各株 SNV 的 4–52%。PRCGAP 公開資料沒有 purity。",
+   "figures": [
+    {
+     "type": "svg",
+     "content": "<svg viewBox=\"0 0 680 260\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"sans-serif\" font-size=\"12\"><line x1=\"60\" x2=\"670\" y1=\"210.0\" y2=\"210.0\" stroke=\"#ddd\"/><text x=\"54\" y=\"214.0\" text-anchor=\"end\" fill=\"#666\">40%</text><line x1=\"60\" x2=\"670\" y1=\"165.0\" y2=\"165.0\" stroke=\"#ddd\"/><text x=\"54\" y=\"169.0\" text-anchor=\"end\" fill=\"#666\">50%</text><line x1=\"60\" x2=\"670\" y1=\"120.0\" y2=\"120.0\" stroke=\"#ddd\"/><text x=\"54\" y=\"124.0\" text-anchor=\"end\" fill=\"#666\">60%</text><line x1=\"60\" x2=\"670\" y1=\"75.0\" y2=\"75.0\" stroke=\"#ddd\"/><text x=\"54\" y=\"79.0\" text-anchor=\"end\" fill=\"#666\">70%</text><line x1=\"60\" x2=\"670\" y1=\"30.0\" y2=\"30.0\" stroke=\"#ddd\"/><text x=\"54\" y=\"34.0\" text-anchor=\"end\" fill=\"#666\">80%</text><line x1=\"60\" x2=\"670\" y1=\"165.0\" y2=\"165.0\" stroke=\"#333\" stroke-dasharray=\"4 3\"/><rect x=\"73.7\" y=\"144.8\" width=\"20.9\" height=\"65.2\" fill=\"#4a7bd0\"/><text x=\"84.2\" y=\"141.8\" text-anchor=\"middle\" font-size=\"10\">54.5</text><rect x=\"96.6\" y=\"91.2\" width=\"20.9\" height=\"118.8\" fill=\"#e08a2c\"/><text x=\"107.0\" y=\"88.2\" text-anchor=\"middle\" font-size=\"10\">66.4</text><text x=\"96.6\" y=\"226.0\" text-anchor=\"middle\">COLO829</text><rect x=\"150.0\" y=\"138.9\" width=\"20.9\" height=\"71.1\" fill=\"#4a7bd0\"/><text x=\"160.4\" y=\"135.9\" text-anchor=\"middle\" font-size=\"10\">55.8</text><rect x=\"172.8\" y=\"92.1\" width=\"20.9\" height=\"117.9\" fill=\"#e08a2c\"/><text x=\"183.3\" y=\"89.1\" text-anchor=\"middle\" font-size=\"10\">66.2</text><text x=\"172.8\" y=\"226.0\" text-anchor=\"middle\">HG008</text><rect x=\"226.2\" y=\"148.8\" width=\"20.9\" height=\"61.2\" fill=\"#4a7bd0\"/><text x=\"236.7\" y=\"145.8\" text-anchor=\"middle\" font-size=\"10\">53.6</text><rect x=\"249.1\" y=\"84.4\" width=\"20.9\" height=\"125.6\" fill=\"#e08a2c\"/><text x=\"259.5\" y=\"81.4\" text-anchor=\"middle\" font-size=\"10\">67.9</text><text x=\"249.1\" y=\"226.0\" text-anchor=\"middle\">H1437</text><rect x=\"302.5\" y=\"156.4\" width=\"20.9\" height=\"53.6\" fill=\"#4a7bd0\"/><text x=\"312.9\" y=\"153.4\" text-anchor=\"middle\" font-size=\"10\">51.9</text><rect x=\"325.4\" y=\"87.6\" width=\"20.9\" height=\"122.4\" fill=\"#e08a2c\"/><text x=\"335.8\" y=\"84.6\" text-anchor=\"middle\" font-size=\"10\">67.2</text><text x=\"325.4\" y=\"226.0\" text-anchor=\"middle\">H2009</text><rect x=\"378.7\" y=\"144.3\" width=\"20.9\" height=\"65.7\" fill=\"#4a7bd0\"/><text x=\"389.2\" y=\"141.3\" text-anchor=\"middle\" font-size=\"10\">54.6</text><rect x=\"401.6\" y=\"118.2\" width=\"20.9\" height=\"91.8\" fill=\"#e08a2c\"/><text x=\"412.0\" y=\"115.2\" text-anchor=\"middle\" font-size=\"10\">60.4</text><text x=\"401.6\" y=\"226.0\" text-anchor=\"middle\">H209</text><rect x=\"455.0\" y=\"153.8\" width=\"20.9\" height=\"56.2\" fill=\"#4a7bd0\"/><text x=\"465.4\" y=\"150.8\" text-anchor=\"middle\" font-size=\"10\">52.5</text><rect x=\"477.9\" y=\"64.2\" width=\"20.9\" height=\"145.8\" fill=\"#e08a2c\"/><text x=\"488.3\" y=\"61.2\" text-anchor=\"middle\" font-size=\"10\">72.4</text><text x=\"477.9\" y=\"226.0\" text-anchor=\"middle\">H2126</text><rect x=\"531.2\" y=\"138.9\" width=\"20.9\" height=\"71.1\" fill=\"#4a7bd0\"/><text x=\"541.7\" y=\"135.9\" text-anchor=\"middle\" font-size=\"10\">55.8</text><rect x=\"554.1\" y=\"45.8\" width=\"20.9\" height=\"164.2\" fill=\"#e08a2c\"/><text x=\"564.5\" y=\"42.8\" text-anchor=\"middle\" font-size=\"10\">76.5</text><text x=\"554.1\" y=\"226.0\" text-anchor=\"middle\">HCC1937</text><rect x=\"607.5\" y=\"127.7\" width=\"20.9\" height=\"82.3\" fill=\"#4a7bd0\"/><text x=\"617.9\" y=\"124.7\" text-anchor=\"middle\" font-size=\"10\">58.3</text><rect x=\"630.4\" y=\"115.5\" width=\"20.9\" height=\"94.5\" fill=\"#e08a2c\"/><text x=\"640.8\" y=\"112.5\" text-anchor=\"middle\" font-size=\"10\">61</text><text x=\"630.4\" y=\"226.0\" text-anchor=\"middle\">HCC1954</text><rect x=\"70\" y=\"8\" width=\"12\" height=\"10\" fill=\"#4a7bd0\"/><text x=\"86\" y=\"17\">只算兩條份數相同的 20 Mb 區段</text><rect x=\"310\" y=\"8\" width=\"12\" height=\"10\" fill=\"#e08a2c\"/><text x=\"326\" y=\"17\">全部區域，逐條染色體</text><text x=\"490\" y=\"17\" fill=\"#333\">虛線＝50%</text></svg>",
+     "caption": "SNV 較多那條的占比：只算份數相同區段（藍）接近一半，加回全部區域（橘）升到 60–77%。純隨機也會略高於 50%"
+    }
+   ],
+   "interpretation": "SNV 落下時大致各半，之後的拷貝數改變（一條流失、份數不等）才把比例拉偏。這支持 diplosim 先用 50%，再由 CNA 製造偏差的做法；但「各半」只在基因體裡份數相同的那一小部分驗證過。",
+   "gaps": "被扣掉的區段裡 SNV 是否也各半沒有回答，留下的區段可能本來就比較「安靜」（選擇偏差）。20 Mb 區段長度沒比較過 10 Mb 或 50 Mb。除了 HG008，其他 7 株的 PRCGAP 判定都沒有獨立驗證；PRCGAP 是預印本。purity 只依「細胞株」推論接近 100%，沒用 VAF 實測。",
+   "artifacts": {
+    "files": [
+     "report/2026_11_11_slides/gen_res1.py",
+     "report/2026_11_11_slides/gen_plan.py",
+     "report/2026_11_11_slides/project/slides/balance.html",
+     "report/2026_11_11_slides/project/slides/colo-loh.html",
+     "lab_report/2026-11-06_prcgap_hap_snv_ratio/per_chromosome.tsv",
+     "lab_report/2026-11-07_hg008_giab_hap_concordance/per_chromosome.tsv"
+    ],
+    "outputs": [
+     "https://claude.ai/artifact/7DDuxKrKST1AAzuiCmL4eu#slide-8"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "PRCGAP",
+     "plain": "Sakamoto 2026 預印本：先把病人正常細胞組裝成兩條參考，再把腫瘤 SNV 放到其中一條"
+    },
+    {
+     "term": "SNV 較多那條的占比",
+     "plain": "每個區段看哪條突變多，算它占多少；就算完全隨機也會略高於 50%"
+    },
+    {
+     "term": "HP1 編號跨染色體不對應",
+     "plain": "chr1 的 HP1 和 chr4 的 HP1 不一定來自同一個親代"
+    }
+   ],
+   "details": "session ad54ff4d 14:31-15:15。commit 02798dd（備份）、a255bb0（第 9 頁）、a50b238（第 8 頁）。Verkko：src/scripts/cluster.py v2.2 第 319、454-468、540-542 行；8-hicPipeline.sm 第 562、572-573 行。",
+   "evidence": [
+    {
+     "line": 4386,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 14:39",
+     "ref": "ad54ff4d:4386"
+    },
+    {
+     "line": 5644,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 14:58",
+     "ref": "ad54ff4d:5644"
+    },
+    {
+     "line": 5255,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 14:49",
+     "ref": "ad54ff4d:5255"
+    }
+   ]
+  },
+  {
+   "title": "[翻案] 11-11 投影片拿掉「驗證三層」階梯",
+   "status": "dropped",
+   "kind": "tooling",
+   "priority": "P1",
+   "summary": "「觀測特徵／克隆結構／演化路徑」三層是 agent 自己從會議 N3 整理出的框架，沒問過使用者；全冊拿掉，第 2 頁改成「暫時想不到驗證方法」",
+   "question": "使用者問第 2 頁的三層驗證：目前哪些資料符合「演化路徑」，標準是怎麼訂的？",
+   "approach": "agent 先查來源：老師在 11-04 只說「最終特徵相似不能證明演化樹正確」，沒有說要分三層；三層的名稱是整理會議時寫進 CLAUDE.md 的，亮燈標準沒寫下來過。使用者先要第 2 頁改成「暫時想不到驗證方法」，之後在頁面留言要求拿掉階梯。agent 從第 6–10 頁、第 14 頁和第 1 頁全部移除，並新增一條 memory。",
+   "result": "目前沒有任何資料達到「演化路徑」這一層。第 2 頁標題改成「上次指出的五個問題：四個已改做法，驗證方法還沒想到」。拿掉階梯後，自我檢查的「驗證標出支持哪一層」如實改成未通過。",
+   "interpretation": "這是 agent 把自己整理出的框架當成會議要求放上投影片。之後的驗證說明要回到老師的原意，不再自創分層。",
+   "gaps": "CLAUDE.md「驗證模擬」一節的 N3 還寫著三層，之後的 agent 會照做；要不要改寫，使用者還沒回答。「怎麼區分特徵相似與演化路徑」仍是 11-04 未決事項。",
+   "artifacts": {
+    "files": [
+     "report/2026_11_11_slides/gen_open.py",
+     "report/2026_11_11_slides/gen_res1.py",
+     "report/2026_11_11_slides/gen_close.py",
+     "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/no-three-layer-ladder.md"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "N3",
+     "plain": "11-04 會議老師的提醒：不同演化過程可以做出相似的 BAM，所以 BAM 像不代表樹對"
+    }
+   ],
+   "details": "session ad54ff4d 15:45-16:57。未 commit。",
+   "evidence": [
+    {
+     "line": 8013,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 15:52",
+     "ref": "ad54ff4d:8013"
+    },
+    {
+     "line": 10679,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 16:57",
+     "ref": "ad54ff4d:10679"
+    }
+   ]
+  },
+  {
+   "title": "[翻案] diplosim 方案刪掉 C，只帶 A、B 請老師決定",
+   "status": "dropped",
+   "kind": "research",
+   "priority": "P1",
+   "summary": "11-07 列的三個方案刪掉 C（真值多記一欄親源），第 11 頁只剩 A（維持獨立 50%）和 B（加 SNV 座標與局部聚集）",
+   "question": "11-07 決定把 SNV 階段的三個模擬器方案帶到 11-11 會議。使用者看第 11 頁後要求刪掉第三個。",
+   "approach": "第 11 頁刪掉方案 C，A、B 兩欄加寬；標題、講稿、第 1 頁的「3 個方案」都改成 2 個。因為「請老師決定」頁也被刪，第 11 頁成為最後一頁，講稿改成「這兩個方案想請老師決定」。",
+   "result": "第 11 頁已上線，截圖檢查版面正常。第 1 頁與講稿的修改只在本地。",
+   "interpretation": "11-07 日誌記下的老師待答問題「A、B、C 要選哪一個」現在只剩 A、B。",
+   "gaps": "對話裡沒有說明刪 C 的理由。第 1 頁「2 個方案」與頁尾等修改還沒發布。方案 A 卡片仍引用自己的統計，沒改成引第 5 頁的論文。",
+   "artifacts": {
+    "files": [
+     "report/2026_11_11_slides/project/slides/options.html",
+     "report/2026_11_11_slides/gen_open.py"
+    ],
+    "outputs": [
+     "https://claude.ai/artifact/7DDuxKrKST1AAzuiCmL4eu"
+    ]
+   },
+   "concepts": [
+    {
+     "term": "方案 C",
+     "plain": "真值裡多記每個 SNV 來自爸爸或媽媽，而不只是 HP1／HP2"
+    }
+   ],
+   "details": "session ad54ff4d 17:32-17:33。未 commit。",
+   "evidence": [
+    {
+     "line": 11081,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 17:32",
+     "ref": "ad54ff4d:11081"
+    },
+    {
+     "line": 11211,
+     "session_id": "ad54ff4d",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-08 17:33",
+     "ref": "ad54ff4d:11211"
+    }
+   ]
+  }
+ ],
+ "record": [
+  {
+   "title": "用 daily-log 寫完 11-07 日誌並推進游標",
+   "what": "11-07 23:00 在 session 6b9cb276 跑 /daily-log：掃描 11-06 23:00 到 11-07 23:00，列 10 個候選，分成呈現 5 項、記錄 4 項、邊界 1 項，寫進 daily/.data/2026-11-07.json 並渲染成 daily/2026-11-07.html。圖從 lab_report 複製兩張（same_hap_by_distance.png、sc_clades.png）到 daily/figures/2026-11-07/。游標推進到 2026-11-07T23:00:10。放行的可讀性提醒：第 1 項標題被誤判找不到動作對象、第 4 項標題超字數 2 字。日誌 repo 沒有 commit，也沒有 push。",
+   "why_demoted": "日誌維護工作，使用者 0 則訊息，分數 5。",
+   "status": "done",
+   "artifacts": {
+    "files": [
+     "daily/.data/2026-11-07.json",
+     "daily/2026-11-07.html",
+     "daily/figures/2026-11-07/same_hap_by_distance.png",
+     "daily/figures/2026-11-07/sc_clades.png"
+    ]
+   },
+   "evidence": [
+    {
+     "line": 4074,
+     "session_id": "6b9cb276",
+     "project": "-bip8-disk-boyu114-main-work",
+     "ts": "11-07 23:05",
+     "ref": "6b9cb276:4074"
+    }
+   ]
+  }
+ ],
+ "issues": [
+  {
+   "title": "投影片發布兩次被權限檢查擋下",
+   "detail": "17:06、17:08 發布第 10 頁與全冊頁尾修正時，權限檢查判定為沒被要求的對外發布，可能因為指示來自頁面留言而不是對話。",
+   "resolution": "agent 沒有繞過，改成請使用者在對話中授權或自己在編輯器修改；到掃描結束仍未授權。"
+  }
+ ],
+ "advisor": [
+  {
+   "kind": "question",
+   "text": "SNV 階段的模擬器方案 A（維持獨立 50%）、B（加 SNV 座標與局部聚集）要選哪一個？（11-08 已刪掉方案 C）",
+   "answered": false
+  },
+  {
+   "kind": "question",
+   "text": "HG008 的候選樹能驗證什麼？「像」要怎麼定義？（11-04 未決事項 3）",
+   "answered": false
+  }
+ ],
+ "questions_for_advisor": [],
+ "next": [],
+ "covers": "11-07 23:00 ~ 11-08 23:00",
+ "scan": {
+  "last_scanned": "2026-11-08T23:00:12",
+  "sessions": [
+   "c3a9f005",
+   "6b9cb276",
+   "ad54ff4d",
+   "d20e493a"
+  ],
+  "layers": {
+   "show": 5,
+   "record": 1,
+   "border": 0
+  }
+ }
+}

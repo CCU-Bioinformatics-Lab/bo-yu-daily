@@ -3,66 +3,74 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>方向進度總覽（截至 2026-11-02）</title>
+<title>方向進度總覽（截至 2026-11-16）</title>
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
 <div class="wrap">
 <header class="page">
-<h1 class="date">方向進度總覽（截至 2026-11-02）</h1>
-<div class="meta">來源：14 篇日誌（09-18、10-19 ~ 11-01），重要數字已對照 <code>lab_report/</code> 與 git log。用到的會議：10-21（record ＋ summary）、10-28（record，沒有 summary）。</div>
-<p class="headline">研究目的：把 long read 的 HP 資訊接進 PhyClone，並用有真值樹的 long read 模擬資料驗證。目前主線是模擬器 diplosim。它已經能產生 HP1／HP2 計數，read 與 HP 層級的統計在 HCC1395 的 5 個 purity 上大多對得上。但它還沒有同 read 共現，樹的結構也還沒驗證，HP 擴充還沒在 diplosim 資料上測。</p>
+<h1 class="date">方向進度總覽（截至 2026-11-16）</h1>
+<div class="meta">來源：27 篇日誌（09-18、10-19 ~ 11-16），4 份週報加上 11-16 的單日頁。用到的會議：10-21、10-28、11-04、11-11。</div>
+<p class="headline">研究目的：模擬帶 HP1／HP2 的 long read bulk 腫瘤資料，附已知真值樹，測試把 HP 加進樹重建（haploclone）能不能改善結果。diplosim 現在是 SNV-only、無 read 雜訊，HP 分配固定 50% 獨立。模擬上，加 HP 讓找回的群多一倍（11% → 22%），但 CCF 相差不到 0.1 的群在 HG008 等級的資料下救不回。HG008 參考樹已能逐步說明並寄出；bulk 重建只分得到最上層。</p>
 </header>
 
 <h2 class="section">週報</h2>
 <nav class="outline"><ol>
 <li><a href="2026-09-18_2026-10-25.html">週報 1：09-18、10-19 ~ 10-25</a> —— 從找現成資料轉成自己做模擬器；A2／C4 在壓力測試樹上有效</li>
 <li><a href="2026-10-26_2026-11-01.html">週報 2：10-26 ~ 11-01</a> —— longbulksim 凍結，改寫 diplosim；HCC1395 多 purity 驗證</li>
+<li><a href="2026-11-02_2026-11-08.html">週報 3：11-02 ~ 11-08</a> —— 11-04 會議後方向收窄；diplosim 刪掉 read 雜訊；SNV 份數相同時大致各半；HG008 候選樹</li>
+<li><a href="2026-11-09_2026-11-15.html">週報 4：11-09 ~ 11-15</a> —— 50% 定案；HG008 參考樹可說明；HP 在低深度有幫助，但 CCF 相近的群分不開</li>
+<li><a href="../2026-11-16.html">11-16（單日）</a> —— 共現上限、換 prior、綁 CCF 都救不回 CCF 相近的群；HP 好處落在 CCF 0.3–0.8</li>
 </ol></nav>
 
-<h2 class="section">兩週的主線</h2>
+<h2 class="section">主線</h2>
 <section class="item"><div class="scroll-x"><pre>
 10-19 文獻：沒找到 HP 建樹方法
    │
 10-21 會議：只用 long read 模擬資料
    │
-10-23 CONIPHER 能重現作者資料 ──► 當改造起點
-   │
-10-24 現成工具都沒有 HP 共現 ──► 自己寫
-   │
 10-25 longbulksim v0.1 ──► A2、C4 在壓力樹上有效
-   │
-10-26 HP 擴充卡在 FSCRP prior；haploclone（Rust）完成
-   │
-10-28 會議：先列方案、一次一步、用圖
    │
 10-29 longbulksim 凍結 ──► 照 CONIPHER 重寫 diplosim
    │
-10-30 diplosim v1：14 項只有 5 項像真實資料
+11-01 HCC1395 多 purity：12/13/12/11/8（t50 → t10）
    │
-10-31 補 CN 與雜訊：t50 很像，換 purity 就失準
+11-04 會議：HCC1395 驗證暫停、共現拿掉、先查生物假說
    │
-11-01 補量測端：12/13/12/11/8（t50 → t10）
+11-06 diplosim 刪掉 read 雜訊；份數相同時 SNV 大致各半
+   │
+11-07 HG008 候選樹：單細胞支持主幹以下三層
+   │
+11-11 會議：五項主軸；HG008 樹 9 步對得到程式，寄出
+   │
+11-12 50% 定案；diplosim 預設 SNV-only；haploclone 重建 10 棵樹
+   │
+11-14 改數找回幾群；HP 在 30× 多 0.90 群，400× 幾乎沒差
+   │
+11-15 天花板：CCF 差 &lt; 0.1 的群資料分不開；共現只多 0.20 群
+   │
+11-16 HG008 等級密度下救不回；HP 讓找回的群 11% → 22%
 </pre></div></section>
 
 <h2 class="section">各方向現在的狀態</h2>
 <section class="item"><div class="scroll-x"><table>
 <tr><th>方向</th><th>狀態</th><th>依據</th><th>下一個缺口</th></tr>
-<tr><td>A. 模擬器 diplosim</td><td><span class="badge ongoing">可行，進行中</span></td><td>v1 照 CONIPHER，和 CONIPHER 比平均值 |z| &lt; 2〔實測，commit 877b751〕</td><td>需求表三條：long read ✓、真值樹 ✓、HP1／HP2 ✓、同 read 共現 ✗（延後）</td></tr>
-<tr><td>B. diplosim 驗證（HCC1395 多 purity）</td><td><span class="badge ongoing">部分可行</span></td><td>13 項統計通過 12/13/12/11/8（t50 → t10）〔實測，<code>lab_report/2026-11-01_diplosim_purity_summary/</code>〕</td><td>t10 只過 8/13；範圍只來自一株細胞；樹與 subclone 結構沒驗證（HCC1395 沒真值樹）</td></tr>
-<tr><td>C. PhyClone 的 HP 擴充（A2、C4）</td><td><span class="badge ongoing">未定</span></td><td>在 longbulksim 壓力樹上 A2、C4 有效；40 棵隨機樹 ARI +0.05〜0.06〔實測〕</td><td>錯樹主因是 FSCRP prior；prior 實驗等老師同意；還沒在 diplosim 資料上跑</td></tr>
-<tr><td>D. haploclone（Rust 版 PhyClone）</td><td><span class="badge done">完成</span></td><td>M0–M9；67 trial PASS；速度中位數 28×；預設輸出逐位元相同〔實測〕</td><td>當 C 的執行工具；§4 prior 實驗待批准</td></tr>
-<tr><td>E. 單細胞真值（HG008）</td><td><span class="badge dropped">暫停</span></td><td>單細胞只支持主幹與兩個共享分枝；HG008 至少 5 群〔實測〕</td><td>約 47 顆分不出群的細胞怎麼處理，沒決定</td></tr>
-<tr><td>F. PCDH 甲基化條碼</td><td><span class="badge dropped">暫停</span></td><td>3／5 株整區高甲基化；H1437 兩群較像兩份 copy〔實測＋推論〕</td><td>somatic SNV linkage 測試沒做</td></tr>
-<tr><td>G. 新穎性（文獻）</td><td><span class="badge done">已查</span></td><td>在 10-19 的 4 組搜尋範圍內，沒找到用 long read HP／PS 建樹的已發表方法〔論文〕</td><td>Hackett 2026 只讀到摘要</td></tr>
+<tr><td>A. 模擬器 diplosim</td><td><span class="badge ongoing">可行，進行中</span></td><td>SNV-only 預設、無 read 雜訊、HP 固定 50% 獨立；11-15 加同 read 共現（<code>--read-length</code>）〔程式，<code>diplosim/DECISIONS.md</code>〕</td><td>沒有定序錯誤，結果偏樂觀；CNA、LOH 之後才加</td></tr>
+<tr><td>B. 模擬驗證（diplosim → haploclone）</td><td><span class="badge ongoing">進行中</span></td><td>加 HP 找回的群 11% → 22%；CCF 差 &lt; 0.1 的群天花板也找不回〔實測，11-14 ~ 11-16〕</td><td>改目標（群層級）或寫成限制，待週會</td></tr>
+<tr><td>C. HG008 參考樹</td><td><span class="badge done">完成，已寄出</span></td><td>5 群 clone，單細胞支持 4 群；9 步對得到程式〔實測，11-11〕</td><td>末端分支沒驗證；QUAL 20 是事後加的</td></tr>
+<tr><td>D. HG008 bulk 重建</td><td><span class="badge ongoing">進行中</span></td><td>ClairS PASS 5,816 個 SNV；ONT、PacBio 都沒分開 111 層〔實測，11-13 ~ 11-15〕</td><td>共現重建太慢沒結果；深層 SNV 門檻要不要放寬</td></tr>
+<tr><td>E. SNV 的 HP 比例與獨立性</td><td><span class="badge done">定案</span></td><td>COLO829 0.993、HG008 0.97，CI 都含 1；≥ 1 kb 沒否定獨立〔實測，使用者 11-12 定案〕</td><td>親源沒量；1 kb 內聚集不模擬</td></tr>
+<tr><td>F. HCC1395 驗證</td><td><span class="badge dropped">暫停</span></td><td>11-04 會議：統計量相似不能證明樹正確</td><td>既有結果只當歷史參考</td></tr>
+<tr><td>G. COLO829 後續實驗</td><td><span class="badge dropped">結案</span></td><td>11-06：一株細胞不足以設定參數</td><td>無</td></tr>
+<tr><td>H. 突變速率、分子時鐘</td><td><span class="badge dropped">暫停</span></td><td>11-07 使用者暫停，11-11 沒重啟</td><td>無</td></tr>
 </table></div></section>
 
 <h2 class="section">要決定或要問的</h2>
 <section class="item"><div class="field gaps"><div class="body"><ul>
-<li>11-04 報告：13 頁已做，最後一版的自我檢查與 <code>check_slides.py</code> 還沒重跑。</li>
-<li>diplosim 下一步（等你選）：補同 read 共現、改善 t10、或先在 diplosim 資料上跑 PhyClone 與 HP 擴充。</li>
-<li>要問老師：short read 統計能不能當參考範圍；§4 prior 實驗的判定門檻。</li>
-<li><code>prop_tagged</code> 等旋鈕範圍只有 HCC1395 一個來源。</li>
+<li>CCF 相近的群：改成群層級的目標，還是寫成方法限制？</li>
+<li>HG008 深層 SNV 多被判 LowQual：要不要放寬門檻？</li>
+<li>11-18 投影片：11-16 的兩個實驗結果還沒放進去；<code>check_slides.py</code> 與附錄 B 自我檢查要重跑。</li>
+<li>11-12 到 11-16 有多個設計選擇是使用者直接決定、沒帶週會，報告要寫明。</li>
 </ul></div></div></section>
 </div>
 </body>

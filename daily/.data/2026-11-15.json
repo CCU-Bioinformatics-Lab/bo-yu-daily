@@ -1,0 +1,634 @@
+{
+  "schema_version": "2",
+  "date": "2026-11-15",
+  "headline": "CCF 相差不到 0.1 的 clone 群，在 60× 只看 read 計數，連已知真值的天花板都找不回；改加同一條 read 的共現，模擬中心點也只多找回 0.20 群，原因是跨群的 SNV 對太少",
+  "items": [
+    {
+      "title": "11-18 週會投影片照審閱改版，最後刪到剩 9 頁",
+      "status": "ongoing",
+      "kind": "tooling",
+      "priority": "P2",
+      "summary": "11-18 投影片：HG008 參考樹拆成「怎麼建」「怎麼驗證」兩頁，模擬頁補上生成步驟與 11 組結果；11-15 使用者要求放慢，刪掉第 10–15 頁，剩 9 頁",
+      "question": "11-18 週會要報告 HP 加進樹重建的進度。11-13 做好的 11 頁，使用者 11-14 逐頁看過後，覺得幾頁老師會看不懂，要改。",
+      "approach": "- **HG008 參考樹頁（11-14）：** 使用者要求參考之前的 PNG 流程圖，每步只寫一句白話。拆成兩頁：先講 8 株選殖株怎麼排出樹，再講 119 個單細胞怎麼驗證。樹改成上週那種「一群一個圓圈、由上往下」的畫法。\n- **模擬頁（11-14）：** 補上 diplosim 怎麼產生資料（SNV 1+1 時加上 HP1／HP2）；第 7 頁改成一棵樹的實例，旁邊放總體分數。評分改成「找回幾群、樹形完全對幾次」（見另一項）。\n- **論文頁（11-14）：** 先寫兩篇論文是在找標準參考漏掉的 SNV，只是剛好標了 HP；所以 HP 仍用 50% 隨機。\n- **加結果（11-15）：** 第 7 頁放 11 組實驗的結論與圖例（含中心點設定）；新增第 8 頁「分得好的樹和分不好的樹長什麼樣」。\n- **刪頁（11-15）：** 使用者說進度太快跟不上，刪掉第 10–15 頁（HG008 重建四頁、決定頁、AI 環境頁）。\n- 兩條規則併入 `report/report_rule.md`：F-5 流程圖每步一句白話；C-6 借論文資料時先寫論文自己的目的與結論。",
+      "result": "- 11-14 commit 五次（見執行細節），並跑完 11-11 會議附錄 B 的自我檢查，未過的 3 條已修。\n- 現在 9 頁：outline、tasks、ref-tree、ref-check、papers、sim-method、sim-result、sim-shape、sim-why。\n- 刪掉的 6 頁搬到 `live_backup/removed_2026-11-15/`，產生程式保留。\n- 10-21 會議「口頭說完模擬生成步驟」這條自我檢查，由使用者 11-14 刪除。",
+      "interpretation": "報告縮回「HG008 參考樹怎麼來」與「模擬上 HP 在哪些條件有用」兩條主線。HG008 bulk 重建的結果已經有，但這次先不上投影片，等使用者消化完再加回。",
+      "gaps": "11-15 的改動（第 7、8 頁、刪頁）還沒 commit。刪頁之後，自我檢查清單和 BRIEF 的頁碼引用要再跑一次。AI 環境頁被刪，但 CLAUDE.md「交付」第 6 項要求要有這頁，週會前要決定放不放。",
+      "artifacts": {
+        "files": [
+          "report/2026_11_18_slides/BRIEF.md",
+          "report/2026_11_18_slides/gen_ref.py",
+          "report/2026_11_18_slides/gen_sim.py",
+          "report/2026_11_18_slides/gen_hg2.py",
+          "report/2026_11_18_slides/gen_open.py",
+          "report/2026_11_18_slides/gen_bg.py",
+          "report/2026_11_18_slides/project/deck.json",
+          "report/report_rule.md",
+          "meeting_record/2026_10_21_meeting_summary.md",
+          "meeting_record/2026_11_11_meeting_summary.md",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/copy-referenced-figure.md"
+        ],
+        "commands": [
+          "python3 -I tools/check_slides.py report/2026_11_18_slides/ --titles",
+          "python3 -I report/2026_11_18_slides/preview.py"
+        ],
+        "outputs": [
+          "report/2026_11_18_slides/project/slides/（9 頁 html）",
+          "report/2026_11_18_slides/live_backup/removed_2026-11-15/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "選殖株",
+          "plain": "從腫瘤細胞株挑出單一細胞養大的細胞群"
+        },
+        {
+          "term": "F-5",
+          "plain": "投影片規則：流程圖每一步配一張示意圖，只寫一句白話"
+        },
+        {
+          "term": "附錄 B",
+          "plain": "11-11 會議整理的自我檢查清單"
+        }
+      ],
+      "details": "commits：1d3f1de（加 HG008 重建頁）、896b134（自我檢查）、fd5c0a8（INDEX 註記 D1–D4 由使用者決定）、567041d（依審閱改版）、3a6e563（改用找回群數評分）\n刪除頁：hg-plan、hg-nist、hg-clairs、hg-rebuild、decide、ai-env\n新增頁：ref-check（11-14）、sim-shape（11-15）",
+      "evidence": [
+        {
+          "line": 4490,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-14 14:22",
+          "ref": "ec9172ea:4490"
+        },
+        {
+          "line": 12463,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 14:29",
+          "ref": "98f86b63:12463"
+        }
+      ]
+    },
+    {
+      "title": "diplosim 加上 read 共現，能分開 CCF 相近的群嗎？只多 0.20 群",
+      "status": "ongoing",
+      "priority": "P1",
+      "summary": "diplosim 新增 read 共現與 SNV 密度兩個選項，haploclone 新增共用比例評分；60× 中心點加共現只多找回 0.20 群，沒過門檻，原因是跨群 SNV 對太少；SNV 密度掃描已開跑",
+      "question": "只看 read 計數分不開 CCF 相近的群（見天花板那項）。同一條 read 上兩個 SNV 是否一起出現，和 CCF 差多少無關。模擬裡加上這個資訊，能不能把相近的群分開？",
+      "approach": "- **先調查（4 個 subagent）：** read 怎麼產生、跨過幾條 read、SNV 位置怎麼放、haploclone 怎麼評分。結論寫成設計文件，建議順序：先修評分，再改模擬器，再掃參數。\n- **第 1 步 評分：** haploclone 現行評分每對 SNV 各算一次，SNV 對越多越偏向「同一群」。新增 `--pair-pool`：同一對群之間的 SNV 對，先合併 read 再算一次（branch `pair-pool`）。不加選項時輸出和原版相同。\n- **第 2 步 diplosim：** 新增 `--read-length`（read 長度，預設 0 ＝ 關閉）與 `--snvs-per-mb`（每 Mb 幾個 SNV）。同 HP、距離小於 read 長度的 SNV 對，抽跨過的 read 數，每條 read 依細胞比例抽一個細胞，寫出 `_pairs.tsv`。關閉時其他輸出逐位元不變；新增 6 個測試。\n- **第 3 步 中心點：** 60×、purity 0.9、5 群、1,000 SNV、read 33 kb、每 Mb 5.3 個 SNV（HG008 等級），10 棵樹，比只用 HP（A1）、A1＋共現（逐對）、A1＋共現（共用比例）三種。",
+      "result": "- **核對：** A1 找回 1.95 群，和 11-14 中心點完全相同。\n- 兩種共現評分都是 **2.15 群**，比 A1 多 0.20 [95% CI −0.05, +0.45]，**沒過門檻**（+0.3 群且 CI 不含 0）。樹形完全對 0／20。\n- **原因：** CCF 差 < 0.1 的群之間，同 HP 的 SNV 對每對群只有 0–7 對；每群卻有 50–200 個 SNV。\n- **兄弟關係的 SNV 對有被分開**（第 2 棵樹 7／7 對、第 7 棵 1／1 對），但其他 SNV 仍只靠 read 計數，所以整群不算找回。\n- **祖先關係的 SNV 對沒被分開**，符合預期：只有「只帶祖先突變」的 read 能分辨，它的比例約等於 purity × CCF 差。\n- 使用者接著決定掃 SNV 密度（每 Mb 20、50、100、200 個），已開跑。",
+      "interpretation": "共現的證據本身清楚，但在真實等級的 SNV 密度下，只覆蓋極少數 SNV。密度掃描會回答「要多少 SNV 對才夠」；如果要的密度遠高於真實資料，共現在 1+1 SNV-only 下也救不了相近的群。",
+      "tables": [
+        {
+          "caption": "模擬中心點：加入共現後找回幾群（5 群，10 棵樹 × 2 seed）",
+          "columns": [
+            "模式",
+            "找回群數",
+            "比 A1 多 [95% CI]",
+            "樹形完全對",
+            "群層級評分找回"
+          ],
+          "rows": [
+            [
+              "A1（只有 HP）",
+              "1.95",
+              "—",
+              "0／20",
+              "2.80"
+            ],
+            [
+              "A1＋共現（逐對）",
+              "2.15",
+              "+0.20 [−0.05, +0.45]",
+              "0／20",
+              "3.00"
+            ],
+            [
+              "A1＋共現（共用比例）",
+              "2.15",
+              "+0.20 [−0.05, +0.45]",
+              "0／20",
+              "3.05"
+            ]
+          ]
+        }
+      ],
+      "gaps": "SNV 密度掃描還沒跑完。diplosim 沒有定序錯誤，不該出現的 read pattern 都是 0，結果比真實資料樂觀；共用比例評分在有錯誤時會假分群（錯誤率 2%、200 對時誤判率 0.74），還沒處理。haploclone `pair-pool` branch 與 diplosim 的改動都還沒 commit；haploclone 的 `meta.json` 沒有記 `--pair-pool`。成簇突變沒有模擬。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-15_cooccurrence_sim_design/README.md",
+          "lab_report/2026-11-15_cooccurrence_sim_design/evidence/",
+          "diplosim/src/pairs.rs",
+          "diplosim/src/lib.rs",
+          "diplosim/src/params.rs",
+          "diplosim/src/output.rs",
+          "diplosim/tests/behaviour.rs",
+          "diplosim/DECISIONS.md",
+          "/bip8_disk/boyu114/haploclone/rust/src/pairs.rs（branch pair-pool）",
+          "lab_report/2026-11-15_diplosim_c4_center/README.md",
+          "lab_report/2026-11-15_diplosim_c4_center/summarize_c4.py",
+          "lab_report/2026-11-15_diplosim_c4_center/group_level_c4.py",
+          "lab_report/2026-11-15_diplosim_c4_density/README.md",
+          "lab_report/2026-11-15_diplosim_c4_density/run_density.sh"
+        ],
+        "commands": [
+          "cd diplosim && cargo test --release",
+          "python3 -I tools/run_diplosim_haploclone_batch.py /bip8_disk/boyu114/diplosim_c4_2026-11-15/center --sim-seeds 1-10 --hc-seeds 1,2 --coverage 60 --purity 0.9 --read-length 33000 --snvs-per-mb 5.3 --modes a1,a1c4,a1c4pool --jobs 16",
+          "nohup lab_report/2026-11-15_diplosim_c4_density/run_density.sh"
+        ],
+        "outputs": [
+          "lab_report/2026-11-15_diplosim_c4_center/summary_center.txt",
+          "lab_report/2026-11-15_diplosim_c4_center/group_level_center.txt",
+          "lab_report/2026-11-15_diplosim_c4_center/pair_evidence_center.txt",
+          "/bip8_disk/boyu114/diplosim_c4_2026-11-15/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "共現",
+          "plain": "同一條 read 跨過兩個 SNV 時，兩個位置是否同時帶突變"
+        },
+        {
+          "term": "A1",
+          "plain": "haploclone 加 HP 的模式：只用 SNV 所在那條 HP 的 read 算比例"
+        },
+        {
+          "term": "CCF",
+          "plain": "腫瘤細胞裡帶這個突變的比例"
+        },
+        {
+          "term": "80/80 規則",
+          "plain": "一群重建結果收了某真值群 ≥ 80% 的 SNV，且它 ≥ 80% 的 SNV 來自那群，才算找回"
+        },
+        {
+          "term": "SNV 密度",
+          "plain": "每一百萬個鹼基有幾個 SNV；越密，同一條 read 跨過兩個 SNV 的機會越多"
+        }
+      ],
+      "details": "diplosim 新選項：--read-length L（跨過的 read 數 ~ Poisson(coverage/2 × (L − d)/L)）、--snvs-per-mb D（等比例縮放每條染色體，只改位置）\n只限 SNV-only，有 CNA／WGD 時拒絕\nHG008 ONT read 長度：中位數 22.9 kb、N50 36.0 kb\nhaploclone：-d binomial -b 1000 -n 3000 --num-chains 4，seed 1、2",
+      "evidence": [
+        {
+          "line": 14435,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 16:46",
+          "ref": "98f86b63:14435"
+        },
+        {
+          "line": 14489,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 16:50",
+          "ref": "98f86b63:14489"
+        },
+        {
+          "line": 16701,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 21:33",
+          "ref": "98f86b63:16701"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] haploclone 重建分數 0.95 卻看起來很差，改數找回幾群",
+      "status": "done",
+      "priority": "P1",
+      "summary": "SNV 配對分數（ARI、樹關係正確率）約 0.95，但整群消失或接錯看不出來；改成「找回幾群、樹形完全對幾次」，11-12 的 10 棵樹 5 群平均只找回 3.35／3.45 群，樹形完全對各 1／20",
+      "question": "使用者 11-14 看第 7 頁的樹，覺得重建「差得要死」，但 agent 說分得很好。哪一個對？",
+      "approach": "- 原本的分數以 SNV 兩兩配對計算。1,000 個 SNV 裡 500 個是主幹，這些配對幾乎都對，所以分數偏高。\n- 改用群層級規則：一群重建結果收了某真值群 ≥ 80% 的 SNV，且它 ≥ 80% 的 SNV 來自那群，才算找回。樹形完全對要每群一對一，父群也相同。\n- 同時按「和 CCF 最近的另一群差多少」分組，看哪種群分得好（使用者 11-14 提出的觀察）。",
+      "result": "- 11-12 批次（深度約 400、10 棵樹、2 seed）：5 群平均找回 **不加 HP 3.35、加 HP 3.45 群**；樹形完全對各只有 **1／20**。\n- CCF 差距 ≥ 0.20 的群 36／36 全部找回；< 0.10 的群大多找不回（20–29%），加不加 HP 都一樣。",
+      "interpretation": "11-12 的「分數 0.9 以上」不能當成「重建得好」。之後模擬結果一律報找回幾群與樹形完全對次數，並先看樹再下結論（已寫進 memory）。",
+      "gaps": "門檻 80/80 是 agent 提的，使用者沒有另定；0.1、0.2 這兩個 CCF 差距分界只來自 10 棵樹。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/clone_recovery_by_ccf_gap.py",
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/README.md",
+          "lab_report/INDEX.md",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/clone-level-not-pair-scores.md"
+        ],
+        "outputs": [
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/clone_recovery_by_ccf_gap.txt"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "ARI",
+          "plain": "兩種分群結果有多一致的分數，以 SNV 兩兩配對計算"
+        },
+        {
+          "term": "樹形完全對",
+          "plain": "重建的每一群都對到一個真值群，而且上下關係也一樣"
+        }
+      ],
+      "details": "commit 3a6e563（11-14 16:09）\n規則寫在 README §8，看結果前定",
+      "evidence": [
+        {
+          "line": 8315,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-14 16:00",
+          "ref": "ec9172ea:8315"
+        },
+        {
+          "line": 8334,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-14 16:01",
+          "ref": "ec9172ea:8334"
+        }
+      ]
+    },
+    {
+      "title": "HP 在什麼條件下有幫助？一次改一個參數跑 11 組",
+      "status": "done",
+      "priority": "P1",
+      "summary": "11 組模擬（每組 10 棵樹）：加 HP 在 30×、purity 0.7、5,000 SNV 三組過門檻，深度越低幫助越大；但 60× 時不論加不加 HP，5 群只找回約 2 群",
+      "question": "11-12 只在深度 400 測，看不到 HP 有用。真實 long read 大約 60×。HP 會不會在比較淺、purity 不同、群數不同時才有用？",
+      "approach": "- 中心點（使用者 11-14 選甲）：depth 60×、purity 0.9、5 群、1,000 SNV。\n- 使用者限制：一次只改一個參數。depth 30／120／400、purity 0.3／0.5／0.7、群數 3／8／12、SNV 5,000，共 11 組，每組 10 棵樹、haploclone 2 個 seed。\n- 開跑後、看結果前寫下判定：加 HP 平均多找回 ≥ 0.3 群，且 95% CI 不含 0，才算「有改善」。",
+      "result": "- **過門檻的 3 組：** 30×（0.60 → 1.50 群，+0.90）、purity 0.7（1.00 → 1.55，+0.55）、5,000 SNV（1.10 → 1.95，+0.85）。\n- **depth 軸照預測：** 增益 30× +0.90 → 60× +0.35 → 120× +0.25 → 400× +0.05。\n- **purity 0.3 完全沒差**（10 棵樹兩種一模一樣）。\n- 加 HP 幾乎不會變差：只有 3 棵樹找回較少。60× 時 CCF 誤差約減半（0.049 → 0.027）。\n- **最大的問題不是 HP：** 60× 時 haploclone 只切出 2–3 群，5 群只找回約 2 群，樹形 0／20 完全對；400× 才約 3.6 群。\n- 一個群找不找得回，主要看它和最近一群的 CCF 差：60× 時差 ≥ 0.2 才有 60%。",
+      "interpretation": "11-12「HP 幫不上」只在 400× 成立；在 long read 實際深度，HP 讓找回的群變多、CCF 更準。但真正卡住的是 CCF 相近的群，這也直接影響 HG008（ONT 63×）。",
+      "figures": [
+        {
+          "type": "svg",
+          "content": "<svg viewBox=\"0 0 640 240\" xmlns=\"http://www.w3.org/2000/svg\" font-family=\"inherit\" font-size=\"12\"><line x1=\"60\" y1=\"190\" x2=\"600\" y2=\"190\" stroke=\"#57606a\"/><line x1=\"60\" y1=\"40\" x2=\"600\" y2=\"40\" stroke=\"#d4a72c\" stroke-dasharray=\"5,4\"/><text x=\"604\" y=\"44\" fill=\"#d4a72c\">真值 5 群</text><line x1=\"60\" y1=\"100\" x2=\"600\" y2=\"100\" stroke=\"#eaeef2\"/><line x1=\"60\" y1=\"145\" x2=\"600\" y2=\"145\" stroke=\"#eaeef2\"/><text x=\"52\" y=\"194\" text-anchor=\"end\" fill=\"#57606a\">0</text><text x=\"52\" y=\"149\" text-anchor=\"end\" fill=\"#57606a\">1.5</text><text x=\"52\" y=\"104\" text-anchor=\"end\" fill=\"#57606a\">3</text><text x=\"52\" y=\"44\" text-anchor=\"end\" fill=\"#57606a\">5</text><rect x=\"100\" y=\"172\" width=\"36\" height=\"18\" fill=\"#57606a\"/><rect x=\"140\" y=\"145\" width=\"36\" height=\"45\" fill=\"#1f6feb\"/><text x=\"118\" y=\"166\" text-anchor=\"middle\">0.60</text><text x=\"158\" y=\"139\" text-anchor=\"middle\">1.50</text><text x=\"138\" y=\"208\" text-anchor=\"middle\">30×</text><rect x=\"230\" y=\"142\" width=\"36\" height=\"48\" fill=\"#57606a\"/><rect x=\"270\" y=\"131.5\" width=\"36\" height=\"58.5\" fill=\"#1f6feb\"/><text x=\"248\" y=\"136\" text-anchor=\"middle\">1.60</text><text x=\"288\" y=\"125\" text-anchor=\"middle\">1.95</text><text x=\"268\" y=\"208\" text-anchor=\"middle\">60×（中心）</text><rect x=\"360\" y=\"127\" width=\"36\" height=\"63\" fill=\"#57606a\"/><rect x=\"400\" y=\"119.5\" width=\"36\" height=\"70.5\" fill=\"#1f6feb\"/><text x=\"378\" y=\"121\" text-anchor=\"middle\">2.10</text><text x=\"418\" y=\"113\" text-anchor=\"middle\">2.35</text><text x=\"398\" y=\"208\" text-anchor=\"middle\">120×</text><rect x=\"490\" y=\"83.5\" width=\"36\" height=\"106.5\" fill=\"#57606a\"/><rect x=\"530\" y=\"82\" width=\"36\" height=\"108\" fill=\"#1f6feb\"/><text x=\"508\" y=\"77\" text-anchor=\"middle\">3.55</text><text x=\"548\" y=\"76\" text-anchor=\"middle\">3.60</text><text x=\"528\" y=\"208\" text-anchor=\"middle\">400×</text><rect x=\"200\" y=\"222\" width=\"12\" height=\"12\" fill=\"#57606a\"/><text x=\"216\" y=\"232\">不加 HP</text><rect x=\"300\" y=\"222\" width=\"12\" height=\"12\" fill=\"#1f6feb\"/><text x=\"316\" y=\"232\">加 HP（A1）</text></svg>",
+          "caption": "depth 軸：5 群平均找回幾群（purity 0.9，10 棵樹，每棵先平均 2 個 seed）。只有 30× 過門檻（+0.3 群且 CI 不含 0）"
+        }
+      ],
+      "gaps": "11 組各自檢定，沒有校正多重比較。5,000 SNV 那組的樹和中心點不同，SNV 數本身的效果分不出來。兩個參數同時改的效果沒測。有拷貝數變化時沒測。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-12_diplosim_haploclone_hp_vs_base/README.md",
+          "lab_report/2026-11-14_diplosim_haploclone_ofat/README.md",
+          "lab_report/2026-11-14_diplosim_haploclone_ofat/summarize_ofat.py",
+          "lab_report/2026-11-14_diplosim_haploclone_ofat/per_clone_ofat.py"
+        ],
+        "commands": [
+          "/bip8_disk/boyu114/diplosim_ofat_2026-11-14/run_all.sh"
+        ],
+        "outputs": [
+          "lab_report/2026-11-14_diplosim_haploclone_ofat/summary_c01-c11.txt",
+          "lab_report/2026-11-14_diplosim_haploclone_ofat/per_clone_c01-c11.tsv",
+          "/bip8_disk/boyu114/diplosim_ofat_2026-11-14/"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "purity",
+          "plain": "樣本裡腫瘤細胞所占的比例"
+        },
+        {
+          "term": "depth",
+          "plain": "每個位置平均被幾條 read 蓋到"
+        },
+        {
+          "term": "95% CI",
+          "plain": "10 棵樹平均差值可能落的範圍；不含 0 才算差得出來"
+        }
+      ],
+      "details": "haploclone branch rust-port：-d binomial -b 1000 -n 3000 --num-chains 4 --seed 1,2；A1 用 --hp-mode a1 和 data_hp.tsv\nc01–c07 是同 10 棵樹（只差 purity 倍數），c08–c11 的樹不同\n11-14 16:19 開跑，11-15 14:10 第 11 組跑完",
+      "evidence": [
+        {
+          "line": 9248,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-14 16:13",
+          "ref": "98f86b63:9248"
+        },
+        {
+          "line": 9386,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-14 16:18",
+          "ref": "98f86b63:9386"
+        }
+      ]
+    },
+    {
+      "title": "CCF 相近的群是方法不夠好，還是資料本身分不開？資料分不開",
+      "status": "done",
+      "priority": "P1",
+      "summary": "假設已知真值 CCF 算天花板：60× 時 CCF 差不到 0.1 的群，連天花板都只找回 0–10%；改用群層級評分、告訴程式有 5 群，也只找回約 3.5 群",
+      "question": "使用者 11-15 的目標：先完美重建 1+1 SNV 模擬裡 CCF 相近的群，再往拷貝數走。加 HP、加深度都救不回這些群。是 haploclone 的方法有問題，還是 read 計數本身就分不開？",
+      "approach": "- **天花板（方案 A 第 ② 步，使用者直接決定）：** 用 11 組實驗的資料，假設已知每群的真值 CCF，每個 SNV 選最可能的群，再用同樣的 80/80 規則評分。沒有樹、沒有搜尋，所以 haploclone 和它的差距就是方法的損失。\n- **群層級評分（使用者要求）：** 不看個別 SNV 有沒有分對，只看群的 CCF 有沒有對上（差 ≤ 0.05）。另算兩個天花板：已知群數（EM 估 CCF），和不知群數（用 BIC 選群數）。規則在算之前寫下。",
+      "result": "- **逐個 SNV 評分：** 60×、CCF 差 < 0.1 的群，天花板只找回 0–10%。haploclone 加 HP 1.95 群，天花板 2.40 群，大部分差距來自資料。\n- **群層級評分：** 60× 加 HP，haploclone 2.80 群；已知有 5 群的天花板也只有 3.50 群。\n- **最難的是判斷有幾群：** 5 群以上的樹，除了 400× 以外，BIC 幾乎從沒選對群數（0–1／10）。\n- 400× 已知群數時能找回 4.90／5 群，但 BIC 只選對 4／10。",
+      "interpretation": "在 60×、purity 0.9、1+1、1,000 SNV 時，只靠 read 計數「完美重建」做不到，不論用哪種評分。要分開相近的群，必須加入新資訊（例如同一條 read 的共現），或改目標。",
+      "tables": [
+        {
+          "caption": "群層級評分：5 群平均找回幾群（加 HP）",
+          "columns": [
+            "組",
+            "haploclone",
+            "天花板（已知群數）",
+            "天花板（BIC 選群數）",
+            "BIC 選對群數"
+          ],
+          "rows": [
+            [
+              "30×",
+              "2.30",
+              "3.50",
+              "2.90",
+              "0／10"
+            ],
+            [
+              "60×（中心）",
+              "2.80",
+              "3.50",
+              "3.30",
+              "0／10"
+            ],
+            [
+              "120×",
+              "3.00",
+              "3.80",
+              "3.90",
+              "1／10"
+            ],
+            [
+              "400×",
+              "4.20",
+              "4.90",
+              "4.30",
+              "4／10"
+            ]
+          ]
+        }
+      ],
+      "gaps": "天花板不是嚴格上限：EM 只有 21 個起點，群數多時可能停在局部最佳解（例：8 群不加 HP 5.00 高於加 HP 3.90，不合理）。群層級評分這次沒有輸出依 CCF 差距分組的明細。目標要改成什麼，還沒決定。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-15_close_ccf_oracle/README.md",
+          "lab_report/2026-11-15_close_ccf_oracle/oracle_ccf.py",
+          "lab_report/2026-11-15_close_ccf_oracle/group_level.py",
+          "~/.claude/projects/-bip8-disk-boyu114-main-work/memory/close-ccf-goal.md"
+        ],
+        "outputs": [
+          "lab_report/2026-11-15_close_ccf_oracle/oracle_summary.txt",
+          "lab_report/2026-11-15_close_ccf_oracle/oracle_per_clone.tsv",
+          "lab_report/2026-11-15_close_ccf_oracle/group_level_summary.txt"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "天花板",
+          "plain": "假設已經知道答案的一部分（真值 CCF 或群數），只用資料最多能做到多好"
+        },
+        {
+          "term": "EM",
+          "plain": "反覆猜每群的 CCF、再重新分配 SNV，直到不再變動"
+        },
+        {
+          "term": "BIC",
+          "plain": "在「群越多越貼合」和「群太多會過度解讀」之間取平衡，用來選群數"
+        }
+      ],
+      "details": "天花板不加 HP 用全部 read（VAF ＝ purity × CCF ÷ 2）；加 HP 只用 SNV 所在 HP 的 read（VAF ＝ purity × CCF），同 haploclone A1（haploclone/rust/src/data/hp.rs:290-345）\n1,260 個「群 × 模式」中只有 4 個是 haploclone 找回、天花板沒找回",
+      "evidence": [
+        {
+          "line": 13277,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 15:01",
+          "ref": "98f86b63:13277"
+        },
+        {
+          "line": 13469,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 15:04",
+          "ref": "98f86b63:13469"
+        },
+        {
+          "line": 13773,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 16:22",
+          "ref": "98f86b63:13773"
+        }
+      ]
+    },
+    {
+      "title": "HG008 真實資料裡，同一條 read 看得出 L111 在主幹下面嗎？看得出來",
+      "status": "ongoing",
+      "priority": "P3",
+      "summary": "HG008 ONT 裡，CCF 只差約 0.07 的主幹和 L111，同 HP 的 SNV 對「只有 L111 帶突變」的 read 只有 3 條、「只有主幹帶」38 條，比例 6.2% 和單細胞 7% 一致；但加進 haploclone 重建太慢，已停掉",
+      "question": "HG008 的 L111（119 個單細胞中 111 個帶，細胞比例約 0.93）和主幹只差約 0.07，11-13 只用 read 計數 4 次都分不開。真實 ONT read 裡，同一條 read 的共現有沒有訊號？",
+      "approach": "- **數 SNV 對（使用者直接決定）：** 用 11-13 重建的 5,816 個 ClairS PASS SNV，在 ONT BAM 逐條 read 記錄兩個位置是否帶突變，只看同染色體、距離 ≤ 100 kb 的 SNV 對。要數什麼在數之前寫下。\n- **加進 haploclone（使用者直接決定）：** 用同 HP 的 SNV 對做成 `pairs.tsv`，跑 A1＋共現，看 L111 能不能自成一群。逐對評分與共用比例兩種都開跑。",
+      "result": "- **有標籤的 SNV 對：** 1,470 對有 read 跨過，每對中位數 30 條 read；約是均勻分布預期的 2.6 倍（我之前估「約 80 對」是錯的）。\n- **主幹 × L111、同一條 HP：** 「只有 L111 帶突變」的 read 只有 3 條、「只有主幹帶」38 條，正是 L111 在主幹下面的 pattern。每個 L111 SNV 只取一對時，只有主幹帶的比例 6.2%（10／160），和單細胞「不帶 L111 的細胞」7% 很接近。\n- **限制：** 137 個 L111 SNV 只有 20 個有同 HP 的主幹鄰居；其他 SNV 對 97% 落在沒有標籤的密集區，看起來是比對假象。\n- **haploclone 重建：** 逐對評分 4,000 次 iteration 約要 31 小時，太慢。使用者同意停掉，先做模擬。沒有結果。",
+      "interpretation": "read 計數做不到的上下關係，共現在真實資料看得到，所以共現值得做。但真實資料能用的 SNV 對很少，而且密集區的假訊號會拖慢、干擾重建；重跑前要先用不看標籤的規則過濾密集區。",
+      "gaps": "haploclone 加共現後 L111 能不能分出來，沒有結果。密集區的過濾規則還沒寫。其他細胞株的 SNV 密度是否一樣，沒查。",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-15_hg008_snv_pairs/README.md",
+          "lab_report/2026-11-15_hg008_snv_pairs/count_pairs.py",
+          "lab_report/2026-11-15_hg008_c4_rebuild/README.md",
+          "lab_report/2026-11-15_hg008_c4_rebuild/build_pairs.py",
+          "lab_report/2026-11-15_hg008_c4_rebuild/run_c4_param.sh"
+        ],
+        "commands": [
+          "python3 lab_report/2026-11-15_hg008_snv_pairs/count_pairs.py --jobs 16",
+          "python3 lab_report/2026-11-15_hg008_c4_rebuild/build_pairs.py /bip8_disk/boyu114/hg008_haploclone/c4 --jobs 16"
+        ],
+        "outputs": [
+          "lab_report/2026-11-15_hg008_snv_pairs/pairs.tsv",
+          "lab_report/2026-11-15_hg008_snv_pairs/pairs_summary.txt",
+          "lab_report/2026-11-15_hg008_snv_pairs/truncal_L111_same_hp.txt"
+        ]
+      },
+      "concepts": [
+        {
+          "term": "L111",
+          "plain": "HG008 參考樹裡 119 個單細胞中有 111 個帶的那一層突變"
+        },
+        {
+          "term": "主幹（truncal）",
+          "plain": "所有腫瘤細胞都帶的突變"
+        },
+        {
+          "term": "C4",
+          "plain": "haploclone 裡用同一條 read 共現來評分的那一項"
+        }
+      ],
+      "details": "BAM：/big8_disk/yungjen114/data/HG008/ONT/HG008.bam（共用，只讀），MAPQ ≥ 20\n共 58,955 對有 ≥ 1 條 read 跨過；C4 輸入用 46,220 對同 HP 的 SNV 對\n不同 HP 時「兩個都帶突變」只有 6 條，符合兩條 HP 是不同分子",
+      "evidence": [
+        {
+          "line": 13899,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 16:31",
+          "ref": "98f86b63:13899"
+        },
+        {
+          "line": 14260,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 16:37",
+          "ref": "98f86b63:14260"
+        },
+        {
+          "line": 15670,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 18:03",
+          "ref": "98f86b63:15670"
+        }
+      ]
+    }
+  ],
+  "record": [
+    {
+      "title": "HG008 用 PacBio 116× 重跑重建：樹比較穩，111 層仍沒分開",
+      "what": "為什麼：11-13 ONT 63× 的重建 4 次都沒把 111 層和主幹分開，使用者 11-14 想知道加深度能不能讓 CCF 更準。做了什麼：只改平台，tumor 用 PacBio 116×、normal 用 PacBio 68×，ClairS 用 hifi_revio_ssrs model 重新 call（約 1.7 小時），其他設定與比法和 ONT 相同。結果：PASS 11,238 個，NIST recall 91.0%（ONT 90.6%）；1+1 區 4,995 個 SNV，中位深度 107。重建 4 次 111 層都沒分開；但 A1 兩個 seed 都多出一個 CCF 0.90 的群，111 層約 35% 落進去，同時收了 98–105 個主幹 SNV，不算乾淨分開。48 層所在群 CCF 0.24–0.30，和細胞比例 0.40 差超過 0.1，沒對上（ONT 有對上）。PacBio 兩個 seed 樹形相同，比 ONT 穩。狀態：結果寫進 README 並 commit（1d3f1de）；平台、tumor 深度、normal 深度同時改變，分不出差別來自哪一個。這組 HG008 重建頁在 11-15 從投影片刪掉。",
+      "why_demoted": "被 5 項上限擠掉，分數 12（第 5 名同分，呈現層留 6 項）。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "lab_report/2026-11-13_hg008_bulk_rebuild/README.md",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/build_input.py",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/run_haploclone.sh"
+        ],
+        "commands": [
+          "bash /bip8_disk/boyu114/hg008_clairs_pacbio/run.sh"
+        ],
+        "outputs": [
+          "lab_report/2026-11-13_hg008_bulk_rebuild/clairs_branch_pacbio.txt",
+          "lab_report/2026-11-13_hg008_bulk_rebuild/haploclone_eval_pacbio.txt"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 2026,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-14 08:43",
+          "ref": "ec9172ea:2026"
+        },
+        {
+          "line": 2405,
+          "session_id": "ec9172ea",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-14 11:43",
+          "ref": "ec9172ea:2405"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 同 read 共現從「先不列需求」改成開始模擬",
+      "what": "為什麼：天花板實驗顯示只看 read 計數分不開 CCF 相近的群，而 HG008 真實資料顯示共現看得出上下關係。使用者 11-15 問「要做共現不就要先模擬出來嗎」，接著決定依設計文件的順序實作、先做 diplosim 的共現模擬，而且不帶週會。這推翻 2026-11-04「同 read 共現先不列為需求」的決定。做了什麼：CLAUDE.md 需求表加上「2026-11-15 使用者決定開始模擬共現，diplosim --read-length」；diplosim/DECISIONS.md 新增 2026-11-15 一列，記選項、測試與限制。狀態：兩份文件的改動都還沒 commit。",
+      "why_demoted": "被 5 項上限擠掉，分數 11。翻案項，最低進記錄層。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "CLAUDE.md",
+          "diplosim/DECISIONS.md"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 13788,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 16:27",
+          "ref": "98f86b63:13788"
+        }
+      ]
+    },
+    {
+      "title": "[翻案] 11-18 投影片刪掉第 10–15 頁，放慢速度",
+      "what": "為什麼：使用者 11-15 14:29 說進度太快、跟不上，想先慢慢理解 haploclone 有哪些特徵能讓 1+1 SNV 分開 CCF 相近的群。做了什麼：刪掉 hg-plan、hg-nist、hg-clairs、hg-rebuild、decide、ai-env 六頁；原檔與舊 deck.json 搬到 live_backup/removed_2026-11-15/，gen_hg.py、gen_hg2.py、gen_close.py 保留。P-5 要求刪整頁前先 commit，但使用者沒要求 commit，所以改成備份檔案。之後 agent 從 A1 開始逐一講 haploclone 的特徵。結果：投影片剩 9 頁，HG008 bulk 重建（11-13、11-14 的結果）與決定頁暫時不在報告裡。狀態：刪頁未 commit；AI 環境頁是 CLAUDE.md 交付第 6 項要求的內容，週會前要再決定。",
+      "why_demoted": "被 5 項上限擠掉，分數 8。翻案項，最低進記錄層。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "report/2026_11_18_slides/project/deck.json",
+          "report/2026_11_18_slides/BRIEF.md"
+        ],
+        "outputs": [
+          "report/2026_11_18_slides/live_backup/removed_2026-11-15/"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 12463,
+          "session_id": "98f86b63",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-15 14:29",
+          "ref": "98f86b63:12463"
+        }
+      ]
+    },
+    {
+      "title": "用 daily-log 寫完 11-13 日誌並推進游標",
+      "what": "為什麼：記錄 11-12 23:00 到 11-13 23:00 的工作。做了什麼：在 session 77aca6c0 跑 collect_day.sh 與 signals.py，寫 candidates.json，把 HG008 規劃流程圖 plan_flow_icons.png 複製進 daily/figures/2026-11-13/，寫 daily/.data/2026-11-13.json 並渲染。結果：11-13 日誌呈現 5 項、記錄 5 項。狀態：完成，游標推進到 2026-11-13T23:00:10。",
+      "why_demoted": "分數 5，進記錄層。",
+      "status": "done",
+      "artifacts": {
+        "files": [
+          "daily/.data/2026-11-13.json",
+          "daily/figures/2026-11-13/plan_flow_icons.png"
+        ],
+        "outputs": [
+          "daily/2026-11-13.html"
+        ]
+      },
+      "evidence": [
+        {
+          "line": 1617,
+          "session_id": "77aca6c0",
+          "project": "-bip8-disk-boyu114-main-work",
+          "ts": "11-13 23:06",
+          "ref": "77aca6c0:1617"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "title": "HG008 加共現的重建太慢，跑不完",
+      "detail": "46,220 對 SNV 每次 iteration 都要全部重算，逐對評分 4,000 次約要 31 小時，--pair-pool 更慢；約 97% 的 SNV 對來自沒有標籤的密集區",
+      "resolution": "使用者同意停掉；重跑前要先用不看標籤的規則過濾密集區，規則在跑之前寫下"
+    }
+  ],
+  "advisor": [
+    {
+      "kind": "policy",
+      "text": "使用者 11-14：刪掉 10-21 會議自我檢查「不看投影片，口頭說完模擬資料的生成步驟」這一條"
+    },
+    {
+      "kind": "policy",
+      "text": "使用者 11-14：模擬重建結果用「找回幾群、樹形完全對幾次」報告，不用 SNV 配對分數"
+    },
+    {
+      "kind": "policy",
+      "text": "使用者 11-14／11-15 直接決定（不帶週會）：11 組一次改一個參數的實驗、天花板實驗、數 HG008 SNV 對、HG008 加共現重建、依序實作共現模擬、掃 SNV 密度"
+    },
+    {
+      "kind": "policy",
+      "text": "使用者 11-15：最終目的是先完美重建模擬 1+1 SNV 樹裡 CCF 相近的群，解決後才往拷貝數走"
+    },
+    {
+      "kind": "question",
+      "text": "天花板顯示 60× 只看 read 計數做不到完美重建；「完美重建 CCF 相近的群」這個目標要改成什麼？",
+      "answered": false
+    }
+  ],
+  "questions_for_advisor": [],
+  "next": [],
+  "covers": "11-13 23:00 ~ 11-15 23:00",
+  "scan": {
+    "last_scanned": "2026-11-15T23:00:17",
+    "sessions": [
+      "77aca6c0",
+      "ec9172ea",
+      "98f86b63",
+      "762f658a",
+      "0c330cce"
+    ],
+    "layers": {
+      "show": 6,
+      "record": 4,
+      "border": 0
+    }
+  }
+}

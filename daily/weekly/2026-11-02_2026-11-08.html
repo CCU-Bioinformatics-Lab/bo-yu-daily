@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>週報 3：11-02 ~ 11-08</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<header class="page">
+<h1 class="date">週報 3：11-02 ~ 11-08</h1>
+<div class="meta">濃縮 7 篇日誌（11-02 ~ 11-08，涵蓋 10-31 23:00 ~ 11-08 23:00）。原始內容在 <code>.data/2026-11-0{2..8}.json</code>，要看單日頁可用 <code>render.py &lt;日期&gt;</code> 重建　·　<a href="index.html">回到方向進度總覽</a></div>
+<p class="headline">這一週研究方向收窄。11-04 會議後，HCC1395 的統計量對照暫停，同 read 共現從需求表拿掉，diplosim 刪掉全部 read 雜訊，只模擬生物過程。工作改成查 SNV 落在 HP1／HP2 的生物假說：論文和 8 株細胞株都指向「份數相同時大致各半」，相鄰 SNV 在 1 kb 以上沒否定獨立。HG008 的 8 株 clone 重建出候選樹，單細胞支持主幹以下三層，末端還沒驗證。</p>
+</header>
+
+<h2 class="section">主線：照時間順序</h2>
+
+<section class="item"><h3><span class="num">01</span> HCC1395 對照收尾：LOH 對不上，原因在 normal（11-02 ~ 11-03）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>11-04 報告結果頁的 6 項統計，4 項在 5 個 purity 都落在 diplosim 95% 區間內。</li>
+<li>低 purity 時 LOH 比例對不上：22 個位點中有 19 個在 chr22 的 IGL 抗體基因區。normal 是 B 細胞株，這一段少一條 HP（depth 31×，兩側 52–62×）。排除 3 區後，LOH 比例在 5 個 purity 都落在區間內。</li>
+<li>purity 0.97 的 depth 略超出區間，差 0.07。原因是中心粒和端粒附近的重複序列疊在同一處，不是腫瘤的 CN。</li>
+<li>11-04 報告做到 15 頁。清 /bip8_disk，刪 tagged BAM、轉 CRAM，共省約 440 GB。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">02</span> 11-04 會議：方向收窄，repo 整理成 agent 找得到重點（11-04）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>會議要點 N1–N5：真值和觀測分開、改機制前先查生物假說、BAM 相似不等於樹正確、一次加一個機制、列方案前先確認前提。</li>
+<li>HCC1395 的 PPC、purity holdout、調參暫停。同 read 共現從需求表拿掉。</li>
+<li>repo 整理：刪掉 longbulksim（tag 保留）、10 支沒人用的腳本、17 個 lab report。新增 <code>lab_report/INDEX.md</code>、<code>tools/README.md</code>、<code>docs/index.md</code>。plan.md 搬到 haploclone。公開 repo 放寬 .gitignore，並從歷史清掉論文 PDF。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">03</span> 97 篇腫瘤演化文獻：全基因組爸媽偏差沒偵測到（11-05）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>直接證據只有 Lefèbvre 2026（preprint，21 人）：不對稱上限 5.7%，約 53–56%。在搜尋範圍內沒找到反駁的論文。</li>
+<li>「比例約 50%」可當零假設；「每個 SNV 獨立」局部被反駁，但成簇突變只占 3.7%。</li>
+<li>research/ 改成三層知識庫，<code>research/index.md</code> 是唯一入口。做了「腫瘤演化圖解」學習網站，改成一個腫瘤的一生來講。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">04</span> diplosim 刪掉全部 read 雜訊，只模擬生物過程（11-06）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>刪掉 8 個參數：<code>prop_tagged</code>、<code>tag_concentration</code>、<code>mistag_rate</code>、<code>mistag_concentration</code>、<code>base_error</code>、<code>fract_noise</code>、<code>n_noise_clones</code>、<code>depth_dispersion</code>。</li>
+<li>保留 depth 的 Poisson 和 alt 的 Binomial，因為那是 bulk 定序本身的取樣。15 個測試通過。</li>
+<li>依據：老師說生成真值樹時，不可能有第三條叫 unphased 的染色體。HP0、mistag、read 錯誤改列為真實資料的觀測限制。</li>
+<li>規則例外：單細胞資料可以當驗證參考，即使不是 long read。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">05</span> SNV 在 HP1、HP2 是否各半、是否獨立？（11-06 ~ 11-08）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>COLO829 扣掉沒有 SNV 的片段後，密度 9.34 比 9.31 個／Mb。HG008 兩條都在的體染色體比值 0.97（95% CI 0.93–1.01）。</li>
+<li>PRCGAP 8 株共 229 個區段，校正後 7 個顯著。只算份數相同的區段，較多那條占 51.9–58.3%；全部區域算，占 60.4–76.5%。偏差主要來自後來的拷貝數改變。</li>
+<li>相鄰 SNV：1 kb 以上，16 個檢定都不顯著；1 kb 內會擠在同一條，但只占相鄰配對的 2.5%（COLO829）和 4.5%（HG008）。</li>
+<li>論文 P01–P11 入庫。11-11 報告第 5 頁改成引用論文，不再只靠自己的統計。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">06</span> HG008 重建候選樹，單細胞支持主架構（11-06 ~ 11-07）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>先下修：repo 原有的 HG008 克隆結構是推論，不是公認真值，而且 10-27 的輸入已刪掉。</li>
+<li>從 8 株 clone 重建。119 顆單細胞支持主幹以下三層分枝，事先定的巢狀檢查沒有違反。末端大多還沒驗證。</li>
+<li>和 diplosim 比：樹的不平衡度、末端枝比例都在模擬範圍內。只有一棵樹，所以只能說「不矛盾」。</li>
+<li>SEQC2／HCC1395 沒有真值樹，單細胞只有 scCNV，只當背景。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">07</span> 方向收斂，11-11 報告做成 11 頁（11-07 ~ 11-08）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>本週只做 SNV，突變速率暫停。模擬器設計不在週中請使用者選，改成帶到週會。</li>
+<li>座標調查：多數工具的 SNV 座標只是事後貼上的標籤。沒找到同時有「座標、逐點 HP、clone tree、long read BAM」的工具。</li>
+<li>diplosim 方案剩 A（維持獨立 50%）、B（加座標與局部聚集），C 刪除。投影片從 16 頁改到 11 頁，拿掉自創的「驗證三層」階梯。</li>
+</ul></div></div></section>
+
+<h2 class="section">這週的翻案</h2>
+<section class="item"><div class="field gaps"><div class="body"><ul>
+<li>低 purity LOH 對不上：原因不是 diplosim，是 normal 的 IGL 區。</li>
+<li>HCC1395 的觀察與驗證暫停，改查單點突變的生物假說。</li>
+<li>同 read 共現從需求表拿掉（10-31 只是延後）。</li>
+<li>diplosim 刪掉全部 read 雜訊，推翻 10-31 加雜訊的做法。</li>
+<li>驗證參考放寬：單細胞資料可以用，即使不是 long read。</li>
+<li>HG008 的克隆結構下修為推論，要重建。</li>
+<li>COLO829 結案，撤回「chr1 的 0 是過濾假象」。</li>
+<li>B04 的 HP 偏向上修：同一個 phase block 內就是兩條親代染色體，只是不知道哪條是爸爸。</li>
+<li>學習網站拿掉 PRCGAP 六株，只留 COLO829 與 HG008。</li>
+<li>突變速率從待辦改成暫停；diplosim 方案刪掉 C；投影片拿掉「驗證三層」。</li>
+<li>CLAUDE.md 交付刪掉「懂／不懂」段落；會議待辦刪掉「subagent 對抗式審查」（是閒聊，不是待辦）。</li>
+</ul></div></div></section>
+
+<h2 class="section">週末時還缺的</h2>
+<section class="item"><div class="field gaps"><div class="body"><ul>
+<li>親源完全沒有量，不能回答偏向爸爸或媽媽。</li>
+<li>除了 HG008，其他 7 株的 PRCGAP HP 判定沒有獨立驗證。PRCGAP 是預印本。</li>
+<li>HG008 樹的末端分支大多沒驗證；「像」要怎麼定義還沒定。</li>
+<li>diplosim 預設參數仍會產生 CNA；方案 A／B 等 11-11 週會決定。</li>
+<li>多數改動（投影片、學習網站、知識庫）還沒 commit。</li>
+</ul></div></div></section>
+</div>
+</body>
+</html>

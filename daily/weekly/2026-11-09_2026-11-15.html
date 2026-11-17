@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>週報 4：11-09 ~ 11-15</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<header class="page">
+<h1 class="date">週報 4：11-09 ~ 11-15</h1>
+<div class="meta">濃縮 5 篇日誌（11-09、11-11、11-12、11-13、11-15，涵蓋 11-08 23:00 ~ 11-15 23:00；11-10、11-14 的工作記在下一篇）。原始內容在 <code>.data/&lt;日期&gt;.json</code>，要看單日頁可用 <code>render.py &lt;日期&gt;</code> 重建　·　<a href="index.html">回到方向進度總覽</a></div>
+<p class="headline">這一週 HP 分配定案為固定 50%、每個 SNV 獨立，HG008 參考樹能逐步說明並已寄出。模擬路線開始跑：haploclone 重建 diplosim 的樹，60× 時加 HP 讓找回的群變多（30× 多 0.90 群），但 CCF 相差不到 0.1 的群連已知真值的天花板都找不回。加同 read 共現也只多 0.20 群。HG008 bulk 重建只分得到最上層。</p>
+</header>
+
+<h2 class="section">主線：照時間順序</h2>
+
+<section class="item"><h3><span class="num">01</span> HP 各半的證據重新分級（11-09）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>三篇論文只有 Lefèbvre 2026 是腫瘤，而且是 short read。P01、P03 是正常家族血液，而且不是獨立樣本。</li>
+<li>Lefèbvre 的 21 人有 11 種癌，purity 0.38–0.98。第 2 號病人 hapA 0.41，偏離明顯。</li>
+<li>只比份數相同的區段，8 株有 6 株更接近各半（COLO829 65.6% → 54.1%，HG008 60.5% → 52.7%）。</li>
+<li>結論：「腫瘤加 long read」只有我們自己對細胞株的再分析，不能寫成「文獻支持」。</li>
+<li>CLAUDE.md 與 memory 對齊：設計問題改成帶到週會；拿掉三層分法。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">02</span> 11-11 會議 → HG008 參考樹 9 步都對得到程式（11-11 ~ 11-12）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>會議五項主軸與規則 O1–O6 寫進 CLAUDE.md。</li>
+<li>8 株選殖株（PacBio）排樹，119 顆單細胞（PTA）獨立檢查。bootstrap 1,000 次只出現三種樹（947／48／5）；5 種門檻組合排出相同的 6 個分支。</li>
+<li>QUAL 20 是第一次結果出現 729 個衝突 SNV 以後才加的，屬於事後調整。VAF 0.25 是第一版就有的，不是實驗定的。</li>
+<li>口徑固定：共 5 群 clone（含共同祖先），單細胞支持其中 4 群（8、63、32、16 顆）。使用者 11-11 已寄出。</li>
+<li>bulk（p23）和單細胞同一批，所以 bulk 的 clone 比例要和單細胞比，不和選殖株比。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">03</span> 兩篇論文作者都沒比兩條 HP → 50% 定案（11-11 ~ 11-12）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>PRCGAP（預印本）解決的是「用病人自己的 diploid 組裝當參考」；COLO829 T2T（Cell 2026）補上 GRCh38 缺的區域。兩篇都沒比 HP1、HP2 的 SNV 數。</li>
+<li>COLO829 只算體染色體重算：hap1 9.24、hap2 9.31 個／Mb，比值 0.993（CI 0.974–1.012）。</li>
+<li>使用者 11-12 直接定案，不帶週會：每個 SNV 獨立，50% 落在 HP2。1 kb 內聚集不模擬。</li>
+<li>diplosim 預設改成 SNV-only：拷貝數參數預設 0，不加旗標就沒有 LOH、gain、loss。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">04</span> haploclone 重建模擬樹：HP 在哪些條件有幫助？（11-12 ~ 11-15）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>11-12，400×、10 棵樹：樹關係分數沒差，CCF 只準約 0.002。11-13 措辭下修成「沒看到改善」。</li>
+<li>11-14 改成數找回幾群：分數 0.95 背後，5 群平均只找回 3.35／3.45 群，樹形完全對 1／20。之後一律報「找回幾群、樹形完全對幾次」。</li>
+<li>一次改一個參數跑 11 組，過門檻的 3 組：30× +0.90 群、purity 0.7 +0.55、5,000 SNV +0.85。增益隨深度下降：60× +0.35、400× +0.05。</li>
+<li>天花板實驗：60× 時 CCF 差 &lt; 0.1 的群，連已知真值都只能找回 0–10%。這是資料分不開，不是方法不好。BIC 幾乎選不對群數。</li>
+<li>diplosim 加上 read 共現（使用者 11-15 決定）：只多 0.20 群（CI −0.05 到 +0.45），沒過門檻。原因是 CCF 相近的兩群之間，同 HP 的 SNV 對只有 0–7 對。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">05</span> HG008 bulk 重建：只分得到最上層（11-13 ~ 11-15）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>只用 NIST 名單：落在參考樹分支上的 139 個 SNV 幾乎都在最上層，深層 0 個。</li>
+<li>ClairS 從 read 找到 15,137 個 PASS SNV。深層的突變在 read 裡（48 顆層合併 VAF 0.141），只是每點 2–10 條 alt read，低於偵測門檻。</li>
+<li>使用者直接決定四個選擇：ClairS PASS、在 SNV 位點標 HP、只用 1+1 區、ONT 63×。輸入 5,816 個 SNV。</li>
+<li>ONT 跑 4 次、PacBio 116× 重跑，都沒把 111 顆那層和主幹分開。</li>
+<li>同 read 共現在真實資料看得出 L111 在主幹下面（只帶 L111 的 read 3 條、只帶主幹的 38 條）。但逐對評分要約 31 小時，使用者同意停掉，沒有結果。</li>
+</ul></div></div></section>
+
+<section class="item"><h3><span class="num">06</span> 11-18 週會投影片（11-13 ~ 11-15）</h3>
+<div class="field result"><div class="label">結果</div><div class="body"><ul>
+<li>11-13 做到 11 頁並發布；頁面全部白話，AI 流程的兩個問題不放進報告。</li>
+<li>11-14 跑完 11-11 附錄 B 自我檢查，未過的 3 條已修。</li>
+<li>11-15 使用者說進度太快，刪掉 HG008 規劃與決定等 6 頁，剩 9 頁。刪掉的頁搬到 <code>live_backup/removed_2026-11-15/</code>。</li>
+</ul></div></div></section>
+
+<h2 class="section">這週的翻案</h2>
+<section class="item"><div class="field gaps"><div class="body"><ul>
+<li>HP 各半的證據下修：論文裡只有一篇是腫瘤，而且是 short read。</li>
+<li>HG008 樹從「4 群」改成「5 群 clone，單細胞支持 4 群」。</li>
+<li>VAF 0.25 不是實驗定的；消除矛盾的是 QUAL 20。</li>
+<li>方案 B 改成「HP1 比例 30–60% 隨機」；隔天 HP 分配直接定案為固定 50%，不帶週會。</li>
+<li><code>DECISIONS.md</code> 的 50% 依據範圍寫錯，已照實際分析更正。</li>
+<li>HG008 的 SNV 來源撤回 ClairS-TO，改用 ClairS 加配對 normal。HG008 的四個選擇由使用者直接決定，不帶週會。</li>
+<li>「HP 沒差」下修為「沒看到改善」；SNV 對分數 0.95 不代表重建得好，改數找回幾群。</li>
+<li>同 read 共現從「先不列需求」改成開始模擬。</li>
+<li>11-18 投影片刪掉 6 頁，放慢速度。</li>
+</ul></div></div></section>
+
+<h2 class="section">週末時還缺的</h2>
+<section class="item"><div class="field gaps"><div class="body"><ul>
+<li>CCF 差 &lt; 0.1 的群怎麼辦：改目標（群層級）或寫成限制，還沒決定（11-16 再確認救不回）。</li>
+<li>diplosim 沒有定序錯誤，共現與 HP 的結果比真實資料樂觀。</li>
+<li>HG008 加共現的重建沒有結果；密集區的假訊號還沒有過濾規則。</li>
+<li>HG008 深層 SNV 多被判 LowQual，要不要放寬門檻（假陽性會變多），待週會。</li>
+<li>只測了 5 群、1+1、單一 sample 的設定；有拷貝數變化時沒測。</li>
+<li>haploclone <code>pair-pool</code> branch、diplosim 共現與投影片改動都還沒 commit。</li>
+</ul></div></div></section>
+</div>
+</body>
+</html>
