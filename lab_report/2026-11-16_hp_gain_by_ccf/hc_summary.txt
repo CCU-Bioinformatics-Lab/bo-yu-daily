@@ -1,0 +1,11 @@
+60 of 60 trees complete; non-truncal clones; found = mean of 2 haploclone seeds; base -> A1; 95% CI by tree bootstrap
+by clone CCF
+  CCF <0.3               n=117  haploclone  20% ->  24%  gain  +3.4 [ -0.8,  +8.1]   ceiling  29% ->  29% (  +0)
+  CCF 0.3-0.6            n=71   haploclone   4% ->  17%  gain +12.7 [ +5.6, +21.1]   ceiling  14% ->  21% (  +7)
+  CCF 0.6-0.8            n=37   haploclone   0% ->  35%  gain +35.1 [+20.4, +52.9]   ceiling   0% ->  43% ( +43)
+  CCF >=0.8              n=15   haploclone   0% ->   0%  gain  +0.0 [ +0.0,  +0.0]   ceiling   0% ->   0% (  +0)
+by CCF gap to the nearest clone
+  gap < 0.1              n=134  haploclone   4% ->   7%  gain  +2.2 [ +0.0,  +5.0]   ceiling   7% ->  10% (  +2)
+  gap >= 0.1             n=106  haploclone  19% ->  41%  gain +21.7 [+13.3, +30.7]   ceiling  32% ->  49% ( +17)
+  CCF 0.6-0.8, gap >= 0.2 n=15   haploclone   0% ->  63%  gain +63.3 [+38.9, +86.4]   ceiling   0% ->  67% ( +67)
+  all                    n=240  haploclone  11% ->  22%  gain +10.8 [ +7.1, +14.8]   ceiling  18% ->  27% (  +9)
